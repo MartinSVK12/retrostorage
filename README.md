@@ -1,7 +1,7 @@
 # RetroStorage 
 Digital storage system mod for Minecraft b1.7.3.
 
-StationAPI port by @MrMasrozYTLIVE[https://github.com/MrMasrozYTLIVE]
+StationAPI port by [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE)
 
  ## Licence
  This mod is licensed under **Apache License 2.0**,
