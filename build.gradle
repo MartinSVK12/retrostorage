@@ -58,6 +58,12 @@ dependencies {
 	modImplementation ("net.modificationstation:StationAPI:${project.stapi_version}") {
 		exclude module: "cursed-fabric-loader"
 	}
+
+	implementation "blue.endless:jankson:1.2.1"
+	modImplementation('com.github.calmilamsy:HowManyItems-Fabric-Unofficial:1c6873a') {
+		exclude module: 'StationAPI'
+		exclude module: 'cursed-fabric-loader'
+	}
 }
 
 processResources {
