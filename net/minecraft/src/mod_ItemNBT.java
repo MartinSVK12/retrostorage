@@ -5,10 +5,11 @@ public class mod_ItemNBT extends BaseMod {
 	public mod_ItemNBT() {
 	}
 
+
 	@Override
 	public String Version() {
 		
-		return "a1.0_b1.7.3";
+		return "1.0";
 	}
 	
 	public String Name() {
