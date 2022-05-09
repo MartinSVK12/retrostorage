@@ -14,6 +14,7 @@ Requires Modloader.
  **Planned**:
  - [ ] Finish crafting recipes
  - [ ] Config file with ID's
+ - [ ] Documentation
 
 **WARNING**
 Experimental *Alpha* release, code is mostly untested: I only cared about making it work, many things are either not yet implemented or they could/will be done better in the future.
