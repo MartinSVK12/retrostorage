@@ -121,7 +121,6 @@
 /net/minecraft/src/TextureFlamesFX.java
 /net/minecraft/src/RenderFish.java
 /net/minecraft/src/GuiIngame.java
-/net/minecraft/src/BlockFurnace.java
 /net/minecraft/src/J_JsonRootNode.java
 /net/minecraft/src/IMob.java
 /net/minecraft/src/J_JsonNodeDoesNotMatchChainedJsonNodeSelectorException.java
@@ -449,7 +448,6 @@
 /net/minecraft/src/MouseHelper.java
 /net/minecraft/src/J_JsonConstants.java
 /net/minecraft/src/EntitySplashFX.java
-/net/minecraft/src/BlockDispenser.java
 /net/minecraft/src/ThreadStatSyncherSend.java
 /net/minecraft/src/MapGenBase.java
 /net/minecraft/src/J_NodeContainer.java
