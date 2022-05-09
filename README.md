@@ -13,7 +13,7 @@ Requires Modloader.
  
  **Planned**:
  - [ ] Finish crafting recipes
- - [ ] Config file with ID's
+ - [X] Config file with ID's
  - [ ] Documentation
 
 **WARNING**
