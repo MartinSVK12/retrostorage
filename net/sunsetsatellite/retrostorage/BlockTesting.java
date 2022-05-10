@@ -1,15 +1,8 @@
 package net.sunsetsatellite.retrostorage;
 
-import java.util.ArrayList;
-import java.util.Random;
+import net.minecraft.src.*;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.CraftingManager;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Material;
-import net.minecraft.src.World;
-import net.minecraft.src.mod_RetroStorage;
+import java.util.Random;
 
 public class BlockTesting extends Block {
 
@@ -25,9 +18,15 @@ public class BlockTesting extends Block {
     
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
-    	
+		if(entityplayer.getCurrentEquippedItem() != null) {
+			if (entityplayer.inventory.getStackInSlot(0) != null) {
+				entityplayer.addChatMessage(
+						String.valueOf(entityplayer.getCurrentEquippedItem().getItemData().equals(entityplayer.inventory.getStackInSlot(0).getItemData()))
+				);
+			}
+		}
 		//entityplayer.addChatMessage("Block activated!");
-		CraftingManager crafter = CraftingManager.getInstance();
+		/*CraftingManager crafter = CraftingManager.getInstance();
 		if(entityplayer.getCurrentEquippedItem() != null) {
 			if (entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.recipeDisc) {
 				ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(entityplayer.getCurrentEquippedItem().getItemData());
@@ -73,7 +72,7 @@ public class BlockTesting extends Block {
 			}else if (entityplayer.getCurrentEquippedItem().getItem() instanceof ItemStorageDisc) {
 				System.out.println(DiscManipulator.decreaseItemAmountOnDisc(entityplayer.getCurrentEquippedItem(), new ItemStack(Block.stone,1)));
 			}
-		}
+		}*/
 
 		/*List<?> list = crafter.getRecipeList();
 		for (int y = 0;y < list.size();y++) {

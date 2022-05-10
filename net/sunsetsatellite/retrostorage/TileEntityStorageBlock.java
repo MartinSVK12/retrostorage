@@ -27,7 +27,8 @@ public class TileEntityStorageBlock extends TileEntityStorage {
     
     public ItemStack decrStackSize(int i, int j)
     {
-        if(contents[i] != null)
+        return null; //Not needed since the item is never supposed to leave
+        /*if(contents[i] != null)
         {
             if(contents[i].stackSize <= j)
             {
@@ -46,16 +47,17 @@ public class TileEntityStorageBlock extends TileEntityStorage {
         } else
         {
             return null;
-        }
+        }*/
     }
     
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
-		contents[i] = itemstack;
+        //Not needed since the item is never supposed to leave
+		/*contents[i] = itemstack;
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
             itemstack.stackSize = getInventoryStackLimit();
-        }
+        }*/
         onInventoryChanged();
         
     }

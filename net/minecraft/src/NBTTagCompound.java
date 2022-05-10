@@ -7,10 +7,7 @@ package net.minecraft.src;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 // Referenced classes of package net.minecraft.src:
 //            NBTBase, NBTTagByte, NBTTagShort, NBTTagInt, 
@@ -230,6 +227,33 @@ public class NBTTagCompound extends NBTBase
         return getByte(s) != 0;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTTagCompound){
+            if(tagMap.size() == 0 && ((NBTTagCompound) obj).tagMap.size() == 0){
+                return true;
+            }
+            if(tagMap.size() == 0 && ((NBTTagCompound) obj).tagMap.size() != 0){
+                return false;
+            } else if (tagMap.size() != 0 && ((NBTTagCompound) obj).tagMap.size() == 0){
+                return false;
+            }
+            Iterator itrt = tagMap.entrySet().iterator();
+            int s = 1;
+            while (itrt.hasNext()) {
+                Map.Entry<?,?> element = (Map.Entry<?, ?>) itrt.next();
+                if(((NBTTagCompound) obj).hasKey((String) element.getKey())){
+                    if(element.getValue().equals(((NBTTagCompound) obj).tagMap.get(element.getKey()))){
+                        s++;
+                    }
+                }
+            }
+            return s == tagMap.size();
+        }
+        return false;
+    }
+
+
     public String toString()
     {
         return (new StringBuilder()).append("").append(tagMap.size()).append(" entries").toString();
@@ -239,9 +263,10 @@ public class NBTTagCompound extends NBTBase
     	 return (new StringBuilder()).append("").append(tagMap).toString();
     }
 
-    private Map tagMap;
+    private HashMap tagMap;
 
 	public Collection getValues() {
 		 return tagMap.values();
 	}
+
 }

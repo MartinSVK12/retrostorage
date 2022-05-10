@@ -74,14 +74,15 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     	if(network_asm != null) {
             TileEntityInNetworkWithInv handler = (TileEntityInNetworkWithInv) network_asm.itemAssembly.get(slot.getStack()).get(0);
     		int handlerSlot = (int) network_asm.itemAssembly.get(slot.getStack()).get(1);
+            ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Requesting: "+slot.getStack().stackSize+"x "+StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName()));
             System.out.println("Requesting: "+slot.getStack().getItemName()+" from "+handler.toString()+" via "+network_asm.toString()+" using slot "+handlerSlot);
 			if (handler instanceof TileEntityAssembler) {
                 if (handler.getStackInSlot(handlerSlot) != null) {
                     if (handler.getStackInSlot(handlerSlot).getItem() == mod_RetroStorage.recipeDisc) {
                         ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(handler.getStackInSlot(handlerSlot).getItemData());
                         ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-                        //System.out.println(output.toString());
-                        if (output != null) {
+                        System.out.println(output.toString());
+                        if (output != null && output.stackSize != 0) {
                             int s = 0;
                             for (int i1 = 0; i1 < recipe.size(); i1++) {
                                 if (network_disc != null) {
@@ -99,20 +100,27 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                             }
                             //System.out.println(s);
                             if (s == recipe.size()) {
-                                for (int i2 = 0; i2 < recipe.size(); i2++) {
-                                    if (network_disc != null) {
-                                        if (network_disc.getItem() instanceof ItemStorageDisc) {
-                                            if (recipe.get(i2) != null) {
-                                                DiscManipulator.decreaseItemAmountOnDisc(network_disc, (ItemStack) recipe.get(i2));
+                                if(getStackInSlot(0) == null || getStackInSlot(0).stackSize < 64) {
+                                    for (Object o : recipe) {
+                                        if (network_disc != null) {
+                                            if (network_disc.getItem() instanceof ItemStorageDisc) {
+                                                if (o != null) {
+                                                    DiscManipulator.decreaseItemAmountOnDisc(network_disc, (ItemStack) o);
+                                                }
                                             }
+
                                         }
-
                                     }
-                                }
 
-                                if (getStackInSlot(0) == null) {
-                                    output.stackSize = 1;
-                                    setInventorySlotContents(0, output);
+                                    if (getStackInSlot(0) == null) {
+                                        output.stackSize = output.stackSize == 0 ? 1 : output.stackSize;
+                                        setInventorySlotContents(0, output.copy());
+                                    } else if (getStackInSlot(0).isItemEqual(output)) {
+                                        output.stackSize = output.stackSize == 0 ? 1 : output.stackSize;
+                                        ItemStack is = output.copy();
+                                        is.stackSize += getStackInSlot(0).stackSize;
+                                        setInventorySlotContents(0, is);
+                                    }
                                 }
                                 //System.out.println(output.stackSize);
                                 //System.out.println("dropped");

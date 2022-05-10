@@ -1,13 +1,8 @@
 package net.sunsetsatellite.retrostorage;
 
-import java.util.ArrayList;
+import net.minecraft.src.*;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.TileEntity;
+import java.util.ArrayList;
 
 public class TileEntityRecipeEncoder extends TileEntity 
 	implements IInventory{
@@ -135,10 +130,10 @@ public class TileEntityRecipeEncoder extends TileEntity
     					ItemStack item = getStackInSlot(i);
     					itemList.add(i, item);
     				}
-    				System.out.println(itemList.toString());
+    				//System.out.println(itemList.toString());
     				NBTTagCompound nbt = DiscManipulator.convertRecipeToNBT(itemList);
     				recipeDisc.setItemData(nbt);
-    				System.out.println(recipeDisc.getItemData().toString());
+    				//System.out.println(recipeDisc.getItemData().toString());
     			}
 		}
 	}

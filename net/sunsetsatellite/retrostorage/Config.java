@@ -60,7 +60,7 @@ public class Config {
                 else if (s.contains("=")) {
                     String as[] = s.split("=");
                     String name = as[0];
-                    Integer id = Integer.parseInt(as[1]);
+                    int id = Integer.parseInt(as[1]);
                     //System.out.println(name +" ("+s2+") "+": "+id);
                     if (name.equals(s2)){
                         return id;

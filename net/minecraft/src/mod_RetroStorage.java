@@ -42,7 +42,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityDigitalTerminal.class, "Digital Terminal");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityImporter.class, "Importer");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityExporter.class, "Exporter");
-		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityStorageBlock.class, "Storage Block");
+		//ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityStorageBlock.class, "Storage Block");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityRecipeEncoder.class, "Recipe Encoder");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityAssembler.class, "Assembler");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityRequestTerminal.class, "Request Terminal");
@@ -65,13 +65,13 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(importer, "Item Importer");
 		ModLoader.AddName(exporter, "Item Exporter");
 		ModLoader.AddName(goldenDisc, "Golden Disc");
-		ModLoader.AddName(goldenStorageBlock, "Golden Storage Block");
-		ModLoader.AddName(storageBlock1, "Storage Block MK I");
+		//ModLoader.AddName(goldenStorageBlock, "Golden Storage Block");
+		/*ModLoader.AddName(storageBlock1, "Storage Block MK I");
 		ModLoader.AddName(storageBlock2, "Storage Block MK II");
 		ModLoader.AddName(storageBlock3, "Storage Block MK III");
 		ModLoader.AddName(storageBlock4, "Storage Block MK IV");
 		ModLoader.AddName(storageBlock5, "Storage Block MK V");
-		ModLoader.AddName(storageBlock6, "Storage Block MK VI");
+		ModLoader.AddName(storageBlock6, "Storage Block MK VI");*/
 		ModLoader.AddName(relay, "Relay");
 		ModLoader.AddName(relayOff, "Relay");
 		ModLoader.AddName(testingBlock, "Testing Block");
@@ -88,13 +88,13 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterBlock(digitalTerminal);
 		ModLoader.RegisterBlock(importer);
 		ModLoader.RegisterBlock(exporter);
-		ModLoader.RegisterBlock(goldenStorageBlock);
-		ModLoader.RegisterBlock(storageBlock1);
+		//ModLoader.RegisterBlock(goldenStorageBlock);
+		/*ModLoader.RegisterBlock(storageBlock1);
 		ModLoader.RegisterBlock(storageBlock2);
 		ModLoader.RegisterBlock(storageBlock3);
 		ModLoader.RegisterBlock(storageBlock4);
 		ModLoader.RegisterBlock(storageBlock5);
-		ModLoader.RegisterBlock(storageBlock6);
+		ModLoader.RegisterBlock(storageBlock6);*/
 		ModLoader.RegisterBlock(relay);
 		ModLoader.RegisterBlock(relayOff);
 		ModLoader.RegisterBlock(testingBlock);
@@ -113,7 +113,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), new Object[] {
 				"RRR", "RDR", "RRR", Character.valueOf('D'), blankDisc, Character.valueOf('R'), Item.redstone
 		});
-	}
+
+}
 
 	public static int getId(String s, int base) {
 		Integer id = config.getFromConfig(s,base);
@@ -141,13 +142,14 @@ public class mod_RetroStorage extends BaseMod {
 	public static Block digitalTerminal = (new BlockDigitalTerminal(getId("digitalTerminal",169), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalTerminal"));
 	public static Block importer = (new BlockImporter(getId("importer",170), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("importer.png").toString()), Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("importer"));
 	public static Block exporter = (new BlockExporter(getId("exporter",171), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("exporter.png").toString()), Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("exporter"));
-	public static Block goldenStorageBlock = (new BlockStorage(getId("goldenStorageBlock",172), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("goldenstorageblock.png").toString()),mod_RetroStorage.goldenDisc, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("goldenStorageBlock"));
-	public static Block storageBlock1 = (new BlockStorage(getId("storageBlock1",173), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock1.png").toString()),mod_RetroStorage.storageDisc1, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock1"));
+	//public static Block goldenStorageBlock = (new BlockStorage(getId("goldenStorageBlock",172), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("goldenstorageblock.png").toString()),mod_RetroStorage.goldenDisc, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("goldenStorageBlock"));
+	/*public static Block storageBlock1 = (new BlockStorage(getId("storageBlock1",173), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock1.png").toString()),mod_RetroStorage.storageDisc1, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock1"));
 	public static Block storageBlock2 = (new BlockStorage(getId("storageBlock2",139), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock2.png").toString()),mod_RetroStorage.storageDisc2, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock2"));
 	public static Block storageBlock3 = (new BlockStorage(getId("storageBlock3",176), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock3.png").toString()),mod_RetroStorage.storageDisc3, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock3"));
 	public static Block storageBlock4 = (new BlockStorage(getId("storageBlock4",177), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock4.png").toString()),mod_RetroStorage.storageDisc4, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock4"));
 	public static Block storageBlock5 = (new BlockStorage(getId("storageBlock5",178), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock5.png").toString()),mod_RetroStorage.storageDisc5, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock5"));
-	public static Block storageBlock6 = (new BlockStorage(getId("storageBlock6",179), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock6.png").toString()),mod_RetroStorage.storageDisc6, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock6"));
+	public static Block storageBlock6 = (new BlockStorage(getId("storageBlock6",179), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock6.png").toString()),mod_RetroStorage.storageDisc6, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock6"));*/
+
 	public static Block relay = (new BlockRelay(getId("relay",180)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("relay"));
 	public static Block relayOff = (new BlockRelayOff(getId("relayOff",181)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("relayOff"));
 	public static Block testingBlock = (new BlockTesting(getId("testingBlock",182), Material.rock).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("testingBlock"));
