@@ -182,7 +182,7 @@ public class mod_RetroStorage extends BaseMod {
 	
 	@Override
 	public String Version() {
-		return "a1.1";
+		return "a1.2";
 	}
 	
 	public String Name() {

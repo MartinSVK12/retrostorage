@@ -9,7 +9,7 @@ public class mod_ItemNBT extends BaseMod {
 	@Override
 	public String Version() {
 		
-		return "1.0";
+		return "1.1";
 	}
 	
 	public String Name() {
