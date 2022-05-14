@@ -25,7 +25,6 @@
 /net/minecraft/src/ThreadDownloadImageData.java
 /net/minecraft/src/ClippingHelperImpl.java
 /net/minecraft/src/BlockSoulSand.java
-/net/minecraft/src/NBTTagString.java
 /net/minecraft/src/Render.java
 /net/minecraft/src/Packet53BlockChange.java
 /net/minecraft/src/BlockWorkbench.java
@@ -48,7 +47,6 @@
 /net/minecraft/src/ModLoader.java
 /net/minecraft/src/TileEntityRecordPlayer.java
 /net/minecraft/src/StepSoundStone.java
-/net/minecraft/src/NBTTagByteArray.java
 /net/minecraft/src/EntityReddustFX.java
 /net/minecraft/src/StatFileWriter.java
 /net/minecraft/src/BlockPistonExtension.java
@@ -66,7 +64,7 @@
 /net/minecraft/src/BiomeGenRainforest.java
 /net/minecraft/src/BlockDetectorRail.java
 /net/minecraft/src/OpenGlCapsChecker.java
-/net/minecraft/src/NBTTagByte.java
+
 /net/minecraft/src/EntityGhast.java
 /net/minecraft/src/ContainerPlayer.java
 /net/minecraft/src/EnumJsonNodeTypeMappingHelper.java
@@ -190,7 +188,6 @@
 /net/minecraft/src/RecipesArmor.java
 /net/minecraft/src/StringTranslate.java
 /net/minecraft/src/GuiAchievements.java
-/net/minecraft/src/NBTTagLong.java
 /net/minecraft/src/RenderPlayer.java
 /net/minecraft/src/ModTextureStatic.java
 /net/minecraft/src/Item.java
@@ -401,7 +398,7 @@
 /net/minecraft/src/GuiWorldSlot.java
 /net/minecraft/src/Packet15Place.java
 /net/minecraft/src/EntitySnowShovelFX.java
-/net/minecraft/src/NBTTagShort.java
+
 /net/minecraft/src/SlotFurnace.java
 /net/minecraft/src/RenderTNTPrimed.java
 /net/minecraft/src/J_JsonNumberNode.java
@@ -428,7 +425,7 @@
 /net/minecraft/src/AxisAlignedBB.java
 /net/minecraft/src/StatTypeDistance.java
 /net/minecraft/src/TextureFX.java
-/net/minecraft/src/NBTTagInt.java
+
 /net/minecraft/src/ClippingHelper.java
 /net/minecraft/src/RenderHelper.java
 /net/minecraft/src/EntityList.java
@@ -544,7 +541,7 @@
 /net/minecraft/src/EntityCreature.java
 /net/minecraft/src/WorldGenTallGrass.java
 /net/minecraft/src/InventoryCraftResult.java
-/net/minecraft/src/NBTTagDouble.java
+
 /net/minecraft/src/ModelSheep2.java
 /net/minecraft/src/J_JsonNodeBuilders.java
 /net/minecraft/src/EntitySlimeFX.java
@@ -616,7 +613,6 @@
 /net/minecraft/src/TileEntityChest.java
 /net/minecraft/src/J_JsonFieldBuilder.java
 /net/minecraft/src/EntityNoteFX.java
-/net/minecraft/src/NBTTagList.java
 /net/minecraft/src/Packet34EntityTeleport.java
 /net/minecraft/src/RecipesFood.java
 /net/minecraft/src/MapData.java
@@ -662,9 +658,7 @@
 /net/minecraft/src/EnumJsonNodeType.java
 /net/minecraft/src/ContainerWorkbench.java
 /net/minecraft/src/ContainerDispenser.java
-/net/minecraft/src/NBTTagFloat.java
 /net/minecraft/src/CodecMus.java
-/net/minecraft/src/NBTTagEnd.java
 /net/minecraft/src/EntityOtherPlayerMP.java
 /net/minecraft/src/BlockBookshelf.java
 /net/minecraft/src/J_JsonListenerToJdomAdapter.java

@@ -178,7 +178,7 @@ public abstract class Container
                     } else
                     if(slot.isItemValid(itemstack3))
                     {
-                        if(itemstack2.itemID != itemstack3.itemID || itemstack2.getHasSubtypes() && itemstack2.getItemDamage() != itemstack3.getItemDamage())
+                        if(itemstack2.itemID != itemstack3.itemID || itemstack2.getHasSubtypes() && itemstack2.getItemDamage() != itemstack3.getItemDamage() || !(itemstack2.getItemData().equals(itemstack3.getItemData())))
                         {
                             if(itemstack3.stackSize <= slot.getSlotStackLimit())
                             {
@@ -205,7 +205,7 @@ public abstract class Container
                             itemstack2.stackSize += k1;
                         }
                     } else
-                    if(itemstack2.itemID == itemstack3.itemID && itemstack3.getMaxStackSize() > 1 && (!itemstack2.getHasSubtypes() || itemstack2.getItemDamage() == itemstack3.getItemDamage()))
+                    if(itemstack2.itemID == itemstack3.itemID && itemstack3.getMaxStackSize() > 1 && (!itemstack2.getHasSubtypes() || itemstack2.getItemDamage() == itemstack3.getItemDamage()) && itemstack2.getItemData().equals(itemstack3.getItemData()))
                     {
                         int l1 = itemstack2.stackSize;
                         if(l1 > 0 && l1 + itemstack3.stackSize <= itemstack3.getMaxStackSize())
@@ -287,7 +287,7 @@ public abstract class Container
             {
                 Slot slot = (Slot)slots.get(k);
                 ItemStack itemstack1 = slot.getStack();
-                if(itemstack1 != null && itemstack1.itemID == itemstack.itemID && (!itemstack.getHasSubtypes() || itemstack.getItemDamage() == itemstack1.getItemDamage()))
+                if(itemstack1 != null && itemstack1.itemID == itemstack.itemID && (!itemstack.getHasSubtypes() || itemstack.getItemDamage() == itemstack1.getItemDamage()) && itemstack.getItemData().equals(itemstack1.getItemData()))
                 {
                     int i1 = itemstack1.stackSize + itemstack.stackSize;
                     if(i1 <= itemstack.getMaxStackSize())

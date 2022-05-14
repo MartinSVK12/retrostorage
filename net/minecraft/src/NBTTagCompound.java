@@ -239,7 +239,8 @@ public class NBTTagCompound extends NBTBase
                 return false;
             }
             Iterator itrt = tagMap.entrySet().iterator();
-            int s = 1;
+            int s = 0;
+            int i = 1;
             while (itrt.hasNext()) {
                 Map.Entry<?,?> element = (Map.Entry<?, ?>) itrt.next();
                 if(((NBTTagCompound) obj).hasKey((String) element.getKey())){
@@ -247,6 +248,7 @@ public class NBTTagCompound extends NBTBase
                         s++;
                     }
                 }
+                i++;
             }
             return s == tagMap.size();
         }
