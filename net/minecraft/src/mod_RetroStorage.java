@@ -10,7 +10,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static Config config;
 
 	public mod_RetroStorage() {
-		config.init();
+		Config.init();
 
 		digitalChestFront = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("digitalchestfront.png").toString());
 		digitalChestSide = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("digitalchestside.png").toString());
@@ -104,22 +104,32 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterBlock(digitalInterface);
 
 
-		ModLoader.AddRecipe(new ItemStack(digitalChest, 1), new Object[] {
-				"ISI", "RCR", "IDI", Character.valueOf('S'), blankDisc, Character.valueOf('I'), Item.ingotIron, Character.valueOf('R'), Item.redstone, Character.valueOf('C'), Block.chest, Character.valueOf('D'), Block.blockDiamond
-		});
-		ModLoader.AddRecipe(new ItemStack(blankDisc, 1), new Object[] {
-				"GGG", "GRG", "GGG", Character.valueOf('G'), Block.glass, Character.valueOf('R'), Item.redstone
-		});
-		ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), new Object[] {
-				"RRR", "RDR", "RRR", Character.valueOf('D'), blankDisc, Character.valueOf('R'), Item.redstone
-		});
-
-}
+		ModLoader.AddRecipe(new ItemStack(digitalChest, 1), "ISI", "RCR", "IDI", 'S', blankDisc, 'I', Item.ingotIron, 'R', Item.redstone, 'C', Block.chest, 'D', Block.blockDiamond);
+		ModLoader.AddRecipe(new ItemStack(blankDisc, 1), "GGG", "GRG", "GGG", 'G', Block.glass, 'R', Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(recipeDisc, 1), "GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.redstone, 'P', new ItemStack(Item.dyePowder,1,5));
+		ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), "RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(itemCable,16), "WLW","GGG","WLW", 'W', Block.cloth, 'G', Block.glass, 'L', new ItemStack(Item.dyePowder,1,4));
+		ModLoader.AddRecipe(new ItemStack(relay,1),"ILI","CRC","ILI",'I',Item.ingotIron,'L',new ItemStack(Item.dyePowder,1,4),'C',itemCable,'R',Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(digitalController,1),"ILI","LDL","ILI",'I',Block.blockSteel,'L',Block.blockLapis,'D',Block.blockDiamond);
+		ModLoader.AddRecipe(new ItemStack(discDrive,1),"III","DDD","III",'I',Item.ingotIron,'D',blankDisc);
+		ModLoader.AddRecipe(new ItemStack(digitalTerminal, 1), "III", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable);
+		ModLoader.AddRecipe(new ItemStack(importer, 1), "ILI", "GHG", "ICI", 'I', Item.ingotIron, 'L', Block.blockLapis,'G',new ItemStack(Item.dyePowder,1,10) ,'H', Block.chest, 'C', itemCable);
+		ModLoader.AddRecipe(new ItemStack(exporter, 1), "ILI", "RHR", "ICI", 'I', Item.ingotIron, 'L', Block.blockLapis,'R',new ItemStack(Item.dyePowder,1,1) ,'H', Block.chest, 'C', itemCable);
+		ModLoader.AddRecipe(new ItemStack(digitalInterface, 1), "IRI", "PHP", "ICI", 'I', Item.ingotIron, 'P', new ItemStack(Item.dyePowder,1,5),'R',recipeDisc ,'H', Block.chest, 'C', itemCable);
+		ModLoader.AddRecipe(new ItemStack(assembler,1),"ICI","CRC","ICI",'I',Block.blockSteel,'C',Block.workbench,'R',recipeDisc);
+		ModLoader.AddRecipe(new ItemStack(recipeEncoder,1),"IRI","PCP","IcI",'I',Item.ingotIron,'C',Block.workbench,'R',recipeDisc,'P', new ItemStack(Item.dyePowder,1,5),'c',itemCable);
+		ModLoader.AddRecipe(new ItemStack(requestTerminal, 1), "ITI", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable,'T',Block.workbench);
+		ModLoader.AddRecipe(new ItemStack(storageDisc2, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc1,'#',new ItemStack(Item.dyePowder,1,14),'R',Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(storageDisc3, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc2,'#',new ItemStack(Item.dyePowder,1,11),'R',Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(storageDisc4, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc3,'#',new ItemStack(Item.dyePowder,1,10),'R',Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(storageDisc5, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc4,'#',new ItemStack(Item.dyePowder,1,4),'R',Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(storageDisc6, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc5,'#',new ItemStack(Item.dyePowder,1,5),'R',Item.redstone);
+	}
 
 	public static int getId(String s, int base) {
-		Integer id = config.getFromConfig(s,base);
+		Integer id = Config.getFromConfig(s,base);
 		System.out.println("Getting id for "+s+": "+ (id == null ? "null (using default: "+base+")" : id.toString()));
-		return id == null ? base : config.getFromConfig(s,base);
+		return id == null ? base : Config.getFromConfig(s,base);
 	}
 
 
@@ -182,7 +192,7 @@ public class mod_RetroStorage extends BaseMod {
 	
 	@Override
 	public String Version() {
-		return "a1.2";
+		return "a1.3";
 	}
 	
 	public String Name() {

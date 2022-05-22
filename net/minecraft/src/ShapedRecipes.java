@@ -97,6 +97,9 @@ public class ShapedRecipes
     }
     
     public boolean matchesArray(ArrayList<ItemStack> list) {
+        if (list.isEmpty()){
+            return false;
+        }
     	ArrayList<ItemStack> recipeList = (ArrayList<ItemStack>) getRecipeItems();
     	recipeList = (ArrayList<ItemStack>) applyWidthHeightToRecipeArray(recipeList);
     	/*if(recipeOutput.getItem() == Item.shovelSteel) {

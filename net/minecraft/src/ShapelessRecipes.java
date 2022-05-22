@@ -77,6 +77,9 @@ public class ShapelessRecipes
     }
     
     public boolean matchesArray(ArrayList<ItemStack> list) {
+        if (list.isEmpty()){
+            return false;
+        }
     	 ArrayList<ItemStack> arraylist = (ArrayList<ItemStack>) getRecipeItems();
     	 int n = 0;
 	     for(int j = 0; j < list.size(); j++)
