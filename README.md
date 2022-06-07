@@ -12,9 +12,9 @@ Requires Modloader.
  - and more to come.
  
  **Planned**:
- - [ ] Finish crafting recipes
+ - [X] Finish crafting recipes
  - [X] Config file with ID's
- - [ ] Documentation
+ - [X] Documentation
 
 **WARNING**
 Experimental *Alpha* release, code is mostly untested: I only cared about making it work, many things are either not yet implemented or they could/will be done better in the future.
