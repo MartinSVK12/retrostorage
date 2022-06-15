@@ -1,18 +1,8 @@
 package net.sunsetsatellite.retrostorage;
 
-import java.util.Random;
+import net.minecraft.src.*;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Material;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
-import net.minecraft.src.mod_RetroStorage;
+import java.util.Random;
 
 public class BlockRecipeEncoder extends BlockContainer{
 
@@ -131,7 +121,7 @@ public class BlockRecipeEncoder extends BlockContainer{
     {
         TileEntityRecipeEncoder TileEntityRecipeEncoder = (TileEntityRecipeEncoder)world.getBlockTileEntity(i, j, k);
         label0:
-        for(int l = 0; l < TileEntityRecipeEncoder.getSizeInventory()-1; l++)
+        for(int l = 0; l < TileEntityRecipeEncoder.getSizeInventory(); l++)
         {
             ItemStack itemstack = TileEntityRecipeEncoder.getStackInSlot(l);
             if(itemstack == null)

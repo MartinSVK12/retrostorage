@@ -1,18 +1,8 @@
 package net.sunsetsatellite.retrostorage;
 
-import java.util.Random;
+import net.minecraft.src.*;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Material;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
-import net.minecraft.src.mod_RetroStorage;
+import java.util.Random;
 
 public class BlockDigitalChest extends BlockContainer{
 
@@ -135,11 +125,11 @@ public class BlockDigitalChest extends BlockContainer{
         }
     }
     
-    public void dropContent(World world, int i, int j, int k)
+    public void onBlockRemoval(World world, int i, int j, int k)
     {
         TileEntityDigitalChest TileEntityDigitalChest = (TileEntityDigitalChest)world.getBlockTileEntity(i, j, k);
    label0:
-        for(int l = 0; l < TileEntityDigitalChest.getSizeInventory(); l++)
+        for(int l = 0; l < 3; l++)
         {
             ItemStack itemstack = TileEntityDigitalChest.getStackInSlot(l);
             if(itemstack == null)
@@ -161,7 +151,7 @@ public class BlockDigitalChest extends BlockContainer{
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getItemDamage()));
+                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getItemDamage(), itemstack.getItemData()));
                 float f3 = 0.05F;
                 entityitem.motionX = (float)world.rand.nextGaussian() * f3;
                 entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
