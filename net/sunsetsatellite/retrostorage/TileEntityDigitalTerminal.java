@@ -4,18 +4,11 @@
 
 package net.sunsetsatellite.retrostorage;
 
+import net.minecraft.src.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
-
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.Slot;
-import net.minecraft.src.TileEntity;
 
 // Referenced classes of package net.minecraft.src:
 //            TileEntity, IInventory, ItemStack, NBTTagCompound, 
@@ -76,60 +69,59 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     
     public void updateEntity()
     {
+
 		if(network.size() > 0) {
-			Iterator<Entry<ArrayList<Integer>, HashMap<String, Object>>> itrt = network.entrySet().iterator();
-			while (itrt.hasNext()) {
-				Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element = (Map.Entry<ArrayList<Integer>, HashMap<String, Object>>)itrt.next();
-				ArrayList<Integer> pos = element.getKey();
-				TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
-				if (tile != null) {
-					if (tile instanceof TileEntityDiscDrive) {
-						TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
-						network_drive = drive;
-						if (drive.getStackInSlot(drive.getSizeInventory()-1) != null) {
-							if (drive.getStackInSlot(drive.getSizeInventory()-1).getItem() instanceof ItemStorageDisc) {
-								network_drive.createVirtualDisc();
-								DiscManipulator.readFromDisc(drive.getStackInSlot(drive.getSizeInventory()-1),page,this);
-    							network_disc = drive.getStackInSlot(drive.getSizeInventory()-1);
-    							pages = network_disc.getItemData().getValues().size() / 36;
-    							//DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-    							break;
-							} else {
-								network_disc = null;
-								network_drive = null;
-							}
-						} else {
-							network_disc = null;
-							network_drive = null;
-						}
-					} else if (tile instanceof TileEntityStorageBlock) {
-						TileEntityStorageBlock drive = (TileEntityStorageBlock) tile;
-						network_drive = drive;
-						if (drive.getStackInSlot(drive.getSizeInventory()-1) != null) {
-							if (drive.getStackInSlot(drive.getSizeInventory()-1).getItem() instanceof ItemStorageDisc) {
-								network_drive.createVirtualDisc();
-								DiscManipulator.readFromDisc(drive.getStackInSlot(drive.getSizeInventory()-1),page,this);
-    							network_disc = drive.getStackInSlot(drive.getSizeInventory()-1);
-    							pages = network_disc.getItemData().getValues().size() / 36;
-    							//DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-    							break;
-							} else {
-								network_disc = null;
-								network_drive = null;
-							}
-						} else {
-							network_disc = null;
-							network_drive = null;
-						}
-					} else {
-						network_disc = null;
-						network_drive = null;
-					}
-				} else {
-					network_disc = null;
-					network_drive = null;
-				}
-			}
+            for (Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
+                ArrayList<Integer> pos = element.getKey();
+                TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
+                if (tile != null) {
+                    if (tile instanceof TileEntityDiscDrive) {
+                        TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
+                        network_drive = drive;
+                        if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
+                            if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
+                                network_drive.createVirtualDisc();
+                                DiscManipulator.readFromDisc(drive.getStackInSlot(drive.getSizeInventory() - 1), page, this);
+                                network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
+                                pages = network_disc.getItemData().getValues().size() / 36;
+                                //DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
+                                break;
+                            } else {
+                                network_disc = null;
+                                network_drive = null;
+                            }
+                        } else {
+                            network_disc = null;
+                            network_drive = null;
+                        }
+                    } else if (tile instanceof TileEntityStorageBlock) {
+                        TileEntityStorageBlock drive = (TileEntityStorageBlock) tile;
+                        network_drive = drive;
+                        if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
+                            if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
+                                network_drive.createVirtualDisc();
+                                DiscManipulator.readFromDisc(drive.getStackInSlot(drive.getSizeInventory() - 1), page, this);
+                                network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
+                                pages = network_disc.getItemData().getValues().size() / 36;
+                                //DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
+                                break;
+                            } else {
+                                network_disc = null;
+                                network_drive = null;
+                            }
+                        } else {
+                            network_disc = null;
+                            network_drive = null;
+                        }
+                    } else {
+                        network_disc = null;
+                        network_drive = null;
+                    }
+                } else {
+                    network_disc = null;
+                    network_drive = null;
+                }
+            }
 		} else {
 			network_disc = null;
 			network_drive = null;

@@ -6,8 +6,9 @@ package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 // Referenced classes of package net.minecraft.src:
 //            TileEntity, IInventory, ItemStack, NBTTagCompound, 
@@ -82,7 +83,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                     if (handler.getStackInSlot(handlerSlot).getItem() == mod_RetroStorage.recipeDisc) {
                         ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(handler.getStackInSlot(handlerSlot).getItemData());
                         ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-                        System.out.println(output.toString());
+                        //System.out.println(output.toString());
                         if (output != null && output.stackSize != 0) {
                             int s = 0;
                             for (int i1 = 0; i1 < recipe.size(); i1++) {
@@ -107,6 +108,22 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                                             if (network_disc.getItem() instanceof ItemStorageDisc) {
                                                 if (o != null) {
                                                     DiscManipulator.decreaseItemAmountOnDisc(network_disc, (ItemStack) o);
+                                                    network_drive.updateDiscs();
+                                                    if (((ItemStack) o).getItem().hasContainerItem()){
+                                                        //System.out.println("returning container item");
+                                                        ItemStack container_item = new ItemStack(((ItemStack) o).getItem().getContainerItem());
+                                                        //System.out.println(container_item);
+                                                        if (network_disc != null) {
+                                                            if (network_disc.getItem() instanceof ItemStorageDisc) {
+                                                                if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
+                                                                    if(DiscManipulator.getFirstAvailablePartition(network_disc, network_drive) != -1) {
+                                                                        DiscManipulator.addStackToPartitionedDisc(container_item,network_disc,DiscManipulator.getFirstAvailablePartition(network_disc, network_drive));
+                                                                        network_drive.updateDiscs();
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
 
@@ -132,6 +149,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                                         world.entityJoinedWorld(entityitem);
                                     }
                                     }
+                                    //System.out.println(network_disc.getItemData().toStringExtended());
                                 }
                                 //System.out.println(output.stackSize);
                                 //System.out.println("dropped");
@@ -272,13 +290,13 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                                     if (DiscManipulator.testDecreaseItemAmountOnDisc(network_disc, handlerItem)) {
                                         ItemStack item = ((TileEntityFurnace) tile).getStackInSlot(0);
                                         boolean add = false;
-                                        System.out.println(item == null);
+                                        //System.out.println(item == null);
                                         if (item != null) {
-                                            System.out.println(item.toString());
+                                            //System.out.println(item.toString());
                                             if (item.itemID == handlerItem.itemID && item.getItemDamage() == handlerItem.getItemDamage()) {
-                                                System.out.println("equal");
+                                                //System.out.println("equal");
                                                 if (item.stackSize <= 64 - handlerItem.stackSize) {
-                                                    System.out.println("enough");
+                                                   // System.out.println("enough");
                                                     add = true;
                                                 } else {
                                                     return;
@@ -317,26 +335,24 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     	connectDrive();
     	setInventorySlotContents(1, network_disc);
     	if(network.size() > 0) {
-			Iterator<Entry<ArrayList<Integer>, HashMap<String, Object>>> itrt = network.entrySet().iterator();
-			while (itrt.hasNext()) {
-				Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element = (Map.Entry<ArrayList<Integer>, HashMap<String, Object>>)itrt.next();
-				ArrayList<Integer> pos = element.getKey();
-				TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
-				if (tile != null) {
-					if (tile instanceof TileEntityDigitalController) {
-						network_asm = (TileEntityDigitalController) tile;
-						if(network_disc != null) {
-							DiscManipulator.readItemAssembly(page,this,network_asm);
-							break;
-						}
-					} else {
-						network_asm = null;
-					}
-				} else {
-					network_asm = null;
-				}
-			}
-    	} 
+            for (Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
+                ArrayList<Integer> pos = element.getKey();
+                TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
+                if (tile != null) {
+                    if (tile instanceof TileEntityDigitalController) {
+                        network_asm = (TileEntityDigitalController) tile;
+                        if (network_disc != null) {
+                            DiscManipulator.readItemAssembly(page, this, network_asm);
+                            break;
+                        }
+                    } else {
+                        network_asm = null;
+                    }
+                } else {
+                    network_asm = null;
+                }
+            }
+    	}
     	if(network_asm == null) {
     		for(int i = 3;i <= 38;i++) {
 				setInventorySlotContents(i, null);
@@ -539,4 +555,5 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     private TileEntityDigitalController network_asm = null;
     public int page;
     public int pages;
+    private boolean processing = false;
 }

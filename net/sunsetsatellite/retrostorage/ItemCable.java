@@ -17,7 +17,7 @@ public class ItemCable extends Item {
     {
 		int pos = world.getBlockId(i, j, k);
 		BlockCable cable = (BlockCable) mod_RetroStorage.cable;
-		System.out.println(world.canBlockBePlacedAt(pos, i, j, k, false, l));
+		//System.out.println(world.canBlockBePlacedAt(pos, i, j, k, false, l));
 		if(world.canBlockBePlacedAt(pos, i, j, k, true, l) && world.setBlockWithNotify(cable.blockID, j, k, l))
         {
             itemstack.stackSize--;
