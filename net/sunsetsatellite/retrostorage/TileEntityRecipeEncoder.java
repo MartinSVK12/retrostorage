@@ -128,7 +128,13 @@ public class TileEntityRecipeEncoder extends TileEntity
     				ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
     				for(int i = 0;i<9;i++) {
     					ItemStack item = getStackInSlot(i);
-    					itemList.add(i, item);
+                        if(item != null) {
+                            item = item.copy();
+                            item.stackSize = 1;
+                            itemList.add(i, item);
+                        } else {
+                            itemList.add(i, null);
+                        }
     				}
     				//System.out.println(itemList.toString());
     				NBTTagCompound nbt = DiscManipulator.convertRecipeToNBT(itemList);
