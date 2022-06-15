@@ -12,12 +12,13 @@ Requires Modloader.
  - and more to come.
  
  **Planned**:
- - [ ] Finish crafting recipes
+ - [X] Finish crafting recipes
  - [X] Config file with ID's
- - [ ] Documentation
+ - [X] Documentation
 
 **WARNING**
 Experimental *Alpha* release, code is mostly untested: I only cared about making it work, many things are either not yet implemented or they could/will be done better in the future.
+**There are a LOT of bugs, you've been warned.**
 
 Please report bugs in Github Issues, and if you have any questions, I'm in the [Modification Station](https://discord.gg/8Qky5XY) discord server as MartinSVK12#0075.
 
@@ -49,8 +50,10 @@ Step 2: Yeet into a [RetroMCP](https://github.com/MCPHackers/RetroMCP-Java/relea
 Step 3: ???
 
 Step 4: Profit!
- 
- ## Licence
- This mod is licensed under **Apache License 2.0**,
- please credit if using parts in your own mods.
 
+## Special Thanks
+- [@rythin-sr](https://github.com/rythin-sr) - based bug finder
+ 
+## Licence
+This mod is licensed under **Apache License 2.0**,
+please credit if using parts in your own mods.
