@@ -48,7 +48,7 @@ public final class ItemStack
         itemID = i;
         stackSize = j;
         itemDamage = k;
-        itemData = new NBTTagCompound();
+        itemData = (NBTTagCompound) NBTBase.createTagOfType((byte) 10);
     }
     
     public ItemStack(int i, int j, int k, NBTTagCompound d)
@@ -234,7 +234,7 @@ public final class ItemStack
 
     public ItemStack copy()
     {
-        return new ItemStack(itemID, stackSize, itemDamage, itemData);
+        return new ItemStack(itemID, stackSize, itemDamage, itemData.copy());
     }
 
     public static boolean areItemStacksEqual(ItemStack itemstack, ItemStack itemstack1)

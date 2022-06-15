@@ -227,6 +227,13 @@ public class NBTTagCompound extends NBTBase
         return getByte(s) != 0;
     }
 
+
+    public NBTTagCompound copy(){
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.tagMap = (HashMap) tagMap.clone();
+        return nbt;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NBTTagCompound){
