@@ -66,7 +66,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     }*/
 
     public void requestItemCrafting(Slot slot) {
-    	if(slot.slotNumber == 1 || slot.slotNumber == 2) {
+    	if(slot.slotNumber == 0 || slot.slotNumber == 1 || slot.slotNumber == 2) {
     		return;
     	}
     	//System.out.println(network_asm == null);
@@ -75,6 +75,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
             TileEntityInNetworkWithInv handler = (TileEntityInNetworkWithInv) network_asm.itemAssembly.get(slot.getStack()).get(0);
     		int handlerSlot = (int) network_asm.itemAssembly.get(slot.getStack()).get(1);
             ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Requesting: "+slot.getStack().stackSize+"x "+StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName()));
+            World world = ModLoader.getMinecraftInstance().theWorld;
             System.out.println("Requesting: "+slot.getStack().getItemName()+" from "+handler.toString()+" via "+network_asm.toString()+" using slot "+handlerSlot);
 			if (handler instanceof TileEntityAssembler) {
                 if (handler.getStackInSlot(handlerSlot) != null) {
@@ -120,12 +121,21 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                                         ItemStack is = output.copy();
                                         is.stackSize += getStackInSlot(0).stackSize;
                                         setInventorySlotContents(0, is);
+                                    } else if (getStackInSlot(0) != null){
+                                        setInventorySlotContents(2, output.copy());
+                                    } else if (getStackInSlot(0) != null && getStackInSlot(2) != null){
+                                        EntityItem entityitem = new EntityItem(world, (float)xCoord, (float)yCoord, (float)zCoord, output.copy());
+                                        float f3 = 0.05F;
+                                        entityitem.motionX = (float)world.rand.nextGaussian() * f3;
+                                        entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
+                                        entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
+                                        world.entityJoinedWorld(entityitem);
+                                    }
                                     }
                                 }
                                 //System.out.println(output.stackSize);
                                 //System.out.println("dropped");
-                                //entityplayer.entityDropItem(output, 0);
-                            }
+                                //
                         }
                     }
                 }
