@@ -159,12 +159,16 @@ public abstract class Container
                     	if(slot.canTakeFromSlot()) {
                     		int j1 = j != 0 ? (itemstack2.stackSize + 1) / 2 : itemstack2.stackSize;
                             ItemStack itemstack5 = slot.decrStackSize(j1);
-                            inventoryplayer.setItemStack(itemstack5);
+                            if (!(slot instanceof SlotDigital)){
+                                inventoryplayer.setItemStack(itemstack5);
+                            }
                             if(itemstack2.stackSize == 0)
                             {
                                 slot.putStack(null);
                             }
-                            slot.onPickupFromSlot(inventoryplayer.getItemStack());
+                            if (!(slot instanceof SlotDigital)){
+                                slot.onPickupFromSlot(inventoryplayer.getItemStack());
+                            }
                     	}
                     	if(slot instanceof SlotDigital) {
                     		if(this instanceof ContainerDigitalChest || this instanceof ContainerDigitalTerminal) {
@@ -182,9 +186,11 @@ public abstract class Container
                         {
                             if(itemstack3.stackSize <= slot.getSlotStackLimit())
                             {
-                                ItemStack itemstack4 = itemstack2;
-                                slot.putStack(itemstack3);
-                                inventoryplayer.setItemStack(itemstack4);
+                                if (!(slot instanceof SlotDigital)){
+                                    ItemStack itemstack4 = itemstack2;
+                                    slot.putStack(itemstack3);
+                                    inventoryplayer.setItemStack(itemstack4);
+                                }
                             }
                         } else
                         {
@@ -210,13 +216,14 @@ public abstract class Container
                         int l1 = itemstack2.stackSize;
                         if(l1 > 0 && l1 + itemstack3.stackSize <= itemstack3.getMaxStackSize())
                         {
-                            itemstack3.stackSize += l1;
-                            itemstack2.splitStack(l1);
-                            if(itemstack2.stackSize == 0)
-                            {
-                                slot.putStack(null);
+                            if (!(slot instanceof SlotDigital)) {
+                                itemstack3.stackSize += l1;
+                                itemstack2.splitStack(l1);
+                                if (itemstack2.stackSize == 0) {
+                                    slot.putStack(null);
+                                }
+                                slot.onPickupFromSlot(inventoryplayer.getItemStack());
                             }
-                            slot.onPickupFromSlot(inventoryplayer.getItemStack());
                         }
                     }
                 }
