@@ -151,14 +151,16 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 									if(recipeDisc != null) {
 											if (recipeDisc.getItem() instanceof ItemRecipeDisc){
 												CraftingManager crafter = CraftingManager.getInstance();
-													ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(recipeDisc.getItemData());
-													ItemStack item = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-													List<Object> value = new ArrayList<>();
-													value.add(tile);
-													value.add(l);
-													itemAssembly.put(item,value);
+												ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(recipeDisc.getItemData());
+												ItemStack item = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+												List<Object> value = new ArrayList<>();
+												value.add(tile);
+												value.add(l);
+												if(item != null) {
+													itemAssembly.put(item, value);
+												}
 											}
-											else if (tile instanceof TileEntityInterface && !(recipeDisc.getItem() instanceof ItemRecipeDisc)){
+											else if (tile instanceof TileEntityInterface){
 												List<Object> value = new ArrayList<>();
 												value.add(tile);
 												value.add(l);

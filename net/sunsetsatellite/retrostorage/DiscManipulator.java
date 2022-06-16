@@ -49,24 +49,30 @@ public class DiscManipulator {
 		Object[] cellDataArray = discStack.getItemData().getValues().toArray();
 		NBTTagCompound cellDataNew = (new NBTTagCompound());
 		//System.out.println(item.toString());
+        int subtracting = 0;
 		boolean flag = false;
 		for(int i = 0; i < cellDataArray.length; i++) {
 			if((((NBTTagCompound) cellDataArray[i]).getShort("id") == item.itemID && ((NBTTagCompound)cellDataArray[i]).getShort("Damage") == item.getItemDamage() && ((NBTTagCompound)cellDataArray[i]).getByte("Count") >= item.stackSize) && ((NBTTagCompound)cellDataArray[i]).getCompoundTag("Data").equals(item.getItemData())) {
 				//System.out.println("Subtracting..");
-				int amount = ((int)((NBTTagCompound) cellDataArray[i]).getByte("Count")) - item.stackSize;
-				if (amount <= 0) {
-					//System.out.println("zero");
-					flag = true;
-					continue;
-				}
-				System.out.println(amount);
-				NBTTagCompound itemNBT = (new NBTTagCompound());
-				itemNBT.setByte("Count", (byte)amount);
-				itemNBT.setShort("id", (short) ((NBTTagCompound) cellDataArray[i]).getShort("id"));
-				itemNBT.setShort("Damage", (short) ((NBTTagCompound) cellDataArray[i]).getShort("Damage"));
-				itemNBT.setInteger("disc", ((NBTTagCompound) cellDataArray[i]).getInteger("disc"));
-				itemNBT.setCompoundTag("Data", ((NBTTagCompound) cellDataArray[i]).getCompoundTag("Data"));
-				cellDataNew.setCompoundTag(String.valueOf(i+1),itemNBT);
+				if (subtracting < 2){
+                    int amount = ((int)((NBTTagCompound) cellDataArray[i]).getByte("Count")) - item.stackSize;
+                    if (amount <= 0) {
+                        //System.out.println("zero");
+                        flag = true;
+                        continue;
+                    }
+                    System.out.println(amount);
+                    NBTTagCompound itemNBT = (new NBTTagCompound());
+                    itemNBT.setByte("Count", (byte)amount);
+                    itemNBT.setShort("id", (short) ((NBTTagCompound) cellDataArray[i]).getShort("id"));
+                    itemNBT.setShort("Damage", (short) ((NBTTagCompound) cellDataArray[i]).getShort("Damage"));
+                    itemNBT.setInteger("disc", ((NBTTagCompound) cellDataArray[i]).getInteger("disc"));
+                    itemNBT.setCompoundTag("Data", ((NBTTagCompound) cellDataArray[i]).getCompoundTag("Data"));
+                    cellDataNew.setCompoundTag(String.valueOf(i+1),itemNBT);
+                    subtracting++;
+                } else {
+                    cellDataNew.setCompoundTag(String.valueOf(i+1),((NBTTagCompound) cellDataArray[i]).copy());
+                }
 				flag = true;
 			} else {
 				cellDataNew.setCompoundTag(String.valueOf(i+1),((NBTTagCompound) cellDataArray[i]).copy());
@@ -119,9 +125,16 @@ public class DiscManipulator {
 		NBTTagCompound cellData = discStack.getItemData();
 		Object[] cellDataArray = discStack.getItemData().getValues().toArray();
 		NBTTagCompound cellDataNew = (new NBTTagCompound());
+		boolean removed = false;
 		for(int i = 0;i < cellDataArray.length;i++) {
 			if(!(((NBTTagCompound) cellDataArray[i]).getShort("id") == item.itemID && ((NBTTagCompound)cellDataArray[i]).getShort("Damage") == item.getItemDamage() && ((NBTTagCompound)cellDataArray[i]).getByte("Count") == item.stackSize && ((NBTTagCompound)cellDataArray[i]).getInteger("disk") == partitionIndex && ((NBTTagCompound)cellDataArray[i]).getCompoundTag("Data").equals(item.getItemData()))) {
 				cellDataNew.setCompoundTag(String.valueOf(i),(NBTTagCompound) cellDataArray[i]);
+			} else {
+				if (!removed) {
+					removed = true;
+				} else {
+					cellDataNew.setCompoundTag(String.valueOf(i), (NBTTagCompound) cellDataArray[i]);
+				}
 			}
 		}
 		discStack.setItemData(cellDataNew);
