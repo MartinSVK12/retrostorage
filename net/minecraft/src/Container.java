@@ -1,7 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import net.sunsetsatellite.retrostorage.ContainerDigitalChest;
@@ -14,75 +10,52 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// Referenced classes of package net.minecraft.src:
-//            Slot, ItemStack, ICrafting, EntityPlayer, 
-//            InventoryPlayer, IInventory
+public abstract class Container {
+	public List field_20123_d = new ArrayList();
+	public List slots = new ArrayList();
+	public int windowId = 0;
+	private short field_20917_a = 0;
+	protected List field_20121_g = new ArrayList();
+	private Set field_20918_b = new HashSet();
 
-public abstract class Container
-{
+	protected void addSlot(Slot slot1) {
+		slot1.slotNumber = this.slots.size();
+		this.slots.add(slot1);
+		this.field_20123_d.add((Object)null);
+	}
 
-    public Container()
-    {
-        field_20123_d = new ArrayList();
-        slots = new ArrayList();
-        windowId = 0;
-        field_20917_a = 0;
-        field_20121_g = new ArrayList();
-        field_20918_b = new HashSet();
-    }
+	public void updateCraftingResults() {
+		for(int i1 = 0; i1 < this.slots.size(); ++i1) {
+			ItemStack itemStack2 = ((Slot)this.slots.get(i1)).getStack();
+			ItemStack itemStack3 = (ItemStack)this.field_20123_d.get(i1);
+			if(!ItemStack.areItemStacksEqual(itemStack3, itemStack2)) {
+				itemStack3 = itemStack2 == null ? null : itemStack2.copy();
+				this.field_20123_d.set(i1, itemStack3);
 
-    protected void addSlot(Slot slot)
-    {
-        slot.slotNumber = slots.size();
-        slots.add(slot);
-        field_20123_d.add(null);
-    }
+				for(int i4 = 0; i4 < this.field_20121_g.size(); ++i4) {
+					((ICrafting)this.field_20121_g.get(i4)).func_20159_a(this, i1, itemStack3);
+				}
+			}
+		}
 
-    public void updateCraftingResults()
-    {
-        for(int i = 0; i < slots.size(); i++)
-        {
-            ItemStack itemstack = ((Slot)slots.get(i)).getStack();
-            ItemStack itemstack1 = (ItemStack)field_20123_d.get(i);
-            if(ItemStack.areItemStacksEqual(itemstack1, itemstack))
-            {
-                continue;
-            }
-            itemstack1 = itemstack != null ? itemstack.copy() : null;
-            field_20123_d.set(i, itemstack1);
-            for(int j = 0; j < field_20121_g.size(); j++)
-            {
-                ((ICrafting)field_20121_g.get(j)).func_20159_a(this, i, itemstack1);
-            }
+	}
 
-        }
+	public Slot getSlot(int i1) {
+		return (Slot)this.slots.get(i1);
+	}
 
-    }
+	public ItemStack getStackInSlot(int i1) {
+		Slot slot2 = (Slot)this.slots.get(i1);
+		return slot2 != null ? slot2.getStack() : null;
+	}
 
-    public Slot getSlot(int i)
-    {
-        return (Slot)slots.get(i);
-    }
+	//Specific for digital slots (SlotDigital.java, used in the Digital Chest), this is the first way i thought of doing this and idk any better
+	public void withdrawItem(Slot slot) {
+	}
 
-    //Specific for digital slots (SlotDigital.java, used in the Digital Chest), this is the first way i thought of doing this and idk any better
-    public void withdrawItem(Slot slot) {
-    }
-    
-    //specific for Request Terminal & Assembler
-    public void requestItemCrafting(Slot slot) {
-    }
-    
-    public ItemStack getStackInSlot(int i)
-    {
-        Slot slot = (Slot)slots.get(i);
-        if(slot != null)
-        {
-            return slot.getStack();
-        } else
-        {
-            return null;
-        }
-    }
+	//specific for Request Terminal & Assembler
+	public void requestItemCrafting(Slot slot) {
+	}
 
     public ItemStack func_27280_a(int i, int j, boolean flag, EntityPlayer entityplayer)
     {
@@ -232,133 +205,103 @@ public abstract class Container
         return itemstack;
     }
 
-    public void onCraftGuiClosed(EntityPlayer entityplayer)
-    {
-        InventoryPlayer inventoryplayer = entityplayer.inventory;
-        if(inventoryplayer.getItemStack() != null)
-        {
-            entityplayer.dropPlayerItem(inventoryplayer.getItemStack());
-            inventoryplayer.setItemStack(null);
-        }
-    }
+	public void onCraftGuiClosed(EntityPlayer entityPlayer1) {
+		InventoryPlayer inventoryPlayer2 = entityPlayer1.inventory;
+		if(inventoryPlayer2.getItemStack() != null) {
+			entityPlayer1.dropPlayerItem(inventoryPlayer2.getItemStack());
+			inventoryPlayer2.setItemStack((ItemStack)null);
+		}
 
-    public void onCraftMatrixChanged(IInventory iinventory)
-    {
-        updateCraftingResults();
-    }
+	}
 
-    public void putStackInSlot(int i, ItemStack itemstack)
-    {
-        getSlot(i).putStack(itemstack);
-    }
+	public void onCraftMatrixChanged(IInventory iInventory1) {
+		this.updateCraftingResults();
+	}
 
-    public void putStacksInSlots(ItemStack aitemstack[])
-    {
-        for(int i = 0; i < aitemstack.length; i++)
-        {
-            getSlot(i).putStack(aitemstack[i]);
-        }
+	public void putStackInSlot(int i1, ItemStack itemStack2) {
+		this.getSlot(i1).putStack(itemStack2);
+	}
 
-    }
+	public void putStacksInSlots(ItemStack[] itemStack1) {
+		for(int i2 = 0; i2 < itemStack1.length; ++i2) {
+			this.getSlot(i2).putStack(itemStack1[i2]);
+		}
 
-    public void func_20112_a(int i, int j)
-    {
-    }
+	}
 
-    public short func_20111_a(InventoryPlayer inventoryplayer)
-    {
-        field_20917_a++;
-        return field_20917_a;
-    }
+	public void func_20112_a(int i1, int i2) {
+	}
 
-    public void func_20113_a(short word0)
-    {
-    }
+	public short func_20111_a(InventoryPlayer inventoryPlayer1) {
+		++this.field_20917_a;
+		return this.field_20917_a;
+	}
 
-    public void func_20110_b(short word0)
-    {
-    }
+	public void func_20113_a(short s1) {
+	}
 
-    public abstract boolean isUsableByPlayer(EntityPlayer entityplayer);
+	public void func_20110_b(short s1) {
+	}
 
-    protected void func_28125_a(ItemStack itemstack, int i, int j, boolean flag)
-    {
-        int k = i;
-        if(flag)
-        {
-            k = j - 1;
-        }
-        if(itemstack.isStackable())
-        {
-            while(itemstack.stackSize > 0 && (!flag && k < j || flag && k >= i)) 
-            {
-                Slot slot = (Slot)slots.get(k);
-                ItemStack itemstack1 = slot.getStack();
-                if(itemstack1 != null && itemstack1.itemID == itemstack.itemID && (!itemstack.getHasSubtypes() || itemstack.getItemDamage() == itemstack1.getItemDamage()) && itemstack.getItemData().equals(itemstack1.getItemData()))
-                {
-                    int i1 = itemstack1.stackSize + itemstack.stackSize;
-                    if(i1 <= itemstack.getMaxStackSize())
-                    {
-                        itemstack.stackSize = 0;
-                        itemstack1.stackSize = i1;
-                        slot.onSlotChanged();
-                    } else
-                    if(itemstack1.stackSize < itemstack.getMaxStackSize())
-                    {
-                        itemstack.stackSize -= itemstack.getMaxStackSize() - itemstack1.stackSize;
-                        itemstack1.stackSize = itemstack.getMaxStackSize();
-                        slot.onSlotChanged();
-                    }
-                }
-                if(flag)
-                {
-                    k--;
-                } else
-                {
-                    k++;
-                }
-            }
-        }
-        if(itemstack.stackSize > 0)
-        {
-            int l;
-            if(flag)
-            {
-                l = j - 1;
-            } else
-            {
-                l = i;
-            }
-            do
-            {
-                if((flag || l >= j) && (!flag || l < i))
-                {
-                    break;
-                }
-                Slot slot1 = (Slot)slots.get(l);
-                ItemStack itemstack2 = slot1.getStack();
-                if(itemstack2 == null)
-                {
-                    slot1.putStack(itemstack.copy());
-                    slot1.onSlotChanged();
-                    itemstack.stackSize = 0;
-                    break;
-                }
-                if(flag)
-                {
-                    l--;
-                } else
-                {
-                    l++;
-                }
-            } while(true);
-        }
-    }
+	public abstract boolean isUsableByPlayer(EntityPlayer entityPlayer1);
 
-    public List field_20123_d;
-    public List slots;
-    public int windowId;
-    private short field_20917_a;
-    protected List field_20121_g;
-    private Set field_20918_b;
+	protected void func_28125_a(ItemStack itemStack1, int i2, int i3, boolean z4) {
+		int i5 = i2;
+		if(z4) {
+			i5 = i3 - 1;
+		}
+
+		Slot slot6;
+		ItemStack itemStack7;
+		if(itemStack1.isStackable()) {
+			while(itemStack1.stackSize > 0 && (!z4 && i5 < i3 || z4 && i5 >= i2)) {
+				slot6 = (Slot)this.slots.get(i5);
+				itemStack7 = slot6.getStack();
+				if(itemStack7 != null && itemStack7.itemID == itemStack1.itemID && (!itemStack1.getHasSubtypes() || itemStack1.getItemDamage() == itemStack7.getItemDamage())) {
+					int i8 = itemStack7.stackSize + itemStack1.stackSize;
+					if(i8 <= itemStack1.getMaxStackSize()) {
+						itemStack1.stackSize = 0;
+						itemStack7.stackSize = i8;
+						slot6.onSlotChanged();
+					} else if(itemStack7.stackSize < itemStack1.getMaxStackSize()) {
+						itemStack1.stackSize -= itemStack1.getMaxStackSize() - itemStack7.stackSize;
+						itemStack7.stackSize = itemStack1.getMaxStackSize();
+						slot6.onSlotChanged();
+					}
+				}
+
+				if(z4) {
+					--i5;
+				} else {
+					++i5;
+				}
+			}
+		}
+
+		if(itemStack1.stackSize > 0) {
+			if(z4) {
+				i5 = i3 - 1;
+			} else {
+				i5 = i2;
+			}
+
+			while(!z4 && i5 < i3 || z4 && i5 >= i2) {
+				slot6 = (Slot)this.slots.get(i5);
+				itemStack7 = slot6.getStack();
+				if(itemStack7 == null) {
+					slot6.putStack(itemStack1.copy());
+					slot6.onSlotChanged();
+					itemStack1.stackSize = 0;
+					break;
+				}
+
+				if(z4) {
+					--i5;
+				} else {
+					++i5;
+				}
+			}
+		}
+
+	}
 }

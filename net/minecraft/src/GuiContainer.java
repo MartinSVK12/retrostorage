@@ -1,7 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import net.sunsetsatellite.retrostorage.DiscManipulator;
@@ -9,245 +5,216 @@ import net.sunsetsatellite.retrostorage.ItemRecipeDisc;
 import net.sunsetsatellite.retrostorage.ItemStorageDisc;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import java.util.ArrayList;
 
-// Referenced classes of package net.minecraft.src:
-//            GuiScreen, EntityPlayerSP, RenderHelper, Container, 
-//            Slot, InventoryPlayer, RenderItem, StringTranslate, 
-//            ItemStack, FontRenderer, RenderEngine, PlayerController, 
-//            GameSettings, KeyBinding
-//
-public abstract class GuiContainer extends GuiScreen
-{
+public abstract class GuiContainer extends GuiScreen {
+	private static RenderItem itemRenderer = new RenderItem();
+	protected int xSize = 176;
+	protected int ySize = 220;
+	public Container inventorySlots;
 
-    public GuiContainer(Container container)
-    {
-        xSize = 176;
-        ySize = 220;
-        inventorySlots = container;
-    }
+	public GuiContainer(Container container1) {
+		this.inventorySlots = container1;
+	}
 
-    public void initGui()
-    {
-        super.initGui();
-        mc.thePlayer.craftingInventory = inventorySlots;
-    }
+	public void initGui() {
+		super.initGui();
+		this.mc.thePlayer.craftingInventory = this.inventorySlots;
+	}
 
-    public void drawScreen(int i, int j, float f)
-    {
-        drawDefaultBackground();
-        int k = (width - xSize) / 2;
-        int l = (height - ySize) / 2;
-        drawGuiContainerBackgroundLayer(f);
-        GL11.glPushMatrix();
-        GL11.glRotatef(120F, 1.0F, 0.0F, 0.0F);
-        RenderHelper.enableStandardItemLighting();
-        GL11.glPopMatrix();
-        GL11.glPushMatrix();
-        GL11.glTranslatef(k, l, 0.0F);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glEnable(32826 /*GL_RESCALE_NORMAL_EXT*/);
-        Slot slot = null;
-        for(int i1 = 0; i1 < inventorySlots.slots.size(); i1++)
-        {
-            Slot slot1 = (Slot)inventorySlots.slots.get(i1);
-            drawSlotInventory(slot1);
-            if(getIsMouseOverSlot(slot1, i, j))
-            {
-                slot = slot1;
-                GL11.glDisable(2896 /*GL_LIGHTING*/);
-                GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-                int j1 = slot1.xDisplayPosition;
-                int l1 = slot1.yDisplayPosition;
-                drawGradientRect(j1, l1, j1 + 16, l1 + 16, 0x80ffffff, 0x80ffffff);
-                GL11.glEnable(2896 /*GL_LIGHTING*/);
-                GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-            }
-        }
+	public void drawScreen(int i1, int i2, float f3) {
+		this.drawDefaultBackground();
+		int i4 = (this.width - this.xSize) / 2;
+		int i5 = (this.height - this.ySize) / 2;
+		this.drawGuiContainerBackgroundLayer(f3);
+		GL11.glPushMatrix();
+		GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
+		RenderHelper.enableStandardItemLighting();
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float)i4, (float)i5, 0.0F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		Slot slot6 = null;
 
-        InventoryPlayer inventoryplayer = mc.thePlayer.inventory;
-        if(inventoryplayer.getItemStack() != null)
-        {
-            GL11.glTranslatef(0.0F, 0.0F, 32F);
-            itemRenderer.renderItemIntoGUI(fontRenderer, mc.renderEngine, inventoryplayer.getItemStack(), i - k - 8, j - l - 8);
-            itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.renderEngine, inventoryplayer.getItemStack(), i - k - 8, j - l - 8);
-        }
-        GL11.glDisable(32826 /*GL_RESCALE_NORMAL_EXT*/);
-        RenderHelper.disableStandardItemLighting();
-        GL11.glDisable(2896 /*GL_LIGHTING*/);
-        GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-        drawGuiContainerForegroundLayer();
-        if(inventoryplayer.getItemStack() == null && slot != null && slot.getHasStack())
-        {
-            String s = (new StringBuilder()).append("").append(StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName())).toString().trim();
-            if(s.length() > 0)
-            {
-            	if(slot.getStack().getItem() instanceof ItemStorageDisc) {
-            		int k1 = (i - k) + 12;
-                    int i2 = j - l - 12;
-                    int j2 = fontRenderer.getStringWidth(s);
-                    ItemStorageDisc disc = (ItemStorageDisc) slot.getStack().getItem();
-                    int w = mc.fontRenderer.getStringWidth(slot.getStack().getItemData().toString()+ " out of "+disc.getMaxStackCapacity());
-        			 if(j2 < w) {
-        				j2 = w;
-        			 }
-                    drawGradientRect(k1 - 3, i2 - 3, k1 + j2 + 3, i2 + 8 + 15, 0xc0000000, 0xc0000000);
-                    fontRenderer.drawStringWithShadow(s, k1, i2, -1);
-                    fontRenderer.drawStringWithShadow(slot.getStack().getItemData().toString() + " out of "+disc.getMaxStackCapacity(), k1, i2+12, 0xFFFF00FF);
-            	} else if(slot.getStack().getItem() instanceof ItemRecipeDisc) {
-					 int k1 = (i - k) + 12;
-					 int i2 = j - l - 12;
-					 int j2 = fontRenderer.getStringWidth(s);
-					 ItemRecipeDisc disc = (ItemRecipeDisc) slot.getStack().getItem();
-					 CraftingManager crafter = CraftingManager.getInstance();
-     				 ArrayList<?> recipe = DiscManipulator.convertRecipeToArray((slot.getStack().getItemData()));
-     				 ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-					 int w = mc.fontRenderer.getStringWidth(output != null ? "Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()) : "Makes: null");
-					 if(j2 < w) {
-						 j2 = w;
-					 }
-					 drawGradientRect(k1 - 3, i2 - 3, k1 + j2 + 3, i2 + 8 + 15, 0xc0000000, 0xc0000000);
-		             fontRenderer.drawStringWithShadow(s, k1, i2, -1);
-		             if (output != null) {
-     					fontRenderer.drawStringWithShadow("Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()), k1, i2+12, 0xFFFF00FF);
-     				 }else {
-     					fontRenderer.drawStringWithShadow("Makes: null", k1, i2+12, 0xFFFF00FF);
-     				 }
-		             
-	           	} else {
-	          		int k1 = (i - k) + 12;
-	                int i2 = j - l - 12;
-	                int j2 = fontRenderer.getStringWidth(s);
-	                drawGradientRect(k1 - 3, i2 - 3, k1 + j2 + 3, i2 + 8 + 3, 0xc0000000, 0xc0000000);
-	                fontRenderer.drawStringWithShadow(s, k1, i2, -1);
-	           	}
-            }
-        }
-        GL11.glPopMatrix();
-        super.drawScreen(i, j, f);
-        GL11.glEnable(2896 /*GL_LIGHTING*/);
-        GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-    }
+		int i9;
+		int i10;
+		for(int i7 = 0; i7 < this.inventorySlots.slots.size(); ++i7) {
+			Slot slot8 = (Slot)this.inventorySlots.slots.get(i7);
+			this.drawSlotInventory(slot8);
+			if(this.getIsMouseOverSlot(slot8, i1, i2)) {
+				slot6 = slot8;
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				i9 = slot8.xDisplayPosition;
+				i10 = slot8.yDisplayPosition;
+				this.drawGradientRect(i9, i10, i9 + 16, i10 + 16, -2130706433, -2130706433);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+			}
+		}
 
-    protected void drawGuiContainerForegroundLayer()
-    {
-    }
+		InventoryPlayer inventoryPlayer12 = this.mc.thePlayer.inventory;
+		if(inventoryPlayer12.getItemStack() != null) {
+			GL11.glTranslatef(0.0F, 0.0F, 32.0F);
+			itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, inventoryPlayer12.getItemStack(), i1 - i4 - 8, i2 - i5 - 8);
+			itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.renderEngine, inventoryPlayer12.getItemStack(), i1 - i4 - 8, i2 - i5 - 8);
+		}
 
-    protected abstract void drawGuiContainerBackgroundLayer(float f);
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		RenderHelper.disableStandardItemLighting();
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		this.drawGuiContainerForegroundLayer();
+		if(inventoryPlayer12.getItemStack() == null && slot6 != null && slot6.getHasStack()) {
+			String string13 = ("" + StringTranslate.getInstance().translateNamedKey(slot6.getStack().getItemName())).trim();
+			if(string13.length() > 0) {
+				if(slot6.getStack().getItem() instanceof ItemStorageDisc) {
+					i9 = i1 - i4 + 12;
+					i10 = i2 - i5 - 12;
+					int i11 = this.fontRenderer.getStringWidth(string13);
+					ItemStorageDisc disc = (ItemStorageDisc) slot6.getStack().getItem();
+					int w = mc.fontRenderer.getStringWidth(slot6.getStack().getItemData().toString()+ " out of "+disc.getMaxStackCapacity());
+					if(i11 < w) {
+						i11 = w;
+					}
+					drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
+					fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+					fontRenderer.drawStringWithShadow(slot6.getStack().getItemData().toString() + " out of "+disc.getMaxStackCapacity(), i9, i10+12, 0xFFFF00FF);
+				} else if(slot6.getStack().getItem() instanceof ItemRecipeDisc) {
+					i9 = i1 - i4 + 12;
+					i10 = i2 - i5 - 12;
+					int i11 = this.fontRenderer.getStringWidth(string13);
+					ItemRecipeDisc disc = (ItemRecipeDisc) slot6.getStack().getItem();
+					CraftingManager crafter = CraftingManager.getInstance();
+					ArrayList<?> recipe = DiscManipulator.convertRecipeToArray((slot6.getStack().getItemData()));
+					ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+					int w = mc.fontRenderer.getStringWidth(output != null ? "Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()) : "Makes: null");
+					if(i11 < w) {
+						i11 = w;
+					}
+					this.drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 3, -1073741824, -1073741824);
+					this.fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+					if (output != null){
+						fontRenderer.drawStringWithShadow("Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()), i9, i10+12, 0xFFFF00FF);
+					} else {
+						fontRenderer.drawStringWithShadow("Makes: null", i9, i10+12, 0xFFFF00FF);
+					}
+				} else {
+					i9 = i1 - i4 + 12;
+					i10 = i2 - i5 - 12;
+					int i11 = this.fontRenderer.getStringWidth(string13);
+					this.drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 3, -1073741824, -1073741824);
+					this.fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+				}
 
-    private void drawSlotInventory(Slot slot)
-    {
-        int i = slot.xDisplayPosition;
-        int j = slot.yDisplayPosition;
-        ItemStack itemstack = slot.getStack();
-        if(itemstack == null)
-        {
-            int k = slot.getBackgroundIconIndex();
-            if(k >= 0)
-            {
-                GL11.glDisable(2896 /*GL_LIGHTING*/);
-                mc.renderEngine.bindTexture(mc.renderEngine.getTexture("/gui/items.png"));
-                drawTexturedModalRect(i, j, (k % 16) * 16, (k / 16) * 16, 16, 16);
-                GL11.glEnable(2896 /*GL_LIGHTING*/);
-                return;
-            }
-        }
-        itemRenderer.renderItemIntoGUI(fontRenderer, mc.renderEngine, itemstack, i, j);
-        itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.renderEngine, itemstack, i, j);
-    }
+			}
+		}
 
-    private Slot getSlotAtPosition(int i, int j)
-    {
-        for(int k = 0; k < inventorySlots.slots.size(); k++)
-        {
-            Slot slot = (Slot)inventorySlots.slots.get(k);
-            if(getIsMouseOverSlot(slot, i, j))
-            {
-                return slot;
-            }
-        }
+		GL11.glPopMatrix();
+		super.drawScreen(i1, i2, f3);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+	}
 
-        return null;
-    }
+	protected void drawGuiContainerForegroundLayer() {
+	}
 
-    private boolean getIsMouseOverSlot(Slot slot, int i, int j)
-    {
-        int k = (width - xSize) / 2;
-        int l = (height - ySize) / 2;
-        i -= k;
-        j -= l;
-        return i >= slot.xDisplayPosition - 1 && i < slot.xDisplayPosition + 16 + 1 && j >= slot.yDisplayPosition - 1 && j < slot.yDisplayPosition + 16 + 1;
-    }
+	protected abstract void drawGuiContainerBackgroundLayer(float f1);
 
-    protected void mouseClicked(int i, int j, int k)
-    {
-        super.mouseClicked(i, j, k);
-        if(k == 0 || k == 1)
-        {
-            Slot slot = getSlotAtPosition(i, j);
-            int l = (width - xSize) / 2;
-            int i1 = (height - ySize) / 2;
-            boolean flag = i < l || j < i1 || i >= l + xSize || j >= i1 + ySize;
-            int j1 = -1;
-            if(slot != null)
-            {
-                j1 = slot.slotNumber;
-            }
-            if(flag)
-            {
-                j1 = -999;
-            }
-            if(j1 != -1)
-            {
-                boolean flag1 = j1 != -999 && (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54));
-                mc.playerController.func_27174_a(inventorySlots.windowId, j1, k, flag1, mc.thePlayer);
-            }
-        }
-    }
+	private void drawSlotInventory(Slot slot1) {
+		int i2 = slot1.xDisplayPosition;
+		int i3 = slot1.yDisplayPosition;
+		ItemStack itemStack4 = slot1.getStack();
+		if(itemStack4 == null) {
+			int i5 = slot1.getBackgroundIconIndex();
+			if(i5 >= 0) {
+				GL11.glDisable(GL11.GL_LIGHTING);
+				this.mc.renderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
+				this.drawTexturedModalRect(i2, i3, i5 % 16 * 16, i5 / 16 * 16, 16, 16);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				return;
+			}
+		}
 
-    protected void mouseMovedOrUp(int i, int j, int k)
-    {
-        if(k != 0);
-    }
+		itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3);
+		itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3);
+	}
 
-    protected void keyTyped(char c, int i)
-    {
-        if(i == 1 || i == mc.gameSettings.keyBindInventory.keyCode)
-        {
-            mc.thePlayer.closeScreen();
-        }
-    }
+	private Slot getSlotAtPosition(int i1, int i2) {
+		for(int i3 = 0; i3 < this.inventorySlots.slots.size(); ++i3) {
+			Slot slot4 = (Slot)this.inventorySlots.slots.get(i3);
+			if(this.getIsMouseOverSlot(slot4, i1, i2)) {
+				return slot4;
+			}
+		}
 
-    public void onGuiClosed()
-    {
-        if(mc.thePlayer == null)
-        {
-            return;
-        } else
-        {
-            mc.playerController.func_20086_a(inventorySlots.windowId, mc.thePlayer);
-            return;
-        }
-    }
+		return null;
+	}
 
-    public boolean doesGuiPauseGame()
-    {
-        return false;
-    }
+	private boolean getIsMouseOverSlot(Slot slot1, int i2, int i3) {
+		int i4 = (this.width - this.xSize) / 2;
+		int i5 = (this.height - this.ySize) / 2;
+		i2 -= i4;
+		i3 -= i5;
+		return i2 >= slot1.xDisplayPosition - 1 && i2 < slot1.xDisplayPosition + 16 + 1 && i3 >= slot1.yDisplayPosition - 1 && i3 < slot1.yDisplayPosition + 16 + 1;
+	}
 
-    public void updateScreen()
-    {
-        super.updateScreen();
-        if(!mc.thePlayer.isEntityAlive() || mc.thePlayer.isDead)
-        {
-            mc.thePlayer.closeScreen();
-        }
-    }
+	protected void mouseClicked(int i1, int i2, int i3) {
+		super.mouseClicked(i1, i2, i3);
+		if(i3 == 0 || i3 == 1) {
+			Slot slot4 = this.getSlotAtPosition(i1, i2);
+			int i5 = (this.width - this.xSize) / 2;
+			int i6 = (this.height - this.ySize) / 2;
+			boolean z7 = i1 < i5 || i2 < i6 || i1 >= i5 + this.xSize || i2 >= i6 + this.ySize;
+			int i8 = -1;
+			if(slot4 != null) {
+				i8 = slot4.slotNumber;
+			}
 
-    private static RenderItem itemRenderer = new RenderItem();
-    protected int xSize;
-    protected int ySize;
-    public Container inventorySlots;
+			if(z7) {
+				i8 = -999;
+			}
 
+			if(i8 != -1) {
+				boolean z9 = i8 != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
+				this.mc.playerController.func_27174_a(this.inventorySlots.windowId, i8, i3, z9, this.mc.thePlayer);
+			}
+		}
+
+	}
+
+	protected void mouseMovedOrUp(int i1, int i2, int i3) {
+		if(i3 == 0) {
+			;
+		}
+
+	}
+
+	protected void keyTyped(char c1, int i2) {
+		if(i2 == 1 || i2 == this.mc.gameSettings.keyBindInventory.keyCode) {
+			this.mc.thePlayer.closeScreen();
+		}
+
+	}
+
+	public void onGuiClosed() {
+		if(this.mc.thePlayer != null) {
+			this.mc.playerController.func_20086_a(this.inventorySlots.windowId, this.mc.thePlayer);
+		}
+	}
+
+	public boolean doesGuiPauseGame() {
+		return false;
+	}
+
+	public void updateScreen() {
+		super.updateScreen();
+		if(!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead) {
+			this.mc.thePlayer.closeScreen();
+		}
+
+	}
 }

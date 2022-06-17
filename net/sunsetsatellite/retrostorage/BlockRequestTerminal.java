@@ -126,6 +126,12 @@ public class BlockRequestTerminal extends BlockContainer{
             return true;
         } else
         {
+
+            if (entityplayer.getCurrentEquippedItem() != null){
+                if (entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.mobileRequestTerminal) {
+                    return false;
+                }
+            }
             TileEntityRequestTerminal TileEntityRequestTerminal = (TileEntityRequestTerminal)world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityRequestTerminal);
             if (TileEntityRequestTerminal != null) {

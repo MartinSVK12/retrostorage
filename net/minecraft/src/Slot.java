@@ -1,78 +1,57 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
+public class Slot {
+	private final int slotIndex;
+	private final IInventory inventory;
+	public int slotNumber;
+	public int xDisplayPosition;
+	public int yDisplayPosition;
 
-// Referenced classes of package net.minecraft.src:
-//            IInventory, ItemStack
+	public Slot(IInventory iInventory1, int i2, int i3, int i4) {
+		this.inventory = iInventory1;
+		this.slotIndex = i2;
+		this.xDisplayPosition = i3;
+		this.yDisplayPosition = i4;
+	}
 
-public class Slot
-{
+	public void onPickupFromSlot(ItemStack itemStack1) {
+		this.onSlotChanged();
+	}
 
-    public Slot(IInventory iinventory, int i, int j, int k)
-    {
-        inventory = iinventory;
-        slotIndex = i;
-        xDisplayPosition = j;
-        yDisplayPosition = k;
-    }
-
-    public void onPickupFromSlot(ItemStack itemstack)
-    {
-        onSlotChanged();
-    }
-
-    public boolean isItemValid(ItemStack itemstack)
-    {
-        return true;
-    }
-
-    public ItemStack getStack()
-    {
-        return inventory.getStackInSlot(slotIndex);
-    }
-
-    public boolean getHasStack()
-    {
-        return getStack() != null;
-    }
-
-    public void putStack(ItemStack itemstack)
-    {
-        inventory.setInventorySlotContents(slotIndex, itemstack);
-        onSlotChanged();
-    }
-
-    public void onSlotChanged()
-    {
-        inventory.onInventoryChanged();
-    }
-
-    public int getSlotStackLimit()
-    {
-        return inventory.getInventoryStackLimit();
-    }
-
-    public int getBackgroundIconIndex()
-    {
-        return -1;
-    }
-
-    public ItemStack decrStackSize(int i)
-    {
-        return inventory.decrStackSize(slotIndex, i);
-    }
-    
-    public boolean canTakeFromSlot() {
+	public boolean isItemValid(ItemStack itemStack1) {
 		return true;
 	}
 
-    private final int slotIndex;
-    private final IInventory inventory;
-    public int slotNumber;
-    public int xDisplayPosition;
-    public int yDisplayPosition;
-	
+	public ItemStack getStack() {
+		return this.inventory.getStackInSlot(this.slotIndex);
+	}
+
+	public boolean getHasStack() {
+		return this.getStack() != null;
+	}
+
+	public void putStack(ItemStack itemStack1) {
+		this.inventory.setInventorySlotContents(this.slotIndex, itemStack1);
+		this.onSlotChanged();
+	}
+
+	public void onSlotChanged() {
+		this.inventory.onInventoryChanged();
+	}
+
+	public int getSlotStackLimit() {
+		return this.inventory.getInventoryStackLimit();
+	}
+
+	public int getBackgroundIconIndex() {
+		return -1;
+	}
+
+	public ItemStack decrStackSize(int i1) {
+		return this.inventory.decrStackSize(this.slotIndex, i1);
+	}
+
+	public boolean canTakeFromSlot() {
+		return true;
+	}
 }

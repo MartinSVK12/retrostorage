@@ -1,26 +1,15 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import java.util.ArrayList;
 
-// Referenced classes of package net.minecraft.src:
-//            InventoryCrafting, ItemStack
+public interface IRecipe {
+	boolean matches(InventoryCrafting inventoryCrafting1);
 
-public interface IRecipe
-{
+	ItemStack getCraftingResult(InventoryCrafting inventoryCrafting1);
 
-    public abstract boolean matches(InventoryCrafting inventorycrafting);
+	int getRecipeSize();
 
-    public abstract ItemStack getCraftingResult(InventoryCrafting inventorycrafting);
+	ItemStack getRecipeOutput();
 
-    public abstract int getRecipeSize();
-
-    public abstract ItemStack getRecipeOutput();
-    
-    public abstract ArrayList<?> getRecipeItems();
-
-	public abstract boolean matchesArray(ArrayList<ItemStack> list);
+	boolean matchesArray(ArrayList<ItemStack> list);
 }

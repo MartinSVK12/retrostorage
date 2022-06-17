@@ -548,7 +548,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 8000D;
     }
 
     private ItemStack contents[];

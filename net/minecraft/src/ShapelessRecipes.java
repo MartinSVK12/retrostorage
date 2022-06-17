@@ -1,128 +1,99 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-// Referenced classes of package net.minecraft.src:
-//            IRecipe, InventoryCrafting, ItemStack
+public class ShapelessRecipes implements IRecipe {
+	private final ItemStack recipeOutput;
+	private final List recipeItems;
 
-public class ShapelessRecipes
-    implements IRecipe
-{
+	public ShapelessRecipes(ItemStack itemStack1, List list2) {
+		this.recipeOutput = itemStack1;
+		this.recipeItems = list2;
+	}
 
-    public ShapelessRecipes(ItemStack itemstack, List list)
-    {
-        recipeOutput = itemstack;
-        recipeItems = list;
-    }
+	public ItemStack getRecipeOutput() {
+		return this.recipeOutput;
+	}
 
-    public ItemStack getRecipeOutput()
-    {
-        return recipeOutput;
-    }
-    
-    public ArrayList<?> getRecipeItems() {
-    	ArrayList arraylist = new ArrayList(recipeItems);
-    	return arraylist;
-    }
+	public ArrayList<?> getRecipeItems() {
+		ArrayList arraylist = new ArrayList(recipeItems);
+		return arraylist;
+	}
 
-    public boolean matches(InventoryCrafting inventorycrafting)
-    {
-        ArrayList arraylist = new ArrayList(recipeItems);
-        int i = 0;
-        do
-        {
-            if(i >= 3)
-            {
-                break;
-            }
-            for(int j = 0; j < 3; j++)
-            {
-                ItemStack itemstack = inventorycrafting.func_21103_b(j, i);
-                if(itemstack == null)
-                {
-                    continue;
-                }
-                boolean flag = false;
-                Iterator iterator = arraylist.iterator();
-                do
-                {
-                    if(!iterator.hasNext())
-                    {
-                        break;
-                    }
-                    ItemStack itemstack1 = (ItemStack)iterator.next();
-                    if(itemstack.itemID != itemstack1.itemID || itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
-                    {
-                        continue;
-                    }
-                    flag = true;
-                    arraylist.remove(itemstack1);
-                    break;
-                } while(true);
-                if(!flag)
-                {
-                    return false;
-                }
-            }
+	public boolean matchesArray(ArrayList<ItemStack> list) {
+		if (list.isEmpty()){
+			return false;
+		}
+		ArrayList<ItemStack> arraylist = (ArrayList<ItemStack>) getRecipeItems();
+		int n = 0;
+		for(int j = 0; j < list.size(); j++)
+		{
+			ItemStack itemstack = list.get(j);//inventorycrafting.func_21103_b(j, i);
+			if (itemstack == null) {
+				continue;
+			}
+			for (int i = 0;i < arraylist.size();i++) {
+				ItemStack itemstack1 = arraylist.get(i);
+				if (itemstack1 == null) {
+					continue;
+				}
+				//System.out.println(itemstack.toString() + " vs " + itemstack1.toString());
+				if(itemstack.itemID != itemstack1.itemID || itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
+				{
+					continue;
+				} else {
+					n++;
+					arraylist.remove(i);
+				}
+			}
 
-            i++;
-        } while(true);
-        return arraylist.isEmpty();
-    }
-    
-    public boolean matchesArray(ArrayList<ItemStack> list) {
-        if (list.isEmpty()){
-            return false;
-        }
-    	 ArrayList<ItemStack> arraylist = (ArrayList<ItemStack>) getRecipeItems();
-    	 int n = 0;
-	     for(int j = 0; j < list.size(); j++)
-	     {
-	         ItemStack itemstack = list.get(j);//inventorycrafting.func_21103_b(j, i);
-	         if (itemstack == null) {
-	        	 continue;
-	         }
-	         for (int i = 0;i < arraylist.size();i++) {
-	        	 ItemStack itemstack1 = arraylist.get(i);
-	        	 if (itemstack1 == null) {
-	        		 continue;
-	        	 }
-	        	 //System.out.println(itemstack.toString() + " vs " + itemstack1.toString());
-	        	 if(itemstack.itemID != itemstack1.itemID || itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
-                 {
-                     continue;
-                 } else {
-                	 n++;
-                	 arraylist.remove(i);
-                 }
-	         }
-	         
-	     }
-	     //System.out.println("n: "+n);
-	     //System.out.println(getRecipeItems().size());
-	     if (n == getRecipeItems().size()) {
-	    	 return true;
-	     } else {
-	    	 return false;
-	     }
-    }
+		}
+		//System.out.println("n: "+n);
+		//System.out.println(getRecipeItems().size());
+		if (n == getRecipeItems().size()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-    public ItemStack getCraftingResult(InventoryCrafting inventorycrafting)
-    {
-        return recipeOutput.copy();
-    }
 
-    public int getRecipeSize()
-    {
-        return recipeItems.size();
-    }
+	public boolean matches(InventoryCrafting inventoryCrafting1) {
+		ArrayList arrayList2 = new ArrayList(this.recipeItems);
 
-    private final ItemStack recipeOutput;
-    private final List recipeItems;
+		for(int i3 = 0; i3 < 3; ++i3) {
+			for(int i4 = 0; i4 < 3; ++i4) {
+				ItemStack itemStack5 = inventoryCrafting1.func_21103_b(i4, i3);
+				if(itemStack5 != null) {
+					boolean z6 = false;
+					Iterator iterator7 = arrayList2.iterator();
+
+					while(iterator7.hasNext()) {
+						ItemStack itemStack8 = (ItemStack)iterator7.next();
+						if(itemStack5.itemID == itemStack8.itemID && (itemStack8.getItemDamage() == -1 || itemStack5.getItemDamage() == itemStack8.getItemDamage())) {
+							z6 = true;
+							arrayList2.remove(itemStack8);
+							break;
+						}
+					}
+
+					if(!z6) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return arrayList2.isEmpty();
+	}
+
+	public ItemStack getCraftingResult(InventoryCrafting inventoryCrafting1) {
+		return this.recipeOutput.copy();
+	}
+
+	public int getRecipeSize() {
+		return this.recipeItems.size();
+	}
 }

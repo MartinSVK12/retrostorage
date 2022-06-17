@@ -1,281 +1,176 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-// Referenced classes of package net.minecraft.src:
-//            NBTBase, NBTTagByte, NBTTagShort, NBTTagInt, 
-//            NBTTagLong, NBTTagFloat, NBTTagDouble, NBTTagString, 
-//            NBTTagByteArray, NBTTagList
+public class NBTTagCompound extends NBTBase {
+	private HashMap tagMap = new HashMap();
 
-public class NBTTagCompound extends NBTBase
-{
+	void writeTagContents(DataOutput dataOutput1) throws IOException {
+		Iterator iterator2 = this.tagMap.values().iterator();
 
-    public NBTTagCompound()
-    {
-        tagMap = new HashMap();
-    }
+		while(iterator2.hasNext()) {
+			NBTBase nBTBase3 = (NBTBase)iterator2.next();
+			NBTBase.writeTag(nBTBase3, dataOutput1);
+		}
 
-    void writeTagContents(DataOutput dataoutput)
-        throws IOException
-    {
-        NBTBase nbtbase;
-        for(Iterator iterator = tagMap.values().iterator(); iterator.hasNext(); NBTBase.writeTag(nbtbase, dataoutput))
-        {
-            nbtbase = (NBTBase)iterator.next();
-        }
-
-        dataoutput.writeByte(0);
-    }
-
-    void readTagContents(DataInput datainput)
-        throws IOException
-    {
-        tagMap.clear();
-        NBTBase nbtbase;
-        for(; (nbtbase = NBTBase.readTag(datainput)).getType() != 0; tagMap.put(nbtbase.getKey(), nbtbase)) { }
-    }
-
-    public Collection func_28110_c()
-    {
-        return tagMap.values();
-    }
-
-    public byte getType()
-    {
-        return 10;
-    }
-
-    public void setTag(String s, NBTBase nbtbase)
-    {
-        tagMap.put(s, nbtbase.setKey(s));
-    }
-
-    public void setByte(String s, byte byte0)
-    {
-        tagMap.put(s, (new NBTTagByte(byte0)).setKey(s));
-    }
-
-    public void setShort(String s, short word0)
-    {
-        tagMap.put(s, (new NBTTagShort(word0)).setKey(s));
-    }
-
-    public void setInteger(String s, int i)
-    {
-        tagMap.put(s, (new NBTTagInt(i)).setKey(s));
-    }
-
-    public void setLong(String s, long l)
-    {
-        tagMap.put(s, (new NBTTagLong(l)).setKey(s));
-    }
-
-    public void setFloat(String s, float f)
-    {
-        tagMap.put(s, (new NBTTagFloat(f)).setKey(s));
-    }
-
-    public void setDouble(String s, double d)
-    {
-        tagMap.put(s, (new NBTTagDouble(d)).setKey(s));
-    }
-
-    public void setString(String s, String s1)
-    {
-        tagMap.put(s, (new NBTTagString(s1)).setKey(s));
-    }
-
-    public void setByteArray(String s, byte abyte0[])
-    {
-        tagMap.put(s, (new NBTTagByteArray(abyte0)).setKey(s));
-    }
-
-    public void setCompoundTag(String s, NBTTagCompound nbttagcompound)
-    {
-        tagMap.put(s, nbttagcompound.setKey(s));
-    }
-
-    public void setBoolean(String s, boolean flag)
-    {
-        setByte(s, ((byte)(flag ? 1 : 0)));
-    }
-
-    public boolean hasKey(String s)
-    {
-        return tagMap.containsKey(s);
-    }
-
-    public byte getByte(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return 0;
-        } else
-        {
-            return ((NBTTagByte)tagMap.get(s)).byteValue;
-        }
-    }
-
-    public short getShort(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return 0;
-        } else
-        {
-            return ((NBTTagShort)tagMap.get(s)).shortValue;
-        }
-    }
-
-    public int getInteger(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return 0;
-        } else
-        {
-            return ((NBTTagInt)tagMap.get(s)).intValue;
-        }
-    }
-
-    public long getLong(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return 0L;
-        } else
-        {
-            return ((NBTTagLong)tagMap.get(s)).longValue;
-        }
-    }
-
-    public float getFloat(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return 0.0F;
-        } else
-        {
-            return ((NBTTagFloat)tagMap.get(s)).floatValue;
-        }
-    }
-
-    public double getDouble(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return 0.0D;
-        } else
-        {
-            return ((NBTTagDouble)tagMap.get(s)).doubleValue;
-        }
-    }
-
-    public String getString(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return "";
-        } else
-        {
-            return ((NBTTagString)tagMap.get(s)).stringValue;
-        }
-    }
-
-    public byte[] getByteArray(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return new byte[0];
-        } else
-        {
-            return ((NBTTagByteArray)tagMap.get(s)).byteArray;
-        }
-    }
-
-    public NBTTagCompound getCompoundTag(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return new NBTTagCompound();
-        } else
-        {
-            return (NBTTagCompound)tagMap.get(s);
-        }
-    }
-
-    public NBTTagList getTagList(String s)
-    {
-        if(!tagMap.containsKey(s))
-        {
-            return new NBTTagList();
-        } else
-        {
-            return (NBTTagList)tagMap.get(s);
-        }
-    }
-
-    public boolean getBoolean(String s)
-    {
-        return getByte(s) != 0;
-    }
-
-
-    public NBTTagCompound copy(){
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.tagMap = (HashMap) tagMap.clone();
-        return nbt;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof NBTTagCompound){
-            if(tagMap.size() == 0 && ((NBTTagCompound) obj).tagMap.size() == 0){
-                return true;
-            }
-            if(tagMap.size() == 0 && ((NBTTagCompound) obj).tagMap.size() != 0){
-                return false;
-            } else if (tagMap.size() != 0 && ((NBTTagCompound) obj).tagMap.size() == 0){
-                return false;
-            }
-            Iterator itrt = tagMap.entrySet().iterator();
-            int s = 0;
-            int i = 1;
-            while (itrt.hasNext()) {
-                Map.Entry<?,?> element = (Map.Entry<?, ?>) itrt.next();
-                if(((NBTTagCompound) obj).hasKey((String) element.getKey())){
-                    if(element.getValue().equals(((NBTTagCompound) obj).tagMap.get(element.getKey()))){
-                        s++;
-                    }
-                }
-                i++;
-            }
-            return s == tagMap.size();
-        }
-        return false;
-    }
-
-
-    public String toString()
-    {
-        return (new StringBuilder()).append("").append(tagMap.size()).append(" entries").toString();
-    }
-    
-    public String toStringExtended() {
-    	 return (new StringBuilder()).append("").append(tagMap).toString();
-    }
-
-    private HashMap tagMap;
-
-	public Collection getValues() {
-		 return tagMap.values();
+		dataOutput1.writeByte(0);
 	}
 
+	void readTagContents(DataInput dataInput1) throws IOException {
+		this.tagMap.clear();
+
+		NBTBase nBTBase2;
+		while((nBTBase2 = NBTBase.readTag(dataInput1)).getType() != 0) {
+			this.tagMap.put(nBTBase2.getKey(), nBTBase2);
+		}
+
+	}
+
+	public Collection getValues() {
+		return this.tagMap.values();
+	}
+
+	public byte getType() {
+		return (byte)10;
+	}
+
+	public void setTag(String string1, NBTBase nBTBase2) {
+		this.tagMap.put(string1, nBTBase2.setKey(string1));
+	}
+
+	public void setByte(String string1, byte b2) {
+		this.tagMap.put(string1, (new NBTTagByte(b2)).setKey(string1));
+	}
+
+	public void setShort(String string1, short s2) {
+		this.tagMap.put(string1, (new NBTTagShort(s2)).setKey(string1));
+	}
+
+	public void setInteger(String string1, int i2) {
+		this.tagMap.put(string1, (new NBTTagInt(i2)).setKey(string1));
+	}
+
+	public void setLong(String string1, long j2) {
+		this.tagMap.put(string1, (new NBTTagLong(j2)).setKey(string1));
+	}
+
+	public void setFloat(String string1, float f2) {
+		this.tagMap.put(string1, (new NBTTagFloat(f2)).setKey(string1));
+	}
+
+	public void setDouble(String string1, double d2) {
+		this.tagMap.put(string1, (new NBTTagDouble(d2)).setKey(string1));
+	}
+
+	public void setString(String string1, String string2) {
+		this.tagMap.put(string1, (new NBTTagString(string2)).setKey(string1));
+	}
+
+	public void setByteArray(String string1, byte[] b2) {
+		this.tagMap.put(string1, (new NBTTagByteArray(b2)).setKey(string1));
+	}
+
+	public void setCompoundTag(String string1, NBTTagCompound nBTTagCompound2) {
+		this.tagMap.put(string1, nBTTagCompound2.setKey(string1));
+	}
+
+	public void setBoolean(String string1, boolean z2) {
+		this.setByte(string1, (byte)(z2 ? 1 : 0));
+	}
+
+	public boolean hasKey(String string1) {
+		return this.tagMap.containsKey(string1);
+	}
+
+	public byte getByte(String string1) {
+		return !this.tagMap.containsKey(string1) ? 0 : ((NBTTagByte)this.tagMap.get(string1)).byteValue;
+	}
+
+	public short getShort(String string1) {
+		return !this.tagMap.containsKey(string1) ? 0 : ((NBTTagShort)this.tagMap.get(string1)).shortValue;
+	}
+
+	public int getInteger(String string1) {
+		return !this.tagMap.containsKey(string1) ? 0 : ((NBTTagInt)this.tagMap.get(string1)).intValue;
+	}
+
+	public long getLong(String string1) {
+		return !this.tagMap.containsKey(string1) ? 0L : ((NBTTagLong)this.tagMap.get(string1)).longValue;
+	}
+
+	public float getFloat(String string1) {
+		return !this.tagMap.containsKey(string1) ? 0.0F : ((NBTTagFloat)this.tagMap.get(string1)).floatValue;
+	}
+
+	public double getDouble(String string1) {
+		return !this.tagMap.containsKey(string1) ? 0.0D : ((NBTTagDouble)this.tagMap.get(string1)).doubleValue;
+	}
+
+	public String getString(String string1) {
+		return !this.tagMap.containsKey(string1) ? "" : ((NBTTagString)this.tagMap.get(string1)).stringValue;
+	}
+
+	public byte[] getByteArray(String string1) {
+		return !this.tagMap.containsKey(string1) ? new byte[0] : ((NBTTagByteArray)this.tagMap.get(string1)).byteArray;
+	}
+
+	public NBTTagCompound getCompoundTag(String string1) {
+		return !this.tagMap.containsKey(string1) ? new NBTTagCompound() : (NBTTagCompound)this.tagMap.get(string1);
+	}
+
+	public NBTTagList getTagList(String string1) {
+		return !this.tagMap.containsKey(string1) ? new NBTTagList() : (NBTTagList)this.tagMap.get(string1);
+	}
+
+	public boolean getBoolean(String string1) {
+		return this.getByte(string1) != 0;
+	}
+
+	public NBTTagCompound copy(){
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.tagMap = (HashMap) tagMap.clone();
+		return nbt;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof NBTTagCompound){
+			if(tagMap.size() == 0 && ((NBTTagCompound) obj).tagMap.size() == 0){
+				return true;
+			}
+			if(tagMap.size() == 0 && ((NBTTagCompound) obj).tagMap.size() != 0){
+				return false;
+			} else if (tagMap.size() != 0 && ((NBTTagCompound) obj).tagMap.size() == 0){
+				return false;
+			}
+			Iterator itrt = tagMap.entrySet().iterator();
+			int s = 0;
+			int i = 1;
+			while (itrt.hasNext()) {
+				Map.Entry<?,?> element = (Map.Entry<?, ?>) itrt.next();
+				if(((NBTTagCompound) obj).hasKey((String) element.getKey())){
+					if(element.getValue().equals(((NBTTagCompound) obj).tagMap.get(element.getKey()))){
+						s++;
+					}
+				}
+				i++;
+			}
+			return s == tagMap.size();
+		}
+		return false;
+	}
+
+	public String toString() {
+		return "" + this.tagMap.size() + " entries";
+	}
+
+	public String toStringExtended() {
+		return (new StringBuilder()).append("").append(tagMap).toString();
+	}
 }

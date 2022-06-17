@@ -80,6 +80,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(requestTerminal, "Request Terminal");
 		ModLoader.AddName(itemCable,"Cable");
 		ModLoader.AddName(digitalInterface,"Item Interface");
+		ModLoader.AddName(mobileTerminal,"Mobile Terminal");
+		ModLoader.AddName(mobileRequestTerminal,"Mobile Request Terminal");
 
 		ModLoader.RegisterBlock(digitalChest);
 		ModLoader.RegisterBlock(digitalController);
@@ -124,6 +126,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(storageDisc4, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc3,'#',new ItemStack(Item.dyePowder,1,10),'R',Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(storageDisc5, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc4,'#',new ItemStack(Item.dyePowder,1,4),'R',Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(storageDisc6, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc5,'#',new ItemStack(Item.dyePowder,1,5),'R',Item.redstone);
+		ModLoader.AddRecipe(new ItemStack(mobileTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass,'I',Item.ingotIron,'D',Item.diamond,'T',digitalTerminal);
+		ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass,'I',Item.ingotIron,'D',Item.diamond,'T',requestTerminal);
 	}
 
 	public static int getId(String s, int base) {
@@ -143,9 +147,10 @@ public class mod_RetroStorage extends BaseMod {
 	public static ItemStorageDisc virtualDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("virtualDisc",143), Integer.MAX_VALUE)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("virtualdisc.png").toString())).setItemName("virtualdisc").setMaxStackSize(1);
 	public static ItemStorageDisc goldenDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("goldenDisc",144), (Short.MAX_VALUE*2)+1)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("goldendisc.png").toString())).setItemName("goldendisc").setMaxStackSize(1);
 	public static ItemRecipeDisc recipeDisc = (ItemRecipeDisc) (new ItemRecipeDisc(getId("recipeDisc",145))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("recipedisc.png").toString())).setItemName("recipedisc");
-	
-	
-	public static Block digitalChest = (new BlockDigitalChest(getId("digitalChest",144), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalChest"));
+	public static ItemTerminal mobileTerminal = (ItemTerminal) (new ItemTerminal(getId("mobileTerminal",147))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobileterminal.png").toString())).setItemName("mobileterminal").setMaxStackSize(1);
+	public static ItemRequestTerminal mobileRequestTerminal = (ItemRequestTerminal) (new ItemRequestTerminal(getId("mobileRequestTerminal",148))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobilerequestterminal.png").toString())).setItemName("mobilerequestterminal").setMaxStackSize(1);
+
+	public static Block digitalChest = (new BlockDigitalChest(getId("digitalChest",165), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalChest"));
 	public static Block digitalController = (new BlockDigitalController(getId("digitalController",166),ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("digitalcontroller.png").toString())).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalController"));
 	public static Block cable = (new BlockCable(getId("cable",167)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("cable"));
 	public static Block discDrive = (new BlockDiscDrive(getId("discDrive",168)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("discDrive"));
@@ -192,7 +197,7 @@ public class mod_RetroStorage extends BaseMod {
 	
 	@Override
 	public String Version() {
-		return "a1.4";
+		return "a1.5";
 	}
 	
 	public String Name() {

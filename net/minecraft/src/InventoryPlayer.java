@@ -29,7 +29,7 @@ public class InventoryPlayer implements IInventory {
 	private int storeItemStack(ItemStack itemStack1) {
 		for(int i2 = 0; i2 < this.mainInventory.length; ++i2) {
 			if(this.mainInventory[i2] != null && this.mainInventory[i2].itemID == itemStack1.itemID && this.mainInventory[i2].getItemData().equals(itemStack1.getItemData()) && this.mainInventory[i2].isStackable() && this.mainInventory[i2].stackSize < this.mainInventory[i2].getMaxStackSize() && this.mainInventory[i2].stackSize < this.getInventoryStackLimit() && (!this.mainInventory[i2].getHasSubtypes() || this.mainInventory[i2].getItemDamage() == itemStack1.getItemDamage())) {
-				System.out.println(this.mainInventory[i2].getItemData().equals(itemStack1.getItemData()));
+				//System.out.println(this.mainInventory[i2].getItemData().equals(itemStack1.getItemData()));
 				return i2;
 			}
 		}

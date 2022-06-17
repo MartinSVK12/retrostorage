@@ -126,6 +126,11 @@ public class BlockDigitalTerminal extends BlockContainer{
             return true;
         } else
         {
+            if (entityplayer.getCurrentEquippedItem() != null){
+                if (entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.mobileTerminal) {
+                    return false;
+                }
+            }
             TileEntityDigitalTerminal TileEntityDigitalTerminal = (TileEntityDigitalTerminal)world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalTerminal);
             if (TileEntityDigitalTerminal != null) {

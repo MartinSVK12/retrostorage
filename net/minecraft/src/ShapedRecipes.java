@@ -1,55 +1,65 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-// Referenced classes of package net.minecraft.src:
-//            IRecipe, ItemStack, InventoryCrafting
+public class ShapedRecipes implements IRecipe {
+	private int recipeWidth;
+	private int recipeHeight;
+	private ItemStack[] recipeItems;
+	private ItemStack recipeOutput;
+	public final int recipeOutputItemID;
 
-public class ShapedRecipes
-    implements IRecipe
-{
+	public ShapedRecipes(int i1, int i2, ItemStack[] itemStack3, ItemStack itemStack4) {
+		this.recipeOutputItemID = itemStack4.itemID;
+		this.recipeWidth = i1;
+		this.recipeHeight = i2;
+		this.recipeItems = itemStack3;
+		this.recipeOutput = itemStack4;
+	}
 
-    public ShapedRecipes(int i, int j, ItemStack aitemstack[], ItemStack itemstack)
-    {
-        recipeOutputItemID = itemstack.itemID;
-        recipeWidth = i;
-        recipeHeight = j;
-        recipeItems = aitemstack;
-        recipeOutput = itemstack;
-    }
+	public ItemStack getRecipeOutput() {
+		return this.recipeOutput;
+	}
 
-    public ItemStack getRecipeOutput()
-    {
-        return recipeOutput;
-    }
-    
-    public ArrayList<?> getRecipeItems() {
-    	ArrayList arraylist = new ArrayList(Arrays.asList(recipeItems));
-    	arraylist.ensureCapacity(9);
-    	for(int i = 0;i<9;i++) {
-    		if(arraylist.size() < 9) {
-    			arraylist.add(null);
-    		}
-    	}
-    	return arraylist;
-    }
-    
-    public ArrayList<?> applyWidthHeightToRecipeArray(ArrayList<?>list){
-    	if (recipeWidth == 3 && recipeHeight == 3) {
-    		return list;
-    	}
-    	ArrayList correctArraylist = new ArrayList();
-    	correctArraylist.ensureCapacity(9);
-    	for(int x = 0;x<9;x++) {
-    		correctArraylist.add(null);
-    	}
-    	int index = 0;
-    	int shifted_index = 0;
+	public ArrayList<?> getRecipeItems() {
+		ArrayList arraylist = new ArrayList(Arrays.asList(recipeItems));
+		arraylist.ensureCapacity(9);
+		for(int i = 0;i<9;i++) {
+			if(arraylist.size() < 9) {
+				arraylist.add(null);
+			}
+		}
+		return arraylist;
+	}
+
+	public boolean matches(InventoryCrafting inventoryCrafting1) {
+		for(int i2 = 0; i2 <= 3 - this.recipeWidth; ++i2) {
+			for(int i3 = 0; i3 <= 3 - this.recipeHeight; ++i3) {
+				if(this.func_21137_a(inventoryCrafting1, i2, i3, true)) {
+					return true;
+				}
+
+				if(this.func_21137_a(inventoryCrafting1, i2, i3, false)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public ArrayList<?> applyWidthHeightToRecipeArray(ArrayList<?>list){
+		if (recipeWidth == 3 && recipeHeight == 3) {
+			return list;
+		}
+		ArrayList correctArraylist = new ArrayList();
+		correctArraylist.ensureCapacity(9);
+		for(int x = 0;x<9;x++) {
+			correctArraylist.add(null);
+		}
+		int index = 0;
+		int shifted_index = 0;
 		for(int i = 0;i<list.size();i++) {
 			if (i > recipeWidth*recipeHeight) {
 				break;
@@ -73,119 +83,77 @@ public class ShapedRecipes
 			index++;
 		}
 		return correctArraylist;
-    }
+	}
 
-    public boolean matches(InventoryCrafting inventorycrafting)
-    {
-        for(int i = 0; i <= 3 - recipeWidth; i++)
-        {
-            for(int j = 0; j <= 3 - recipeHeight; j++)
-            {
-                if(func_21137_a(inventorycrafting, i, j, true))
-                {
-                    return true;
-                }
-                if(func_21137_a(inventorycrafting, i, j, false))
-                {
-                    return true;
-                }
-            }
+	public boolean matchesArray(ArrayList<ItemStack> list) {
+		if (list.isEmpty()){
+			return false;
+		}
+		ArrayList<ItemStack> recipeList = (ArrayList<ItemStack>) getRecipeItems();
+		recipeList = (ArrayList<ItemStack>) applyWidthHeightToRecipeArray(recipeList);
+		for(int i = 0;i < list.size();i++) {
+			ItemStack itemstack1 = list.get(i);
+			ItemStack itemstack = recipeList.get(i);
+			if(itemstack1 == null && itemstack == null)
+			{
+				continue;
+			}
+			if(itemstack1 == null && itemstack != null || itemstack1 != null && itemstack == null)
+			{
+				return false;
+			}
+			if(itemstack.itemID != itemstack1.itemID)
+			{
+				return false;
+			}
+			if(itemstack.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
+			{
+				return false;
+			}
+		}
 
-        }
+		return true;
+	}
 
-        return false;
-    }
-    
-    public boolean matchesArray(ArrayList<ItemStack> list) {
-        if (list.isEmpty()){
-            return false;
-        }
-    	ArrayList<ItemStack> recipeList = (ArrayList<ItemStack>) getRecipeItems();
-    	recipeList = (ArrayList<ItemStack>) applyWidthHeightToRecipeArray(recipeList);
-    	/*if(recipeOutput.getItem() == Item.shovelSteel) {
-    		System.out.println(recipeList.toString() + " vs " + list.toString());
-    	}*/
-    	for(int i = 0;i < list.size();i++) {
-    		ItemStack itemstack1 = list.get(i);
-    		ItemStack itemstack = recipeList.get(i);
-    		 if(itemstack1 == null && itemstack == null)
-             {
-                 continue;
-             }
-             if(itemstack1 == null && itemstack != null || itemstack1 != null && itemstack == null)
-             {
-                 return false;
-             }
-             //System.out.println(itemstack.toString() + " vs " + itemstack1.toString());
-             if(itemstack.itemID != itemstack1.itemID)
-             {
-                 return false;
-             }
-             if(itemstack.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
-             {
-                 return false;
-             }
-    	}
+	private boolean func_21137_a(InventoryCrafting inventoryCrafting1, int i2, int i3, boolean z4) {
+		for(int i5 = 0; i5 < 3; ++i5) {
+			for(int i6 = 0; i6 < 3; ++i6) {
+				int i7 = i5 - i2;
+				int i8 = i6 - i3;
+				ItemStack itemStack9 = null;
+				if(i7 >= 0 && i8 >= 0 && i7 < this.recipeWidth && i8 < this.recipeHeight) {
+					if(z4) {
+						itemStack9 = this.recipeItems[this.recipeWidth - i7 - 1 + i8 * this.recipeWidth];
+					} else {
+						itemStack9 = this.recipeItems[i7 + i8 * this.recipeWidth];
+					}
+				}
 
-        return true;
-    }
+				ItemStack itemStack10 = inventoryCrafting1.func_21103_b(i5, i6);
+				if(itemStack10 != null || itemStack9 != null) {
+					if(itemStack10 == null && itemStack9 != null || itemStack10 != null && itemStack9 == null) {
+						return false;
+					}
 
-    private boolean func_21137_a(InventoryCrafting inventorycrafting, int i, int j, boolean flag)
-    {
-        for(int k = 0; k < 3; k++)
-        {
-            for(int l = 0; l < 3; l++)
-            {
-                int i1 = k - i;
-                int j1 = l - j;
-                ItemStack itemstack = null;
-                if(i1 >= 0 && j1 >= 0 && i1 < recipeWidth && j1 < recipeHeight)
-                {
-                    if(flag)
-                    {
-                        itemstack = recipeItems[(recipeWidth - i1 - 1) + j1 * recipeWidth];
-                    } else
-                    {
-                        itemstack = recipeItems[i1 + j1 * recipeWidth];
-                    }
-                }
-                ItemStack itemstack1 = inventorycrafting.func_21103_b(k, l);
-                if(itemstack1 == null && itemstack == null)
-                {
-                    continue;
-                }
-                if(itemstack1 == null && itemstack != null || itemstack1 != null && itemstack == null)
-                {
-                    return false;
-                }
-                if(itemstack.itemID != itemstack1.itemID)
-                {
-                    return false;
-                }
-                if(itemstack.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
-                {
-                    return false;
-                }
-            }
+					if(itemStack9.itemID != itemStack10.itemID) {
+						return false;
+					}
 
-        }
+					if(itemStack9.getItemDamage() != -1 && itemStack9.getItemDamage() != itemStack10.getItemDamage()) {
+						return false;
+					}
+				}
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public ItemStack getCraftingResult(InventoryCrafting inventorycrafting)
-    {
-        return new ItemStack(recipeOutput.itemID, recipeOutput.stackSize, recipeOutput.getItemDamage());
-    }
+	public ItemStack getCraftingResult(InventoryCrafting inventoryCrafting1) {
+		return new ItemStack(this.recipeOutput.itemID, this.recipeOutput.stackSize, this.recipeOutput.getItemDamage());
+	}
 
-    public int getRecipeSize()
-    {
-        return recipeWidth * recipeHeight;
-    }
-
-    private int recipeWidth;
-    private int recipeHeight;
-    private ItemStack recipeItems[];
-    private ItemStack recipeOutput;
-    public final int recipeOutputItemID;
+	public int getRecipeSize() {
+		return this.recipeWidth * this.recipeHeight;
+	}
 }
