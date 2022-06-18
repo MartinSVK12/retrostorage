@@ -27,6 +27,9 @@ public class ShapelessRecipes implements IRecipe {
 			return false;
 		}
 		ArrayList<ItemStack> arraylist = (ArrayList<ItemStack>) getRecipeItems();
+		if (list.size() != arraylist.size()){
+			return false;
+		}
 		int n = 0;
 		for(int j = 0; j < list.size(); j++)
 		{
