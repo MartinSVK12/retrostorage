@@ -334,7 +334,8 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     {
     	connectDrive();
     	setInventorySlotContents(1, network_disc);
-    	if(network.size() > 0) {
+        //autocrafting is broken, disabling it for now
+    	/*if(network.size() > 0) {
             for (Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
                 ArrayList<Integer> pos = element.getKey();
                 TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
@@ -352,7 +353,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                     network_asm = null;
                 }
             }
-    	}
+    	}*/
     	if(network_asm == null) {
     		for(int i = 3;i <= 38;i++) {
 				setInventorySlotContents(i, null);

@@ -95,7 +95,7 @@ public abstract class GuiContainer extends GuiScreen {
 					if(i11 < w) {
 						i11 = w;
 					}
-					this.drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 3, -1073741824, -1073741824);
+					this.drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, -1073741824, -1073741824);
 					this.fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
 					if (output != null){
 						fontRenderer.drawStringWithShadow("Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()), i9, i10+12, 0xFFFF00FF);
