@@ -3,6 +3,8 @@ Digital storage system mod for Minecraft b1.7.3.
 
 Requires Modloader (+ Forge 1.0.6 for versions a1.5 and above.)
 
+*Version a1.5 will include a rewrite of most internals to make them better, easier to use and less buggy and such it might take a while to be released*
+
 **Features**:
 
  - ItemNBT (Allows items to carry NBT data, available as a standalone mod.)
