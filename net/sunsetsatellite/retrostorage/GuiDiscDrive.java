@@ -19,21 +19,27 @@ public class GuiDiscDrive extends GuiContainer
     public GuiDiscDrive(InventoryPlayer inventoryplayer, TileEntityDiscDrive tileentitydiscdrive)
     {
         super(new ContainerDiscDrive(inventoryplayer, tileentitydiscdrive));
+        tile = tileentitydiscdrive;
     }
 
     protected void drawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Disc Drive", 60, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 148) + 2, 0x404040);
+        if(tile.virtualDisc != null){
+            fontRenderer.drawString(tile.virtualDisc.getItemData().size() +"/"+tile.virtualDriveMaxStacks, 80, 20, 0x404040);
+        }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("/gui/trap.png");
+        int i = mc.renderEngine.getTexture("/retrostorage/discdrivegui.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
+
+    private TileEntityDiscDrive tile;
 }

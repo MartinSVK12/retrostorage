@@ -119,6 +119,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 						if(tile != this) {
 							network_tile.updateEntity();
 							network_tile.network = new HashMap<ArrayList<Integer>, HashMap<String, Object>>();
+							network_tile.controller = null;
 						}
 					}
 				}
@@ -144,6 +145,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 					if(tile instanceof TileEntityInNetwork) {
 						TileEntityInNetwork network_tile = (TileEntityInNetwork) tile;
 						network_tile.network = network;
+						network_tile.controller = this;
 						if(tile != this) {
 							if (tile instanceof TileEntityAssembler || tile instanceof TileEntityInterface){
 								for(int l = 0;l<9;l++){
@@ -218,6 +220,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	public double energy = 0;
     public boolean active = true;
     public int devicesConnected = 0;
+
 
 	public HashMap<ItemStack, List<Object>> itemAssembly = new HashMap<ItemStack, List<Object>>();
 }

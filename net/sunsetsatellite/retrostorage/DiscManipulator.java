@@ -545,14 +545,15 @@ public class DiscManipulator {
 			discStack.setItemData(cellData);
 		}
     }
-	
+
     public static void addStackToPartitionedDisc(ItemStack item, ItemStack discStack, int partitionIndex) {
 		System.out.println((new StringBuilder()).append("Adding ").append(item.toString()).append(" to partition ").append(partitionIndex).append(" of ").append(discStack.toString()));
 		ItemStorageDisc disc = (ItemStorageDisc) discStack.getItem();
-		NBTTagCompound cellData = discStack.getItemData();
+		NBTTagCompound cellData = discStack.getItemData().copy();
 		Object[] cellDataArray = cellData.getValues().toArray();
-		int cellDataSize = cellData.getValues().size();
-		if(cellDataSize >= disc.getMaxStackCapacity()) {
+		int cellDataSize = cellData.getKeys().size();
+		System.out.println("Data size:"+String.valueOf(cellDataSize));
+;		if(cellDataSize >= disc.getMaxStackCapacity()) {
 			return;
 		}
 		NBTTagCompound itemNBT = (new NBTTagCompound());
@@ -565,19 +566,25 @@ public class DiscManipulator {
 				if(cellItemNBT.getByte("Count") != 64){
 					similiarItemNBT = cellItemNBT;
 					NBTMatchFound = true;
+					System.out.println("Found similiar item at "+String.valueOf(i1));
 					break;
 				}
 			}
 		}
 		if(NBTMatchFound) {
-			System.out.println("Found similiar item in network");
+			System.out.println(similiarItemNBT.toStringExtended());
 			if(similiarItemNBT.getByte("Count") + item.stackSize <= 64) {
-				similiarItemNBT.setByte("Count", (byte)(similiarItemNBT.getByte("Count") + item.stackSize));
-				cellData.setCompoundTag((new StringBuilder()).append(i1+1).toString(), similiarItemNBT);
-				similiarItemNBT.setInteger("disc", partitionIndex);
+				System.out.println("Less than 64");
+				itemNBT.setByte("Count", (byte)(similiarItemNBT.getByte("Count") + item.stackSize));
+				itemNBT.setShort("id", (short)item.itemID);
+				itemNBT.setShort("Damage", (short)item.getItemDamage());
+				itemNBT.setInteger("disc", partitionIndex);
+				//similiarItemNBT.setByte("Count", (byte)(similiarItemNBT.getByte("Count") + item.stackSize));
+				cellData.setCompoundTag((new StringBuilder()).append(i1+1).toString(), itemNBT);
 				discStack.setItemData(cellData);
 			}
 			else if (similiarItemNBT.getByte("Count") + item.stackSize > 64) {
+				System.out.println("More than 64");
 				int total = similiarItemNBT.getByte("Count") + item.stackSize;
 				int remainder = total - 64;
 				System.out.println((new StringBuilder()).append("Total: ").append(total));
@@ -638,4 +645,54 @@ public class DiscManipulator {
     	}
     	return recipeNBT;
     }
+
+	public static void saveDisc(ItemStack disc, IInventory inv, int page){
+		System.out.printf("Saving contents of page %d of inventory %s to disc %s%n",page,inv.toString(),disc.toString());
+		NBTTagCompound discNBT = disc.getItemData();
+		for(int i = 1; i < inv.getSizeInventory();i++){
+			ItemStack item = inv.getStackInSlot(i);
+			NBTTagCompound itemNBT = new NBTTagCompound();
+			if(item != null){
+				itemNBT.setByte("Count", (byte)item.stackSize);
+				itemNBT.setShort("id", (short)item.itemID);
+				itemNBT.setShort("Damage", (short)item.getItemDamage());
+				itemNBT.setCompoundTag("Data", (NBTTagCompound)item.getItemData());
+				discNBT.setCompoundTag(String.valueOf(i+(page*36)),itemNBT);
+			} else {
+				discNBT.removeTag(String.valueOf(i+(page*36)));
+			}
+		}
+		System.out.printf("Data: %s%n",discNBT.toStringExtended());
+		disc.setItemData(discNBT);
+	}
+
+	public static void loadDisc(ItemStack disc, IInventory inv, int page){
+		System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
+		NBTTagCompound discNBT = disc.getItemData();
+		for(int i = 1; i < 37;i++){
+			if(discNBT.hasKey(String.valueOf(i+(page*36)))){
+				ItemStack item = new ItemStack(discNBT.getCompoundTag(String.valueOf(i+(page*36))));
+				inv.setInventorySlotContents(i,item);
+			}
+		}
+
+	}
+
+	public static void clearDigitalInv(IInventory inv){
+		//System.out.printf("Clearing digital inventory %s%n",inv.toString());
+		for (int i = 1; i < inv.getSizeInventory(); i++){
+			inv.setInventorySlotContents(i,null);
+		}
+	}
+
+	public static NBTTagCompound stacksToNBT(ItemStack[] stacks){
+
+		return null;
+	}
+
+	public static ItemStack[] NBTToStacks(NBTTagCompound NBT){
+
+		return new ItemStack[0];
+	}
+
 }

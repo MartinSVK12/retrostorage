@@ -55,13 +55,21 @@ public class GuiDigitalTerminal extends GuiContainer
         }
         if(guibutton.id == 0)
         {
-        	if(tile.page<tile.pages)
-        	tile.page++;
+        	if(tile.page<tile.pages) {
+                DiscManipulator.saveDisc(tile.network_disc, tile, tile.page);
+                tile.page++;
+                DiscManipulator.clearDigitalInv(tile);
+                DiscManipulator.loadDisc(tile.network_disc, tile, tile.page);
+            }
         }
         if(guibutton.id == 1)
         {
-        	if(tile.page > 0)
-        	tile.page--;
+        	if(tile.page > 0){
+                DiscManipulator.saveDisc(tile.network_disc, tile, tile.page);
+                tile.page--;
+                DiscManipulator.clearDigitalInv(tile);
+                DiscManipulator.loadDisc(tile.network_disc,tile,tile.page);
+            }
         }
         //System.out.println(tile.page);
     }

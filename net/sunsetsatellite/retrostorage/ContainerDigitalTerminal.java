@@ -18,10 +18,8 @@ public class ContainerDigitalTerminal extends Container
 
     public ContainerDigitalTerminal(IInventory iinventory, TileEntityDigitalTerminal tileentitydigitalterminal)
     {
-    	
-    	addSlot(new Slot(tileentitydigitalterminal, 0, 44, 108));
-    	addSlot(new SlotDigital(tileentitydigitalterminal, 1, 80, 108));
-    	addSlot(new Slot(tileentitydigitalterminal, 2, 116, 108));
+
+    	addSlot(new SlotViewOnly(tileentitydigitalterminal, 0, 80, 108));
     	
     	for(int k = 0; k < 9; k++)
         {
@@ -42,7 +40,7 @@ public class ContainerDigitalTerminal extends Container
         {
             for(int l = 0; l < 9; l++)
             {
-        		addSlot(new SlotDigital(tileentitydigitalterminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
+        		addSlot(new SlotDigital(tileentitydigitalterminal,l + i * 9 + 1 , 8 + l * 18, 18 + i * 18));
             }
 
         }
@@ -56,10 +54,6 @@ public class ContainerDigitalTerminal extends Container
 	public boolean isUsableByPlayer(EntityPlayer entityplayer)
     {
         return tile.canInteractWith(entityplayer);
-    }
-
-    public void withdrawItem(Slot slot) {
-    	tile.withdrawItem(slot);
     }
     
     private TileEntityDigitalTerminal tile;

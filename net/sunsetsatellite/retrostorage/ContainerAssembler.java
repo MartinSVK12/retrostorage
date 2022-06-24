@@ -20,7 +20,7 @@ public class ContainerAssembler extends Container
     {
     	tile = TileEntityAssembler;
     	
-    	addSlot(new SlotDigital(TileEntityAssembler, 9, 134, 53));
+    	addSlot(new SlotViewOnly(TileEntityAssembler, 9, 134, 53));
     	
         for(int i = 0; i < 3; i++)
         {

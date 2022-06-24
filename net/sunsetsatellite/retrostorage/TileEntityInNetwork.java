@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 
-public class TileEntityInNetwork extends TileEntity
+public class TileEntityInNetwork extends TileEntityDigitalContainer
 {
 
 	public TileEntityInNetwork() {
@@ -38,61 +38,18 @@ public class TileEntityInNetwork extends TileEntity
 	}
 	
 	protected void connectDrive() {
-		/*if(network.size() > 0) {
-			Iterator<Entry<ArrayList<Integer>, HashMap<String, Object>>> itrt = network.entrySet().iterator();
-			while (itrt.hasNext()) {
-				Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element = (Map.Entry<ArrayList<Integer>, HashMap<String, Object>>)itrt.next();
-				ArrayList<Integer> pos = element.getKey();
-				TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
-				if (tile != null) {
-					if (tile instanceof TileEntityDiscDrive) {
-						TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
-						network_drive = drive;
-						if (drive.getStackInSlot(9) != null) {
-							if (drive.getStackInSlot(9).getItem() instanceof ItemStorageDisc) {
-								network_drive.createVirtualDisc();
-								network_disc = drive.getStackInSlot(9);
-								break;
-							} else {
-								network_disc = null;
-								network_drive = null;
-							}
-						} else {
-							network_disc = null;
-							network_drive = null;
-						}
-					} else {
-						network_disc = null;
-						network_drive = null;
-					}
-				} else {
-					network_disc = null;
-					network_drive = null;
-				}
-			}
-		} else {
-			network_disc = null;
-			network_drive = null;
-		}*/
 		if(network.size() > 0) {
-			Iterator<Entry<ArrayList<Integer>, HashMap<String, Object>>> itrt = network.entrySet().iterator();
-			while (itrt.hasNext()) {
-				Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element = (Map.Entry<ArrayList<Integer>, HashMap<String, Object>>)itrt.next();
+			for (Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
 				ArrayList<Integer> pos = element.getKey();
 				TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
 				if (tile != null) {
 					if (tile instanceof TileEntityDiscDrive) {
 						TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
 						network_drive = drive;
-						if (drive.getStackInSlot(drive.getSizeInventory()-1) != null) {
-							if (drive.getStackInSlot(drive.getSizeInventory()-1).getItem() instanceof ItemStorageDisc) {
-								network_drive.createVirtualDisc();
-    							network_disc = drive.getStackInSlot(drive.getSizeInventory()-1);
-    							/*if(DiscManipulator.getDiscMaxStacks(network_disc, network_drive) == network_disc.getItemData().getValues().size()) {
-    								continue;
-    							}*/
-    							//DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-    							break;
+						if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
+							if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
+								network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
+								break;
 							} else {
 								network_disc = null;
 								network_drive = null;
@@ -104,15 +61,11 @@ public class TileEntityInNetwork extends TileEntity
 					} else if (tile instanceof TileEntityStorageBlock) {
 						TileEntityStorageBlock drive = (TileEntityStorageBlock) tile;
 						network_drive = drive;
-						if (drive.getStackInSlot(drive.getSizeInventory()-1) != null) {
-							if (drive.getStackInSlot(drive.getSizeInventory()-1).getItem() instanceof ItemStorageDisc) {
+						if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
+							if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
 								network_drive.createVirtualDisc();
-    							network_disc = drive.getStackInSlot(drive.getSizeInventory()-1);
-    							//DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-    							/*if(DiscManipulator.getDiscMaxStacks(network_disc, network_drive) == network_disc.getItemData().getValues().size()) {
-    								continue;
-    							}*/
-    							break;
+								network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
+								break;
 							} else {
 								network_disc = null;
 								network_drive = null;
@@ -140,4 +93,5 @@ public class TileEntityInNetwork extends TileEntity
 	
 	protected TileEntityStorage network_drive = null;
 	protected ItemStack network_disc = null;
+	protected TileEntityDigitalController controller = null;
 }

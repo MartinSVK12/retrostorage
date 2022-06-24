@@ -19,7 +19,7 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
 
     public TileEntityDigitalTerminal()
     {
-        contents = new ItemStack[39];
+        contents = new ItemStack[37];
     }
 
     public int getSizeInventory()
@@ -55,133 +55,56 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
             return null;
         }
     }
-    
-    public void withdrawItem(Slot slot) {
-    	if(slot.slotNumber == 1) {
-    		return;
-    	}
-    	DiscManipulator.outputItemFromDisc(network_disc, slot.getStack(), (TileEntityInNetworkWithInv) this, (TileEntityInNetworkWithInv) network_drive);
-    	network_drive.updateDiscs();
-    	//System.out.println((new StringBuilder().append("Slot ").append(slot).append(" want to withdraw item.")).toString());
-    	
+
+    public void updateContents(){
+        if(getStackInSlot(0) != null && network_disc != null){
+            DiscManipulator.clearDigitalInv(this);
+            DiscManipulator.loadDisc(network_disc, this, page);
+        }
     }
 
-    
     public void updateEntity()
     {
-
-		if(network.size() > 0) {
-            for (Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
-                ArrayList<Integer> pos = element.getKey();
-                TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
-                if (tile != null) {
-                    if (tile instanceof TileEntityDiscDrive) {
-                        TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
-                        network_drive = drive;
-                        if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
-                            if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
-                                network_drive.createVirtualDisc();
-                                DiscManipulator.readFromDisc(drive.getStackInSlot(drive.getSizeInventory() - 1), page, this);
-                                network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
-                                pages = network_disc.getItemData().getValues().size() / 36;
-                                //DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-                                break;
-                            } else {
-                                network_disc = null;
-                                network_drive = null;
-                            }
-                        } else {
-                            network_disc = null;
-                            network_drive = null;
-                        }
-                    } else if (tile instanceof TileEntityStorageBlock) {
-                        TileEntityStorageBlock drive = (TileEntityStorageBlock) tile;
-                        network_drive = drive;
-                        if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
-                            if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
-                                network_drive.createVirtualDisc();
-                                DiscManipulator.readFromDisc(drive.getStackInSlot(drive.getSizeInventory() - 1), page, this);
-                                network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
-                                pages = network_disc.getItemData().getValues().size() / 36;
-                                //DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-                                break;
-                            } else {
-                                network_disc = null;
-                                network_drive = null;
-                            }
-                        } else {
-                            network_disc = null;
-                            network_drive = null;
-                        }
-                    } else {
-                        network_disc = null;
-                        network_drive = null;
-                    }
-                } else {
-                    network_disc = null;
-                    network_drive = null;
-                }
+        if(network_drive == null && network_disc == null){
+            connectDrive();
+        }
+        if(getStackInSlot(0) != null && network_disc != null){
+            if(!network_disc.isStackEqual(getStackInSlot(0))){
+                DiscManipulator.clearDigitalInv(this);
+                DiscManipulator.loadDisc(network_disc, this, page);
             }
-		} else {
-			network_disc = null;
-			network_drive = null;
-		}
-    		/*TileEntity tile = worldObj.getBlockTileEntity(xCoord, yCoord+1, zCoord);
-    		
-    		if (tile instanceof TileEntityChest){
-    			//System.out.println("chest connected");
-    			for(int i = 0; i < ((TileEntityChest) tile).getSizeInventory(); i++) {
-    				ItemStack item = ((TileEntityChest) tile).getStackInSlot(i);
-    				if (item != null) {
-    					if (network_disc != null){
-    						addToDisc(item, network_disc);
-    						((TileEntityChest) tile).setInventorySlotContents(i, null);
-    					}
-    					//System.out.println("There's something in slot "+i);
-    				}
-    			}
-    		}*/
-    	if (getStackInSlot(2) != null) {
-    		if (network_disc != null) {
-    			if (network_disc.getItem() instanceof ItemStorageDisc) {
-    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-    					if(DiscManipulator.getFirstAvailablePartition(network_disc, network_drive) != -1) {
-    						DiscManipulator.addStackToPartitionedDisc(getStackInSlot(2),network_disc,DiscManipulator.getFirstAvailablePartition(network_disc, network_drive));
-    						setInventorySlotContents(2, null);
-    						network_drive.updateDiscs();
-    					}
-    				}
-    			}
-			}
-    	}
-    	if (network_disc != null) {
-    		if(network_disc.getItem() instanceof ItemStorageDisc) {
-    			//DiscManipulator.readPartitionFromPartitionedDisc(network_disc, pages, this, -1);
-    			//DiscManipulator.readAllFromPartitionedDisc(network_disc, page, this);
-    			pages = network_disc.getItemData().getValues().size() / 36;
-    			network_drive.createVirtualDisc();
-    			DiscManipulator.readFromDisc(network_disc,page,this);
-    			//System.out.println("END LOOP");
-    			//System.out.println(data.toString());*/
-    		} else
-        	{
-    			for(int i = 3;i <= 38;i++) {
-    				setInventorySlotContents(i, null);
-    			}
-        		
-        	}
-    	} else {
-    		for(int i = 3;i <= 38;i++) {
-				setInventorySlotContents(i, null);
-			}
-    	}
-    	
-    	setInventorySlotContents(1, network_disc);
-    	
+        } else if(getStackInSlot(0) == null && network_disc != null){
+            DiscManipulator.clearDigitalInv(this);
+            DiscManipulator.loadDisc(network_disc, this, page);
+        }
+        setInventorySlotContents(0, network_disc);
+        if(network_disc != null){
+            this.pages = ((int) Math.floor((double) network_disc.getItemData().size()/(getSizeInventory()-1)));
+            //System.out.printf("%d %d %d%n",network_disc.getItemData().size(),(getSizeInventory()-1),(network_disc.getItemData().size()/(getSizeInventory()-1)));
+            //System.out.println(((int) Math.ceil(network_disc.getItemData().size()/(getSizeInventory()-1)))+1);
+        }/* else {
+            this.pages = 0;
+        }*/
+
+        /*System.out.println(network_drive);
+        System.out.println(network_disc);*/
+        /*if(network_drive != null){
+            setInventorySlotContents(0, network_drive.virtualDisc);
+        }*/
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
+        if(itemstack != null && getStackInSlot(0) != null){
+            if (i == 0 && itemstack.getItem() instanceof ItemStorageDisc) {
+                //DiscManipulator.saveDisc(network_disc, this, page);
+
+            }
+        }
+
+        if(i == 0 && itemstack == null){
+            DiscManipulator.clearDigitalInv(this);
+        }
         contents[i] = itemstack;
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
@@ -239,6 +162,14 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
         return 64;
     }
 
+    public int getAmountOfUsedSlots(){
+        int j = 0;
+        if(network_disc != null){
+            j = network_disc.getItemData().size();
+        }
+        return j;
+    }
+
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
         if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
@@ -249,8 +180,4 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     }
 
     private ItemStack contents[];
-    private ItemStack network_disc = null;
-    private TileEntityStorage network_drive = null;
-    public int page;
-    public int pages;
 }

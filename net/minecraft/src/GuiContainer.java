@@ -1,6 +1,7 @@
 package net.minecraft.src;
 
 import net.sunsetsatellite.retrostorage.DiscManipulator;
+import net.sunsetsatellite.retrostorage.GuiDigitalChest;
 import net.sunsetsatellite.retrostorage.ItemRecipeDisc;
 import net.sunsetsatellite.retrostorage.ItemStorageDisc;
 import org.lwjgl.input.Keyboard;

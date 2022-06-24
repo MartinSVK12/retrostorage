@@ -20,7 +20,7 @@ public class ContainerRequestTerminal extends Container
     {
     	
     	addSlot(new Slot(TileEntityRequestTerminal, 0, 44, 108));
-    	addSlot(new SlotDigital(TileEntityRequestTerminal, 1, 80, 108));
+    	addSlot(new SlotViewOnly(TileEntityRequestTerminal, 1, 80, 108));
     	addSlot(new Slot(TileEntityRequestTerminal, 2, 116, 108));
     	
     	for(int k = 0; k < 9; k++)
@@ -42,7 +42,7 @@ public class ContainerRequestTerminal extends Container
         {
             for(int l = 0; l < 9; l++)
             {
-        		addSlot(new SlotDigital(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
+        		addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
             }
 
         }

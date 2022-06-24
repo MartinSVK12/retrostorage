@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.sunsetsatellite.retrostorage.ContainerDigitalChest;
 import net.sunsetsatellite.retrostorage.ContainerDigitalTerminal;
 import net.sunsetsatellite.retrostorage.ContainerRequestTerminal;
-import net.sunsetsatellite.retrostorage.SlotDigital;
+import net.sunsetsatellite.retrostorage.SlotViewOnly;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -132,18 +132,18 @@ public abstract class Container {
                     	if(slot.canTakeFromSlot()) {
                     		int j1 = j != 0 ? (itemstack2.stackSize + 1) / 2 : itemstack2.stackSize;
                             ItemStack itemstack5 = slot.decrStackSize(j1);
-                            if (!(slot instanceof SlotDigital)){
+                            if (!(slot instanceof SlotViewOnly)){
                                 inventoryplayer.setItemStack(itemstack5);
                             }
                             if(itemstack2.stackSize == 0)
                             {
                                 slot.putStack(null);
                             }
-                            if (!(slot instanceof SlotDigital)){
+                            if (!(slot instanceof SlotViewOnly)){
                                 slot.onPickupFromSlot(inventoryplayer.getItemStack());
                             }
                     	}
-                    	if(slot instanceof SlotDigital) {
+                    	if(slot instanceof SlotViewOnly) {
                     		if(this instanceof ContainerDigitalChest || this instanceof ContainerDigitalTerminal) {
                     			withdrawItem(slot);
                     			//slot.getStack()
@@ -159,7 +159,7 @@ public abstract class Container {
                         {
                             if(itemstack3.stackSize <= slot.getSlotStackLimit())
                             {
-                                if (!(slot instanceof SlotDigital)){
+                                if (!(slot instanceof SlotViewOnly)){
                                     ItemStack itemstack4 = itemstack2;
                                     slot.putStack(itemstack3);
                                     inventoryplayer.setItemStack(itemstack4);
@@ -189,7 +189,7 @@ public abstract class Container {
                         int l1 = itemstack2.stackSize;
                         if(l1 > 0 && l1 + itemstack3.stackSize <= itemstack3.getMaxStackSize())
                         {
-                            if (!(slot instanceof SlotDigital)) {
+                            if (!(slot instanceof SlotViewOnly)) {
                                 itemstack3.stackSize += l1;
                                 itemstack2.splitStack(l1);
                                 if (itemstack2.stackSize == 0) {

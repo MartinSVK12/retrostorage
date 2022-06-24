@@ -75,6 +75,10 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     	if(network_asm != null) {
             TileEntityInNetworkWithInv handler = (TileEntityInNetworkWithInv) network_asm.itemAssembly.get(slot.getStack()).get(0);
     		int handlerSlot = (int) network_asm.itemAssembly.get(slot.getStack()).get(1);
+            if (processing){
+                ModLoader.getMinecraftInstance().thePlayer.addChatMessage("An item is already being processed, try again later.");
+                return;
+            }
             ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Requesting: "+slot.getStack().stackSize+"x "+StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName()));
             World world = ModLoader.getMinecraftInstance().theWorld;
             System.out.println("Requesting: "+slot.getStack().getItemName()+" from "+handler.toString()+" via "+network_asm.toString()+" using slot "+handlerSlot);
@@ -84,7 +88,8 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                         ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(handler.getStackInSlot(handlerSlot).getItemData());
                         ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
                         //System.out.println(output.toString());
-                        if (output != null && output.stackSize != 0) {
+                        if (output != null && output.stackSize != 0 && !processing) {
+                            processing = true;
                             int s = 0;
                             for (int i1 = 0; i1 < recipe.size(); i1++) {
                                 if (network_disc != null) {
@@ -149,8 +154,13 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                                         world.entityJoinedWorld(entityitem);
                                     }
                                     }
+                                    ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Request successful!");
+                                    processing = false;
                                     //System.out.println(network_disc.getItemData().toStringExtended());
-                                }
+                            } else {
+                                processing = false;
+                                ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Request failed!");
+                            }
                                 //System.out.println(output.stackSize);
                                 //System.out.println("dropped");
                                 //
@@ -335,7 +345,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     	connectDrive();
     	setInventorySlotContents(1, network_disc);
         //autocrafting is broken, disabling it for now
-    	/*if(network.size() > 0) {
+    	if(network.size() > 0) {
             for (Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
                 ArrayList<Integer> pos = element.getKey();
                 TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
@@ -353,7 +363,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                     network_asm = null;
                 }
             }
-    	}*/
+    	}
     	if(network_asm == null) {
     		for(int i = 3;i <= 38;i++) {
 				setInventorySlotContents(i, null);

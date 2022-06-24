@@ -3,10 +3,7 @@ package net.minecraft.src;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class NBTTagCompound extends NBTBase {
 	private HashMap tagMap = new HashMap();
@@ -34,6 +31,14 @@ public class NBTTagCompound extends NBTBase {
 
 	public Collection getValues() {
 		return this.tagMap.values();
+	}
+
+	public Set getKeys(){
+		return this.tagMap.keySet();
+	}
+
+	public int size() {
+		return this.tagMap.size();
 	}
 
 	public byte getType() {
@@ -132,6 +137,10 @@ public class NBTTagCompound extends NBTBase {
 		return this.getByte(string1) != 0;
 	}
 
+	public void removeTag(String s){
+		this.tagMap.remove(s);
+	}
+
 	public NBTTagCompound copy(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.tagMap = (HashMap) tagMap.clone();
@@ -166,7 +175,7 @@ public class NBTTagCompound extends NBTBase {
 		return false;
 	}
 
-	public String toString() {
+	public String toString() { //return (new StringBuilder()).append("").append(tagMap).toString();
 		return "" + this.tagMap.size() + " entries";
 	}
 

@@ -107,13 +107,13 @@ public class BlockAssembler extends BlockContainer{
             return true;
         } else
         {
-            /*TileEntityAssembler TileEntityAssembler = (TileEntityAssembler)world.getBlockTileEntity(i, j, k);
+            TileEntityAssembler TileEntityAssembler = (TileEntityAssembler)world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityAssembler);
             if (TileEntityAssembler != null) {
             	ModLoader.OpenGUI(entityplayer, new GuiAssembler
             			(entityplayer.inventory, TileEntityAssembler));
-            }*/
-            entityplayer.addChatMessage("Autocrafting disabled due to bugs, sorry!");
+            }
+            //entityplayer.addChatMessage("Autocrafting disabled due to bugs, sorry!");
             return true;
         }
     }

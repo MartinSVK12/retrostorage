@@ -135,6 +135,7 @@ public class BlockDigitalTerminal extends BlockContainer{
             //System.out.println(TileEntityDigitalTerminal);
             if (TileEntityDigitalTerminal != null) {
             	ModLoader.OpenGUI(entityplayer, new GuiDigitalTerminal(entityplayer.inventory, TileEntityDigitalTerminal));
+                TileEntityDigitalTerminal.updateContents();
             }
             return true;
         }
