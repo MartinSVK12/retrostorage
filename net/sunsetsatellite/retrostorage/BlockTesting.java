@@ -103,7 +103,7 @@ public class BlockTesting extends Block {
     
     public int idDropped(int i, Random random)
     {
-        return mod_RetroStorage.testingBlock.blockID;
+        return 0;//mod_RetroStorage.testingBlock.blockID;
     }
 	
 	
