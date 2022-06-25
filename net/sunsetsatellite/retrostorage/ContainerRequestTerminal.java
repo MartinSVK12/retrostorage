@@ -58,9 +58,9 @@ public class ContainerRequestTerminal extends Container
         return tile.canInteractWith(entityplayer);
     }
 
-    public void requestItemCrafting(Slot slot) {
+    /*public void requestItemCrafting(Slot slot) {
     	tile.requestItemCrafting(slot);
-    }
+    }*/
     
     private TileEntityRequestTerminal tile;
 }

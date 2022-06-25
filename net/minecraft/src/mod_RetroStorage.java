@@ -56,7 +56,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(storageDisc4, "Storage Disc MK IV");
 		ModLoader.AddName(storageDisc5, "Storage Disc MK V");
 		ModLoader.AddName(storageDisc6, "Storage Disc MK VI");
-		ModLoader.AddName(recipeDisc, "Recipe Disc");
+		//ModLoader.AddName(recipeDisc, "Recipe Disc");
 		ModLoader.AddName(digitalController, "Digital Controller");
 		ModLoader.AddName(cable, "Cable");
 		//ModLoader.AddName(itemCable, "Cable");
@@ -109,7 +109,7 @@ public class mod_RetroStorage extends BaseMod {
 
 		ModLoader.AddRecipe(new ItemStack(digitalChest, 1), "ISI", "RCR", "IDI", 'S', blankDisc, 'I', Item.ingotIron, 'R', Item.redstone, 'C', Block.chest, 'D', Block.blockDiamond);
 		ModLoader.AddRecipe(new ItemStack(blankDisc, 1), "GGG", "GRG", "GGG", 'G', Block.glass, 'R', Item.redstone);
-		ModLoader.AddRecipe(new ItemStack(recipeDisc, 1), "GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.redstone, 'P', new ItemStack(Item.dyePowder,1,5));
+		//ModLoader.AddRecipe(new ItemStack(recipeDisc, 1), "GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.redstone, 'P', new ItemStack(Item.dyePowder,1,5));
 		ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), "RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(itemCable,16), "WLW","GGG","WLW", 'W', Block.cloth, 'G', Block.glass, 'L', new ItemStack(Item.dyePowder,1,4));
 		ModLoader.AddRecipe(new ItemStack(relay,1),"ILI","CRC","ILI",'I',Item.ingotIron,'L',new ItemStack(Item.dyePowder,1,4),'C',itemCable,'R',Item.redstone);
@@ -139,7 +139,7 @@ public class mod_RetroStorage extends BaseMod {
 
 
 	public static Item blankDisc = (new Item(getId("blankDisc",104))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("blankdisc.png").toString())).setItemName("blankdisc");
-	public static ItemStorageDisc storageDisc1 = (ItemStorageDisc) (new ItemStorageDisc(getId("storageDisc1",137),16)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("disc1.png").toString())).setItemName("storagedisc1").setMaxStackSize(1);
+	public static ItemStorageDisc storageDisc1 = (ItemStorageDisc) (new ItemStorageDisc(getId("storageDisc1",137),64)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("disc1.png").toString())).setItemName("storagedisc1").setMaxStackSize(1);
 	public static ItemStorageDisc storageDisc2 = (ItemStorageDisc) (new ItemStorageDisc(getId("storageDisc2",138),128)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("disc2.png").toString())).setItemName("storagedisc2").setMaxStackSize(1);
 	public static ItemStorageDisc storageDisc3 = (ItemStorageDisc) (new ItemStorageDisc(getId("storageDisc3",139),192)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("disc3.png").toString())).setItemName("storagedisc3").setMaxStackSize(1);
 	public static ItemStorageDisc storageDisc4 = (ItemStorageDisc) (new ItemStorageDisc(getId("storageDisc4",140),256)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("disc4.png").toString())).setItemName("storagedisc4").setMaxStackSize(1);
@@ -147,7 +147,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static ItemStorageDisc storageDisc6 = (ItemStorageDisc) (new ItemStorageDisc(getId("storageDisc6",142),384)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("disc6.png").toString())).setItemName("storagedisc6").setMaxStackSize(1);
 	public static ItemStorageDisc virtualDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("virtualDisc",143), Integer.MAX_VALUE)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("virtualdisc.png").toString())).setItemName("virtualdisc").setMaxStackSize(1);
 	public static ItemStorageDisc goldenDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("goldenDisc",144), (Short.MAX_VALUE*2)+1)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("goldendisc.png").toString())).setItemName("goldendisc").setMaxStackSize(1);
-	public static ItemRecipeDisc recipeDisc = (ItemRecipeDisc) (new ItemRecipeDisc(getId("recipeDisc",145))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("recipedisc.png").toString())).setItemName("recipedisc");
+	//public static ItemRecipeDisc recipeDisc = (ItemRecipeDisc) (new ItemRecipeDisc(getId("recipeDisc",145))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("recipedisc.png").toString())).setItemName("recipedisc");
 	public static ItemTerminal mobileTerminal = (ItemTerminal) (new ItemTerminal(getId("mobileTerminal",147))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobileterminal.png").toString())).setItemName("mobileterminal").setMaxStackSize(1);
 	//public static ItemRequestTerminal mobileRequestTerminal = (ItemRequestTerminal) (new ItemRequestTerminal(getId("mobileRequestTerminal",148))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobilerequestterminal.png").toString())).setItemName("mobilerequestterminal").setMaxStackSize(1);
 
