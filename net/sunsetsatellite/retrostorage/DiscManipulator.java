@@ -181,37 +181,6 @@ public class DiscManipulator {
 	    }
     }
 
-	@Deprecated
-    public static void readFromAssembler(ItemStack discStack, int page, TileEntityInNetworkWithInv reader, TileEntityAssembler asm) {
-    	Object[] data = discStack.getItemData().getValues().toArray();
-		int i = 3;
-
-		for (int j = 0 /*+ page*36*/;j < asm.getSizeInventory()+1;j++) {
-	        if(j < asm.getSizeInventory()) {
-	        	//NBTTagCompound itemNBT = (NBTTagCompound) data[j];
-	        	ItemStack recipeDisc = asm.getStackInSlot(j);
-	        	CraftingManager crafter = CraftingManager.getInstance();
-	        	if(recipeDisc != null) {
-	    			if (recipeDisc.getItem() == mod_RetroStorage.recipeDisc) {
-	    				ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(recipeDisc.getItemData());
-	    				ItemStack item = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-	    				reader.setInventorySlotContents(i, item);
-	    			}
-	        	}
-				//ItemStack item = //(new ItemStack(itemNBT.getShort("id"),itemNBT.getByte("Count"),itemNBT.getShort("Damage"),itemNBT.getCompoundTag("Data")));
-	        } else {
-	        	for(;i<=38;i++) {
-	        		reader.setInventorySlotContents(i, null);
-	        	}
-	        }
-			if (i < 38) {
-				i++;
-			} else {
-				break;
-			}
-	    }
-    }
-
 	public static void readItemAssembly(int page, TileEntityInNetworkWithInv reader, TileEntityDigitalController controller){
 		int i = 3;
 

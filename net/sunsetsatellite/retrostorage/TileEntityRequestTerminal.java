@@ -66,7 +66,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     	
     }*/
 
-    public void requestItemCrafting(Slot slot) {
+    /*public void requestItemCrafting(Slot slot) {
     	if(slot.slotNumber == 0 || slot.slotNumber == 1 || slot.slotNumber == 2) {
     		return;
     	}
@@ -171,80 +171,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                 TileEntity tile = handler.findTileEntityAroundBlock();
                 if (handler.getStackInSlot(handlerSlot) != null) {
                     if (handler.getStackInSlot(handlerSlot).getItem() == mod_RetroStorage.recipeDisc) {
-                       /* ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(handler.getStackInSlot(handlerSlot).getItemData());
-                        ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-                        if (tile instanceof TileEntityChest) {
-                            if (output != null) {
-                                int s = 0;
-                                for (int i1 = 0; i1 < recipe.size(); i1++) {
-                                    if (network_disc != null) {
-                                        if (network_disc.getItem() instanceof ItemStorageDisc) {
-                                            if (recipe.get(i1) != null) {
-                                                if (DiscManipulator.testDecreaseItemAmountOnDisc(network_disc, (ItemStack) recipe.get(i1))) {
-                                                    s++;
-                                                }
-                                            } else {
-                                                s++;
-                                            }
-                                        }
-                                    }
 
-                                }
-                                //System.out.println(s);
-                                if (s == recipe.size()) {
-                                    for (int i2 = 0; i2 < recipe.size(); i2++) {
-                                        if (network_disc != null) {
-                                            if (network_disc.getItem() instanceof ItemStorageDisc) {
-                                                if (recipe.get(i2) != null) {
-                                                    int tileSlot = -1;
-                                                    boolean add = false;
-                                                    for(int i = 0; i < ((TileEntityChest) tile).getSizeInventory(); i++) {
-                                                        ItemStack item = ((TileEntityChest) tile).getStackInSlot(i);
-                                                        if (item != null) {
-                                                            //System.out.println(item.toString());
-                                                            if (item.itemID == ((ItemStack) recipe.get(i2)).itemID && item.getItemDamage() == ((ItemStack) recipe.get(i2)).getItemDamage()){
-                                                                //System.out.println("equal");
-                                                                if(item.stackSize <= 64-((ItemStack) recipe.get(i2)).stackSize) {
-                                                                    //System.out.println("enough");
-                                                                    tileSlot = i;
-                                                                    add = true;
-                                                                    break;
-                                                                } else {
-                                                                    continue;
-                                                                }
-                                                            } else {
-                                                                continue;
-                                                            }
-                                                        } else {
-                                                            tileSlot = i;
-                                                            break;
-                                                        }
-                                                    }
-                                                    if (tileSlot != -1){
-                                                        DiscManipulator.decreaseItemAmountOnDisc(network_disc, (ItemStack) recipe.get(i2));
-                                                        if (add){
-                                                            //System.out.println("add");
-                                                            ItemStack item = ((TileEntityChest) tile).getStackInSlot(tileSlot);
-                                                            //System.out.println(item == null);
-                                                            if(item != null) {
-                                                                item.stackSize += ((ItemStack) recipe.get(i2)).stackSize;
-                                                                ((TileEntityChest) tile).setInventorySlotContents(tileSlot, item);
-                                                            } else {
-                                                                ((TileEntityChest) tile).setInventorySlotContents(tileSlot, (ItemStack) recipe.get(i2));
-                                                            }
-                                                        } else {
-                                                            ((TileEntityChest) tile).setInventorySlotContents(tileSlot, (ItemStack) recipe.get(i2));
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else if (tile instanceof TileEntityFurnace) {
-
-                        }*/
                     }else{
                         if (tile instanceof TileEntityChest) {
                             if (network_disc != null) {
@@ -337,8 +264,8 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
                 }
             }
 		}
-    	network_drive.updateDiscs();
-    }
+    	//network_drive.updateDiscs();
+    }*/
     
     public void updateEntity()
     {
