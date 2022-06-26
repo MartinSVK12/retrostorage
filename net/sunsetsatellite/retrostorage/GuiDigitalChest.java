@@ -81,6 +81,12 @@ public class GuiDigitalChest extends GuiContainer
     {
     	
     }
+
+    public void onGuiClosed(){
+        if(tile.getStackInSlot(0) != null){
+            DiscManipulator.saveDisc(tile.getStackInSlot(0), tile, tile.page);
+        }
+    }
     
     private TileEntityDigitalChest tile;
 }
