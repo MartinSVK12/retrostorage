@@ -1,11 +1,6 @@
 package net.sunsetsatellite.retrostorage;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.TileEntityChest;
+import net.minecraft.src.*;
 
 public class TileEntityExporter extends TileEntityInNetworkWithInv {
 
@@ -133,30 +128,13 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 		connectDrive();
 		
 		if(network.size() > 0 && network_disc != null && network_drive != null) {
-			TileEntity chest = findTileEntityAroundBlock();
-			if (chest instanceof TileEntityChest){
-				//System.out.println("chest connected");
-				/*for(int i = 0; i < ((TileEntityChest) chest).getSizeInventory(); i++) {
-					ItemStack item = ((TileEntityChest) chest).getStackInSlot(i);
-					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-	    							ItemStack network_item = DiscManipulator.getItemFromDiscByIndex(network_disc, i+1);
-		    						if(network_item != null || network_item.itemID != 0) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, network_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    						((TileEntityChest) chest).setInventorySlotContents(i, network_item);
-			    						network_drive.updateDiscs();
-		    						}
-		    					}
-		    				}
-		    			}
-					}*/
-				chest = (TileEntityChest) chest;
+			TileEntity tile = findTileEntityAroundBlock();
+			if (tile instanceof TileEntityChest){
+				TileEntityChest chest = (TileEntityChest) tile;
 				ItemStack item = null;
 				int slot = 0;
-				for(int i = 0; i < ((TileEntityChest) chest).getSizeInventory(); i++) {
-					item = ((TileEntityChest) chest).getStackInSlot(i);
+				for(int i = 0; i < chest.getSizeInventory(); i++) {
+					item = chest.getStackInSlot(i);
 					if (item != null) {
 						continue;
 					} else {
@@ -167,47 +145,36 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 				if(isEmpty()) {
 					if (item == null) {
 						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-	    							ItemStack network_item = DiscManipulator.getItemFromDiscByIndex(network_disc, 1);
-		    						if(network_item != null || network_item.itemID != 0) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, network_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    						((TileEntityChest) chest).setInventorySlotContents(slot, network_item);
-			    						network_drive.updateDiscs();
-		    						}
-		    					}
-		    				}
+                            ItemStack network_item = controller.network_inv.getStackInSlot(controller.network_inv.getLastOccupiedStack());
+                            if(network_item != null && network_item.getItem() != mod_RetroStorage.virtualDisc){
+                                controller.network_inv.setInventorySlotContents(controller.network_inv.getLastOccupiedStack(),null);
+                                DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                                chest.setInventorySlotContents(slot, network_item);
+                            }
 						}
 					}
 				} else {
 					if (item == null) {
 						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-		    						ItemStack filter_item = DiscManipulator.itemExistsInDisc(network_disc, getStackInSlot(0).getItem());
-		    						if (filter_item != null) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, filter_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-		    							((TileEntityChest) chest).setInventorySlotContents(slot, filter_item);
-			    						network_drive.updateDiscs();
-		    						} else {
-		    							int i = 0;
-		    							do {
-		    								if(getStackInSlot(i) != null) {
-		    									filter_item = DiscManipulator.itemExistsInDisc(network_disc, getStackInSlot(i).getItem());
-		    								}
-		    								i++;
-		    								if(i == 9) {
-		    									break;
-		    								}
-		    							} while (filter_item == null);
-		    							if (filter_item != null) {
-			    							DiscManipulator.removeFromPartitionedDisc(network_disc, filter_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    							((TileEntityChest) chest).setInventorySlotContents(slot, filter_item);
-				    						network_drive.updateDiscs();
-			    						}
-		    						}
-		    					}
-		    				}
+                            int i = 0;
+                            int filter = -1;
+                            do {
+                                if(getStackInSlot(i) != null) {
+                                    filter = controller.network_inv.getInventorySlotContainItem(getStackInSlot(0).itemID);
+                                }
+                                i++;
+                                if(i == 9) {
+                                    break;
+                                }
+                            } while (filter == -1);
+                            if(filter != -1){
+                                ItemStack network_item = controller.network_inv.getStackInSlot(filter);
+                                if(network_item != null){
+                                    controller.network_inv.setInventorySlotContents(filter,null);
+                                    DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                                    chest.setInventorySlotContents(slot, network_item);
+                                }
+                            }
 						}
 					}
 				}

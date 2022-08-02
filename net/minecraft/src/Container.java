@@ -49,9 +49,9 @@ public abstract class Container {
 		return slot2 != null ? slot2.getStack() : null;
 	}
 
-	//Specific for digital slots (SlotDigital.java, used in the Digital Chest), this is the first way i thought of doing this and idk any better
+	/*//Specific for digital slots (SlotDigital.java, used in the Digital Chest), this is the first way i thought of doing this and idk any better
 	public void withdrawItem(Slot slot) {
-	}
+	}*/
 
 	//specific for Request Terminal & Assembler
 	public void requestItemCrafting(Slot slot) {
@@ -144,11 +144,7 @@ public abstract class Container {
                             }
                     	}
                     	if(slot instanceof SlotViewOnly) {
-                    		if(this instanceof ContainerDigitalChest || this instanceof ContainerDigitalTerminal) {
-                    			withdrawItem(slot);
-                    			//slot.getStack()
-                    		}
-                    		else if (this instanceof ContainerRequestTerminal) {
+                    		if (this instanceof ContainerRequestTerminal) {
                     			requestItemCrafting(slot);
                     		}
                     	}

@@ -11,7 +11,7 @@ public class TileEntityImporter extends TileEntityInNetwork {
     {
 		connectDrive();
 		
-		if(network.size() > 0 && network_disc != null && network_drive != null) {
+		if(network.size() > 0 && network_disc != null && network_drive != null && network_drive.virtualDriveMaxStacks != 0) {
 			TileEntity tile = findTileEntityAroundBlock();
 			if (tile instanceof TileEntityChest){
 				//System.out.println("chest connected");
@@ -19,13 +19,10 @@ public class TileEntityImporter extends TileEntityInNetwork {
 					ItemStack item = ((TileEntityChest) tile).getStackInSlot(i);
 					if (item != null) {
 						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstAvailablePartition(network_disc, network_drive) != -1) {
-		    						((TileEntityChest) tile).setInventorySlotContents(i, null);
-		    						DiscManipulator.addStackToPartitionedDisc(item,network_disc,DiscManipulator.getFirstAvailablePartition(network_disc, network_drive));
-		    						network_drive.updateDiscs();
-		    					}
-		    				}
+							if (controller.network_inv.addItemStackToInventory(item)){
+								((TileEntityChest) tile).setInventorySlotContents(i, null);
+								DiscManipulator.saveDisc(network_disc,controller.network_inv);
+							}
 		    			}
 					}
 				}
@@ -33,12 +30,9 @@ public class TileEntityImporter extends TileEntityInNetwork {
 				ItemStack item = ((TileEntityFurnace) tile).getStackInSlot(2);
 				if (item != null) {
 					if (network_disc.getItem() instanceof ItemStorageDisc) {
-						if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-							if(DiscManipulator.getFirstAvailablePartition(network_disc, network_drive) != -1) {
-								((TileEntityFurnace) tile).setInventorySlotContents(2, null);
-								DiscManipulator.addStackToPartitionedDisc(item,network_disc,DiscManipulator.getFirstAvailablePartition(network_disc, network_drive));
-								network_drive.updateDiscs();
-							}
+						if (controller.network_inv.addItemStackToInventory(item)){
+							((TileEntityFurnace) tile).setInventorySlotContents(2, null);
+							DiscManipulator.saveDisc(network_disc,controller.network_inv);
 						}
 					}
 				}

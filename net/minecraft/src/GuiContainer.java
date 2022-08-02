@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL12;
 import java.util.ArrayList;
 
 public abstract class GuiContainer extends GuiScreen {
-	private static RenderItem itemRenderer = new RenderItem();
+	protected static RenderItem itemRenderer = new RenderItem();
 	protected int xSize = 176;
 	protected int ySize = 220;
 	public Container inventorySlots;

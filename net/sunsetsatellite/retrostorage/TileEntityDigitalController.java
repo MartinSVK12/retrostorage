@@ -22,14 +22,19 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	public void updateEntity(){
 		if(energy <= 0 && active) {
 			removeFromNetwork(worldObj, xCoord, yCoord, zCoord);
+			DiscManipulator.saveDisc(network_disc,network_inv);
 			network.clear();
 			devicesConnected = 0;
 			active = false;
 			itemAssembly.clear();
+			network_disc = null;
+			network_drive = null;
 		}
 		if(energy > 0) {
 			energy -= devicesConnected;
+			connectDrive();
 		}
+
     }
 	
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -192,6 +197,9 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 				if (entityplayer.getCurrentEquippedItem().getItem() == Item.redstone) {
 					entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, 1);
 					energy += 6000;
+				} else if (entityplayer.getCurrentEquippedItem().getItem().shiftedIndex == Block.bedrock.blockID) {
+					entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, 1);
+					energy = Integer.MAX_VALUE;
 				}
 			}
 		}
@@ -199,6 +207,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 		network.clear();
 		devicesConnected = 0;
 		itemAssembly.clear();
+		network_inv = new InventoryDigital("Digital Network Inventory",this);
 		if(energy > 0) {
 			if(entityplayer != null) {
 				entityplayer.addChatMessage("Network reloaded.");
@@ -211,16 +220,22 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			return;
 		}
 		if(entityplayer != null) {
-			entityplayer.addChatMessage(devicesConnected != 0 ? devicesConnected > 1 ? "There are "+(devicesConnected)+" devices connected." : "There is 1 device connected" : "There are no devices connected.");
-			entityplayer.addChatMessage("Network remaining energy: "+energy+" ("+energy/(20*devicesConnected)+" seconds remain.)");
-			entityplayer.addChatMessage("Current energy usage: "+(devicesConnected));
+			entityplayer.addChatMessage(devicesConnected != 0 ? devicesConnected > 1 ? "There are " + (devicesConnected) + " devices connected." : "There is 1 device connected" : "There are no devices connected.");
+			entityplayer.addChatMessage("Network remaining energy: " + energy + " (" + energy / (20 * devicesConnected) + " seconds remain.)");
+			entityplayer.addChatMessage("Current energy usage: " + (devicesConnected));
+			/*if(!itemAssembly.isEmpty()){
+				System.out.println("Craftable Items: "+itemAssembly.toString());
+			}
+			if(!assemblyQueue.isEmpty()){
+				System.out.println("Assembly Queue: "+assemblyQueue.toString());
+			}*/
 		}
-		
 	}
-	public double energy = 0;
-    public boolean active = true;
+	private double energy = 0;
+    private boolean active = true;
     public int devicesConnected = 0;
 
-
+	public InventoryDigital network_inv = new InventoryDigital("Digital Network Inventory",this);
 	public HashMap<ItemStack, List<Object>> itemAssembly = new HashMap<ItemStack, List<Object>>();
+	public ArrayDeque<Item> assemblyQueue = new ArrayDeque<>();
 }

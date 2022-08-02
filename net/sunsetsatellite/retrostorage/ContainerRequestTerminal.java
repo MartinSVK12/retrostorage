@@ -19,9 +19,9 @@ public class ContainerRequestTerminal extends Container
     public ContainerRequestTerminal(IInventory iinventory, TileEntityRequestTerminal TileEntityRequestTerminal)
     {
     	
-    	addSlot(new Slot(TileEntityRequestTerminal, 0, 44, 108));
+    	//addSlot(new Slot(TileEntityRequestTerminal, 0, 44, 108));
     	addSlot(new SlotViewOnly(TileEntityRequestTerminal, 1, 80, 108));
-    	addSlot(new Slot(TileEntityRequestTerminal, 2, 116, 108));
+    	//addSlot(new Slot(TileEntityRequestTerminal, 2, 116, 108));
     	
     	for(int k = 0; k < 9; k++)
         {
@@ -58,9 +58,9 @@ public class ContainerRequestTerminal extends Container
         return tile.canInteractWith(entityplayer);
     }
 
-    /*public void requestItemCrafting(Slot slot) {
+    public void requestItemCrafting(Slot slot) {
     	tile.requestItemCrafting(slot);
-    }*/
+    }
     
     private TileEntityRequestTerminal tile;
 }

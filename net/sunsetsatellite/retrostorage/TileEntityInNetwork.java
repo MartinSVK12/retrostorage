@@ -58,7 +58,7 @@ public class TileEntityInNetwork extends TileEntityDigitalContainer
 							network_disc = null;
 							network_drive = null;
 						}
-					} else if (tile instanceof TileEntityStorageBlock) {
+					}/* else if (tile instanceof TileEntityStorageBlock) {
 						TileEntityStorageBlock drive = (TileEntityStorageBlock) tile;
 						network_drive = drive;
 						if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
@@ -73,8 +73,8 @@ public class TileEntityInNetwork extends TileEntityDigitalContainer
 						} else {
 							network_disc = null;
 							network_drive = null;
-						}
-					} else {
+						}*/
+					else {
 						network_disc = null;
 						network_drive = null;
 					}
@@ -91,7 +91,7 @@ public class TileEntityInNetwork extends TileEntityDigitalContainer
 	
 	protected HashMap<ArrayList<Integer>, HashMap<String, Object>> network = new HashMap<ArrayList<Integer>, HashMap<String, Object>>();
 	
-	protected TileEntityStorage network_drive = null;
+	protected TileEntityDiscDrive network_drive = null;
 	protected ItemStack network_disc = null;
 	protected TileEntityDigitalController controller = null;
 }

@@ -24,7 +24,7 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
 
     public int getSizeInventory()
     {
-        return contents.length;
+        return 37;
     }
 
     public ItemStack getStackInSlot(int i)
@@ -59,27 +59,30 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     public void updateContents(){
         if(getStackInSlot(0) != null && network_disc != null){
             DiscManipulator.clearDigitalInv(this);
-            DiscManipulator.loadDisc(network_disc, this, page);
+            DiscManipulator.loadDisc(network_disc, controller.network_inv, page);
         }
     }
 
     public void updateEntity()
     {
+        if(controller != null){
+            contents = controller.network_inv.inventoryContents;
+        }
         if(network_drive == null && network_disc == null){
             connectDrive();
         }
         if(getStackInSlot(0) != null && network_disc != null){
             if(!network_disc.isStackEqual(getStackInSlot(0))){
                 DiscManipulator.clearDigitalInv(this);
-                DiscManipulator.loadDisc(network_disc, this, page);
+                DiscManipulator.loadDisc(network_disc, controller.network_inv, page);
             }
         } else if(getStackInSlot(0) == null && network_disc != null){
             DiscManipulator.clearDigitalInv(this);
-            DiscManipulator.loadDisc(network_disc, this, page);
+            DiscManipulator.loadDisc(network_disc, controller.network_inv, page);
         }
         setInventorySlotContents(0, network_disc);
         if(network_disc != null){
-            this.pages = ((int) Math.floor((double) network_disc.getItemData().size()/(getSizeInventory()-1)));
+            this.pages = ((int) Math.floor((double) network_disc.getItemData().size()/(36)));
             //System.out.printf("%d %d %d%n",network_disc.getItemData().size(),(getSizeInventory()-1),(network_disc.getItemData().size()/(getSizeInventory()-1)));
             //System.out.println(((int) Math.ceil(network_disc.getItemData().size()/(getSizeInventory()-1)))+1);
         }/* else {

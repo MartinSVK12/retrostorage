@@ -4,11 +4,8 @@
 
 package net.sunsetsatellite.retrostorage;
 
+import net.minecraft.src.*;
 import org.lwjgl.opengl.GL11;
-
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
 
 // Referenced classes of package net.minecraft.src:
 //            GuiContainer, ContainerDispenser, FontRenderer, RenderEngine, 
@@ -34,7 +31,9 @@ public class GuiRequestTerminal extends GuiContainer
     {
     	super.initGui();
     	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
-    	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
+    	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));
+        controlList.add(new GuiButton(2, Math.round(width / 2 - 35), Math.round(height / 2 - 5), 20, 20, "Q"));// /2 - 34, - 150
+        controlList.add(new GuiButton(3, Math.round(width / 2 + 15), Math.round(height / 2 - 5), 20, 20, "X"));
     }
     
     protected void drawGuiContainerBackgroundLayer(float f)
@@ -62,6 +61,16 @@ public class GuiRequestTerminal extends GuiContainer
         {
         	if(tile.page > 0)
         	tile.page--;
+        }
+        if(guibutton.id == 2){
+            EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+            System.out.println("Assembly queue: "+tile.controller.assemblyQueue.toString());
+            entityplayer.addChatMessage("Assembly queue: "+tile.controller.assemblyQueue.toString());
+        }
+        if(guibutton.id == 3){
+            EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+            tile.controller.assemblyQueue.clear();
+            entityplayer.addChatMessage("Assembly queue cleared!");
         }
         //System.out.println(tile.page);
     }

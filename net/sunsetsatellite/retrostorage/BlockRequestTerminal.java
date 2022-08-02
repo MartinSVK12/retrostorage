@@ -39,7 +39,7 @@ public class BlockRequestTerminal extends BlockContainer{
 
     public int idDropped(int i, Random random)
     {
-        return 0;//mod_RetroStorage.requestTerminal.blockID;
+        return mod_RetroStorage.requestTerminal.blockID;
     }
 
     public void onBlockAdded(World world, int i, int j, int k)
@@ -121,7 +121,7 @@ public class BlockRequestTerminal extends BlockContainer{
     
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
-       /* if(world.multiplayerWorld)
+       if(world.multiplayerWorld)
         {
             return true;
         } else
@@ -138,7 +138,7 @@ public class BlockRequestTerminal extends BlockContainer{
             	ModLoader.OpenGUI(entityplayer, new GuiRequestTerminal(entityplayer.inventory, TileEntityRequestTerminal));
             }
             return true;
-        }*/ return false;
+        }
     }
     
     public void dropContent(World world, int i, int j, int k)

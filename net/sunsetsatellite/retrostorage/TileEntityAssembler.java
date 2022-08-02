@@ -1,9 +1,10 @@
 package net.sunsetsatellite.retrostorage;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
+import net.minecraft.src.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TileEntityAssembler extends TileEntityInNetworkWithInv {
 
@@ -130,94 +131,101 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
     {
 		connectDrive();
 		setInventorySlotContents(9, network_disc);
-		if(network.size() > 0 && network_disc != null && network_drive != null) {
-			if (network_disc.getItem() instanceof ItemStorageDisc) {
-				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-						
-					}
-				}
-			}
-			/*TileEntity chest = findTileEntityAroundBlock();
-			if (chest instanceof TileEntityChest){
-				//System.out.println("chest connected");
-				/*for(int i = 0; i < ((TileEntityChest) chest).getSizeInventory(); i++) {
-					ItemStack item = ((TileEntityChest) chest).getStackInSlot(i);
-					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-	    							ItemStack network_item = DiscManipulator.getItemFromDiscByIndex(network_disc, i+1);
-		    						if(network_item != null || network_item.itemID != 0) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, network_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    						((TileEntityChest) chest).setInventorySlotContents(i, network_item);
-			    						network_drive.updateDiscs();
-		    						}
-		    					}
-		    				}
-		    			}
-					}
-				chest = (TileEntityChest) chest;
-				ItemStack item = null;
-				int slot = 0;
-				for(int i = 0; i < ((TileEntityChest) chest).getSizeInventory(); i++) {
-					item = ((TileEntityChest) chest).getStackInSlot(i);
-					if (item != null) {
-						continue;
-					} else {
-						slot = i;
-						break;
-					}
-				}
-				if(isEmpty()) {
-					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-	    							ItemStack network_item = DiscManipulator.getItemFromDiscByIndex(network_disc, 1);
-		    						if(network_item != null || network_item.itemID != 0) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, network_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    						((TileEntityChest) chest).setInventorySlotContents(slot, network_item);
-			    						network_drive.updateDiscs();
-		    						}
-		    					}
-		    				}
-						}
-					}
-				} else {
-					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-		    						ItemStack filter_item = DiscManipulator.itemExistsInDisc(network_disc, getStackInSlot(0).getItem());
-		    						if (filter_item != null) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, filter_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-		    							((TileEntityChest) chest).setInventorySlotContents(slot, filter_item);
-			    						network_drive.updateDiscs();
-		    						} else {
-		    							int i = 0;
-		    							do {
-		    								if(getStackInSlot(i) != null) {
-		    									filter_item = DiscManipulator.itemExistsInDisc(network_disc, getStackInSlot(i).getItem());
-		    								}
-		    								i++;
-		    								if(i == 9) {
-		    									break;
-		    								}
-		    							} while (filter_item == null);
-		    							if (filter_item != null) {
-			    							DiscManipulator.removeFromPartitionedDisc(network_disc, filter_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    							((TileEntityChest) chest).setInventorySlotContents(slot, filter_item);
-				    						network_drive.updateDiscs();
-			    						}
-		    						}
-		    					}
-		    				}
-						}
-					}
-				}
-			}*/
-		}
+        if(network.size() > 0 && network_drive != null && network_disc != null && controller != null){
+            if(!controller.assemblyQueue.isEmpty()){
+                Item item = controller.assemblyQueue.peekFirst();
+                CraftingManager crafter = CraftingManager.getInstance();
+                for(int i = 0;i < 9;i++){
+                    if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == mod_RetroStorage.recipeDisc){
+                        ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(getStackInSlot(i).getItemData());
+                        ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+                        if(output != null && output.getItem() == item){
+                            craftItem(recipe,output);
+                            return;
+                        }
+                    }
+                }
+                /*ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(getStackInSlot(handlerSlot).getItemData());
+                ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);*/
+            }
+        }
+    }
+
+    private boolean craftItem(ArrayList<?> recipe, ItemStack output){
+        if(!controller.itemAssembly.containsKey(output)){
+            ModLoader.getMinecraftInstance().thePlayer.addChatMessage("ERROR: Attempted to craft an unrecognized recipe.");
+            controller.assemblyQueue.remove(output.getItem());
+            return false;
+        }
+        //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()));
+        controller.assemblyQueue.remove(output.getItem());
+        HashMap<Integer, Integer> requirements = new HashMap<Integer, Integer>();
+        for (Object value : recipe) {
+            if (value != null) {
+                if (!requirements.containsKey(((ItemStack) value).itemID)) {
+                    requirements.put(((ItemStack) value).itemID, 1);
+                } else {
+                    requirements.replace(((ItemStack) value).itemID, requirements.get(((ItemStack) value).itemID), requirements.get(((ItemStack) value).itemID) + 1);
+                }
+            }
+        }
+        int s = 0;
+        for (Map.Entry<Integer, Integer> i1 : requirements.entrySet()) {
+            if (network_disc != null) {
+                if (network_disc.getItem() instanceof ItemStorageDisc) {
+                    if (requirements.get(i1.getKey()) != null) {
+                        int count = controller.network_inv.getItemCount(i1.getKey());
+                        if(count >= requirements.get(i1.getKey())){
+                            s++;
+                        }
+                    } else {
+                        s++;
+                    }
+                }
+            }
+        }
+        if (s == requirements.size()) {
+            for (Object o : recipe) {
+                if(o != null){
+                    int slot = controller.network_inv.getInventorySlotContainItem(((ItemStack)o).itemID);
+                    if(slot != -1){
+                        ItemStack itemCopy = controller.network_inv.getStackInSlot(slot).copy();
+                        controller.network_inv.decrStackSize(slot,1);
+                        DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                        if(itemCopy.getItem().hasContainerItem()){
+                            if(controller.network_inv.getFirstEmptyStack() != -1){
+                                controller.network_inv.addItemStackToInventory(new ItemStack(itemCopy.getItem().getContainerItem(),1));
+                                DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                            } else {
+                                World world = ModLoader.getMinecraftInstance().theWorld;
+                                EntityItem entityitem = new EntityItem(world, (float)xCoord, (float)yCoord, (float)zCoord, new ItemStack(getStackInSlot(slot).getItem().getContainerItem(),1));
+                                float f3 = 0.05F;
+                                entityitem.motionX = (float)world.rand.nextGaussian() * f3;
+                                entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
+                                entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
+                                world.entityJoinedWorld(entityitem);
+                            }
+                        }
+                    }
+                }
+            }
+            if(controller.network_inv.getFirstEmptyStack() != -1){
+                controller.network_inv.addItemStackToInventory(output.copy());
+                DiscManipulator.saveDisc(network_disc,controller.network_inv);
+            } else {
+                World world = ModLoader.getMinecraftInstance().theWorld;
+                EntityItem entityitem = new EntityItem(world, (float)xCoord, (float)yCoord, (float)zCoord, output.copy());
+                float f3 = 0.05F;
+                entityitem.motionX = (float)world.rand.nextGaussian() * f3;
+                entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
+                entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
+                world.entityJoinedWorld(entityitem);
+            }
+            //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting successful!");
+            return true;
+        }
+        ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting failed!");
+        return false;
     }
 	
 	public boolean canInteractWith(EntityPlayer entityplayer)

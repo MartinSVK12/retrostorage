@@ -3,6 +3,9 @@ package net.sunsetsatellite.retrostorage;
 import net.minecraft.src.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DiscManipulator {
 
@@ -616,9 +619,9 @@ public class DiscManipulator {
     }
 
 	public static void saveDisc(ItemStack disc, IInventory inv, int page){
-		System.out.printf("Saving contents of page %d of inventory %s to disc %s%n",page,inv.toString(),disc.toString());
+		//System.out.printf("Saving contents of page %d of inventory %s to disc %s%n",page,inv.toString(),disc.toString());
 		NBTTagCompound discNBT = disc.getItemData();
-		for(int i = 1; i < inv.getSizeInventory();i++){
+		for(int i = 1; i < 37;i++){
 			ItemStack item = inv.getStackInSlot(i);
 			NBTTagCompound itemNBT = new NBTTagCompound();
 			if(item != null){
@@ -631,12 +634,32 @@ public class DiscManipulator {
 				discNBT.removeTag(String.valueOf(i+(page*36)));
 			}
 		}
-		System.out.printf("Data: %s%n",discNBT.toStringExtended());
+		//System.out.printf("Data: %s%n",discNBT.toStringExtended());
+		disc.setItemData(discNBT);
+	}
+
+	public static void saveDisc(ItemStack disc, IInventory inv){
+		//System.out.printf("Saving contents of entire inventory %s to disc %s%n",inv.toString(),disc.toString());
+		NBTTagCompound discNBT = disc.getItemData();
+		for(int i = 1; i < inv.getSizeInventory();i++){
+			ItemStack item = inv.getStackInSlot(i);
+			NBTTagCompound itemNBT = new NBTTagCompound();
+			if(item != null){
+				itemNBT.setByte("Count", (byte)item.stackSize);
+				itemNBT.setShort("id", (short)item.itemID);
+				itemNBT.setShort("Damage", (short)item.getItemDamage());
+				itemNBT.setCompoundTag("Data", (NBTTagCompound)item.getItemData());
+				discNBT.setCompoundTag(String.valueOf(i),itemNBT);
+			} else {
+				discNBT.removeTag(String.valueOf(i));
+			}
+		}
+		//System.out.printf("Data: %s%n",discNBT.toStringExtended());
 		disc.setItemData(discNBT);
 	}
 
 	public static void loadDisc(ItemStack disc, IInventory inv, int page){
-		System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
+		//System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
 		NBTTagCompound discNBT = disc.getItemData();
 		for(int i = 1; i < 37;i++){
 			if(discNBT.hasKey(String.valueOf(i+(page*36)))){
@@ -651,6 +674,75 @@ public class DiscManipulator {
 		//System.out.printf("Clearing digital inventory %s%n",inv.toString());
 		for (int i = 1; i < inv.getSizeInventory(); i++){
 			inv.setInventorySlotContents(i,null);
+		}
+	}
+
+	public static boolean addCraftRequest(ItemStack item, int count, TileEntityDigitalController controller){
+		if(controller == null){
+			return false;
+		}
+		EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+		entityplayer.addChatMessage("Requesting "+count+"x of "+item.stackSize+"x "+StringTranslate.getInstance().translateNamedKey(item.getItemName()));
+		CraftingManager crafter = CraftingManager.getInstance();
+		TileEntityAssembler assembler = (TileEntityAssembler) controller.itemAssembly.get(item).get(0);
+		int assemblerSlot = (int) controller.itemAssembly.get(item).get(1);
+		ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(assembler.getStackInSlot(assemblerSlot).getItemData());
+		ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+		HashMap<Integer, Integer> requirements = new HashMap<Integer, Integer>();
+		HashMap<Item,ItemStack> assemblyItems = new HashMap<>();
+		int s = 0;
+		for (Map.Entry<ItemStack, List<Object>> entry : controller.itemAssembly.entrySet()) {
+			assemblyItems.put(entry.getKey().getItem(),entry.getKey());
+		}
+		for (Object value : recipe) {
+			if (value != null) {
+				if (!requirements.containsKey(((ItemStack) value).itemID)) {
+					requirements.put(((ItemStack) value).itemID, 1);
+				} else {
+					requirements.replace(((ItemStack) value).itemID, requirements.get(((ItemStack) value).itemID), requirements.get(((ItemStack) value).itemID) + 1);
+				}
+			}
+		}
+		for (Map.Entry<Integer, Integer> entry : requirements.entrySet()) {
+			Integer key = entry.getKey();
+			Integer value = entry.getValue();
+			entry.setValue(entry.getValue() * count);
+		}
+		System.out.println("Craft requirements: "+requirements.toString());
+		for (Map.Entry<Integer, Integer> i1 : requirements.entrySet()) {
+			ItemStack stack = new ItemStack(i1.getKey(),1,0);
+			int networkItemCount = controller.network_inv.getItemCount(i1.getKey());
+			if(networkItemCount >= requirements.get(i1.getKey())){
+				s++;
+			} else {
+				if(assemblyItems.containsKey(stack.getItem())){
+					ItemStack assemblyStack = assemblyItems.get(stack.getItem());
+					int reqCount = requirements.get(i1.getKey())/assemblyStack.stackSize;
+					if(reqCount <= 0) reqCount = 1;
+					System.out.println("Calling subrequest for: "+assemblyStack.toString());
+					boolean result = addCraftRequest(assemblyStack,reqCount,controller);
+					if(result){
+						s++;
+					} else {
+						entityplayer.addChatMessage("Request failed!");
+						return false;
+					}
+				} else {
+					entityplayer.addChatMessage("Request failed!");
+					return false;
+
+				}
+			}
+		}
+		if(s == requirements.size()){
+			entityplayer.addChatMessage("Request successful!");
+			for(int i = 0;i<count;i++){
+				controller.assemblyQueue.add(item.getItem());
+			}
+			return true;
+		} else {
+			entityplayer.addChatMessage("Request failed!");
+			return false;
 		}
 	}
 
