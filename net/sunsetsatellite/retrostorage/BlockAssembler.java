@@ -110,7 +110,7 @@ public class BlockAssembler extends BlockContainer{
             TileEntityAssembler TileEntityAssembler = (TileEntityAssembler)world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityAssembler);
             if (TileEntityAssembler != null) {
-                if (entityplayer.getCurrentEquippedItem() != null && TileEntityAssembler.controller != null){
+                /*if (entityplayer.getCurrentEquippedItem() != null && TileEntityAssembler.controller != null){
                     if(entityplayer.getCurrentEquippedItem().itemID == 51){
                         TileEntityAssembler.controller.assemblyQueue.clear();
                         entityplayer.addChatMessage("Assembly queue cleared!");
@@ -119,7 +119,7 @@ public class BlockAssembler extends BlockContainer{
                     entityplayer.addChatMessage("Requesting: "+new ItemStack(entityplayer.getCurrentEquippedItem().getItem(),1).toString());
                     TileEntityAssembler.controller.assemblyQueue.add(entityplayer.getCurrentEquippedItem().getItem());
                     return false;
-                }
+                }*/
             	ModLoader.OpenGUI(entityplayer, new GuiAssembler
             			(entityplayer.inventory, TileEntityAssembler));
             }
