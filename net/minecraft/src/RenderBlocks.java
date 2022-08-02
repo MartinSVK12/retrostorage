@@ -181,12 +181,12 @@ public class RenderBlocks {
 		float f1 = (1.0F - f) / 2.0F;
 		block.setBlockBounds(f1, f1, f1, f1 + f, f1 + f, f1 + f);
 		renderStandardBlock(block, i, j, k);
-		boolean flag = blockAccess.getBlockId(i + 1, j, k) == mod_RetroStorage.relay.blockID ? true : false || blockAccess.getBlockId(i + 1, j, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i + 1, j, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag1 = blockAccess.getBlockId(i - 1, j, k) == mod_RetroStorage.relay.blockID ? true : false || blockAccess.getBlockId(i - 1, j, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i - 1, j, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag2 = blockAccess.getBlockId(i, j + 1, k) == mod_RetroStorage.relay.blockID ? true : false || blockAccess.getBlockId(i, j + 1, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j + 1, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag3 = blockAccess.getBlockId(i, j - 1, k) == mod_RetroStorage.relay.blockID ? true : false || blockAccess.getBlockId(i, j - 1, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j - 1, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag4 = blockAccess.getBlockId(i, j, k + 1) == mod_RetroStorage.relay.blockID ? true : false || blockAccess.getBlockId(i, j, k + 1) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j, k + 1) instanceof TileEntityInNetwork ? true : false;
-		boolean flag5 = blockAccess.getBlockId(i, j, k - 1) == mod_RetroStorage.relay.blockID ? true : false || blockAccess.getBlockId(i , j, k - 1) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j, k - 1) instanceof TileEntityInNetwork ? true : false;
+		boolean flag = blockAccess.getBlockId(i + 1, j, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i + 1, j, k) instanceof TileEntityInNetwork ? true : false;
+		boolean flag1 = blockAccess.getBlockId(i - 1, j, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i - 1, j, k) instanceof TileEntityInNetwork ? true : false;
+		boolean flag2 = blockAccess.getBlockId(i, j + 1, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j + 1, k) instanceof TileEntityInNetwork ? true : false;
+		boolean flag3 = blockAccess.getBlockId(i, j - 1, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j - 1, k) instanceof TileEntityInNetwork ? true : false;
+		boolean flag4 = blockAccess.getBlockId(i, j, k + 1) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j, k + 1) instanceof TileEntityInNetwork ? true : false;
+		boolean flag5 = blockAccess.getBlockId(i , j, k - 1) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j, k - 1) instanceof TileEntityInNetwork ? true : false;
 		if(flag)
 		{
 			block.setBlockBounds(f1 + f, f1, f1, 1.0F, f1 + f, f1 + f);

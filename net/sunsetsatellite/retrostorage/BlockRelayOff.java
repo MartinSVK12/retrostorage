@@ -35,12 +35,12 @@ public class BlockRelayOff extends Block {
 	 
 	 public void updateTick(World world, int i, int j, int k, Random random)
 	    {
-	        if(world.isBlockIndirectlyGettingPowered(i, j, k) || world.isBlockIndirectlyGettingPowered(i, j + 1, k))
+	        /*if(world.isBlockIndirectlyGettingPowered(i, j, k) || world.isBlockIndirectlyGettingPowered(i, j + 1, k))
 	        {
 	        	world.setBlockWithNotify(i, j, k, mod_RetroStorage.relayOff.blockID);
 	        } else if (!world.isBlockIndirectlyGettingPowered(i, j, k) && !world.isBlockIndirectlyGettingPowered(i, j + 1, k)) {
 	        	world.setBlockWithNotify(i, j, k, mod_RetroStorage.relay.blockID);
-	        }
+	        }*/
 	    }
 	    
 	    public void onNeighborBlockChange(World world, int i, int j, int k, int l)
@@ -58,7 +58,7 @@ public class BlockRelayOff extends Block {
 	 
 	 public int idDropped(int i, Random random)
     {
-    	return mod_RetroStorage.relay.blockID;
+    	return 0;//mod_RetroStorage.relay.blockID;
     }
 
 	 public int getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l)
@@ -102,13 +102,13 @@ public class BlockRelayOff extends Block {
 	
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
-    	if(world.getBlockId(i, j, k) == mod_RetroStorage.relay.blockID) {
+    	/*if(world.getBlockId(i, j, k) == mod_RetroStorage.relay.blockID) {
     		world.setBlockWithNotify(i, j, k, mod_RetroStorage.relayOff.blockID);
     		return true;
     	} else if (world.getBlockId(i, j, k) == mod_RetroStorage.relayOff.blockID) {
     		world.setBlockWithNotify(i, j, k, mod_RetroStorage.relay.blockID);
     		return true;
-    	}
+    	}*/
     	return false;
     }
 	 

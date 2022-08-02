@@ -73,8 +73,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(storageBlock4, "Storage Block MK IV");
 		ModLoader.AddName(storageBlock5, "Storage Block MK V");
 		ModLoader.AddName(storageBlock6, "Storage Block MK VI");*/
-		ModLoader.AddName(relay, "Relay");
-		ModLoader.AddName(relayOff, "Relay");
+		/*ModLoader.AddName(relay, "Relay");
+		ModLoader.AddName(relayOff, "Relay");*/
 		//ModLoader.AddName(testingBlock, "Testing Block");
 		ModLoader.AddName(recipeEncoder, "Recipe Encoder");
 		ModLoader.AddName(assembler, "Assembler");
@@ -98,8 +98,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterBlock(storageBlock4);
 		ModLoader.RegisterBlock(storageBlock5);
 		ModLoader.RegisterBlock(storageBlock6);*/
-		ModLoader.RegisterBlock(relay);
-		ModLoader.RegisterBlock(relayOff);
+		/*ModLoader.RegisterBlock(relay);
+		ModLoader.RegisterBlock(relayOff);*/
 		//ModLoader.RegisterBlock(testingBlock);
 		ModLoader.RegisterBlock(recipeEncoder);
 		ModLoader.RegisterBlock(assembler);
@@ -112,7 +112,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(recipeDisc, 1), "GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.redstone, 'P', new ItemStack(Item.dyePowder,1,5));
 		ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), "RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(itemCable,16), "WLW","GGG","WLW", 'W', Block.cloth, 'G', Block.glass, 'L', new ItemStack(Item.dyePowder,1,4));
-		ModLoader.AddRecipe(new ItemStack(relay,1),"ILI","CRC","ILI",'I',Item.ingotIron,'L',new ItemStack(Item.dyePowder,1,4),'C',itemCable,'R',Item.redstone);
+		//ModLoader.AddRecipe(new ItemStack(relay,1),"ILI","CRC","ILI",'I',Item.ingotIron,'L',new ItemStack(Item.dyePowder,1,4),'C',itemCable,'R',Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(digitalController,1),"ILI","LDL","ILI",'I',Block.blockSteel,'L',Block.blockLapis,'D',Block.blockDiamond);
 		ModLoader.AddRecipe(new ItemStack(discDrive,1),"III","DDD","III",'I',Item.ingotIron,'D',blankDisc);
 		ModLoader.AddRecipe(new ItemStack(digitalTerminal, 1), "III", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable);
@@ -166,8 +166,8 @@ public class mod_RetroStorage extends BaseMod {
 	public static Block storageBlock5 = (new BlockStorage(getId("storageBlock5",178), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock5.png").toString()),mod_RetroStorage.storageDisc5, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock5"));
 	public static Block storageBlock6 = (new BlockStorage(getId("storageBlock6",179), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock6.png").toString()),mod_RetroStorage.storageDisc6, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock6"));*/
 
-	public static Block relay = (new BlockRelay(getId("relay",180)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("relay"));
-	public static Block relayOff = (new BlockRelayOff(getId("relayOff",181)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("relayOff"));
+	/*public static Block relay = (new BlockRelay(getId("relay",180)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("relay"));
+	public static Block relayOff = (new BlockRelayOff(getId("relayOff",181)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("relayOff"));*/
 	//public static Block testingBlock = (new BlockTesting(getId("testingBlock",182), Material.rock).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("testingBlock"));
 	public static Block recipeEncoder = (new BlockRecipeEncoder(getId("recipeEncoder",183)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("recipeEncoder"));
 	public static Block assembler = (new BlockAssembler(getId("assembler",184)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("assembler"));

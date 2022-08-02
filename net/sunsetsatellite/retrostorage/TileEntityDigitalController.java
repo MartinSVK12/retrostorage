@@ -57,7 +57,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 		faces.put("-y",null);
 		faces.put("+z",null);
 		faces.put("-z",null);
-		if (world.getBlockId(i + 1, j, k) == mod_RetroStorage.relay.blockID || world.getBlockId(i + 1, j, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i + 1, j, k) instanceof TileEntityInNetwork) {
+		if (world.getBlockId(i + 1, j, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i + 1, j, k) instanceof TileEntityInNetwork) {
 			ArrayList<Integer> pos = new ArrayList<Integer>(3);
 			pos.add(i + 1);
 			pos.add(j);
@@ -65,7 +65,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			faces.put("+x",pos);
 			//System.out.println("[Network] +x Found valid block at: "+pos.toString());
 		}
-		if(world.getBlockId(i - 1, j, k) == mod_RetroStorage.relay.blockID || world.getBlockId(i - 1, j, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i - 1, j, k) instanceof TileEntityInNetwork) {
+		if(world.getBlockId(i - 1, j, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i - 1, j, k) instanceof TileEntityInNetwork) {
 			ArrayList<Integer> pos = new ArrayList<Integer>(3);
 			pos.add(i - 1);
 			pos.add(j);
@@ -73,7 +73,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			faces.put("-x",pos);
 			//System.out.println("[Network] -x Found valid block at: "+pos.toString());
 		}
-		if(world.getBlockId(i, j - 1, k) == mod_RetroStorage.relay.blockID || world.getBlockId(i, j + 1, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j + 1, k) instanceof TileEntityInNetwork) {
+		if(world.getBlockId(i, j + 1, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j + 1, k) instanceof TileEntityInNetwork) {
 			ArrayList<Integer> pos = new ArrayList<Integer>(3);
 			pos.add(i);
 			pos.add(j + 1);
@@ -81,7 +81,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			faces.put("+y",pos);
 			//System.out.println("[Network] +y Found valid block at: "+pos.toString());
 		}
-		if(world.getBlockId(i, j - 1, k) == mod_RetroStorage.relay.blockID || world.getBlockId(i, j - 1, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j - 1, k) instanceof TileEntityInNetwork) {
+		if(world.getBlockId(i, j - 1, k) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j - 1, k) instanceof TileEntityInNetwork) {
 			ArrayList<Integer> pos = new ArrayList<Integer>(3);
 			pos.add(i);
 			pos.add(j - 1);
@@ -89,7 +89,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			faces.put("-y",pos);
 			//System.out.println("[Network] -y Found valid block at: "+pos.toString());
 		}
-		if(world.getBlockId(i, j, k + 1) == mod_RetroStorage.relay.blockID || world.getBlockId(i, j, k + 1) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j, k + 1) instanceof TileEntityInNetwork) {
+		if(world.getBlockId(i, j, k + 1) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j, k + 1) instanceof TileEntityInNetwork) {
 			ArrayList<Integer> pos = new ArrayList<Integer>(3);
 			pos.add(i);
 			pos.add(j);
@@ -97,7 +97,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			faces.put("+z",pos);
 			//System.out.println("[Network] +z Found valid block at: "+pos.toString());
 		}
-		if(world.getBlockId(i, j, k - 1) == mod_RetroStorage.relay.blockID || world.getBlockId(i, j, k - 1) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j, k - 1) instanceof TileEntityInNetwork) {
+		if(world.getBlockId(i, j, k - 1) == mod_RetroStorage.cable.blockID || world.getBlockTileEntity(i, j, k - 1) instanceof TileEntityInNetwork) {
 			ArrayList<Integer> pos = new ArrayList<Integer>(3);
 			pos.add(i);
 			pos.add(j);
