@@ -5,6 +5,7 @@
 /net/minecraft/src.rar
 /net/minecraft/src/overrideapi/
 /net/minecraft/src/GuiSlotStatsItem.java
+/net/minecraft/src/EntityPlayer.java
 /net/minecraft/src/WorldProviderHell.java
 /net/minecraft/src/EmptyChunk.java
 /net/minecraft/src/J_JsonNodeDoesNotMatchJsonNodeSelectorException.java
