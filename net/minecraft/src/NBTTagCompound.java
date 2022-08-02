@@ -29,6 +29,8 @@ public class NBTTagCompound extends NBTBase {
 
 	}
 
+	public Collection func_28110_c() {return this.tagMap.values();}
+
 	public Collection getValues() {
 		return this.tagMap.values();
 	}
