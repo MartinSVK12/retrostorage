@@ -187,6 +187,9 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	}
 	
 	public void reloadNetwork(World world, int i, int j, int k, EntityPlayer entityplayer) {
+		if(network_disc != null){
+			DiscManipulator.saveDisc(network_disc,network_inv);
+		}
 		removeFromNetwork(world);
 		if(entityplayer != null) {
 			if(entityplayer.getCurrentEquippedItem() != null) {
