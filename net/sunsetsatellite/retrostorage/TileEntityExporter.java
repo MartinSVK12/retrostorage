@@ -143,9 +143,9 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 				if(isEmpty()) {
 					if (item == null) {
 						if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                            ItemStack network_item = controller.network_inv.getStackInSlot(controller.network_inv.getLastOccupiedStack());
+                            ItemStack network_item = controller.network_inv.getStackInSlot(controller.network_inv.getFirstOccupiedStack());
                             if(network_item != null && network_item.getItem() != mod_RetroStorage.virtualDisc){
-                                controller.network_inv.setInventorySlotContents(controller.network_inv.getLastOccupiedStack(),null);
+                                controller.network_inv.setInventorySlotContents(controller.network_inv.getFirstOccupiedStack(),null);
                                 DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                                 chest.setInventorySlotContents(slot, network_item);
                             }

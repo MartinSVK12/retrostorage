@@ -64,8 +64,14 @@ public class InventoryDigital implements IInventory {
 		return -1;
 	}
 
-	public int getLastOccupiedStack(){
-		return (getFirstEmptyStack() == -1 ? -1 : getFirstEmptyStack()-1);
+	public int getFirstOccupiedStack(){
+		for(int i1 = 1; i1 < this.inventoryContents.length; ++i1) {
+			if(this.inventoryContents[i1] != null) {
+				return i1;
+			}
+		}
+
+		return -1;
 	}
 
 	public int storePartialItemStack(ItemStack itemStack1) {
