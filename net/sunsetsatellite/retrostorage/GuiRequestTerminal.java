@@ -63,14 +63,18 @@ public class GuiRequestTerminal extends GuiContainer
         	tile.page--;
         }
         if(guibutton.id == 2){
-            EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
-            System.out.println("Assembly queue: "+tile.controller.assemblyQueue.toString());
-            entityplayer.addChatMessage("Assembly queue: "+tile.controller.assemblyQueue.toString());
+            if(tile.controller != null){
+                EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+                System.out.println("Assembly queue: "+tile.controller.assemblyQueue.toString());
+                entityplayer.addChatMessage("Assembly queue: "+tile.controller.assemblyQueue.toString());
+            }
         }
         if(guibutton.id == 3){
-            EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
-            tile.controller.assemblyQueue.clear();
-            entityplayer.addChatMessage("Assembly queue cleared!");
+            if(tile.controller != null) {
+                EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+                tile.controller.assemblyQueue.clear();
+                entityplayer.addChatMessage("Assembly queue cleared!");
+            }
         }
         //System.out.println(tile.page);
     }

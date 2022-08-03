@@ -20,9 +20,13 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
     }
 	
 	public void updateEntity(){
+		ticksSinceReload += 1;
+		if(ticksSinceReload > 60){
+			ticksSinceReload = 0;
+			reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord,yCoord,zCoord,null);
+		}
 		if(energy <= 0 && active) {
-			removeFromNetwork(worldObj, xCoord, yCoord, zCoord);
-			DiscManipulator.saveDisc(network_disc,network_inv);
+			removeFromNetwork(worldObj);
 			network.clear();
 			devicesConnected = 0;
 			active = false;
@@ -108,34 +112,22 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 		return faces;
 	}
 	
-	private void removeFromNetwork(World world, int i, int j, int k) {
-		HashMap<String, ArrayList<Integer>> neighbors = scanNeighboringBlocks(world, i, j, k);
-		Iterator<Entry<String, ArrayList<Integer>>> itrt = neighbors.entrySet().iterator();
-		while (itrt.hasNext()) {
-			Map.Entry<String, ArrayList<Integer>> element = (Map.Entry<String, ArrayList<Integer>>)itrt.next();
-			if(element.getValue() != null && !network.containsKey(element.getValue())) {
-				HashMap<String, Object> block = new HashMap<String, Object>();
-				block.put("id", world.getBlockId(element.getValue().get(0), element.getValue().get(1), element.getValue().get(2)));
-				block.put("tile", world.getBlockTileEntity(element.getValue().get(0), element.getValue().get(1), element.getValue().get(2)));
-				TileEntity tile = world.getBlockTileEntity(element.getValue().get(0), element.getValue().get(1), element.getValue().get(2));
-				if(tile != null) {
-					if(tile instanceof TileEntityInNetwork) {
+	public void removeFromNetwork(World world) {
+		for (Entry<ArrayList<Integer>, HashMap<String, Object>> entry : network.entrySet()) {
+			if (entry.getValue().get("tile") != null) {
+				TileEntity tile = world.getBlockTileEntity(entry.getKey().get(0), entry.getKey().get(1), entry.getKey().get(2));
+				if (tile != null && tile != this) {
+					if (tile instanceof TileEntityInNetwork) {
 						TileEntityInNetwork network_tile = (TileEntityInNetwork) tile;
-						if(tile != this) {
-							network_tile.updateEntity();
-							network_tile.network = new HashMap<ArrayList<Integer>, HashMap<String, Object>>();
-							network_tile.controller = null;
-						}
+						network_tile.updateEntity();
+						//network_tile.network.clear();
+						network_tile.controller = null;
 					}
 				}
-				network.put(element.getValue(), block);
-				removeFromNetwork(world, element.getValue().get(0), element.getValue().get(1), element.getValue().get(2));
-			} else if (element.getValue() != null && network.containsKey(element.getValue())) {
-				//System.out.println("[Network] Already in network: "+element.getValue().toString());
 			}
 		}
 	}
-	
+
 	private void addToNetwork(World world, int i, int j, int k) {
 		HashMap<String, ArrayList<Integer>> neighbors = scanNeighboringBlocks(world, i, j, k);
 		Iterator<Entry<String, ArrayList<Integer>>> itrt = neighbors.entrySet().iterator();
@@ -149,7 +141,6 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 				if(tile != null) {
 					if(tile instanceof TileEntityInNetwork) {
 						TileEntityInNetwork network_tile = (TileEntityInNetwork) tile;
-						network_tile.network = network;
 						network_tile.controller = this;
 						if(tile != this) {
 							if (tile instanceof TileEntityAssembler || tile instanceof TileEntityInterface){
@@ -176,9 +167,9 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 										}
 									}
 								}
+								devicesConnected += 1;
 							}
 							network_tile.updateEntity();
-							devicesConnected += 1;
 						}
 					}
 				network.put(element.getValue(), block);
@@ -190,13 +181,24 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 		}
 		active = true;
 	}
+
+	public boolean isActive(){
+		return active;
+	}
 	
 	public void reloadNetwork(World world, int i, int j, int k, EntityPlayer entityplayer) {
+		removeFromNetwork(world);
 		if(entityplayer != null) {
 			if(entityplayer.getCurrentEquippedItem() != null) {
 				if (entityplayer.getCurrentEquippedItem().getItem() == Item.redstone) {
-					entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, 1);
-					energy += 6000;
+					if(entityplayer.isSneaking()){
+						int count = entityplayer.inventory.getCurrentItem().stackSize;
+						entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem,null);
+						energy += 6000 * count;
+					} else {
+						entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, 1);
+						energy += 6000;
+					}
 				} else if (entityplayer.getCurrentEquippedItem().getItem().shiftedIndex == Block.bedrock.blockID) {
 					entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, 1);
 					energy = Integer.MAX_VALUE;
@@ -231,6 +233,50 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			}*/
 		}
 	}
+
+	protected void connectDrive() {
+		if(network.size() > 0) {
+			for (Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
+				ArrayList<Integer> pos = element.getKey();
+				TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
+				if (tile != null) {
+					if (tile instanceof TileEntityDiscDrive) {
+						TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
+						network_drive = drive;
+						if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
+							if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
+								network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
+								break;
+							} else {
+								network_disc = null;
+								network_drive = null;
+							}
+						} else {
+							network_disc = null;
+							network_drive = null;
+						}
+					}
+					else {
+						network_disc = null;
+						network_drive = null;
+					}
+				} else {
+					network_disc = null;
+					network_drive = null;
+				}
+			}
+		} else {
+			network_disc = null;
+			network_drive = null;
+		}
+	}
+
+	public HashMap<ArrayList<Integer>, HashMap<String, Object>> network = new HashMap<ArrayList<Integer>, HashMap<String, Object>>();
+
+	public TileEntityDiscDrive network_drive = null;
+	public ItemStack network_disc = null;
+
+	private int ticksSinceReload = 0;
 	private double energy = 0;
     private boolean active = true;
     public int devicesConnected = 0;

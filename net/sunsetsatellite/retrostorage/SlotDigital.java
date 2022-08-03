@@ -18,14 +18,14 @@ public class SlotDigital extends Slot {
                 int slotsUsed = ((TileEntityDigitalChest) inventory).getAmountOfUsedSlots();
                 return slotsUsed <= ((ItemStorageDisc) discStack.getItem()).getMaxStackCapacity();
             } else if (inventory instanceof  TileEntityDigitalTerminal){
-                if(((TileEntityDigitalTerminal) inventory).network_drive == null){
+                if(((TileEntityDigitalTerminal) inventory).controller.network_drive == null){
                     return false;
                 }
                 int slotsUsed = ((TileEntityDigitalTerminal) inventory).getAmountOfUsedSlots();
-                if(((TileEntityDigitalTerminal) inventory).network_drive == null){
+                if(((TileEntityDigitalTerminal) inventory).controller.network_drive == null){
                     return false;
                 } else {
-                    return slotsUsed < ((TileEntityDiscDrive)((TileEntityDigitalTerminal) inventory).network_drive).virtualDriveMaxStacks;
+                    return slotsUsed < ((TileEntityDiscDrive)((TileEntityDigitalTerminal) inventory).controller.network_drive).virtualDriveMaxStacks;
                 }
 
             }

@@ -125,7 +125,6 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-		connectDrive();
 		
 		/*if(network.size() > 0 && network_disc != null && network_drive != null) {
 			TileEntity tile = findTileEntityAroundBlock();

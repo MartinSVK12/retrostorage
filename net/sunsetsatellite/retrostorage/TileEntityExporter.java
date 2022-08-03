@@ -125,9 +125,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-		connectDrive();
-		
-		if(network.size() > 0 && network_disc != null && network_drive != null) {
+		if(controller != null && controller.isActive() && controller.network_disc != null) {
 			TileEntity tile = findTileEntityAroundBlock();
 			if (tile instanceof TileEntityChest){
 				TileEntityChest chest = (TileEntityChest) tile;
@@ -144,18 +142,18 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 				}
 				if(isEmpty()) {
 					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
+						if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
                             ItemStack network_item = controller.network_inv.getStackInSlot(controller.network_inv.getLastOccupiedStack());
                             if(network_item != null && network_item.getItem() != mod_RetroStorage.virtualDisc){
                                 controller.network_inv.setInventorySlotContents(controller.network_inv.getLastOccupiedStack(),null);
-                                DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                                 chest.setInventorySlotContents(slot, network_item);
                             }
 						}
 					}
 				} else {
 					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
+						if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
                             int i = 0;
                             int filter = -1;
                             do {
@@ -171,7 +169,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                                 ItemStack network_item = controller.network_inv.getStackInSlot(filter);
                                 if(network_item != null){
                                     controller.network_inv.setInventorySlotContents(filter,null);
-                                    DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                                    DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                                     chest.setInventorySlotContents(slot, network_item);
                                 }
                             }

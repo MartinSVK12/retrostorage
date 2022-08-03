@@ -20,7 +20,6 @@ public class TileEntityDiscDrive extends TileEntityStorage
     public TileEntityDiscDrive()
     {
         contents = new ItemStack[3];
-        //createVirtualDisc();
     }
 
     public int getSizeInventory()
@@ -56,75 +55,6 @@ public class TileEntityDiscDrive extends TileEntityStorage
             return null;
         }
     }
-    
-    
-    
-    /*public void createVirtualDisc() {
-        NBTTagCompound vDiscNBT = new NBTTagCompound();
-        int j = 0;
-        int k = 0;
-    	for(int i = 0; i < getSizeInventory()-2;i++) {
-    		if(getStackInSlot(i) != null) {
-    			if (getStackInSlot(i).getItem() instanceof ItemStorageDisc) {
-    				ItemStack disc = getStackInSlot(i);
-    				Object[] discNBT = disc.getItemData().getValues().toArray();
-                    j += ((ItemStorageDisc)disc.getItem()).getMaxStackCapacity();
-                    for (int i1 = 0; i1 < discNBT.length; i1++) {
-                        Object o = discNBT[i1];
-                        vDiscNBT.setCompoundTag(String.valueOf(k), (NBTTagCompound) o);
-                        k++;
-                    }
-    			}
-    		}
-    	}
-        virtualDriveMaxStacks = j;
-        virtualDisc.setItemData(vDiscNBT);
-    	setInventorySlotContents(9, virtualDisc);
-    }*/
-    
-    /*public void updateDiscs() {
-        Object[] vDiscNBT = virtualDisc.getItemData().getValues().toArray();
-        for(int i = 0; i < getSizeInventory()-2;i++) {
-            if (getStackInSlot(i) != null) {
-                if (getStackInSlot(i).getItem() instanceof ItemStorageDisc) {
-                    getStackInSlot(i).setItemData(new NBTTagCompound());
-                }
-            }
-        }
-        if(vDiscNBT.length > 0) {
-            int discId = 0;
-            int itemsSaved = 0;
-            while(discId < 8){
-                ItemStack disc = getStackInSlot(discId);
-                NBTTagCompound discNBT = new NBTTagCompound();
-                if (disc != null) {
-                    if (disc.getItem() instanceof ItemStorageDisc) {
-                        int i;
-                        int j = 0;
-                        for(i = 0; i < Math.min(vDiscNBT.length,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity()); i++){
-                            if(vDiscNBT.length-1 < i+itemsSaved){
-                                break;
-                            }
-                            discNBT.setCompoundTag(String.valueOf(i+itemsSaved), (NBTTagCompound) vDiscNBT[i+itemsSaved]);
-                            j++;
-                        }
-                        itemsSaved += j;
-                        if(itemsSaved < vDiscNBT.length){
-                            disc.setItemData(discNBT);
-                            discId++;
-                        } else if (itemsSaved == vDiscNBT.length){
-                            disc.setItemData(discNBT);
-                            break;
-                        }
-                    } else {
-                        discId++;
-                    }
-                } else {
-                    discId++;
-                }
-            }
-        }
-    }*/
     
     public void updateEntity()
     {
@@ -168,8 +98,6 @@ public class TileEntityDiscDrive extends TileEntityStorage
                 }
             }
         }
-        /*updateDiscs();
-        createVirtualDisc();*/
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)

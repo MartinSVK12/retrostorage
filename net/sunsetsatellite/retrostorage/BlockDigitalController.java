@@ -23,8 +23,14 @@ public class BlockDigitalController extends BlockContainer
 		TileEntityDigitalController.reloadNetwork(world, i, j, k, entityplayer);
 		return true;
     }
-	
-	public void updateTick(World world, int i, int j, int k, Random random)
+
+    public void onBlockRemoval(World world1, int i2, int i3, int i4) {
+        TileEntityDigitalController TileEntityDigitalController = (TileEntityDigitalController)world1.getBlockTileEntity(i2, i3, i4);
+        TileEntityDigitalController.removeFromNetwork(world1);
+        super.onBlockRemoval(world1, i2, i3, i4);
+    }
+
+    public void updateTick(World world, int i, int j, int k, Random random)
     {
 		TileEntityDigitalController TileEntityDigitalController = (TileEntityDigitalController)world.getBlockTileEntity(i, j, k);
 		TileEntityDigitalController.reloadNetwork(world, i, j, k, null);
@@ -32,6 +38,8 @@ public class BlockDigitalController extends BlockContainer
     
     public void onNeighborBlockChange(World world, int i, int j, int k, int l)
     {
+        TileEntityDigitalController TileEntityDigitalController = (TileEntityDigitalController)world.getBlockTileEntity(i, j, k);
+        TileEntityDigitalController.reloadNetwork(world, i, j, k, null);
         if(l > 0 && Block.blocksList[l].canProvidePower())
         {
             boolean flag = world.isBlockIndirectlyGettingPowered(i, j, k) || world.isBlockIndirectlyGettingPowered(i, j + 1, k);

@@ -67,7 +67,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     }*/
     public void requestItemCrafting(Slot slot) {
         EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
-        if(slot.getStack() != null){
+        if(slot.getStack() != null && slot.getStack().getItem() != mod_RetroStorage.virtualDisc){
             ModLoader.OpenGUI(entityplayer, new GuiAssemblyRequest(entityplayer.inventory, this, slot.getStack()));
         }
         /*entityplayer.addChatMessage("Requesting: "+slot.getStack().stackSize+"x "+StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName()));
@@ -276,29 +276,23 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     
     public void updateEntity()
     {
-    	connectDrive();
-    	setInventorySlotContents(1, network_disc);
-    	if(network.size() > 0) {
-            for (Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element : network.entrySet()) {
+    	if(controller != null && controller.isActive()) {
+            setInventorySlotContents(1, controller.network_disc);
+            if (controller.network_disc != null) {
+                DiscManipulator.readItemAssembly(page, this, controller);
+            }
+            /*for (Map.Entry<ArrayList<Integer>, HashMap<String, Object>> element : controller.network.entrySet()) {
                 ArrayList<Integer> pos = element.getKey();
                 TileEntity tile = (TileEntity) worldObj.getBlockTileEntity(pos.get(0), pos.get(1), pos.get(2));
                 if (tile != null) {
                     if (tile instanceof TileEntityDigitalController) {
-                        network_asm = (TileEntityDigitalController) tile;
-                        if (network_disc != null) {
-                            DiscManipulator.readItemAssembly(page, this, network_asm);
-                            break;
-                        }
-                    } else {
-                        network_asm = null;
+                        controller = (TileEntityDigitalController) tile;
                     }
-                } else {
-                    network_asm = null;
                 }
-            }
+            }*/
     	}
-    	if(network_asm == null) {
-    		for(int i = 3;i <= 38;i++) {
+    	else if(controller == null || !controller.isActive()) {
+    		for(int i = 0;i <= 38;i++) {
 				setInventorySlotContents(i, null);
 			}
     	}
@@ -389,7 +383,6 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     }
 
     private ItemStack contents[];
-    private TileEntityDigitalController network_asm = null;
     public int page;
     public int pages;
     private boolean processing = false;

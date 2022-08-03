@@ -118,7 +118,14 @@ public class BlockDigitalTerminal extends BlockContainer{
             return sprites[2];
         }
     }
-    
+
+    public void onNeighborBlockChange(World world, int i, int j, int k, int l) {
+        /*TileEntityDigitalTerminal TileEntityDigitalTerminal = (TileEntityDigitalTerminal)world.getBlockTileEntity(i, j, k);
+        if(TileEntityDigitalTerminal != null && TileEntityDigitalTerminal.controller != null){
+            TileEntityDigitalTerminal.controller.reloadNetwork(world, i, j, k, ModLoader.getMinecraftInstance().thePlayer);
+        }*/
+    }
+
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
         if(world.multiplayerWorld)

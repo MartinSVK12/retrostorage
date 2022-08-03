@@ -129,9 +129,8 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-		connectDrive();
-		setInventorySlotContents(9, network_disc);
-        if(network.size() > 0 && network_drive != null && network_disc != null && controller != null){
+        if(controller != null && controller.isActive()){
+            setInventorySlotContents(9, controller.network_disc);
             if(!controller.assemblyQueue.isEmpty()){
                 Item item = controller.assemblyQueue.peekFirst();
                 CraftingManager crafter = CraftingManager.getInstance();
@@ -149,9 +148,15 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
                 ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);*/
             }
         }
+        if(controller == null || !controller.isActive()) {
+            setInventorySlotContents(9,null);
+        }
     }
 
     private boolean craftItem(ArrayList<?> recipe, ItemStack output){
+        if(controller == null || !controller.isActive()) {
+            return false;
+        }
         if(!controller.itemAssembly.containsKey(output)){
             ModLoader.getMinecraftInstance().thePlayer.addChatMessage("ERROR: Attempted to craft an unrecognized recipe.");
             controller.assemblyQueue.remove(output.getItem());
@@ -171,8 +176,8 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
         }
         int s = 0;
         for (Map.Entry<Integer, Integer> i1 : requirements.entrySet()) {
-            if (network_disc != null) {
-                if (network_disc.getItem() instanceof ItemStorageDisc) {
+            if (controller.network_disc != null) {
+                if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
                     if (requirements.get(i1.getKey()) != null) {
                         int count = controller.network_inv.getItemCount(i1.getKey());
                         if(count >= requirements.get(i1.getKey())){
@@ -191,11 +196,11 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
                     if(slot != -1){
                         ItemStack itemCopy = controller.network_inv.getStackInSlot(slot).copy();
                         controller.network_inv.decrStackSize(slot,1);
-                        DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                        DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                         if(itemCopy.getItem().hasContainerItem()){
                             if(controller.network_inv.getFirstEmptyStack() != -1){
                                 controller.network_inv.addItemStackToInventory(new ItemStack(itemCopy.getItem().getContainerItem(),1));
-                                DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                             } else {
                                 World world = ModLoader.getMinecraftInstance().theWorld;
                                 EntityItem entityitem = new EntityItem(world, (float)xCoord, (float)yCoord, (float)zCoord, new ItemStack(getStackInSlot(slot).getItem().getContainerItem(),1));
@@ -211,7 +216,7 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
             }
             if(controller.network_inv.getFirstEmptyStack() != -1){
                 controller.network_inv.addItemStackToInventory(output.copy());
-                DiscManipulator.saveDisc(network_disc,controller.network_inv);
+                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
             } else {
                 World world = ModLoader.getMinecraftInstance().theWorld;
                 EntityItem entityitem = new EntityItem(world, (float)xCoord, (float)yCoord, (float)zCoord, output.copy());

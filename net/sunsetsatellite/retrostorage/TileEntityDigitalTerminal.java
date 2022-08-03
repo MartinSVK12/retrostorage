@@ -57,50 +57,43 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     }
 
     public void updateContents(){
-        if(getStackInSlot(0) != null && network_disc != null){
+        if(getStackInSlot(0) != null && controller.network_disc != null && controller != null){
             DiscManipulator.clearDigitalInv(this);
-            DiscManipulator.loadDisc(network_disc, controller.network_inv, page);
+            DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
         }
     }
 
     public void updateEntity()
     {
+        if(controller == null || !controller.isActive()){
+            for(int i = 0;i<getSizeInventory();i++){
+                setInventorySlotContents(i,null);
+            }
+            return;
+        }
         if(controller != null){
             contents = controller.network_inv.inventoryContents;
         }
-        if(network_drive == null && network_disc == null){
-            connectDrive();
-        }
-        if(getStackInSlot(0) != null && network_disc != null){
-            if(!network_disc.isStackEqual(getStackInSlot(0))){
+        if(getStackInSlot(0) != null && controller.network_disc != null){
+            if(!controller.network_disc.isStackEqual(getStackInSlot(0))){
                 DiscManipulator.clearDigitalInv(this);
-                DiscManipulator.loadDisc(network_disc, controller.network_inv, page);
+                DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
             }
-        } else if(getStackInSlot(0) == null && network_disc != null){
+        } else if(getStackInSlot(0) == null && controller.network_disc != null){
             DiscManipulator.clearDigitalInv(this);
-            DiscManipulator.loadDisc(network_disc, controller.network_inv, page);
+            DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
         }
-        setInventorySlotContents(0, network_disc);
-        if(network_disc != null){
-            this.pages = ((int) Math.floor((double) network_disc.getItemData().size()/(36)));
-            //System.out.printf("%d %d %d%n",network_disc.getItemData().size(),(getSizeInventory()-1),(network_disc.getItemData().size()/(getSizeInventory()-1)));
-            //System.out.println(((int) Math.ceil(network_disc.getItemData().size()/(getSizeInventory()-1)))+1);
-        }/* else {
-            this.pages = 0;
-        }*/
-
-        /*System.out.println(network_drive);
-        System.out.println(network_disc);*/
-        /*if(network_drive != null){
-            setInventorySlotContents(0, network_drive.virtualDisc);
-        }*/
+        setInventorySlotContents(0, controller.network_disc);
+        if(controller.network_disc != null) {
+            this.pages = ((int) Math.floor((double) controller.network_disc.getItemData().size() / (36)));
+        }
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
         if(itemstack != null && getStackInSlot(0) != null){
             if (i == 0 && itemstack.getItem() instanceof ItemStorageDisc) {
-                //DiscManipulator.saveDisc(network_disc, this, page);
+                //DiscManipulator.saveDisc(controller.network_disc, this, page);
 
             }
         }
@@ -167,8 +160,8 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
 
     public int getAmountOfUsedSlots(){
         int j = 0;
-        if(network_disc != null){
-            j = network_disc.getItemData().size();
+        if(controller.network_disc != null){
+            j = controller.network_disc.getItemData().size();
         }
         return j;
     }
