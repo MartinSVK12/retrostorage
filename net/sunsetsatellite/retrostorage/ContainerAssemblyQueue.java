@@ -13,17 +13,14 @@ import net.minecraft.src.Slot;
 //            Container, Slot, TileEntityDispenser, IInventory, 
 //            EntityPlayer
 
-public class ContainerRequestTerminal extends Container
+public class ContainerAssemblyQueue extends Container
 {
 
-    public ContainerRequestTerminal(IInventory iinventory, TileEntityRequestTerminal TileEntityRequestTerminal)
+    public ContainerAssemblyQueue(IInventory iinventory, TileEntityRequestTerminal TileEntityRequestTerminal)
     {
-    	
-    	//addSlot(new Slot(TileEntityRequestTerminal, 0, 44, 108));
-    	addSlot(new SlotViewOnly(TileEntityRequestTerminal, 1, 80, 108));
-    	//addSlot(new Slot(TileEntityRequestTerminal, 2, 116, 108));
-    	
-    	for(int k = 0; k < 9; k++)
+    	tile = TileEntityRequestTerminal;
+
+        for(int k = 0; k < 9; k++)
         {
             addSlot(new Slot(iinventory, k, 8 + k * 18, 198));
         }
@@ -37,30 +34,13 @@ public class ContainerRequestTerminal extends Container
 
         }
 
-        tile = TileEntityRequestTerminal;
-        for(int i = 0; i < 4; i++)
-        {
-            for(int l = 0; l < 9; l++)
-            {
-                addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
-            }
-
-        }
-
-        
-
-        
-
     }
 
-	public boolean isUsableByPlayer(EntityPlayer entityplayer)
+    public boolean isUsableByPlayer(EntityPlayer entityplayer)
     {
         return tile.canInteractWith(entityplayer);
     }
 
-    public void requestItemCrafting(Slot slot) {
-    	tile.requestItemCrafting(slot);
-    }
-    
     private TileEntityRequestTerminal tile;
+
 }

@@ -25,6 +25,25 @@ public abstract class GuiContainer extends GuiScreen {
 		this.mc.thePlayer.craftingInventory = this.inventorySlots;
 	}
 
+	public void drawItemStack(ItemStack stack, int x, int y) {
+		if(stack != null) {
+			GL11.glPushMatrix();
+			GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
+			RenderHelper.enableStandardItemLighting();
+			GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+			GL11.glTranslatef(0.0F, 0.0F, 32.0F);
+			itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, stack, x, y);
+			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+			RenderHelper.disableStandardItemLighting();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glPopMatrix();
+		}
+	}
+
 	public void drawScreen(int i1, int i2, float f3) {
 		this.drawDefaultBackground();
 		int i4 = (this.width - this.xSize) / 2;

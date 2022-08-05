@@ -27,22 +27,7 @@ public class GuiAssemblyRequest extends GuiContainer
         fontRenderer.drawString("Assembly Request", 45, 6, 0x404040);
         fontRenderer.drawString(count + "x " /*+ StringTranslate.getInstance().translateNamedKey(request.getItemName())*/, 10, 34, 0x404040);
         fontRenderer.drawString(request.stackSize+"x "+StringTranslate.getInstance().translateNamedKey(request.getItemName()), 55, 34, 0x404040);
-        if(request != null) {
-            GL11.glPushMatrix();
-            GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
-            RenderHelper.enableStandardItemLighting();
-            GL11.glPopMatrix();
-            GL11.glPushMatrix();
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-            itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, request, 30, 30);
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            RenderHelper.disableStandardItemLighting();
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glPopMatrix();
-        }
+        drawItemStack(request,30,30);
     }
 
     public void initGui()

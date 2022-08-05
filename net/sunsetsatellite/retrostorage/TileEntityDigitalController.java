@@ -187,8 +187,8 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	}
 	
 	public void reloadNetwork(World world, int i, int j, int k, EntityPlayer entityplayer) {
-		if(network_disc != null){
-			DiscManipulator.saveDisc(network_disc,network_inv);
+		if(network_disc != null && network_drive != null && network_drive.virtualDriveMaxStacks == 0){
+			DiscManipulator.clearDigitalInv(network_inv);
 		}
 		removeFromNetwork(world);
 		if(entityplayer != null) {
@@ -212,7 +212,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 		network.clear();
 		devicesConnected = 0;
 		itemAssembly.clear();
-		network_inv = new InventoryDigital("Digital Network Inventory",this);
+		//network_inv = new InventoryDigital("Digital Network Inventory",this);
 		if(energy > 0) {
 			if(entityplayer != null) {
 				entityplayer.addChatMessage("Network reloaded.");

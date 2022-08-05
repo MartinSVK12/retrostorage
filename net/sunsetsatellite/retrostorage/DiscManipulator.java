@@ -2,10 +2,7 @@ package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DiscManipulator {
 
@@ -640,6 +637,7 @@ public class DiscManipulator {
 
 	public static void saveDisc(ItemStack disc, IInventory inv){
 		//System.out.printf("Saving contents of entire inventory %s to disc %s%n",inv.toString(),disc.toString());
+		//System.out.printf("Inv contents: %s%n", Arrays.toString(((InventoryDigital) inv).inventoryContents));
 		NBTTagCompound discNBT = disc.getItemData();
 		for(int i = 1; i < inv.getSizeInventory();i++){
 			ItemStack item = inv.getStackInSlot(i);
@@ -688,7 +686,7 @@ public class DiscManipulator {
 		int assemblerSlot = (int) controller.itemAssembly.get(item).get(1);
 		ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(assembler.getStackInSlot(assemblerSlot).getItemData());
 		ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-		HashMap<Integer, Integer> requirements = new HashMap<Integer, Integer>();
+		HashMap<ArrayList<Integer>, Integer> requirements = new HashMap<ArrayList<Integer>, Integer>();
 		HashMap<Item,ItemStack> assemblyItems = new HashMap<>();
 		int s = 0;
 		for (Map.Entry<ItemStack, List<Object>> entry : controller.itemAssembly.entrySet()) {
@@ -696,22 +694,25 @@ public class DiscManipulator {
 		}
 		for (Object value : recipe) {
 			if (value != null) {
-				if (!requirements.containsKey(((ItemStack) value).itemID)) {
-					requirements.put(((ItemStack) value).itemID, 1);
+				ArrayList<Integer> item1 = new ArrayList<>();
+				item1.add(((ItemStack)value).itemID);
+				item1.add(((ItemStack)value).getItemDamage());
+				if (!requirements.containsKey(item1)){
+					requirements.put(item1, 1);
 				} else {
-					requirements.replace(((ItemStack) value).itemID, requirements.get(((ItemStack) value).itemID), requirements.get(((ItemStack) value).itemID) + 1);
+					requirements.replace(item1,requirements.get(item1),requirements.get(item1)+1);
 				}
 			}
 		}
-		for (Map.Entry<Integer, Integer> entry : requirements.entrySet()) {
-			Integer key = entry.getKey();
+		for (Map.Entry<ArrayList<Integer>, Integer> entry : requirements.entrySet()) {
+			ArrayList<Integer>  key = entry.getKey();
 			Integer value = entry.getValue();
 			entry.setValue(entry.getValue() * count);
 		}
 		System.out.println("Craft requirements: "+requirements.toString());
-		for (Map.Entry<Integer, Integer> i1 : requirements.entrySet()) {
-			ItemStack stack = new ItemStack(i1.getKey(),1,0);
-			int networkItemCount = controller.network_inv.getItemCount(i1.getKey());
+		for (Map.Entry<ArrayList<Integer> , Integer> i1 : requirements.entrySet()) {
+			ItemStack stack = new ItemStack(i1.getKey().get(0),1,i1.getKey().get(1));
+			int networkItemCount = controller.network_inv.getItemCount(i1.getKey().get(0),i1.getKey().get(1));
 			if(networkItemCount >= requirements.get(i1.getKey())){
 				s++;
 			} else {

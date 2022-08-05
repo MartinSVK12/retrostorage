@@ -57,7 +57,7 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     }
 
     public void updateContents(){
-        if(getStackInSlot(0) != null && controller.network_disc != null && controller != null){
+        if(getStackInSlot(0) != null && controller != null && controller.network_disc != null){
             DiscManipulator.clearDigitalInv(this);
             DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
         }
@@ -65,6 +65,13 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
 
     public void updateEntity()
     {
+        ticksSinceUpdate += 1;
+        if(ticksSinceUpdate >= 60){
+            ticksSinceUpdate = 0;
+            if(controller != null){
+                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv,page);
+            }
+        }
         if(controller == null || !controller.isActive()){
             for(int i = 0;i<getSizeInventory();i++){
                 setInventorySlotContents(i,null);
@@ -176,4 +183,5 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     }
 
     private ItemStack contents[];
+    private int ticksSinceUpdate = 0;
 }

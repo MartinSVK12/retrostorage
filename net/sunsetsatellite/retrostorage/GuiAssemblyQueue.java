@@ -7,24 +7,47 @@ package net.sunsetsatellite.retrostorage;
 import net.minecraft.src.*;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 // Referenced classes of package net.minecraft.src:
 //            GuiContainer, ContainerDispenser, FontRenderer, RenderEngine, 
 //            InventoryPlayer, TileEntityDispenser
 
-public class GuiRequestTerminal extends GuiContainer
+public class GuiAssemblyQueue extends GuiContainer
 {
 
-    public GuiRequestTerminal(InventoryPlayer inventoryplayer, TileEntityRequestTerminal TileEntityRequestTerminal)
+    public GuiAssemblyQueue(InventoryPlayer inventoryplayer, TileEntityRequestTerminal TileEntityRequestTerminal)
     {
-        super(new ContainerRequestTerminal(inventoryplayer, TileEntityRequestTerminal));
+        super(new ContainerAssemblyQueue(inventoryplayer, TileEntityRequestTerminal));
         tile = TileEntityRequestTerminal;
     }
 
 	protected void drawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Request Terminal", 45, 6, 0x404040);
+        fontRenderer.drawString("Assembly Queue", 47, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
-        fontRenderer.drawString((new StringBuilder().append("Page: ").append(tile.page+1).append("/").append(tile.pages+1)).toString(), 65, 93, 0x404040);
+        fontRenderer.drawString((new StringBuilder().append("Page: ").append(page+1).append("/").append(pages+1)).toString(), 65, 93, 0x404040);
+        int j = page*36;
+        if(tile.controller != null){
+            List<Object> q = Arrays.asList(tile.controller.assemblyQueue.stream().toArray());
+            pages = q.size()/36;
+            if(q.size() > 0){
+                for(int i = 0; i < 4; i++)
+                {
+                    for(int l = 0; l < 9; l++)
+                    {
+                        j++;
+                        if(q.size() > j){
+                            drawItemStack(new ItemStack((Item)q.get(j)), 8 + l * 18, 18 + i * 18);
+                        }
+                        //addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
+                    }
+
+                }
+            }
+        }
     }
 
     public void initGui()
@@ -32,7 +55,7 @@ public class GuiRequestTerminal extends GuiContainer
     	super.initGui();
     	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
     	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));
-        controlList.add(new GuiButton(2, Math.round(width / 2 - 35), Math.round(height / 2 - 5), 20, 20, "Q"));// /2 - 34, - 150
+        controlList.add(new GuiButton(2, Math.round(width / 2 - 35), Math.round(height / 2 - 5), 20, 20, "R"));// /2 - 34, - 150
         controlList.add(new GuiButton(3, Math.round(width / 2 + 15), Math.round(height / 2 - 5), 20, 20, "X"));
     }
     
@@ -54,20 +77,18 @@ public class GuiRequestTerminal extends GuiContainer
         }
         if(guibutton.id == 0)
         {
-        	if(tile.page<tile.pages)
-        	tile.page++;
+        	if(page<pages)
+        	page++;
         }
         if(guibutton.id == 1)
         {
-        	if(tile.page > 0)
-        	tile.page--;
+        	if(page > 0)
+        	page--;
         }
         if(guibutton.id == 2){
             if(tile.controller != null){
                 EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
-                ModLoader.OpenGUI(entityplayer, new GuiAssemblyQueue(entityplayer.inventory, tile));
-                /*System.out.println("Assembly queue: "+tile.controller.assemblyQueue.toString());
-                entityplayer.addChatMessage("Assembly queue: "+tile.controller.assemblyQueue.toString());*/
+                ModLoader.OpenGUI(entityplayer, new GuiRequestTerminal(entityplayer.inventory, tile));
             }
         }
         if(guibutton.id == 3){
@@ -86,4 +107,6 @@ public class GuiRequestTerminal extends GuiContainer
     }
     
     private TileEntityRequestTerminal tile;
+    private int page = 0;
+    private int pages = 0;
 }

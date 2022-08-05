@@ -129,23 +129,27 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-        if(controller != null && controller.isActive()){
-            setInventorySlotContents(9, controller.network_disc);
-            if(!controller.assemblyQueue.isEmpty()){
-                Item item = controller.assemblyQueue.peekFirst();
-                CraftingManager crafter = CraftingManager.getInstance();
-                for(int i = 0;i < 9;i++){
-                    if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == mod_RetroStorage.recipeDisc){
-                        ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(getStackInSlot(i).getItemData());
-                        ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-                        if(output != null && output.getItem() == item){
-                            craftItem(recipe,output);
-                            return;
+        requestSearchTicks += 1;
+        if(requestSearchTicks >= requestSearchMaxTicks){
+            requestSearchTicks = 0;
+            if(controller != null && controller.isActive()){
+                setInventorySlotContents(9, controller.network_disc);
+                if(!controller.assemblyQueue.isEmpty() && !processing){
+                    Item item = controller.assemblyQueue.peekFirst();
+                    CraftingManager crafter = CraftingManager.getInstance();
+                    for(int i = 0;i < 9;i++){
+                        if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == mod_RetroStorage.recipeDisc){
+                            ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(getStackInSlot(i).getItemData());
+                            ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+                            if(output != null && output.getItem() == item){
+                                craftItem(recipe,output);
+                                return;
+                            }
                         }
                     }
-                }
                 /*ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(getStackInSlot(handlerSlot).getItemData());
                 ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);*/
+                }
             }
         }
         if(controller == null || !controller.isActive()) {
@@ -164,22 +168,31 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
         }
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()));
         controller.assemblyQueue.remove(output.getItem());
-        HashMap<Integer, Integer> requirements = new HashMap<Integer, Integer>();
+        processing = true;
+        HashMap<ArrayList<Integer>, Integer> requirements = new HashMap<ArrayList<Integer>, Integer>();
         for (Object value : recipe) {
             if (value != null) {
-                if (!requirements.containsKey(((ItemStack) value).itemID)) {
+                ArrayList<Integer> item = new ArrayList<>();
+                item.add(((ItemStack)value).itemID);
+                item.add(((ItemStack)value).getItemDamage());
+                if (!requirements.containsKey(item)){
+                    requirements.put(item, 1);
+                } else {
+                    requirements.replace(item,requirements.get(item),requirements.get(item)+1);
+                }
+                /*if (!requirements.containsKey(((ItemStack) value).itemID)) {
                     requirements.put(((ItemStack) value).itemID, 1);
                 } else {
                     requirements.replace(((ItemStack) value).itemID, requirements.get(((ItemStack) value).itemID), requirements.get(((ItemStack) value).itemID) + 1);
-                }
+                }*/
             }
         }
         int s = 0;
-        for (Map.Entry<Integer, Integer> i1 : requirements.entrySet()) {
+        for (Map.Entry<ArrayList<Integer>, Integer> i1 : requirements.entrySet()) {
             if (controller.network_disc != null) {
                 if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
                     if (requirements.get(i1.getKey()) != null) {
-                        int count = controller.network_inv.getItemCount(i1.getKey());
+                        int count = controller.network_inv.getItemCount(i1.getKey().get(0),i1.getKey().get(1));
                         if(count >= requirements.get(i1.getKey())){
                             s++;
                         }
@@ -192,7 +205,7 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
         if (s == requirements.size()) {
             for (Object o : recipe) {
                 if(o != null){
-                    int slot = controller.network_inv.getInventorySlotContainItem(((ItemStack)o).itemID);
+                    int slot = controller.network_inv.getInventorySlotContainItem(((ItemStack)o).itemID, ((ItemStack)o).getItemDamage());
                     if(slot != -1){
                         ItemStack itemCopy = controller.network_inv.getStackInSlot(slot).copy();
                         controller.network_inv.decrStackSize(slot,1);
@@ -226,9 +239,11 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
                 entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
                 world.entityJoinedWorld(entityitem);
             }
+            processing = false;
             //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting successful!");
             return true;
         }
+        processing = false;
         ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting failed!");
         return false;
     }
@@ -243,4 +258,7 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
     }
 	
 	private ItemStack[] contents;
+    private boolean processing = false;
+    private int requestSearchTicks = 0;
+    private int requestSearchMaxTicks = 20;
 }

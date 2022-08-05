@@ -33,10 +33,31 @@ public class InventoryDigital implements IInventory {
 		return -1;
 	}
 
+	public int getInventorySlotContainItem(int itemID, int itemDamage) {
+		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID && this.inventoryContents[i2].getItemDamage() == itemDamage) {
+				return i2;
+			}
+		}
+
+		return -1;
+	}
+
 	public int getItemCount(int itemID){
 		int i = 0;
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
 			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID) {
+				i += this.inventoryContents[i2].stackSize;
+			}
+		}
+
+		return i;
+	}
+
+	public int getItemCount(int itemID, int itemDamage){
+		int i = 0;
+		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID && this.inventoryContents[i2].getItemDamage() == itemDamage) {
 				i += this.inventoryContents[i2].stackSize;
 			}
 		}
