@@ -33,8 +33,8 @@ public class BlockRequestTerminal extends BlockContainer{
         sprites[0] = mod_RetroStorage.digitalChestSide; //bottom
         sprites[1] = mod_RetroStorage.digitalChestFront; //front
         sprites[2] = mod_RetroStorage.assemblerSide; //side
-        sprites[3] = mod_RetroStorage.digitalChestSide; //top 1
-        sprites[4] = mod_RetroStorage.digitalChestSide; //top 2
+        sprites[3] = mod_RetroStorage.assemblerSide; //top 1
+        sprites[4] = mod_RetroStorage.assemblerSide; //top 2
     }
 
     public int idDropped(int i, Random random)

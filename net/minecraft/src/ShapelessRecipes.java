@@ -19,14 +19,20 @@ public class ShapelessRecipes implements IRecipe {
 
 	public ArrayList<?> getRecipeItems() {
 		ArrayList arraylist = new ArrayList(recipeItems);
+		arraylist.ensureCapacity(9);
+		for(int i = arraylist.size();i<9;i++){
+			arraylist.add(i,null);
+		}
 		return arraylist;
 	}
 
 	public boolean matchesArray(ArrayList<ItemStack> list) {
+		//System.out.println(list);
 		if (list.isEmpty()){
 			return false;
 		}
 		ArrayList<ItemStack> arraylist = (ArrayList<ItemStack>) getRecipeItems();
+		//System.out.println(arraylist);
 		if (list.size() != arraylist.size()){
 			return false;
 		}
@@ -34,21 +40,25 @@ public class ShapelessRecipes implements IRecipe {
 		for(int j = 0; j < list.size(); j++)
 		{
 			ItemStack itemstack = list.get(j);//inventorycrafting.func_21103_b(j, i);
-			if (itemstack == null) {
-				continue;
-			}
 			for (int i = 0;i < arraylist.size();i++) {
 				ItemStack itemstack1 = arraylist.get(i);
-				if (itemstack1 == null) {
-					continue;
-				}
-				//System.out.println(itemstack.toString() + " vs " + itemstack1.toString());
-				if(itemstack.itemID != itemstack1.itemID || (itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage()))
-				{
-					continue;
-				} else {
+				if (itemstack1 == null && itemstack == null) {
+					//System.out.println("Matching (null)");
 					n++;
 					arraylist.remove(i);
+					continue;
+				} else if(itemstack != null && itemstack1 != null) {
+					//System.out.println(itemstack.toString() + " vs " + itemstack1.toString());
+					if(itemstack.itemID != itemstack1.itemID || (itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage()))
+					{
+						continue;
+					} else {
+						//System.out.println("Matching");
+						n++;
+						arraylist.remove(i);
+					}
+				} else {
+					continue;
 				}
 			}
 
