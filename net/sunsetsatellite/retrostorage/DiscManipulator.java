@@ -617,6 +617,9 @@ public class DiscManipulator {
 
 	public static void saveDisc(ItemStack disc, IInventory inv, int page){
 		//System.out.printf("Saving contents of page %d of inventory %s to disc %s%n",page,inv.toString(),disc.toString());
+		if(disc == null){
+			return;
+		}
 		NBTTagCompound discNBT = disc.getItemData();
 		for(int i = 1; i < 37;i++){
 			ItemStack item = inv.getStackInSlot(i);
@@ -738,7 +741,7 @@ public class DiscManipulator {
 		if(s == requirements.size()){
 			entityplayer.addChatMessage("Request successful!");
 			for(int i = 0;i<count;i++){
-				controller.assemblyQueue.add(item.getItem());
+				controller.assemblyQueue.add(item);
 			}
 			return true;
 		} else {

@@ -68,7 +68,7 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
         ticksSinceUpdate += 1;
         if(ticksSinceUpdate >= 60){
             ticksSinceUpdate = 0;
-            if(controller != null){
+            if(controller != null && controller.isActive()){
                 DiscManipulator.saveDisc(controller.network_disc,controller.network_inv,page);
             }
         }

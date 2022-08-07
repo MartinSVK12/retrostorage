@@ -125,59 +125,61 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-		if(controller != null && controller.isActive() && controller.network_disc != null) {
-			TileEntity tile = findTileEntityAroundBlock();
-			if (tile instanceof TileEntityChest){
-				TileEntityChest chest = (TileEntityChest) tile;
-				ItemStack item = null;
-				int slot = 0;
-				for(int i = 0; i < chest.getSizeInventory(); i++) {
-					item = chest.getStackInSlot(i);
-					if (item != null) {
-						continue;
-					} else {
-						slot = i;
-						break;
-					}
-				}
-				if(isEmpty()) {
-					if (item == null) {
-						if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                            ItemStack network_item = controller.network_inv.getStackInSlot(controller.network_inv.getFirstOccupiedStack());
-                            if(network_item != null && network_item.getItem() != mod_RetroStorage.virtualDisc){
-                                controller.network_inv.setInventorySlotContents(controller.network_inv.getFirstOccupiedStack(),null);
-                                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
-                                chest.setInventorySlotContents(slot, network_item);
-                            }
-						}
-					}
-				} else {
-					if (item == null) {
-						if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                            int i = 0;
-                            int filter = -1;
-                            do {
-                                if(getStackInSlot(i) != null) {
-                                    filter = controller.network_inv.getInventorySlotContainItem(getStackInSlot(0).itemID);
-                                }
-                                i++;
-                                if(i == 9) {
-                                    break;
-                                }
-                            } while (filter == -1);
-                            if(filter != -1){
-                                ItemStack network_item = controller.network_inv.getStackInSlot(filter);
-                                if(network_item != null){
-                                    controller.network_inv.setInventorySlotContents(filter,null);
+        if(enabled){
+            if(controller != null && controller.isActive() && controller.network_disc != null) {
+                TileEntity tile = findTileEntityAroundBlock();
+                if (tile instanceof TileEntityChest){
+                    TileEntityChest chest = (TileEntityChest) tile;
+                    ItemStack item = null;
+                    int slot = 0;
+                    for(int i = 0; i < chest.getSizeInventory(); i++) {
+                        item = chest.getStackInSlot(i);
+                        if (item != null) {
+                            continue;
+                        } else {
+                            slot = i;
+                            break;
+                        }
+                    }
+                    if(isEmpty()) {
+                        if (item == null) {
+                            if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
+                                ItemStack network_item = controller.network_inv.getStackInSlot(controller.network_inv.getFirstOccupiedStack());
+                                if(network_item != null && network_item.getItem() != mod_RetroStorage.virtualDisc){
+                                    controller.network_inv.setInventorySlotContents(controller.network_inv.getFirstOccupiedStack(),null);
                                     DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                                     chest.setInventorySlotContents(slot, network_item);
                                 }
                             }
-						}
-					}
-				}
-			}
-		}	
+                        }
+                    } else {
+                        if (item == null) {
+                            if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
+                                int i = 0;
+                                int filter = -1;
+                                do {
+                                    if(getStackInSlot(i) != null) {
+                                        filter = controller.network_inv.getInventorySlotContainItem(getStackInSlot(0).itemID);
+                                    }
+                                    i++;
+                                    if(i == 9) {
+                                        break;
+                                    }
+                                } while (filter == -1);
+                                if(filter != -1){
+                                    ItemStack network_item = controller.network_inv.getStackInSlot(filter);
+                                    if(network_item != null){
+                                        controller.network_inv.setInventorySlotContents(filter,null);
+                                        DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                        chest.setInventorySlotContents(slot, network_item);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 	
 	public boolean canInteractWith(EntityPlayer entityplayer)
@@ -190,4 +192,5 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
     }
 	
 	private ItemStack[] contents;
+    boolean enabled = true;
 }

@@ -40,7 +40,7 @@ public class GuiAssemblyQueue extends GuiContainer
                     {
                         j++;
                         if(q.size() > j){
-                            drawItemStack(new ItemStack((Item)q.get(j)), 8 + l * 18, 18 + i * 18);
+                            drawItemStack((ItemStack)q.get(j), 8 + l * 18, 18 + i * 18);
                         }
                         //addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
                     }

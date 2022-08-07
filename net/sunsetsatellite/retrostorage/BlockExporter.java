@@ -1,13 +1,8 @@
 package net.sunsetsatellite.retrostorage;
 
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Material;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.src.*;
+
+import java.util.Random;
 
 public class BlockExporter extends BlockContainer {
 
@@ -74,6 +69,30 @@ public class BlockExporter extends BlockContainer {
 			    return true;
 		    }
     }
+	public void updateTick(World world, int i, int j, int k, Random random)
+	{
+		TileEntityExporter tileentityexporter = (TileEntityExporter)world.getBlockTileEntity(i, j, k);
+		if(world.isBlockIndirectlyGettingPowered(i, j, k) || world.isBlockIndirectlyGettingPowered(i, j + 1, k))
+		{
+			tileentityexporter.enabled = false;
+		} else if (!world.isBlockIndirectlyGettingPowered(i, j, k) && !world.isBlockIndirectlyGettingPowered(i, j + 1, k)) {
+			tileentityexporter.enabled = true;
+		}
+	}
+
+	public void onNeighborBlockChange(World world, int i, int j, int k, int l)
+	{
+		if(l > 0 && Block.blocksList[l].canProvidePower())
+		{
+			boolean flag = world.isBlockIndirectlyGettingPowered(i, j, k) || world.isBlockIndirectlyGettingPowered(i, j + 1, k);
+			boolean flag2 = !world.isBlockIndirectlyGettingPowered(i, j, k) && !world.isBlockIndirectlyGettingPowered(i, j + 1, k);
+			if(flag || flag2)
+			{
+				world.scheduleBlockUpdate(i, j, k, blockID, tickRate());
+			}
+		}
+	}
+
 	
 	protected TileEntity getBlockEntity() {
 		return new TileEntityExporter();

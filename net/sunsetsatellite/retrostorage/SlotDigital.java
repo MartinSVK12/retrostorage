@@ -59,7 +59,9 @@ public class SlotDigital extends Slot {
 
     public void putStack(ItemStack itemStack1) {
         if(inventory instanceof TileEntityInNetwork){
-            System.out.println(itemStack1.toString()+" inserted into slot "+ this +" (index "+ this.slotIndex +")");
+            if(itemStack1 != null){
+                System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +")");
+            }
             super.putStack(itemStack1);
             if(this.slotIndex == 0 && itemStack1.getItem() instanceof ItemStorageDisc){
                 DiscManipulator.clearDigitalInv(((TileEntityInNetwork) inventory).controller.network_inv);
@@ -68,7 +70,9 @@ public class SlotDigital extends Slot {
                 DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),((TileEntityInNetwork) inventory).controller.network_inv,((TileEntityDigitalContainer)inventory).page);
             }
         } else if(inventory instanceof TileEntityDigitalChest) {
-            System.out.println(itemStack1.toString()+" inserted into slot "+ this +" (index "+ this.slotIndex +")");
+            if(itemStack1 != null) {
+                System.out.println(itemStack1 + " inserted into slot " + this + " (index " + this.slotIndex + ")");
+            }
             super.putStack(itemStack1);
             if(this.slotIndex == 0 && itemStack1.getItem() instanceof ItemStorageDisc){
                 DiscManipulator.clearDigitalInv(this.inventory);

@@ -83,6 +83,8 @@ public class mod_RetroStorage extends BaseMod {
 		//ModLoader.AddName(digitalInterface,"Item Interface");
 		ModLoader.AddName(mobileTerminal,"Mobile Terminal");
 		ModLoader.AddName(mobileRequestTerminal,"Mobile Request Terminal");
+		ModLoader.AddName(blankCard,"Blank Card");
+		ModLoader.AddName(boosterCard,"Booster Card");
 
 		ModLoader.RegisterBlock(digitalChest);
 		ModLoader.RegisterBlock(digitalController);
@@ -150,6 +152,8 @@ public class mod_RetroStorage extends BaseMod {
 	public static ItemRecipeDisc recipeDisc = (ItemRecipeDisc) (new ItemRecipeDisc(getId("recipeDisc",145))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("recipedisc.png").toString())).setItemName("recipedisc");
 	public static ItemTerminal mobileTerminal = (ItemTerminal) (new ItemTerminal(getId("mobileTerminal",147))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobileterminal.png").toString())).setItemName("mobileterminal").setMaxStackSize(1);
 	public static ItemRequestTerminal mobileRequestTerminal = (ItemRequestTerminal) (new ItemRequestTerminal(getId("mobileRequestTerminal",148))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobilerequestterminal.png").toString())).setItemName("mobilerequestterminal").setMaxStackSize(1);
+	public static Item blankCard = (new Item(getId("blankCard",149))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("blankcard.png").toString())).setItemName("blankcard");
+	public static Item boosterCard = (new Item(getId("boosterCard",150))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("boostercard.png").toString())).setItemName("boostercard");
 
 	public static Block digitalChest = (new BlockDigitalChest(getId("digitalChest",165), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalChest"));
 	public static Block digitalController = (new BlockDigitalController(getId("digitalController",166),ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("digitalcontroller.png").toString())).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalController"));

@@ -1,5 +1,6 @@
 package net.sunsetsatellite.retrostorage;
 
+import ic2.TileEntityElectricBlock;
 import net.minecraft.src.*;
 
 import java.util.*;
@@ -25,18 +26,43 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			ticksSinceReload = 0;
 			reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord,yCoord,zCoord,null);
 		}
-		if(energy <= 0 && active) {
-			removeFromNetwork(worldObj);
-			network.clear();
-			devicesConnected = 0;
-			active = false;
-			itemAssembly.clear();
-			network_disc = null;
-			network_drive = null;
+		TileEntity tile = findTileEntityAroundBlock();
+		if(tile instanceof TileEntityElectricBlock){
+			externalEnergySource = true;
+			externalEnergySourceTile = tile;
+		} else {
+			externalEnergySource = false;
+			externalEnergySourceTile = null;
 		}
-		if(energy > 0) {
-			energy -= devicesConnected;
-			connectDrive();
+		if(!externalEnergySource){
+			if(energy <= 0 && active) {
+				removeFromNetwork(worldObj);
+				network.clear();
+				devicesConnected = 0;
+				active = false;
+				itemAssembly.clear();
+				network_disc = null;
+				network_drive = null;
+			}
+			if(energy > 0) {
+				energy -= devicesConnected;
+				connectDrive();
+			}
+		} else {
+			if(((TileEntityElectricBlock) tile).energy < 0+devicesConnected && active){
+				((TileEntityElectricBlock) tile).energy = 0;
+				removeFromNetwork(worldObj);
+				network.clear();
+				devicesConnected = 0;
+				active = false;
+				itemAssembly.clear();
+				network_disc = null;
+				network_drive = null;
+			} else {
+				((TileEntityElectricBlock) tile).energy -= devicesConnected;
+				connectDrive();
+			}
+
 		}
 
     }
@@ -213,27 +239,40 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 		devicesConnected = 0;
 		itemAssembly.clear();
 		//network_inv = new InventoryDigital("Digital Network Inventory",this);
-		if(energy > 0) {
+		if(!externalEnergySource){
+			if(energy > 0) {
+				if(entityplayer != null) {
+					entityplayer.addChatMessage("Network reloaded.");
+				}
+				addToNetwork(world, i, j, k);
+			} else if (!active && energy <= 0) {
+				if(entityplayer != null) {
+					entityplayer.addChatMessage("Network out of energy!");
+				}
+				return;
+			}
 			if(entityplayer != null) {
-				entityplayer.addChatMessage("Network reloaded.");
+				entityplayer.addChatMessage(devicesConnected != 0 ? devicesConnected > 1 ? "There are " + (devicesConnected) + " devices connected." : "There is 1 device connected" : "There are no devices connected.");
+				entityplayer.addChatMessage("Network remaining energy: " + energy + " (" + energy / (20 * devicesConnected) + " seconds remain.)");
+				entityplayer.addChatMessage("Current energy usage: " + (devicesConnected));
 			}
-			addToNetwork(world, i, j, k);
-		} else if (!active && energy <= 0) {
+		} else {
+			if(((TileEntityElectricBlock)externalEnergySourceTile).energy > 0) {
+				if(entityplayer != null) {
+					entityplayer.addChatMessage("Network reloaded.");
+				}
+				addToNetwork(world, i, j, k);
+			} else if (!active && ((TileEntityElectricBlock)externalEnergySourceTile).energy <= 0) {
+				if(entityplayer != null) {
+					entityplayer.addChatMessage("Network out of energy!");
+				}
+				return;
+			}
 			if(entityplayer != null) {
-				entityplayer.addChatMessage("Network out of energy!");
+				entityplayer.addChatMessage(devicesConnected != 0 ? devicesConnected > 1 ? "There are " + (devicesConnected) + " devices connected." : "There is 1 device connected" : "There are no devices connected.");
+				entityplayer.addChatMessage("External energy source connected.");
+				entityplayer.addChatMessage("Current energy usage: " + (devicesConnected));
 			}
-			return;
-		}
-		if(entityplayer != null) {
-			entityplayer.addChatMessage(devicesConnected != 0 ? devicesConnected > 1 ? "There are " + (devicesConnected) + " devices connected." : "There is 1 device connected" : "There are no devices connected.");
-			entityplayer.addChatMessage("Network remaining energy: " + energy + " (" + energy / (20 * devicesConnected) + " seconds remain.)");
-			entityplayer.addChatMessage("Current energy usage: " + (devicesConnected));
-			/*if(!itemAssembly.isEmpty()){
-				System.out.println("Craftable Items: "+itemAssembly.toString());
-			}
-			if(!assemblyQueue.isEmpty()){
-				System.out.println("Assembly Queue: "+assemblyQueue.toString());
-			}*/
 		}
 	}
 
@@ -283,8 +322,10 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	private double energy = 0;
     private boolean active = true;
     public int devicesConnected = 0;
+	private boolean externalEnergySource = false;
+	private TileEntity externalEnergySourceTile = null;
 
 	public InventoryDigital network_inv = new InventoryDigital("Digital Network Inventory",this);
 	public HashMap<ItemStack, List<Object>> itemAssembly = new HashMap<ItemStack, List<Object>>();
-	public ArrayDeque<Item> assemblyQueue = new ArrayDeque<>();
+	public ArrayDeque<ItemStack> assemblyQueue = new ArrayDeque<>();
 }

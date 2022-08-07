@@ -43,7 +43,7 @@ public class ShapelessRecipes implements IRecipe {
 					continue;
 				}
 				//System.out.println(itemstack.toString() + " vs " + itemstack1.toString());
-				if(itemstack.itemID != itemstack1.itemID || itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage())
+				if(itemstack.itemID != itemstack1.itemID || (itemstack1.getItemDamage() != -1 && itemstack.getItemDamage() != itemstack1.getItemDamage()))
 				{
 					continue;
 				} else {

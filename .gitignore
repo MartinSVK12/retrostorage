@@ -696,3 +696,10 @@
 /forge/MinecraftForgeClient.java
 /forge/Property.java
 /forge/
+/ic2/
+/net/minecraft/src/mod_IC2.java
+/IC2sprites/
+/armor/
+/adminwrench.png
+/net/minecraft/src/mod_AdminWrench.java
+/net/minecraft/src/ItemAdminWrench.java

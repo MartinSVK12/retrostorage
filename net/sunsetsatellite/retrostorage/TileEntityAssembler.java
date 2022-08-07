@@ -60,16 +60,16 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
     
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
-    	if(i != 9) {
+    	/*if(i != 9) {
     		for(int j = 0;j < contents.length;j++) {
         		if (contents[j] == null) { 
         			contents[j] = itemstack;
         			break;
         		}
         	}
-    	} else {
-    		contents[i] = itemstack;
-    	}
+    	} else {*/
+        contents[i] = itemstack;
+    	//}
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
             itemstack.stackSize = getInventoryStackLimit();
@@ -135,7 +135,7 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
             if(controller != null && controller.isActive()){
                 setInventorySlotContents(9, controller.network_disc);
                 if(!controller.assemblyQueue.isEmpty() && !processing){
-                    Item item = controller.assemblyQueue.peekFirst();
+                    Item item = controller.assemblyQueue.peekFirst().getItem();
                     CraftingManager crafter = CraftingManager.getInstance();
                     for(int i = 0;i < 9;i++){
                         if(getStackInSlot(i) != null && getStackInSlot(i).getItem() == mod_RetroStorage.recipeDisc){
@@ -163,11 +163,11 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
         }
         if(!controller.itemAssembly.containsKey(output)){
             ModLoader.getMinecraftInstance().thePlayer.addChatMessage("ERROR: Attempted to craft an unrecognized recipe.");
-            controller.assemblyQueue.remove(output.getItem());
+            controller.assemblyQueue.remove(output);
             return false;
         }
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()));
-        controller.assemblyQueue.remove(output.getItem());
+        controller.assemblyQueue.remove(output);
         processing = true;
         HashMap<ArrayList<Integer>, Integer> requirements = new HashMap<ArrayList<Integer>, Integer>();
         for (Object value : recipe) {
