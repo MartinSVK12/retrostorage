@@ -1,5 +1,6 @@
 package net.sunsetsatellite.retrostorage;
 
+import ic2.TileEntityElecMachine;
 import net.minecraft.src.*;
 
 public class TileEntityInterface extends TileEntityInNetworkWithInv {
@@ -151,12 +152,12 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
             requestSearchTicks = 0;
             if(controller != null && controller.isActive() &&controller.network_disc != null && controller.network_disc.getItem() instanceof ItemStorageDisc && attachedTileEntity != null) {
                 if(processing != null && processingAmount != 0){
-                    if(attachedTileEntity instanceof TileEntityFurnace){
-                        ItemStack tileItem = ((TileEntityFurnace) attachedTileEntity).getStackInSlot(2);
+                    if(attachedTileEntity instanceof TileEntityFurnace){// || (ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded(" net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElecMachine){
+                        ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
                         if(tileItem != null && tileItem.stackSize == processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
                                 if (controller.network_inv.addItemStackToInventory(tileItem)){
-                                    ((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(2, null);
+                                    ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
                                     DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
                                     processing = null;
                                     processingAmount = 0;
@@ -171,8 +172,8 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                     if(processing == null && getInventorySlotContainItem(item.itemID,item.getItemDamage()) != -1){
                         int networkItemCount = controller.network_inv.getItemCount(item.itemID,item.getItemDamage());
                         if(networkItemCount >= 1){
-                            if(attachedTileEntity instanceof TileEntityFurnace){
-                                ItemStack tileItem = ((TileEntityFurnace) attachedTileEntity).getStackInSlot(0);
+                            if(attachedTileEntity instanceof TileEntityFurnace){ // || (ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded(" net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElecMachine){
+                                ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
                                 if(tileItem == null){
                                     controller.assemblyQueue.remove(item);
                                     processing = item;
@@ -181,7 +182,7 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                                         processingAmount += 1;
                                         controller.network_inv.decrStackSize(networkSlot,1);
                                         DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
-                                        ((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(0,item.copy());
+                                        ((IInventory) attachedTileEntity).setInventorySlotContents(0,item.copy());
                                     }
                                 }
                             }
@@ -192,8 +193,8 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                     } else if(processing != null && processing.getItem() == item.getItem() && processing.getItemDamage() == item.getItemDamage() && getInventorySlotContainItem(item.itemID,item.getItemDamage()) != -1){
                         int networkItemCount = controller.network_inv.getItemCount(item.itemID,item.getItemDamage());
                         if(networkItemCount >= 1) {
-                            if (attachedTileEntity instanceof TileEntityFurnace) {
-                                ItemStack tileItem = ((TileEntityFurnace) attachedTileEntity).getStackInSlot(0);
+                            if (attachedTileEntity instanceof TileEntityFurnace){//  || (ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded(" net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElecMachine){
+                                ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
                                 if (tileItem.isItemEqual(item) && tileItem.stackSize < 64) {
                                     controller.assemblyQueue.remove(item);
                                     int networkSlot = controller.network_inv.getInventorySlotContainItem(item.itemID, item.getItemDamage());

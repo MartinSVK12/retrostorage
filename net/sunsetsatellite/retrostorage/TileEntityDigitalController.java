@@ -27,7 +27,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord,yCoord,zCoord,null);
 		}
 		TileEntity tile = findTileEntityAroundBlock();
-		if(tile instanceof TileEntityElectricBlock){
+		if(ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2") && tile instanceof TileEntityElectricBlock){
 			externalEnergySource = true;
 			externalEnergySourceTile = tile;
 		} else {
@@ -49,7 +49,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 				connectDrive();
 			}
 		} else {
-			if(((TileEntityElectricBlock) tile).energy < 0+devicesConnected && active){
+			if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && ((TileEntityElectricBlock) tile).energy < 0+devicesConnected && active){
 				((TileEntityElectricBlock) tile).energy = 0;
 				removeFromNetwork(worldObj);
 				network.clear();
@@ -257,16 +257,18 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 				entityplayer.addChatMessage("Current energy usage: " + (devicesConnected));
 			}
 		} else {
-			if(((TileEntityElectricBlock)externalEnergySourceTile).energy > 0) {
-				if(entityplayer != null) {
-					entityplayer.addChatMessage("Network reloaded.");
+			if(ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")){
+				if(((TileEntityElectricBlock)externalEnergySourceTile).energy > 0) {
+					if(entityplayer != null) {
+						entityplayer.addChatMessage("Network reloaded.");
+					}
+					addToNetwork(world, i, j, k);
+				} else if (!active && ((TileEntityElectricBlock)externalEnergySourceTile).energy <= 0) {
+					if(entityplayer != null) {
+						entityplayer.addChatMessage("Network out of energy!");
+					}
+					return;
 				}
-				addToNetwork(world, i, j, k);
-			} else if (!active && ((TileEntityElectricBlock)externalEnergySourceTile).energy <= 0) {
-				if(entityplayer != null) {
-					entityplayer.addChatMessage("Network out of energy!");
-				}
-				return;
 			}
 			if(entityplayer != null) {
 				entityplayer.addChatMessage(devicesConnected != 0 ? devicesConnected > 1 ? "There are " + (devicesConnected) + " devices connected." : "There is 1 device connected" : "There are no devices connected.");

@@ -29,33 +29,26 @@ public class BlockRecipeEncoder extends BlockContainer{
         return mod_RetroStorage.recipeEncoder.blockID;
     }
 
-    public void onBlockAdded(World world, int i, int j, int k)
-    {
+    public void onBlockAdded(World world, int i, int j, int k) {
         super.onBlockAdded(world, i, j, k);
-        setDefaultDirection(world, i, j, k);
     }
 
-    private void setDefaultDirection(World world, int i, int j, int k)
-    {
-        int l = world.getBlockId(i, j, k - 1);
-        int i1 = world.getBlockId(i, j, k + 1);
-        int j1 = world.getBlockId(i - 1, j, k);
-        int k1 = world.getBlockId(i + 1, j, k);
+    public void onBlockPlacedBy(World world, int i, int j, int k, EntityLiving entityliving) {
+        int l = MathHelper.floor_double((double) (entityliving.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
         byte byte0 = 3;
-        if(Block.opaqueCubeLookup[l] && !Block.opaqueCubeLookup[i1])
-        {
-            byte0 = 3;
-        }
-        if(Block.opaqueCubeLookup[i1] && !Block.opaqueCubeLookup[l])
-        {
+        if(l == 0) {
             byte0 = 2;
         }
-        if(Block.opaqueCubeLookup[j1] && !Block.opaqueCubeLookup[k1])
-        {
+
+        if(l == 1) {
             byte0 = 5;
         }
-        if(Block.opaqueCubeLookup[k1] && !Block.opaqueCubeLookup[j1])
-        {
+
+        if(l == 2) {
+            byte0 = 3;
+        }
+
+        if(l == 3) {
             byte0 = 4;
         }
         world.setBlockMetadataWithNotify(i, j, k, byte0);
