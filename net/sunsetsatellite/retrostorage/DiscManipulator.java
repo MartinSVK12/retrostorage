@@ -682,6 +682,21 @@ public class DiscManipulator {
 		if(controller == null){
 			return false;
 		}
+		if(controller.itemAssembly.get(item).get(0) instanceof TileEntityInterface){
+			TileEntityInterface itemInterface = (TileEntityInterface) controller.itemAssembly.get(item).get(0);
+			EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+			entityplayer.addChatMessage("Requesting processing of "+count+"x "+StringTranslate.getInstance().translateNamedKey(item.getItemName()));
+			int networkItemCount = controller.network_inv.getItemCount(item.itemID,item.getItemDamage());
+			int requestItemCount = item.stackSize * count;
+			if(networkItemCount >= requestItemCount){
+				for(int i = 0;i<count;i++) {
+					controller.assemblyQueue.add(item);
+				}
+			} else {
+				entityplayer.addChatMessage("Request failed!");
+			}
+			return false;
+		}
 		EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
 		entityplayer.addChatMessage("Requesting "+count+"x of "+item.stackSize+"x "+StringTranslate.getInstance().translateNamedKey(item.getItemName()));
 		CraftingManager crafter = CraftingManager.getInstance();

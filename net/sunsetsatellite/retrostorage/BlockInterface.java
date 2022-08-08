@@ -21,10 +21,10 @@ public class BlockInterface extends BlockContainer {
 	public static void loadSprites()
 	{
 		sprites = new int[4];
-		sprites[0] = mod_RetroStorage.digitalChestSide; //bottom
+		sprites[0] = mod_RetroStorage.interfaceSide; //bottom
 		sprites[1] = mod_RetroStorage.interfaceSide; //front
 		sprites[2] = mod_RetroStorage.interfaceSide; //side
-		sprites[3] = mod_RetroStorage.digitalChestSide; //top 1
+		sprites[3] = mod_RetroStorage.interfaceSide; //top 1
 	}
 
 	private void setDefaultDirection(World world, int i, int j, int k)

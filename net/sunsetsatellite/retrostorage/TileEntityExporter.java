@@ -87,6 +87,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
     {
         super.readFromNBT(nbttagcompound);
         NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        enabled = nbttagcompound.getBoolean("enabled");
         contents = new ItemStack[getSizeInventory()];
         for(int i = 0; i < nbttaglist.tagCount(); i++)
         {
@@ -114,7 +115,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                 nbttaglist.setTag(nbttagcompound1);
             }
         }
-
+        nbttagcompound.setBoolean("enabled",enabled);
         nbttagcompound.setTag("Items", nbttaglist);
     }
 

@@ -50,11 +50,15 @@ public class TileEntityImporter extends TileEntityInNetwork {
         }
         return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
-	
-	public void readFromNBT() {	
+
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		super.readFromNBT(nbttagcompound);
+		enabled = nbttagcompound.getBoolean("enabled");
 	}
-	
-	public void writeToNBT() {
+
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		super.writeToNBT(nbttagcompound);
+		nbttagcompound.setBoolean("enabled",enabled);
 	}
 
 	boolean enabled = true;

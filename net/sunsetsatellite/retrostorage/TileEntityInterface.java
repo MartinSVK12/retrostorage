@@ -97,6 +97,8 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                 contents[j] = new ItemStack(nbttagcompound1);
             }
         }
+        processing = new ItemStack(nbttagcompound.getCompoundTag("processing"));
+        processingAmount = nbttagcompound.getInteger("processingAmount");
 
     }
 
@@ -114,7 +116,10 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                 nbttaglist.setTag(nbttagcompound1);
             }
         }
-
+        NBTTagCompound compound = new NBTTagCompound();
+        processing.writeToNBT(compound);
+        nbttagcompound.setCompoundTag("processung",compound);
+        nbttagcompound.setInteger("processingAmount",processingAmount);
         nbttagcompound.setTag("Items", nbttaglist);
     }
 
@@ -123,62 +128,98 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
         return 64;
     }
 
+    public int getInventorySlotContainItem(int itemID, int itemDamage) {
+        for(int i2 = 0; i2 < this.contents.length; ++i2) {
+            if(this.contents[i2] != null && this.contents[i2].itemID == itemID && this.contents[i2].getItemDamage() == itemDamage) {
+                return i2;
+            }
+        }
+
+        return -1;
+    }
+
+    public void cancelProcessing(){
+        processing = null;
+        processingAmount = 0;
+    }
+
 	public void updateEntity()
     {
-		
-		/*if(network.size() > 0 && network_disc != null && network_drive != null) {
-			TileEntity tile = findTileEntityAroundBlock();
-			if (tile instanceof TileEntityChest){
-                //System.out.println("chest connected");
-				for(int i = 0; i < ((TileEntityChest) chest).getSizeInventory(); i++) {
-					ItemStack item = ((TileEntityChest) chest).getStackInSlot(i);
-					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-	    							ItemStack network_item = DiscManipulator.getItemFromDiscByIndex(network_disc, i+1);
-		    						if(network_item != null || network_item.itemID != 0) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, network_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    						((TileEntityChest) chest).setInventorySlotContents(i, network_item);
-			    						network_drive.updateDiscs();
-		    						}
-		    					}
-		    				}
-		    			}
-					}
+        attachedTileEntity = findTileEntityAroundBlock();
+        requestSearchTicks++;
+        if(requestSearchTicks >= requestSearchMaxTicks){
+            requestSearchTicks = 0;
+            if(controller != null && controller.isActive() &&controller.network_disc != null && controller.network_disc.getItem() instanceof ItemStorageDisc && attachedTileEntity != null) {
+                if(processing != null && processingAmount != 0){
+                    if(attachedTileEntity instanceof TileEntityFurnace){
+                        ItemStack tileItem = ((TileEntityFurnace) attachedTileEntity).getStackInSlot(2);
+                        if(tileItem != null && tileItem.stackSize == processingAmount){
+                            if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
+                                if (controller.network_inv.addItemStackToInventory(tileItem)){
+                                    ((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(2, null);
+                                    DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                    processing = null;
+                                    processingAmount = 0;
+                                    ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!controller.assemblyQueue.isEmpty()) {
+                    ItemStack item = controller.assemblyQueue.peekFirst();
+                    if(processing == null && getInventorySlotContainItem(item.itemID,item.getItemDamage()) != -1){
+                        int networkItemCount = controller.network_inv.getItemCount(item.itemID,item.getItemDamage());
+                        if(networkItemCount >= 1){
+                            if(attachedTileEntity instanceof TileEntityFurnace){
+                                ItemStack tileItem = ((TileEntityFurnace) attachedTileEntity).getStackInSlot(0);
+                                if(tileItem == null){
+                                    controller.assemblyQueue.remove(item);
+                                    processing = item;
+                                    int networkSlot = controller.network_inv.getInventorySlotContainItem(item.itemID,item.getItemDamage());
+                                    if(networkSlot != -1){
+                                        processingAmount += 1;
+                                        controller.network_inv.decrStackSize(networkSlot,1);
+                                        DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                        ((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(0,item.copy());
+                                    }
+                                }
+                            }
+                        } else {
+                            controller.assemblyQueue.remove(item);
+                            ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing failed!");
+                        }
+                    } else if(processing != null && processing.getItem() == item.getItem() && processing.getItemDamage() == item.getItemDamage() && getInventorySlotContainItem(item.itemID,item.getItemDamage()) != -1){
+                        int networkItemCount = controller.network_inv.getItemCount(item.itemID,item.getItemDamage());
+                        if(networkItemCount >= 1) {
+                            if (attachedTileEntity instanceof TileEntityFurnace) {
+                                ItemStack tileItem = ((TileEntityFurnace) attachedTileEntity).getStackInSlot(0);
+                                if (tileItem.isItemEqual(item) && tileItem.stackSize < 64) {
+                                    controller.assemblyQueue.remove(item);
+                                    int networkSlot = controller.network_inv.getInventorySlotContainItem(item.itemID, item.getItemDamage());
+                                    if (networkSlot != -1) {
+                                        processingAmount += 1;
+                                        controller.network_inv.decrStackSize(networkSlot, 1);
+                                        DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
+                                        tileItem.stackSize += 1;
+                                        //((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(0, item.copy());
+                                    }
+                                }
+                            }
+                        } else if(getInventorySlotContainItem(item.itemID,item.getItemDamage()) == -1){
+                            return;
+                        } else {
+                            controller.assemblyQueue.remove(item);
+                            ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing failed!");
+                        }
+                    } else {
+                        return;
+                    }
+                }
+            }
+        }
 
-				/*ItemStack item = null;
-				int slot = 0;
-				for(int i = 0; i < ((TileEntityChest) chest).getSizeInventory(); i++) {
-					item = ((TileEntityChest) chest).getStackInSlot(i);
-					if (item != null) {
-						continue;
-					} else {
-						slot = i;
-						break;
-					}
-				}
-				if(isEmpty()) {
-					if (item == null) {
-						if (network_disc.getItem() instanceof ItemStorageDisc) {
-		    				if(DiscManipulator.getMaxPartitions(network_drive) > 0) {
-		    					if(DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive) != -1) {
-	    							ItemStack network_item = DiscManipulator.getItemFromDiscByIndex(network_disc, 1);
-		    						if(network_item != null || network_item.itemID != 0) {
-		    							DiscManipulator.removeFromPartitionedDisc(network_disc, network_item, DiscManipulator.getFirstNonEmptyPartition(network_disc, network_drive));
-			    						((TileEntityChest) chest).setInventorySlotContents(slot, network_item);
-			    						network_drive.updateDiscs();
-		    						}
-		    					}
-		    				}
-						}
-					}
-				} else {
-
-					}
-				}
-			}*/
-		}
+    }
 	
 	public boolean canInteractWith(EntityPlayer entityplayer)
     {
@@ -190,4 +231,9 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
     }
 	
 	private ItemStack[] contents;
+    private ItemStack processing = null;
+    private int processingAmount = 0;
+    private int requestSearchTicks = 0;
+    private int requestSearchMaxTicks = 20;
+    private TileEntity attachedTileEntity = null;
 }

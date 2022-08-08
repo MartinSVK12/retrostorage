@@ -35,7 +35,7 @@ public class mod_RetroStorage extends BaseMod {
 		BlockRecipeEncoder.loadSprites();
 		BlockAssembler.loadSprites();
 		BlockRequestTerminal.loadSprites();
-		/*BlockInterface.loadSprites();*/
+		BlockInterface.loadSprites();
 
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityDigitalChest.class, "Digital Chest");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityDigitalController.class, "Digital Controller");
@@ -80,7 +80,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(assembler, "Assembler");
 		ModLoader.AddName(requestTerminal, "Request Terminal");
 		ModLoader.AddName(itemCable,"Cable");
-		//ModLoader.AddName(digitalInterface,"Item Interface");
+		ModLoader.AddName(digitalInterface,"Item Interface");
 		ModLoader.AddName(mobileTerminal,"Mobile Terminal");
 		ModLoader.AddName(mobileRequestTerminal,"Mobile Request Terminal");
 		ModLoader.AddName(blankCard,"Blank Card");
@@ -106,7 +106,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterBlock(recipeEncoder);
 		ModLoader.RegisterBlock(assembler);
 		ModLoader.RegisterBlock(requestTerminal);
-		/*ModLoader.RegisterBlock(digitalInterface);*/
+		ModLoader.RegisterBlock(digitalInterface);
 
 
 		ModLoader.AddRecipe(new ItemStack(digitalChest, 1), "ISI", "RCR", "IDI", 'S', blankDisc, 'I', Item.ingotIron, 'R', Item.redstone, 'C', Block.chest, 'D', Block.blockDiamond);
@@ -120,7 +120,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(digitalTerminal, 1), "III", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable);
 		ModLoader.AddRecipe(new ItemStack(importer, 1), "ILI", "GHG", "ICI", 'I', Item.ingotIron, 'L', Block.blockLapis,'G',new ItemStack(Item.dyePowder,1,10) ,'H', Block.chest, 'C', itemCable);
 		ModLoader.AddRecipe(new ItemStack(exporter, 1), "ILI", "RHR", "ICI", 'I', Item.ingotIron, 'L', Block.blockLapis,'R',new ItemStack(Item.dyePowder,1,1) ,'H', Block.chest, 'C', itemCable);
-		//odLoader.AddRecipe(new ItemStack(digitalInterface, 1), "IRI", "PHP", "ICI", 'I', Item.ingotIron, 'P', new ItemStack(Item.dyePowder,1,5),'R',recipeDisc ,'H', Block.chest, 'C', itemCable);
+		ModLoader.AddRecipe(new ItemStack(digitalInterface, 1), "IRI", "PHP", "ICI", 'I', Item.ingotIron, 'P', new ItemStack(Item.dyePowder,1,5),'R',recipeDisc ,'H', Block.chest, 'C', itemCable);
 		ModLoader.AddRecipe(new ItemStack(assembler,1),"ICI","CRC","ICI",'I',Block.blockSteel,'C',Block.workbench,'R',recipeDisc);
 		ModLoader.AddRecipe(new ItemStack(recipeEncoder,1),"IRI","PCP","IcI",'I',Item.ingotIron,'C',Block.workbench,'R',recipeDisc,'P', new ItemStack(Item.dyePowder,1,5),'c',itemCable);
 		ModLoader.AddRecipe(new ItemStack(requestTerminal, 1), "ITI", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable,'T',Block.workbench);
@@ -176,7 +176,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static Block recipeEncoder = (new BlockRecipeEncoder(getId("recipeEncoder",183)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("recipeEncoder"));
 	public static Block assembler = (new BlockAssembler(getId("assembler",184)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("assembler"));
 	public static Block requestTerminal = (new BlockRequestTerminal(getId("requestTerminal",185), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("requestTerminal"));
-	/*public static Block digitalInterface = (new BlockInterface(getId("digitalInterface",186)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("interface"));*/
+	public static Block digitalInterface = (new BlockInterface(getId("digitalInterface",186)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("interface"));
 
 	public static Item itemCable = (new ItemReed(getId("itemCable",146),cable).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("itemcable.png").toString())).setItemName("itemCable"));
 	

@@ -1,15 +1,11 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 import org.lwjgl.opengl.GL11;
 
-// Referenced classes of package net.minecraft.src:
-//            GuiContainer, ContainerDispenser, FontRenderer, RenderEngine, 
-//            InventoryPlayer, TileEntityDispenser
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GuiRequestTerminal extends GuiContainer
 {
@@ -72,6 +68,13 @@ public class GuiRequestTerminal extends GuiContainer
         }
         if(guibutton.id == 3){
             if(tile.controller != null) {
+                for (Map.Entry<ArrayList<Integer>, HashMap<String, Object>> entry : tile.controller.network.entrySet()) {
+                    //loop over tile entities in network
+                    TileEntity tile = (TileEntity) entry.getValue().values().toArray()[0];
+                    if(tile instanceof TileEntityInterface){
+                        ((TileEntityInterface) tile).cancelProcessing();
+                    }
+                }
                 EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
                 tile.controller.assemblyQueue.clear();
                 entityplayer.addChatMessage("Assembly queue cleared!");
