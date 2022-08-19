@@ -659,6 +659,32 @@ public class DiscManipulator {
 		disc.setItemData(discNBT);
 	}
 
+	public static void saveDisc(TileEntityDigitalController controller){
+		ItemStack disc = controller.network_disc;
+		IInventory inv = controller.network_inv;
+		//System.out.printf("Saving contents of entire inventory %s to disc %s%n",inv.toString(),disc.toString());
+		//System.out.printf("Inv contents: %s%n", Arrays.toString(((InventoryDigital) inv).inventoryContents));
+		if(controller.network_disc == null &!controller.isActive()){
+			return;
+		}
+		NBTTagCompound discNBT = disc.getItemData();
+		for(int i = 1; i < inv.getSizeInventory();i++){
+			ItemStack item = inv.getStackInSlot(i);
+			NBTTagCompound itemNBT = new NBTTagCompound();
+			if(item != null){
+				itemNBT.setByte("Count", (byte)item.stackSize);
+				itemNBT.setShort("id", (short)item.itemID);
+				itemNBT.setShort("Damage", (short)item.getItemDamage());
+				itemNBT.setCompoundTag("Data", (NBTTagCompound)item.getItemData());
+				discNBT.setCompoundTag(String.valueOf(i),itemNBT);
+			} else {
+				discNBT.removeTag(String.valueOf(i));
+			}
+		}
+		//System.out.printf("Data: %s%n",discNBT.toStringExtended());
+		disc.setItemData(discNBT);
+	}
+
 	public static void loadDisc(ItemStack disc, IInventory inv, int page){
 		//System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
 		NBTTagCompound discNBT = disc.getItemData();

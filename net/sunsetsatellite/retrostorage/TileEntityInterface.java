@@ -162,9 +162,9 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
                         if(tileItem != null && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                                if (controller.network_inv.addItemStackToInventory(tileItem)){
+                                if (controller.network_inv.addItemStackToInventory(tileItem.copy())){
                                     ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
-                                    DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                    DiscManipulator.saveDisc(controller);
                                     processing = null;
                                     processingAmount = 0;
                                     ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
@@ -175,9 +175,9 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
                         if(tileItem != null && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                                if (controller.network_inv.addItemStackToInventory(tileItem)){
+                                if (controller.network_inv.addItemStackToInventory(tileItem.copy())){
                                     ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
-                                    DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                    DiscManipulator.saveDisc(controller);
                                     processing = null;
                                     processingAmount = 0;
                                     ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");

@@ -9,7 +9,6 @@ public class mod_RetroStorage extends BaseMod {
 
 	public static Config config;
 
-	//TODO: Re-add all the machines and remove their classes from the compiler exclusion list.
 	public mod_RetroStorage() {
 		Config.init();
 
@@ -59,7 +58,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(storageDisc6, "Storage Disc MK VI");
 		ModLoader.AddName(recipeDisc, "Recipe Disc");
 		ModLoader.AddName(digitalController, "Digital Controller");
-		ModLoader.AddName(cable, "Cable");
+		ModLoader.AddName(cable, "Network Cable");
 		//ModLoader.AddName(itemCable, "Cable");
 		ModLoader.AddName(discDrive, "Disc Drive");
 		ModLoader.AddName(digitalTerminal, "Digital Terminal");
@@ -80,7 +79,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(recipeEncoder, "Recipe Encoder");
 		ModLoader.AddName(assembler, "Assembler");
 		ModLoader.AddName(requestTerminal, "Request Terminal");
-		ModLoader.AddName(itemCable,"Cable");
+		ModLoader.AddName(itemCable,"Network Cable");
 		ModLoader.AddName(digitalInterface,"Item Interface");
 		ModLoader.AddName(mobileTerminal,"Mobile Terminal");
 		ModLoader.AddName(mobileRequestTerminal,"Mobile Request Terminal");
