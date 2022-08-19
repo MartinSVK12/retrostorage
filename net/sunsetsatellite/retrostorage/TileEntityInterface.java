@@ -1,7 +1,10 @@
 package net.sunsetsatellite.retrostorage;
 
 import ic2.TileEntityElecMachine;
+import ic2.TileEntityElectricMachine;
 import net.minecraft.src.*;
+
+import java.util.Objects;
 
 public class TileEntityInterface extends TileEntityInNetworkWithInv {
 
@@ -98,9 +101,10 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                 contents[j] = new ItemStack(nbttagcompound1);
             }
         }
-        processing = new ItemStack(nbttagcompound.getCompoundTag("processing"));
-        processingAmount = nbttagcompound.getInteger("processingAmount");
-
+        if(!Objects.equals(nbttagcompound.getCompoundTag("processing"), new NBTTagCompound())){
+            processing = new ItemStack(nbttagcompound.getCompoundTag("processing"));
+            processingAmount = nbttagcompound.getInteger("processingAmount");
+        }
     }
 
     public void writeToNBT(NBTTagCompound nbttagcompound)
@@ -117,10 +121,12 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                 nbttaglist.setTag(nbttagcompound1);
             }
         }
-        NBTTagCompound compound = new NBTTagCompound();
-        processing.writeToNBT(compound);
-        nbttagcompound.setCompoundTag("processung",compound);
-        nbttagcompound.setInteger("processingAmount",processingAmount);
+        if(processing != null) {
+            NBTTagCompound compound = new NBTTagCompound();
+            processing.writeToNBT(compound);
+            nbttagcompound.setCompoundTag("processung", compound);
+            nbttagcompound.setInteger("processingAmount", processingAmount);
+        }
         nbttagcompound.setTag("Items", nbttaglist);
     }
 
@@ -154,7 +160,20 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                 if(processing != null && processingAmount != 0){
                     if(attachedTileEntity instanceof TileEntityFurnace){// || (ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded(" net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElecMachine){
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
-                        if(tileItem != null && tileItem.stackSize == processingAmount){
+                        if(tileItem != null && tileItem.stackSize >= processingAmount){
+                            if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
+                                if (controller.network_inv.addItemStackToInventory(tileItem)){
+                                    ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
+                                    DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                    processing = null;
+                                    processingAmount = 0;
+                                    ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
+                                }
+                            }
+                        }
+                    } else if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElectricMachine){
+                        ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
+                        if(tileItem != null && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
                                 if (controller.network_inv.addItemStackToInventory(tileItem)){
                                     ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
@@ -185,6 +204,19 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                                         ((IInventory) attachedTileEntity).setInventorySlotContents(0,item.copy());
                                     }
                                 }
+                            } else if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElectricMachine){
+                                ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
+                                if(tileItem == null){
+                                    controller.assemblyQueue.remove(item);
+                                    processing = item;
+                                    int networkSlot = controller.network_inv.getInventorySlotContainItem(item.itemID,item.getItemDamage());
+                                    if(networkSlot != -1){
+                                        processingAmount += 1;
+                                        controller.network_inv.decrStackSize(networkSlot,1);
+                                        DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                        ((IInventory) attachedTileEntity).setInventorySlotContents(0,item.copy());
+                                    }
+                                }
                             }
                         } else {
                             controller.assemblyQueue.remove(item);
@@ -194,6 +226,19 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                         int networkItemCount = controller.network_inv.getItemCount(item.itemID,item.getItemDamage());
                         if(networkItemCount >= 1) {
                             if (attachedTileEntity instanceof TileEntityFurnace){//  || (ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded(" net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElecMachine){
+                                ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
+                                if (tileItem.isItemEqual(item) && tileItem.stackSize < 64) {
+                                    controller.assemblyQueue.remove(item);
+                                    int networkSlot = controller.network_inv.getInventorySlotContainItem(item.itemID, item.getItemDamage());
+                                    if (networkSlot != -1) {
+                                        processingAmount += 1;
+                                        controller.network_inv.decrStackSize(networkSlot, 1);
+                                        DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
+                                        tileItem.stackSize += 1;
+                                        //((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(0, item.copy());
+                                    }
+                                }
+                            } else if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElectricMachine){
                                 ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
                                 if (tileItem.isItemEqual(item) && tileItem.stackSize < 64) {
                                     controller.assemblyQueue.remove(item);

@@ -26,6 +26,7 @@ public class mod_RetroStorage extends BaseMod {
 		recipeEncoderFront = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("recipeencoderfront.png").toString());
 		virtualDiscTop = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("virtualdisctop.png").toString());
 		interfaceSide = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("interfaceside.png").toString());
+		requestTerminalFront = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("requestterminalfront.png").toString());
 		BlockDigitalChest.loadSprites();
 		BlockDiscDrive.loadSprites();
 		BlockDigitalTerminal.loadSprites();
@@ -193,6 +194,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static int recipeEncoderFront;
 	public static int virtualDiscTop;
 	public static int interfaceSide;
+	public static int requestTerminalFront;
 	
 	
 	public void GenerateSurface(World world, Random random, int i, int j){
