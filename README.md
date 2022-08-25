@@ -1,9 +1,9 @@
 # RetroStorage 
 Digital storage system mod for Minecraft b1.7.3.
 
-Requires Modloader (+ Forge 1.0.6 for versions a1.5 and above.). Currently, singleplayer only.
+Requires Modloader (+ Forge 1.0.6 for versions a1.5pre1 and above.). Currently, singleplayer only.
 
-*Version a1.5 will include a rewrite of most internals to make them better, easier to use and less buggy and such it might take a while to be released*
+*Version a1.5pre2 also includes IC2 support*
 
 **Features**:
 
@@ -29,7 +29,7 @@ Have fun! :D
 
 ## Installation
 [MultiMC](https://multimc.org/) recommended, Modloader + Forge required.
-Forge 1.0.6 is recommended and is required for versions a1.5 and above.
+Forge 1.0.6 is recommended and is required for versions a1.5pre1 and above.
 
 Install as a jar mod using 'Add to minecraft.jar' in MultiMC.
 
@@ -43,6 +43,8 @@ Does edit some base classes for now:
  - `Container & GuiContainer.java` moves GUI's higher to make the custom ones fit + adds item lore (used for displaying capacity of discs)
  - `RenderBlocks.java` for the cable model
  - All `NBTTag*.java` classes to implement proper `equals()` and some other fuctions.
+ 
+Versions a1.5pre2 and above support IC2 energy storage for powering the Digital Controller and IC2 machines in Interface processing.
 
 ## Building
 Step 1: Download source.
@@ -55,7 +57,7 @@ Step 4: Profit!
 
 ## Special Thanks
 - [@rythin-sr](https://github.com/rythin-sr) - based bug finder
+- [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.  
  
-## Licence
-This mod is licensed under **Apache License 2.0**,
-please credit if using parts in your own mods.
+## License
+Please credit if using parts in your own mods/modpacks (like ItemNBT for example)
