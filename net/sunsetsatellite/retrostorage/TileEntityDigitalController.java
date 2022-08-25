@@ -27,7 +27,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord,yCoord,zCoord,null);
 		}
 		TileEntity tile = findTileEntityAroundBlock();
-		if(ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2") && tile instanceof TileEntityElectricBlock){
+		if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && tile instanceof TileEntityElectricBlock){
 			externalEnergySource = true;
 			externalEnergySourceTile = tile;
 		} else {
@@ -49,18 +49,20 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 				connectDrive();
 			}
 		} else {
-			if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && ((TileEntityElectricBlock) tile).energy < 0+devicesConnected && active){
-				((TileEntityElectricBlock) tile).energy = 0;
-				removeFromNetwork(worldObj);
-				network.clear();
-				devicesConnected = 0;
-				active = false;
-				itemAssembly.clear();
-				network_disc = null;
-				network_drive = null;
-			} else {
-				((TileEntityElectricBlock) tile).energy -= devicesConnected;
-				connectDrive();
+			if(ModLoader.isModLoaded("mod_IC2") || ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) {
+				if (((TileEntityElectricBlock) tile).energy < devicesConnected && active){
+					((TileEntityElectricBlock) tile).energy = 0;
+					removeFromNetwork(worldObj);
+					network.clear();
+					devicesConnected = 0;
+					active = false;
+					itemAssembly.clear();
+					network_disc = null;
+					network_drive = null;
+				} else {
+					((TileEntityElectricBlock) tile).energy -= devicesConnected;
+					connectDrive();
+				}
 			}
 
 		}
@@ -258,16 +260,18 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			}
 		} else {
 			if(ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")){
-				if(((TileEntityElectricBlock)externalEnergySourceTile).energy > 0) {
-					if(entityplayer != null) {
-						entityplayer.addChatMessage("Network reloaded.");
+				if(externalEnergySourceTile instanceof TileEntityElectricBlock){
+					if(((TileEntityElectricBlock)externalEnergySourceTile).energy > 0) {
+						if(entityplayer != null) {
+							entityplayer.addChatMessage("Network reloaded.");
+						}
+						addToNetwork(world, i, j, k);
+					} else if (!active && ((TileEntityElectricBlock)externalEnergySourceTile).energy <= 0) {
+						if(entityplayer != null) {
+							entityplayer.addChatMessage("Network out of energy!");
+						}
+						return;
 					}
-					addToNetwork(world, i, j, k);
-				} else if (!active && ((TileEntityElectricBlock)externalEnergySourceTile).energy <= 0) {
-					if(entityplayer != null) {
-						entityplayer.addChatMessage("Network out of energy!");
-					}
-					return;
 				}
 			}
 			if(entityplayer != null) {
