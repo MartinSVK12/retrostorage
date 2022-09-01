@@ -131,6 +131,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(storageDisc6, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc5,'#',new ItemStack(Item.dyePowder,1,5),'R',Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(mobileTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass,'I',Item.ingotIron,'D',Item.diamond,'T',digitalTerminal);
 		ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass,'I',Item.ingotIron,'D',Item.diamond,'T',requestTerminal);
+
+		System.out.println("[RetroStorage] IC2 Installed: "+IC2Available());
 	}
 
 	public static int getId(String s, int base) {
@@ -200,7 +202,11 @@ public class mod_RetroStorage extends BaseMod {
     }
 
 
-	
+	public static boolean IC2Available(){
+		return ((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")));
+	}
+
+
 	@Override
 	public String Version() {
 		return "a1.5-pre2";

@@ -11,7 +11,7 @@ public class TileEntityImporter extends TileEntityInNetwork {
     {
 		if(enabled){
 			if(controller != null && controller.network_drive != null && controller.network_drive.virtualDriveMaxStacks != 0) {
-				TileEntity tile = findTileEntityAroundBlock();
+				TileEntity tile = findTileEntityAroundBlock(TileEntityChest.class);
 				if (tile instanceof TileEntityChest){
 					//System.out.println("chest connected");
 					for(int i = 0; i < ((TileEntityChest) tile).getSizeInventory(); i++) {

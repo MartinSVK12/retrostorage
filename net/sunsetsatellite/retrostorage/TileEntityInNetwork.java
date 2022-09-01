@@ -15,23 +15,45 @@ public class TileEntityInNetwork extends TileEntityDigitalContainer
 	public TileEntityInNetwork() {
 	}
 	
-	protected TileEntity findTileEntityAroundBlock() {
+	protected TileEntity findTileEntityAroundBlock(Class<?> tile) {
+		if (worldObj.getBlockTileEntity(xCoord, yCoord+1, zCoord) != null && tile.isAssignableFrom(worldObj.getBlockTileEntity(xCoord, yCoord+1, zCoord).getClass())) {
+			return worldObj.getBlockTileEntity(xCoord, yCoord+1, zCoord);
+		}
+		if (worldObj.getBlockTileEntity(xCoord+1, yCoord, zCoord) != null && tile.isAssignableFrom(worldObj.getBlockTileEntity(xCoord+1, yCoord, zCoord).getClass())) {
+			return worldObj.getBlockTileEntity(xCoord+1, yCoord, zCoord);
+		}
+		if (worldObj.getBlockTileEntity(xCoord-1, yCoord, zCoord) != null && tile.isAssignableFrom(worldObj.getBlockTileEntity(xCoord-1, yCoord, zCoord).getClass())) {
+			return worldObj.getBlockTileEntity(xCoord-1, yCoord, zCoord);
+		}
+		if (worldObj.getBlockTileEntity(xCoord, yCoord-1, zCoord) != null && tile.isAssignableFrom(worldObj.getBlockTileEntity(xCoord, yCoord-1, zCoord).getClass())) {
+			return worldObj.getBlockTileEntity(xCoord, yCoord-1, zCoord);
+		}
+		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord+1) != null && tile.isAssignableFrom(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord+1).getClass())) {
+			return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord+1);
+		}
+		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord-1) != null && tile.isAssignableFrom(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord-1).getClass())) {
+			return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord-1);
+		}
+		return null;
+	}
+
+	protected TileEntity findAnyTileEntityAroundBlock() {
 		if (worldObj.getBlockTileEntity(xCoord, yCoord+1, zCoord) != null) {
 			return worldObj.getBlockTileEntity(xCoord, yCoord+1, zCoord);
 		}
-		if (worldObj.getBlockTileEntity(xCoord+1, yCoord, zCoord) != null) {
-			return worldObj.getBlockTileEntity(xCoord+1, yCoord, zCoord);
+		if (worldObj.getBlockTileEntity(xCoord + 1, yCoord, zCoord) != null){
+			return worldObj.getBlockTileEntity(xCoord + 1, yCoord, zCoord);
 		}
-		if (worldObj.getBlockTileEntity(xCoord-1, yCoord, zCoord) != null) {
+		if (worldObj.getBlockTileEntity(xCoord-1, yCoord, zCoord) != null){
 			return worldObj.getBlockTileEntity(xCoord-1, yCoord, zCoord);
 		}
-		if (worldObj.getBlockTileEntity(xCoord, yCoord-1, zCoord) != null) {
+		if (worldObj.getBlockTileEntity(xCoord, yCoord-1, zCoord) != null){
 			return worldObj.getBlockTileEntity(xCoord, yCoord-1, zCoord);
 		}
-		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord+1) != null) {
+		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord+1) != null){
 			return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord+1);
 		}
-		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord-1) != null) {
+		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord-1) != null){
 			return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord-1);
 		}
 		return null;

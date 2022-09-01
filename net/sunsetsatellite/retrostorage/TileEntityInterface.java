@@ -1,6 +1,7 @@
 package net.sunsetsatellite.retrostorage;
 
 import ic2.TileEntityElecMachine;
+import ic2.TileEntityElectricBlock;
 import ic2.TileEntityElectricMachine;
 import net.minecraft.src.*;
 
@@ -152,13 +153,15 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-        attachedTileEntity = findTileEntityAroundBlock();
+        TileEntity tile = findTileEntityAroundBlock(TileEntityFurnace.class);
+        TileEntity tile2 = findTileEntityAroundBlock(TileEntityElectricMachine.class);
+        attachedTileEntity = (tile != null ? tile : tile2);
         requestSearchTicks++;
         if(requestSearchTicks >= requestSearchMaxTicks){
             requestSearchTicks = 0;
             if(controller != null && controller.isActive() &&controller.network_disc != null && controller.network_disc.getItem() instanceof ItemStorageDisc && attachedTileEntity != null) {
                 if(processing != null && processingAmount != 0){
-                    if(attachedTileEntity instanceof TileEntityFurnace){// || (ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded(" net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElecMachine){
+                    if(attachedTileEntity instanceof TileEntityFurnace){
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
                         if(tileItem != null && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
@@ -171,7 +174,7 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                                 }
                             }
                         }
-                    } else if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElectricMachine){
+                    } else if(mod_RetroStorage.IC2Available() && attachedTileEntity instanceof TileEntityElectricMachine){
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
                         if(tileItem != null && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
@@ -204,7 +207,7 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                                         ((IInventory) attachedTileEntity).setInventorySlotContents(0,item.copy());
                                     }
                                 }
-                            } else if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElectricMachine){
+                            } else if(mod_RetroStorage.IC2Available() && attachedTileEntity instanceof TileEntityElectricMachine){
                                 ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
                                 if(tileItem == null){
                                     controller.assemblyQueue.remove(item);
@@ -238,7 +241,7 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                                         //((TileEntityFurnace) attachedTileEntity).setInventorySlotContents(0, item.copy());
                                     }
                                 }
-                            } else if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && attachedTileEntity instanceof TileEntityElectricMachine){
+                            } else if(mod_RetroStorage.IC2Available() && attachedTileEntity instanceof TileEntityElectricMachine){
                                 ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(0);
                                 if (tileItem.isItemEqual(item) && tileItem.stackSize < 64) {
                                     controller.assemblyQueue.remove(item);

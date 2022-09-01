@@ -128,7 +128,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
     {
         if(enabled){
             if(controller != null && controller.isActive() && controller.network_disc != null) {
-                TileEntity tile = findTileEntityAroundBlock();
+                TileEntity tile = findTileEntityAroundBlock(TileEntityChest.class);
                 if (tile instanceof TileEntityChest){
                     TileEntityChest chest = (TileEntityChest) tile;
                     ItemStack item = null;

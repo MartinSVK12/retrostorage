@@ -26,8 +26,11 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 			ticksSinceReload = 0;
 			reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord,yCoord,zCoord,null);
 		}
-		TileEntity tile = findTileEntityAroundBlock();
-		if((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")) && tile instanceof TileEntityElectricBlock){
+		TileEntity tile = null;
+		if(mod_RetroStorage.IC2Available()){
+			tile = findTileEntityAroundBlock(TileEntityElectricBlock.class);
+		}
+		if(mod_RetroStorage.IC2Available() && tile instanceof TileEntityElectricBlock){
 			externalEnergySource = true;
 			externalEnergySourceTile = tile;
 		} else {
@@ -259,7 +262,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 				entityplayer.addChatMessage("Current energy usage: " + (devicesConnected));
 			}
 		} else {
-			if(ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")){
+			if (mod_RetroStorage.IC2Available()){
 				if(externalEnergySourceTile instanceof TileEntityElectricBlock){
 					if(((TileEntityElectricBlock)externalEnergySourceTile).energy > 0) {
 						if(entityplayer != null) {
