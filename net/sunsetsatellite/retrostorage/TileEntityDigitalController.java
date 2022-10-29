@@ -334,6 +334,8 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	private boolean externalEnergySource = false;
 	private TileEntity externalEnergySourceTile = null;
 
+	public boolean clearing = false;
+
 	public InventoryDigital network_inv = new InventoryDigital("Digital Network Inventory",this);
 	public HashMap<ItemStack, List<Object>> itemAssembly = new HashMap<ItemStack, List<Object>>();
 	public ArrayDeque<ItemStack> assemblyQueue = new ArrayDeque<>();

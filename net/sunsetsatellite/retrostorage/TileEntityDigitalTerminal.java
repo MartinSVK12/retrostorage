@@ -83,12 +83,16 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
         }
         if(getStackInSlot(0) != null && controller.network_disc != null){
             if(!controller.network_disc.isStackEqual(getStackInSlot(0))){
+                controller.clearing = true;
                 DiscManipulator.clearDigitalInv(this);
                 DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
+                controller.clearing = false;
             }
         } else if(getStackInSlot(0) == null && controller.network_disc != null){
+            controller.clearing = true;
             DiscManipulator.clearDigitalInv(this);
             DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
+            controller.clearing = false;
         }
         setInventorySlotContents(0, controller.network_disc);
         if(controller.network_disc != null) {

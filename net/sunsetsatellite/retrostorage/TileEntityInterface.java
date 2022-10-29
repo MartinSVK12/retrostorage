@@ -163,27 +163,31 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
                 if(processing != null && processingAmount != 0){
                     if(attachedTileEntity instanceof TileEntityFurnace){
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
-                        if(tileItem != null && tileItem.stackSize >= processingAmount){
+                        if(tileItem != null){// && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                                if (controller.network_inv.addItemStackToInventory(tileItem.copy())){
+                                if (controller.network_inv.addItemStackToInventory(tileItem.copy())) {
                                     ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
                                     DiscManipulator.saveDisc(controller);
-                                    processing = null;
-                                    processingAmount = 0;
-                                    ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
+                                    if (((IInventory) attachedTileEntity).getStackInSlot(0) == null) {
+                                        processing = null;
+                                        processingAmount = 0;
+                                        ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
+                                    }
                                 }
                             }
                         }
                     } else if(mod_RetroStorage.IC2Available() && attachedTileEntity instanceof TileEntityElectricMachine){
                         ItemStack tileItem = ((IInventory) attachedTileEntity).getStackInSlot(2);
-                        if(tileItem != null && tileItem.stackSize >= processingAmount){
+                        if(tileItem != null){// && tileItem.stackSize >= processingAmount){
                             if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-                                if (controller.network_inv.addItemStackToInventory(tileItem.copy())){
+                                if (controller.network_inv.addItemStackToInventory(tileItem.copy())) {
                                     ((IInventory) attachedTileEntity).setInventorySlotContents(2, null);
                                     DiscManipulator.saveDisc(controller);
-                                    processing = null;
-                                    processingAmount = 0;
-                                    ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
+                                    if (((IInventory) attachedTileEntity).getStackInSlot(0) == null) {
+                                        processing = null;
+                                        processingAmount = 0;
+                                        ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing finished!");
+                                    }
                                 }
                             }
                         }

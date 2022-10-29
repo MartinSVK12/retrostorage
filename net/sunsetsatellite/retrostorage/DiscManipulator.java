@@ -664,7 +664,7 @@ public class DiscManipulator {
 		IInventory inv = controller.network_inv;
 		//System.out.printf("Saving contents of entire inventory %s to disc %s%n",inv.toString(),disc.toString());
 		//System.out.printf("Inv contents: %s%n", Arrays.toString(((InventoryDigital) inv).inventoryContents));
-		if(controller.network_disc == null &!controller.isActive()){
+		if(controller.network_disc == null && !controller.isActive() && !controller.clearing){
 			return;
 		}
 		NBTTagCompound discNBT = disc.getItemData();
@@ -719,7 +719,7 @@ public class DiscManipulator {
 					controller.assemblyQueue.add(item);
 				}
 			} else {
-				entityplayer.addChatMessage("Request failed!");
+				entityplayer.addChatMessage("Request failed! Not enough resources.");
 			}
 			return false;
 		}
@@ -769,11 +769,11 @@ public class DiscManipulator {
 					if(result){
 						s++;
 					} else {
-						entityplayer.addChatMessage("Request failed!");
+						entityplayer.addChatMessage("Request failed! Subrequest failed.");
 						return false;
 					}
 				} else {
-					entityplayer.addChatMessage("Request failed!");
+					entityplayer.addChatMessage("Request failed! Not enough resources and no valid subrequests could be made.");
 					return false;
 
 				}
@@ -786,7 +786,7 @@ public class DiscManipulator {
 			}
 			return true;
 		} else {
-			entityplayer.addChatMessage("Request failed!");
+			entityplayer.addChatMessage("Request failed! Not enough resources.");
 			return false;
 		}
 	}
