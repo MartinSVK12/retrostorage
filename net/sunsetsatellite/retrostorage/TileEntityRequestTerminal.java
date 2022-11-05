@@ -68,10 +68,10 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
     public void requestItemCrafting(Slot slot) {
         EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
         if(slot.getStack() != null && slot.getStack().getItem() != mod_RetroStorage.virtualDisc){
-            if(slot.getStack().stackSize >= 0){
+            if(slot.getStack().stackSize <= 0){
                 slot.getStack().stackSize = 1;
             }
-            ModLoader.OpenGUI(entityplayer, new GuiAssemblyRequest(entityplayer.inventory, this, slot.getStack()));
+            ModLoader.OpenGUI(entityplayer, new GuiAssemblyRequest(entityplayer.inventory, this, slot.getStack().copy()));
         }
         /*entityplayer.addChatMessage("Requesting: "+slot.getStack().stackSize+"x "+StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName()));
         controller.assemblyQueue.add(slot.getStack().getItem());*/
