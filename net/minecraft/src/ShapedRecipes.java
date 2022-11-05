@@ -19,7 +19,7 @@ public class ShapedRecipes implements IRecipe {
 	}
 
 	public ItemStack getRecipeOutput() {
-		return this.recipeOutput;
+		return this.recipeOutput.copy();
 	}
 
 	public ArrayList<?> getRecipeItems() {
