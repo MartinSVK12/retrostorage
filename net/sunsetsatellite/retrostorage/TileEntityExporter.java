@@ -119,19 +119,27 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
     {
         if(enabled){
             if(controller != null && controller.isActive() && controller.network_disc != null) {
-                TileEntity tile = findTileEntityAroundBlock(TileEntityChest.class);
-                if (tile instanceof TileEntityChest){
-                    TileEntityChest chest = (TileEntityChest) tile;
+                TileEntity tile = findAnyTileEntityAroundBlock();
+                if (tile instanceof IInventory){
+                    IInventory chest = (IInventory) tile;
                     ItemStack item = null;
-                    int slot = 0;
-                    for(int i = 0; i < chest.getSizeInventory(); i++) {
-                        item = chest.getStackInSlot(i);
-                        if (item != null) {
-                            continue;
-                        } else {
-                            slot = i;
-                            break;
+                    int s_slot = -1;
+                    if(slot == -1) {
+                        for (int i = 0; i < chest.getSizeInventory(); i++) {
+                            item = chest.getStackInSlot(i);
+                            if (item != null) {
+                                continue;
+                            } else {
+                                s_slot = i;
+                                break;
+                            }
                         }
+                        if(s_slot == -1){
+                            return;
+                        }
+                    } else {
+                        s_slot = slot;
+                        item = chest.getStackInSlot(s_slot);
                     }
                     if(isEmpty()) {
                         if (item == null) {
@@ -140,7 +148,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                                 if(network_item != null && network_item.getItem() != mod_RetroStorage.virtualDisc){
                                     controller.network_inv.setInventorySlotContents(controller.network_inv.getFirstOccupiedStack(),null);
                                     DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
-                                    chest.setInventorySlotContents(slot, network_item);
+                                    chest.setInventorySlotContents(s_slot, network_item);
                                 }
                             }
                         }
@@ -163,7 +171,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                                     if(network_item != null){
                                         controller.network_inv.setInventorySlotContents(filter,null);
                                         DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
-                                        chest.setInventorySlotContents(slot, network_item);
+                                        chest.setInventorySlotContents(s_slot, network_item);
                                     }
                                 }
                             }
@@ -185,4 +193,5 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 	
 	private ItemStack[] contents;
     boolean enabled = true;
+    int slot = 0;
 }

@@ -71,7 +71,7 @@ public class TileEntityRequestTerminal extends TileEntityInNetworkWithInv
             if(slot.getStack().stackSize <= 0){
                 slot.getStack().stackSize = 1;
             }
-            ModLoader.OpenGUI(entityplayer, new GuiAssemblyRequest(entityplayer.inventory, this, slot.getStack().copy()));
+            ModLoader.OpenGUI(entityplayer, new GuiAssemblyRequest(entityplayer.inventory, this, slot.getStack()));
         }
         /*entityplayer.addChatMessage("Requesting: "+slot.getStack().stackSize+"x "+StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName()));
         controller.assemblyQueue.add(slot.getStack().getItem());*/

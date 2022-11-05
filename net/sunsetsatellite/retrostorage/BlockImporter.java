@@ -16,12 +16,28 @@ public class BlockImporter extends BlockContainer {
 		
 	}
 	
-	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
+	/*public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
 		TileEntityImporter tileentityimporter = (TileEntityImporter)world.getBlockTileEntity(i, j, k);
 		return true;
-    }
+    }*/
 
+	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
+	{
+		if(world.multiplayerWorld)
+		{
+			return true;
+		} else
+		{
+			TileEntityImporter TileEntityImporter = (TileEntityImporter)world.getBlockTileEntity(i, j, k);
+			//System.out.println(TileEntityImporter);
+			if (TileEntityImporter != null) {
+				ModLoader.OpenGUI(entityplayer, new GuiImporter
+						(entityplayer.inventory, TileEntityImporter));
+			}
+			return true;
+		}
+	}
 
 	public void updateTick(World world, int i, int j, int k, Random random)
 	{

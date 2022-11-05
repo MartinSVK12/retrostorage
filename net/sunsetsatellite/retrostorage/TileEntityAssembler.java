@@ -164,6 +164,7 @@ public class TileEntityAssembler extends TileEntityInNetworkWithInv {
         if(!controller.itemAssembly.containsKey(output)){
             ModLoader.getMinecraftInstance().thePlayer.addChatMessage("ERROR: Attempted to craft an unrecognized recipe.");
             controller.assemblyQueue.remove(output);
+            processing = false;
             return false;
         }
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Crafting: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()));

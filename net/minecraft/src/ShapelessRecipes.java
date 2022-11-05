@@ -6,15 +6,17 @@ import java.util.List;
 
 public class ShapelessRecipes implements IRecipe {
 	private final ItemStack recipeOutput;
+	private ItemStack recipeOutputCopy;
 	private final List recipeItems;
 
 	public ShapelessRecipes(ItemStack itemStack1, List list2) {
 		this.recipeOutput = itemStack1;
+		this.recipeOutputCopy = itemStack1.copy();
 		this.recipeItems = list2;
 	}
 
 	public ItemStack getRecipeOutput() {
-		return this.recipeOutput.copy();
+		return this.recipeOutputCopy;
 	}
 
 	public ArrayList<?> getRecipeItems() {

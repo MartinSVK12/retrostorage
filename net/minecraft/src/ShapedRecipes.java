@@ -8,6 +8,7 @@ public class ShapedRecipes implements IRecipe {
 	private int recipeHeight;
 	private ItemStack[] recipeItems;
 	private ItemStack recipeOutput;
+	private ItemStack recipeOutputCopy;
 	public final int recipeOutputItemID;
 
 	public ShapedRecipes(int i1, int i2, ItemStack[] itemStack3, ItemStack itemStack4) {
@@ -16,10 +17,11 @@ public class ShapedRecipes implements IRecipe {
 		this.recipeHeight = i2;
 		this.recipeItems = itemStack3;
 		this.recipeOutput = itemStack4;
+		this.recipeOutputCopy = itemStack4.copy();
 	}
 
 	public ItemStack getRecipeOutput() {
-		return this.recipeOutput.copy();
+		return this.recipeOutputCopy;
 	}
 
 	public ArrayList<?> getRecipeItems() {

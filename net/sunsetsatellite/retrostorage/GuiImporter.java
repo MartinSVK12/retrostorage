@@ -5,22 +5,21 @@
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.GuiButton;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.InventoryPlayer;
+import org.lwjgl.opengl.GL11;
 
 // Referenced classes of package net.minecraft.src:
 //            GuiContainer, ContainerDispenser, FontRenderer, RenderEngine, 
 //            InventoryPlayer, TileEntityDispenser
 
-public class GuiExporter extends GuiContainer
+public class GuiImporter extends GuiContainer
 {
 
-    public GuiExporter(InventoryPlayer inventoryplayer, TileEntityExporter tileentityexporter)
+    public GuiImporter(InventoryPlayer inventoryplayer, TileEntityImporter tileentityimporter)
     {
-        super(new ContainerExporter(inventoryplayer, tileentityexporter));
-        tile = tileentityexporter;
+        super(new ContainerImporter(inventoryplayer, tileentityimporter));
+        tile = tileentityimporter;
     }
 
     public void initGui()
@@ -32,14 +31,13 @@ public class GuiExporter extends GuiContainer
 
     protected void drawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Item Exporter", 56, 6, 0x404040);
-        fontRenderer.drawString("Slot: "+tile.slot, 16, 30, 0x404040);
-        fontRenderer.drawString("Inventory", 8, (ySize - 148) + 2, 0x404040);
+        fontRenderer.drawString("Item Importer", 56, 6, 0x404040);
+        fontRenderer.drawString("Slot: "+tile.slot, 70, 55, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("/gui/trap.png");
+        int i = mc.renderEngine.getTexture("/retrostorage/assembly_request.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;
@@ -60,5 +58,5 @@ public class GuiExporter extends GuiContainer
         }
     }
 
-    TileEntityExporter tile;
+    private TileEntityImporter tile;
 }
