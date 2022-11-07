@@ -11,9 +11,12 @@ public class TileEntityStorageContainer extends TileEntity {
     
     public void updateEntity()
     {
-        if(isUnlimited && storedID != 0){
+        if(isInfinite && storedID != 0){
             storedAmount = maxAmount;
         }
+        if(isUnlimited){
+            maxAmount = Integer.MAX_VALUE;
+        } else { maxAmount = 4096; }
         if(storedAmount == 0){
             if(!isItemLocked) {
                 storedID = 0;
@@ -67,7 +70,8 @@ public class TileEntityStorageContainer extends TileEntity {
     public int storedMetadata = 0;
     public int storedAmount = 0;
     public boolean isItemLocked = false;
-    public boolean isUnlimited = true;
+    public boolean isUnlimited = false;
+    public boolean isInfinite = false;
     public int maxAmount = 4096;
     public NBTTagCompound storedData = new NBTTagCompound();
 }
