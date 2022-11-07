@@ -44,9 +44,11 @@ public class TileEntityImporter extends TileEntityInNetwork {
 						if(container.storedID != 0){
 							if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
 								for(int i = 0; i<64;i++){
-									ItemStack item = new ItemStack(container.storedID,1,container.storedMetadata,container.storedData);
-									if (controller.network_inv.addItemStackToInventory(item)){
-										container.storedAmount--;
+									if(container.storedAmount > 0){
+										ItemStack item = new ItemStack(container.storedID,1,container.storedMetadata,container.storedData);
+										if (controller.network_inv.addItemStackToInventory(item)){
+											container.storedAmount--;
+										}
 									}
 								}
 								DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);

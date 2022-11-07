@@ -17,6 +17,7 @@ public class TileEntityStorageContainer extends TileEntity {
         if(isUnlimited){
             maxAmount = Integer.MAX_VALUE;
         } else { maxAmount = 4096; }
+        if(storedAmount < 0){storedAmount = 0;}
         if(storedAmount == 0){
             if(!isItemLocked) {
                 storedID = 0;
