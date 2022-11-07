@@ -24,7 +24,7 @@ public class GuiAssembler extends GuiContainer
     protected void drawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Assembler", 64, 6, 0x404040);
-        fontRenderer.drawString("Inventory", 8, (ySize - 148) + 2, 0x404040);
+        fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f)

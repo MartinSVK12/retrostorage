@@ -25,7 +25,7 @@ public class GuiDiscDrive extends GuiContainer
     protected void drawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Disc Drive", 60, 6, 0x404040);
-        fontRenderer.drawString("Inventory", 8, (ySize - 148) + 2, 0x404040);
+        fontRenderer.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
         if(tile.virtualDisc != null){
             fontRenderer.drawString(tile.virtualDisc.getItemData().size() +"/"+tile.virtualDriveMaxStacks, 80, 20, 0x404040);
         }

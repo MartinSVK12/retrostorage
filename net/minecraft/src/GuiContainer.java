@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public abstract class GuiContainer extends GuiScreen {
 	protected static RenderItem itemRenderer = new RenderItem();
 	protected int xSize = 176;
-	protected int ySize = 220;
+	protected int ySize = 166;
 	public Container inventorySlots;
 
 	public GuiContainer(Container container1) {
@@ -91,19 +91,19 @@ public abstract class GuiContainer extends GuiScreen {
 		if(inventoryPlayer12.getItemStack() == null && slot6 != null && slot6.getHasStack()) {
 			String string13 = ("" + StringTranslate.getInstance().translateNamedKey(slot6.getStack().getItemName())).trim();
 			if(string13.length() > 0) {
-				if(slot6.getStack().getItem() instanceof ItemStorageDisc) {
+				if (slot6.getStack().getItem() instanceof ItemStorageDisc) {
 					i9 = i1 - i4 + 12;
 					i10 = i2 - i5 - 12;
 					int i11 = this.fontRenderer.getStringWidth(string13);
 					ItemStorageDisc disc = (ItemStorageDisc) slot6.getStack().getItem();
-					int w = mc.fontRenderer.getStringWidth(slot6.getStack().getItemData().toString()+ " out of "+disc.getMaxStackCapacity());
-					if(i11 < w) {
+					int w = mc.fontRenderer.getStringWidth(slot6.getStack().getItemData().toString() + " out of " + disc.getMaxStackCapacity());
+					if (i11 < w) {
 						i11 = w;
 					}
 					drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
 					fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
-					fontRenderer.drawStringWithShadow(slot6.getStack().getItemData().toString() + " out of "+disc.getMaxStackCapacity(), i9, i10+12, 0xFFFF00FF);
-				} else if(slot6.getStack().getItem() instanceof ItemRecipeDisc) {
+					fontRenderer.drawStringWithShadow(slot6.getStack().getItemData().toString() + " out of " + disc.getMaxStackCapacity(), i9, i10 + 12, 0xFFFF00FF);
+				} else if (slot6.getStack().getItem() instanceof ItemRecipeDisc) {
 					i9 = i1 - i4 + 12;
 					i10 = i2 - i5 - 12;
 					int i11 = this.fontRenderer.getStringWidth(string13);
@@ -111,17 +111,30 @@ public abstract class GuiContainer extends GuiScreen {
 					CraftingManager crafter = CraftingManager.getInstance();
 					ArrayList<?> recipe = DiscManipulator.convertRecipeToArray((slot6.getStack().getItemData()));
 					ItemStack output = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-					int w = mc.fontRenderer.getStringWidth(output != null ? "Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()) : "Makes: null");
-					if(i11 < w) {
+					int w = mc.fontRenderer.getStringWidth(output != null ? "Makes: " + StringTranslate.getInstance().translateNamedKey(output.getItemName()) : "Makes: null");
+					if (i11 < w) {
 						i11 = w;
 					}
 					this.drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, -1073741824, -1073741824);
 					this.fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
-					if (output != null){
-						fontRenderer.drawStringWithShadow("Makes: "+StringTranslate.getInstance().translateNamedKey(output.getItemName()), i9, i10+12, 0xFFFF00FF);
+					if (output != null) {
+						fontRenderer.drawStringWithShadow("Makes: " + StringTranslate.getInstance().translateNamedKey(output.getItemName()), i9, i10 + 12, 0xFFFF00FF);
 					} else {
-						fontRenderer.drawStringWithShadow("Makes: null", i9, i10+12, 0xFFFF00FF);
+						fontRenderer.drawStringWithShadow("Makes: null", i9, i10 + 12, 0xFFFF00FF);
 					}
+				} else if(slot6.getStack().itemID == mod_RetroStorage.storageContainer.blockID && slot6.getStack().getItemData().hasKey("locked")){
+					i9 = i1 - i4 + 12;
+					i10 = i2 - i5 - 12;
+					int i11 = this.fontRenderer.getStringWidth(string13);
+					ItemStack stack = slot6.getStack();
+					String str = stack.getItemData().getInteger("storedAmount") + "x " + StringTranslate.getInstance().translateNamedKey(new ItemStack(stack.getItemData().getInteger("storedId"),1,stack.getItemData().getInteger("storedDamage")).getItemName());
+					int w = mc.fontRenderer.getStringWidth(str);
+					if (i11 < w) {
+						i11 = w;
+					}
+					drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
+					fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+					fontRenderer.drawStringWithShadow(str, i9, i10 + 12, 0xFFFF00FF);
 				} else {
 					i9 = i1 - i4 + 12;
 					i10 = i2 - i5 - 12;

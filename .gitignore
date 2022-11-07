@@ -702,3 +702,16 @@
 /adminwrench.png
 /net/minecraft/src/mod_AdminWrench.java
 /net/minecraft/src/ItemAdminWrench.java
+/buildcraft/
+/net/minecraft/src/BuildCraftBlockUtil.java
+/net/minecraft/src/BuildCraftBuilders.java
+/net/minecraft/src/BuildCraftCore.java
+/net/minecraft/src/BuildCraftEnergy.java
+/net/minecraft/src/BuildCraftFactory.java
+/net/minecraft/src/BuildCraftTransport.java
+/net/minecraft/src/mod_BuildCraftBuilders.java
+/net/minecraft/src/mod_BuildCraftCore.java
+/net/minecraft/src/mod_BuildCraftFactory.java
+/net/minecraft/src/mod_BuildCraftTransport.java
+/net/minecraft/src/mod_BuildCraftEnergy.java
+/net/minecraft/src/buildcraft/

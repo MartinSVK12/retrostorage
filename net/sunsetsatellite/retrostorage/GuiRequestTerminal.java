@@ -13,6 +13,7 @@ public class GuiRequestTerminal extends GuiContainer
     public GuiRequestTerminal(InventoryPlayer inventoryplayer, TileEntityRequestTerminal TileEntityRequestTerminal)
     {
         super(new ContainerRequestTerminal(inventoryplayer, TileEntityRequestTerminal));
+        ySize = 220;
         tile = TileEntityRequestTerminal;
     }
 

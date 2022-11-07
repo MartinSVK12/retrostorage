@@ -20,6 +20,7 @@ public class GuiDigitalTerminal extends GuiContainer
     public GuiDigitalTerminal(InventoryPlayer inventoryplayer, TileEntityDigitalTerminal tileentitydigitalterminal)
     {
         super(new ContainerDigitalTerminal(inventoryplayer, tileentitydigitalterminal));
+        ySize = 220;
         tile = tileentitydigitalterminal;
     }
 

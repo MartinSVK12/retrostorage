@@ -36,31 +36,20 @@ public class TileEntityImporter extends TileEntityInNetwork {
 							}
 						}
 					}
-				} /*else if (tile instanceof TileEntityFurnace){
-					if(slot == -1){
-						for(int i = 0; i < ((TileEntityFurnace) tile).getSizeInventory(); i++) {
-							ItemStack item = ((TileEntityFurnace) tile).getStackInSlot(i);
-							if (item != null) {
-								if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
-									if (controller.network_inv.addItemStackToInventory(item)){
-										((TileEntityFurnace) tile).setInventorySlotContents(i, null);
-										DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
-									}
-								}
-							}
-						}
-					} else {
-						ItemStack item = ((TileEntityFurnace) tile).getStackInSlot(slot);
-						if (item != null) {
-							if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
+				} else if (tile instanceof TileEntityStorageContainer){
+					TileEntityStorageContainer container = (TileEntityStorageContainer) tile;
+					if(container.storedID != 0){
+						if (controller.network_disc.getItem() instanceof ItemStorageDisc) {
+							for(int i = 0; i<container.storedAmount;i++){
+								ItemStack item = new ItemStack(container.storedID,1,container.storedMetadata,container.storedData);
 								if (controller.network_inv.addItemStackToInventory(item)){
-									((TileEntityFurnace) tile).setInventorySlotContents(slot, null);
 									DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+									container.storedAmount--;
 								}
 							}
 						}
 					}
-				}*/
+				}
 			}
 		}
 

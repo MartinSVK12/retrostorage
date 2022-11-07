@@ -177,6 +177,31 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                             }
                         }
                     }
+                } else if(tile instanceof TileEntityStorageContainer){
+                    TileEntityStorageContainer container = (TileEntityStorageContainer) tile;
+                    if(container.storedID != 0 && isEmpty()){
+                        int filter = controller.network_inv.getInventorySlotContainItem(container.storedID,container.storedMetadata);
+                        if(filter != -1){
+                            ItemStack network_item = controller.network_inv.getStackInSlot(filter);
+                            if(network_item != null && container.storedAmount + network_item.stackSize <= container.maxAmount){
+                                controller.network_inv.setInventorySlotContents(filter,null);
+                                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                container.storedAmount += network_item.stackSize;
+                            } else if(network_item != null && !(container.storedAmount == container.maxAmount) && container.storedAmount + network_item.stackSize > container.maxAmount){
+                                controller.network_inv.decrStackSize(filter,container.maxAmount-container.storedAmount);
+                                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                                container.storedAmount += container.maxAmount - container.storedAmount;
+                            }
+                        }
+                    } else if(container.storedID == 0 && isEmpty()) {
+                        int filter = 0;
+                        ItemStack network_item = controller.network_inv.getStackInSlot(filter);
+                        if(network_item != null){
+                            controller.network_inv.setInventorySlotContents(filter,null);
+                            DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
+                            container.storedAmount += network_item.stackSize;
+                        }
+                    }
                 }
             }
         }

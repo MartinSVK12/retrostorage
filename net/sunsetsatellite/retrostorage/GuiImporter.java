@@ -32,7 +32,7 @@ public class GuiImporter extends GuiContainer
     protected void drawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Item Importer", 56, 6, 0x404040);
-        fontRenderer.drawString("Slot: "+tile.slot, 70, 55, 0x404040);
+        fontRenderer.drawString("Slot: "+tile.slot, 70, 30, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f)

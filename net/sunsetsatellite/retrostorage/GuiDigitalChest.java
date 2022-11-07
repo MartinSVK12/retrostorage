@@ -18,6 +18,7 @@ public class GuiDigitalChest extends GuiContainer
     public GuiDigitalChest(InventoryPlayer inventoryplayer, TileEntityDigitalChest tileentitydigitalchest)
     {
         super(new ContainerDigitalChest(inventoryplayer, tileentitydigitalchest));
+        ySize = 220;
         tile = tileentitydigitalchest;
     }
 

@@ -37,7 +37,7 @@ public class GuiRecipeEncoder extends GuiContainer
     protected void drawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Recipe Encoder", 28, 6, 0x404040);
-        fontRenderer.drawString("Inventory", 8, (ySize - 150) + 2, 0x404040);
+        fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
     
     public void initGui()

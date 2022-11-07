@@ -26,6 +26,7 @@ public class mod_RetroStorage extends BaseMod {
 		virtualDiscTop = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("virtualdisctop.png").toString());
 		interfaceSide = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("interfaceside.png").toString());
 		requestTerminalFront = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("requestterminalfront.png").toString());
+		storageContainerFront = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storagecontainer.png").toString());
 		BlockDigitalChest.loadSprites();
 		BlockDiscDrive.loadSprites();
 		BlockDigitalTerminal.loadSprites();
@@ -36,6 +37,7 @@ public class mod_RetroStorage extends BaseMod {
 		BlockAssembler.loadSprites();
 		BlockRequestTerminal.loadSprites();
 		BlockInterface.loadSprites();
+		BlockStorageContainer.loadSprites();
 
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityDigitalChest.class, "Digital Chest");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityDigitalController.class, "Digital Controller");
@@ -48,6 +50,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityAssembler.class, "Assembler");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityRequestTerminal.class, "Request Terminal");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityInterface.class, "Interface");
+		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityStorageContainer.class,"Storage Container",new TileEntityContainerRenderer());
 		ModLoader.AddName(digitalChest, "Digital Chest");
 		ModLoader.AddName(blankDisc, "Blank Storage Disc");
 		ModLoader.AddName(storageDisc1, "Storage Disc MK I");
@@ -85,6 +88,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddName(mobileRequestTerminal,"Mobile Request Terminal");
 		ModLoader.AddName(blankCard,"Blank Card");
 		ModLoader.AddName(boosterCard,"Booster Card");
+		ModLoader.AddName(lockingCard,"Locking Card");
+		ModLoader.AddName(storageContainer,"Storage Container");
 
 		ModLoader.RegisterBlock(digitalChest);
 		ModLoader.RegisterBlock(digitalController);
@@ -93,6 +98,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterBlock(digitalTerminal);
 		ModLoader.RegisterBlock(importer);
 		ModLoader.RegisterBlock(exporter);
+		ModLoader.RegisterBlock(storageContainer,ItemBlockStorageContainer.class);
 		//ModLoader.RegisterBlock(goldenStorageBlock);
 		/*ModLoader.RegisterBlock(storageBlock1);
 		ModLoader.RegisterBlock(storageBlock2);
@@ -156,6 +162,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static ItemRequestTerminal mobileRequestTerminal = (ItemRequestTerminal) (new ItemRequestTerminal(getId("mobileRequestTerminal",148))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobilerequestterminal.png").toString())).setItemName("mobilerequestterminal").setMaxStackSize(1);
 	public static Item blankCard = (new Item(getId("blankCard",149))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("blankcard.png").toString())).setItemName("blankcard");
 	public static Item boosterCard = (new Item(getId("boosterCard",150))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("boostercard.png").toString())).setItemName("boostercard");
+	public static Item lockingCard = (new Item(getId("lockingCard",151))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("lockingcard.png").toString())).setItemName("lockingcard");
 
 	public static Block digitalChest = (new BlockDigitalChest(getId("digitalChest",165), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalChest"));
 	public static Block digitalController = (new BlockDigitalController(getId("digitalController",166),ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("digitalcontroller.png").toString())).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalController"));
@@ -164,6 +171,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static Block digitalTerminal = (new BlockDigitalTerminal(getId("digitalTerminal",169), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalTerminal"));
 	public static Block importer = (new BlockImporter(getId("importer",170), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("importer.png").toString()), Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("importer"));
 	public static Block exporter = (new BlockExporter(getId("exporter",171), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("exporter.png").toString()), Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("exporter"));
+	public static Block storageContainer = (new BlockStorageContainer(getId("container",172),false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("container"));
 	//public static Block goldenStorageBlock = (new BlockStorage(getId("goldenStorageBlock",172), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("goldenstorageblock.png").toString()),mod_RetroStorage.goldenDisc, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("goldenStorageBlock"));
 	/*public static Block storageBlock1 = (new BlockStorage(getId("storageBlock1",173), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock1.png").toString()),mod_RetroStorage.storageDisc1, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock1"));
 	public static Block storageBlock2 = (new BlockStorage(getId("storageBlock2",139), ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("storageblock2.png").toString()),mod_RetroStorage.storageDisc2, Material.rock).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("storageBlock2"));
@@ -196,6 +204,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static int virtualDiscTop;
 	public static int interfaceSide;
 	public static int requestTerminalFront;
+	public static int storageContainerFront;
 	
 	
 	public void GenerateSurface(World world, Random random, int i, int j){

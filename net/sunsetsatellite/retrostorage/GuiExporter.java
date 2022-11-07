@@ -33,8 +33,8 @@ public class GuiExporter extends GuiContainer
     protected void drawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Item Exporter", 56, 6, 0x404040);
-        fontRenderer.drawString("Slot: "+tile.slot, 16, 30, 0x404040);
-        fontRenderer.drawString("Inventory", 8, (ySize - 148) + 2, 0x404040);
+        fontRenderer.drawString("Slot: "+tile.slot, 16, 50, 0x404040);
+        fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f)
