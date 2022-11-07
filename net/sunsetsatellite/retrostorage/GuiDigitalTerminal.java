@@ -4,6 +4,7 @@
 
 package net.sunsetsatellite.retrostorage;
 
+import net.minecraft.src.Slot;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.src.GuiButton;
@@ -58,10 +59,16 @@ public class GuiDigitalTerminal extends GuiContainer
         {
             if(tile.controller != null){
                 if(tile.page<tile.pages) {
-                    DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
                     tile.page++;
-                    DiscManipulator.clearDigitalInv(tile);
-                    DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
+                    for(Object slot : inventorySlots.slots){
+                        if(slot instanceof SlotDigital){
+                            ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotNumber + ((tile.page-1) * 37) + 1;
+                        }
+                    }
+                    //DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
+
+                    //DiscManipulator.clearDigitalInv(tile);
+                    //DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
                 }
             }
         }
@@ -69,10 +76,16 @@ public class GuiDigitalTerminal extends GuiContainer
         {
             if(tile.controller != null) {
                 if (tile.page > 0) {
-                    DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
                     tile.page--;
-                    DiscManipulator.clearDigitalInv(tile);
-                    DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
+                    for(Object slot : inventorySlots.slots){
+                        if(slot instanceof SlotDigital){
+                            ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotNumber + ((tile.page-1) * 37) + 1;
+                        }
+                    }
+                    //DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
+
+                    //DiscManipulator.clearDigitalInv(tile);
+                    //DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
                 }
             }
         }

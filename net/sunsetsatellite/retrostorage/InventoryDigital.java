@@ -77,6 +77,9 @@ public class InventoryDigital implements IInventory {
 
 	public int getFirstEmptyStack() {
 		for(int i1 = 0; i1 < this.inventoryContents.length; ++i1) {
+			if(i1 > owner.network_drive.virtualDriveMaxStacks){
+				return -1;
+			}
 			if(this.inventoryContents[i1] == null) {
 				return i1;
 			}

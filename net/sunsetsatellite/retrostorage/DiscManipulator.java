@@ -615,8 +615,10 @@ public class DiscManipulator {
     	return recipeNBT;
     }
 
-	public static void saveDisc(ItemStack disc, IInventory inv, int page){
-		//System.out.printf("Saving contents of page %d of inventory %s to disc %s%n",page,inv.toString(),disc.toString());
+	public static void saveDisc(ItemStack disc, IInventory inv, int page) {
+		saveDisc(disc, inv);
+	}
+		/*//System.out.printf("Saving contents of page %d of inventory %s to disc %s%n",page,inv.toString(),disc.toString());
 		if(disc == null){
 			return;
 		}
@@ -636,7 +638,7 @@ public class DiscManipulator {
 		}
 		//System.out.printf("Data: %s%n",discNBT.toStringExtended());
 		disc.setItemData(discNBT);
-	}
+	}*/
 
 
 	public static void saveDisc(ItemStack disc, IInventory inv){
