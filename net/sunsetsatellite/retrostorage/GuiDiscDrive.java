@@ -4,6 +4,7 @@
 
 package net.sunsetsatellite.retrostorage;
 
+import net.minecraft.src.GuiButton;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.src.GuiContainer;
@@ -31,6 +32,12 @@ public class GuiDiscDrive extends GuiContainer
         }
     }
 
+    public void initGui()
+    {
+        super.initGui();
+        controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 50), 20, 20, "-"));
+    }
+
     protected void drawGuiContainerBackgroundLayer(float f)
     {
         int i = mc.renderEngine.getTexture("/retrostorage/discdrivegui.png");
@@ -39,6 +46,16 @@ public class GuiDiscDrive extends GuiContainer
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+    }
+
+    protected void actionPerformed(GuiButton guibutton) {
+        if (!guibutton.enabled) {
+            return;
+        }
+        if (guibutton.id == 0) {
+            tile.removeLastDisc();
+        }
+
     }
 
     private TileEntityDiscDrive tile;

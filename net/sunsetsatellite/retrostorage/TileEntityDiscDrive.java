@@ -71,33 +71,38 @@ public class TileEntityDiscDrive extends TileEntityStorage
                 NBTTagCompound vDiscNBT = virtualDisc.getItemData();
                 ItemStack disc = getStackInSlot(0);
                 Object[] discNBT = disc.getItemData().getValues().toArray();
-                for (int i1 = 0; i1 < discNBT.length; i1++) {
-                    Object o = discNBT[i1];
-                    vDiscNBT.setCompoundTag(String.valueOf(vDiscData.length+i1+1), (NBTTagCompound) o);
+                for (Object o : discNBT) {
+                    controller.network_inv.addItemStackToInventory(new ItemStack((NBTTagCompound) o));
+                    //vDiscNBT.setCompoundTag(String.valueOf(vDiscData.length+i1+1), (NBTTagCompound) o);
                 }
-                setInventorySlotContents(0,new ItemStack(mod_RetroStorage.blankDisc,1));
+                setInventorySlotContents(0,null);
                 discsUsed.add(disc);
+                DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
+                controller.forceReload();
             }
         }
-        if (getStackInSlot(1) != null){
-            if (getStackInSlot(1).getItem() == mod_RetroStorage.blankDisc && getStackInSlot(1).stackSize == 1){
-                if(discsUsed.size() > 0){
-                    ItemStack disc = discsUsed.get(0);
-                    discsUsed.remove(0);
-                    virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
-                    setInventorySlotContents(1,disc);
-                    NBTTagCompound discData = new NBTTagCompound();
-                    Object[] virtualDiscDataV = virtualDisc.getItemData().getValues().toArray();
-                    Object[] virtualDiscDataK = virtualDisc.getItemData().getKeys().toArray();
-                    int j = Math.min(virtualDisc.getItemData().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
-                    for(int i = 0; i < j; i++){
-                        discData.setCompoundTag(String.valueOf(i+1), (NBTTagCompound) virtualDiscDataV[i]);
-                        virtualDisc.getItemData().removeTag((String) virtualDiscDataK[i]);
-                    }
-                    disc.setItemData(discData);
-                }
+    }
+
+    public void removeLastDisc() {
+        if(discsUsed.size() > 0){
+            ItemStack disc = discsUsed.get(0);
+            discsUsed.remove(0);
+            virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            setInventorySlotContents(1,disc);
+            NBTTagCompound discData = new NBTTagCompound();
+            Object[] virtualDiscDataV = virtualDisc.getItemData().getValues().toArray();
+            Object[] virtualDiscDataK = virtualDisc.getItemData().getKeys().toArray();
+            int j = Math.min(virtualDisc.getItemData().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            for(int i = 0; i < j; i++) {
+                discData.setCompoundTag(String.valueOf(i + 1), (NBTTagCompound) virtualDiscDataV[i]);
+                controller.network_inv.setInventorySlotContents(i + 1, null);
+                //virtualDisc.getItemData().removeTag((String) virtualDiscDataK[i]);
             }
+            disc.setItemData(discData);
+            DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
+            controller.forceReload();
         }
+        //DiscManipulator.saveDisc(virtualDisc,controller.network_inv);
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)

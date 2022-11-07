@@ -216,7 +216,11 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	public boolean isActive(){
 		return active;
 	}
-	
+
+	public void forceReload(){
+		controller.reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord, yCoord, zCoord, null);
+	}
+
 	public void reloadNetwork(World world, int i, int j, int k, EntityPlayer entityplayer) {
 		if(network_disc != null && network_drive != null && network_drive.virtualDriveMaxStacks == 0){
 			DiscManipulator.clearDigitalInv(network_inv);
