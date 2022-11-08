@@ -137,7 +137,9 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(storageDisc6, 1), "RgG", "X#X", "GgR", 'G', Block.glass,'g',Item.ingotGold,'X',storageDisc5,'#',new ItemStack(Item.dyePowder,1,5),'R',Item.redstone);
 		ModLoader.AddRecipe(new ItemStack(mobileTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass,'I',Item.ingotIron,'D',Item.diamond,'T',digitalTerminal);
 		ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass,'I',Item.ingotIron,'D',Item.diamond,'T',requestTerminal);
-
+		ModLoader.AddRecipe(new ItemStack(storageContainer,1),"SSS","ICI","SSS", 'S', Block.stone, 'I', Item.ingotIron, 'C', Block.chest);
+		ModLoader.AddRecipe(new ItemStack(blankCard, 4),"ISI","SPS","ISI",'I',Item.ingotIron,'S',Block.stone,'P',Block.pressurePlateStone);
+		ModLoader.AddRecipe(new ItemStack(lockingCard, 1),"RTR","TCT","RTR",'R',Item.redstone,'T',Block.torchRedstoneActive,'C',blankCard);
 		System.out.println("[RetroStorage] IC2 Installed: "+IC2Available());
 	}
 
