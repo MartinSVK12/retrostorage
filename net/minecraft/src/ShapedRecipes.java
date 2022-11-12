@@ -8,8 +8,8 @@ public class ShapedRecipes implements IRecipe {
 	private int recipeHeight;
 	private ItemStack[] recipeItems;
 	private ItemStack recipeOutput;
-	private ItemStack recipeOutputCopy;
 	public final int recipeOutputItemID;
+	private ItemStack recipeOutputCopy;
 
 	public ShapedRecipes(int i1, int i2, ItemStack[] itemStack3, ItemStack itemStack4) {
 		this.recipeOutputItemID = itemStack4.itemID;
