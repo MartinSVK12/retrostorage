@@ -33,9 +33,9 @@ public class GuiAssemblyRequest extends GuiContainer
     public void initGui()
     {
     	super.initGui();
-    	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 50), 20, 20, "-"));
-    	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 50), 20, 20, "+"));// /2 - 34, - 150
-        controlList.add(new GuiButton(2, Math.round(width / 2 - 30), Math.round(height / 2 - 50), 60, 20, "Request"));
+    	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 25), 20, 20, "-"));
+    	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 25), 20, 20, "+"));// /2 - 34, - 150
+        controlList.add(new GuiButton(2, Math.round(width / 2 - 30), Math.round(height / 2 - 25), 60, 20, "Request"));
     }
     
     protected void drawGuiContainerBackgroundLayer(float f)

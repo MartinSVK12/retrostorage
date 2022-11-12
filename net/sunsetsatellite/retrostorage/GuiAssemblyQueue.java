@@ -12,6 +12,7 @@ public class GuiAssemblyQueue extends GuiContainer
     {
         super(new ContainerAssemblyQueue(inventoryplayer, TileEntityRequestTerminal));
         tile = TileEntityRequestTerminal;
+        ySize = 220;
     }
 
 	protected void drawGuiContainerForegroundLayer()
