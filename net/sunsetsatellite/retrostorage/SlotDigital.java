@@ -45,7 +45,7 @@ public class SlotDigital extends Slot {
             } else if(this.slotIndex != 0 && this.inventory.getStackInSlot(0) != null && this.inventory.getStackInSlot(0).getItem() instanceof ItemStorageDisc){
                 DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),((TileEntityInNetwork) inventory).controller.network_inv,((TileEntityDigitalContainer)inventory).page);
             }
-            System.out.println((itemStack1 != null ? itemStack1.toString() : "null") +" picked up from slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
+            //System.out.println((itemStack1 != null ? itemStack1.toString() : "null") +" picked up from slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
             super.onPickupFromSlot(itemStack1);
         } else if(inventory instanceof TileEntityDigitalChest) {
             if(this.slotIndex == 0 && itemStack1 != null && itemStack1.getItem() instanceof ItemStorageDisc){
@@ -54,7 +54,7 @@ public class SlotDigital extends Slot {
             } else if(this.slotIndex != 0 && this.inventory.getStackInSlot(0) != null && this.inventory.getStackInSlot(0).getItem() instanceof ItemStorageDisc){
                 DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),this.inventory,((TileEntityDigitalContainer)inventory).page);
             }
-            System.out.println((itemStack1 != null ? itemStack1.toString() : "null") +" picked up from slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
+            //System.out.println((itemStack1 != null ? itemStack1.toString() : "null") +" picked up from slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
             super.onPickupFromSlot(itemStack1);
         }
 
@@ -71,7 +71,7 @@ public class SlotDigital extends Slot {
     public void putStack(ItemStack itemStack1) {
         if(inventory instanceof TileEntityInNetwork){
             if(itemStack1 != null){
-                System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
+                //System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
             }
             this.onSlotChanged();
             this.inventory.setInventorySlotContents(this.variableIndex, itemStack1);
@@ -84,7 +84,7 @@ public class SlotDigital extends Slot {
             }
         } else if(inventory instanceof TileEntityDigitalChest) {
             if(itemStack1 != null) {
-                System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
+                //System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
             }
             this.onSlotChanged();
             this.inventory.setInventorySlotContents(this.variableIndex, itemStack1);
