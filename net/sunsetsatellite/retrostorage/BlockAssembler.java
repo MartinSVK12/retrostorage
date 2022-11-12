@@ -26,7 +26,7 @@ public class BlockAssembler extends BlockContainer{
 
     public int idDropped(int i, Random random)
     {
-        return mod_RetroStorage.assembler.blockID;
+        return 0;//mod_RetroStorage.assembler.blockID;
     }
 
     public void onBlockAdded(World world, int i, int j, int k)

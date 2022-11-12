@@ -26,7 +26,7 @@ public class BlockDiscDrive extends BlockContainer{
 
     public int idDropped(int i, Random random)
     {
-        return mod_RetroStorage.discDrive.blockID;
+        return 0;//mod_RetroStorage.discDrive.blockID;
     }
 
     public void onBlockAdded(World world, int i, int j, int k) {

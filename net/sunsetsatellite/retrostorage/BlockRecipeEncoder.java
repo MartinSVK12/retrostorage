@@ -26,7 +26,7 @@ public class BlockRecipeEncoder extends BlockContainer{
 
     public int idDropped(int i, Random random)
     {
-        return mod_RetroStorage.recipeEncoder.blockID;
+        return 0;//mod_RetroStorage.recipeEncoder.blockID;
     }
 
     public void onBlockAdded(World world, int i, int j, int k) {

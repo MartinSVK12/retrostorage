@@ -46,7 +46,10 @@ public class TileEntityContainerRenderer extends TileEntitySpecialRenderer {
 		String string16 = "";
 		if(tileEntity.storedID != 0) {
 			stack = new ItemStack(tileEntity.storedID, 1, tileEntity.storedMetadata);
-			string15 = StringTranslate.getInstance().translateNamedKey(stack.getItemName());
+			if(stack.itemID == mod_RetroStorage.multiID.blockID)
+				string15 = stack.getItemName();
+			else
+				string15 = StringTranslate.getInstance().translateNamedKey(stack.getItemName());
 			string16 = ((Integer) tileEntity.storedAmount).toString();
 			if(tileEntity.isItemLocked)
 			string15 = "* "+StringTranslate.getInstance().translateNamedKey(stack.getItemName())+" *";

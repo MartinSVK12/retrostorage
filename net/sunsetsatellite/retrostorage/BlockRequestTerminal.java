@@ -29,7 +29,7 @@ public class BlockRequestTerminal extends BlockContainer{
 
     public int idDropped(int i, Random random)
     {
-        return mod_RetroStorage.requestTerminal.blockID;
+        return 0;//mod_RetroStorage.requestTerminal.blockID;
     }
 
     public void onBlockAdded(World world, int i, int j, int k)

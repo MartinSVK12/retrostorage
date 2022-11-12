@@ -4,7 +4,7 @@ import net.minecraft.src.*;
 
 import java.util.ArrayList;
 
-public class TileEntityRecipeEncoder extends TileEntity 
+public class TileEntityRecipeEncoder extends TileEntityDigitalContainer
 	implements IInventory{
 
 	public TileEntityRecipeEncoder() {
@@ -90,7 +90,7 @@ public class TileEntityRecipeEncoder extends TileEntity
                 contents[j] = new ItemStack(nbttagcompound1);
             }
         }
-
+        facing = nbttagcompound.getInteger("facing");
     }
 
     public void writeToNBT(NBTTagCompound nbttagcompound)
@@ -109,6 +109,7 @@ public class TileEntityRecipeEncoder extends TileEntity
         }
 
         nbttagcompound.setTag("Items", nbttaglist);
+        nbttagcompound.setInteger("facing",facing);
     }
 
     public int getInventoryStackLimit()
