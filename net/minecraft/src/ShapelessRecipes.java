@@ -11,8 +11,8 @@ public class ShapelessRecipes implements IRecipe {
 
 	public ShapelessRecipes(ItemStack itemStack1, List list2) {
 		this.recipeOutput = itemStack1;
-		this.recipeOutputCopy = itemStack1.copy();
 		this.recipeItems = list2;
+		this.recipeOutputCopy = itemStack1.copy();
 	}
 
 	public ItemStack getRecipeOutput() {
