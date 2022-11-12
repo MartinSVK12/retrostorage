@@ -43,7 +43,7 @@ public class GuiRecipeEncoder extends GuiContainer
     public void initGui()
     {
     	super.initGui();
-    	controlList.add(new GuiButton(0, Math.round(width / 2 + 15), Math.round(height / 2 - 50), 60, 20, "Encode"));
+    	controlList.add(new GuiButton(0, Math.round(width / 2 + 15), Math.round(height / 2 - 25), 60, 20, "Encode"));
     }
     
     protected void actionPerformed(GuiButton guibutton)
