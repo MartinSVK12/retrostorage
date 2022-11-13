@@ -17,23 +17,23 @@ public class ItemDigitalMachineBlock extends ItemBlock {
         int meta = itemstack.getItemDamage();
         switch(meta) {
             case 0:
-                return StringTranslate.getInstance().translateNamedKey("tile.digitalController");
+                return "tile.digitalController";
             case 1:
-                return StringTranslate.getInstance().translateNamedKey("tile.digitalTerminal");
+                return "tile.digitalTerminal";
             case 2:
-                return StringTranslate.getInstance().translateNamedKey("tile.discDrive");
+                return "tile.discDrive";
             case 3:
-                return StringTranslate.getInstance().translateNamedKey("tile.assembler");
+                return "tile.assembler";
             case 4:
-                return StringTranslate.getInstance().translateNamedKey("tile.importer");
+                return "tile.importer";
             case 5:
-                return StringTranslate.getInstance().translateNamedKey("tile.exporter");
+                return "tile.exporter";
             case 6:
-                return StringTranslate.getInstance().translateNamedKey("tile.requestTerminal");
+                return "tile.requestTerminal";
             case 7:
-                return StringTranslate.getInstance().translateNamedKey("tile.interface");
+                return "tile.interface";
             case 8:
-                return StringTranslate.getInstance().translateNamedKey("tile.recipeEncoder");
+                return "tile.recipeEncoder";
         }
         return null;
     }
