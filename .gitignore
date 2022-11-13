@@ -40,6 +40,7 @@
 /net/minecraft/src/J_JsonNode.java
 /net/minecraft/src/GuiInventory.java
 /net/minecraft/src/RenderLiving.java
+/net/minecraft/src/RenderBlocks.java
 /net/minecraft/src/WorldGenLakes.java
 /net/minecraft/src/BlockFlowing.java
 /net/minecraft/src/ItemShears.java
