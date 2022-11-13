@@ -34,6 +34,10 @@ public class ItemDigitalMachineBlock extends ItemBlock {
                 return "tile.interface";
             case 8:
                 return "tile.recipeEncoder";
+            case 9:
+                return "tile.advInterface";
+            case 10:
+                return "tile.processProgrammer";
         }
         return null;
     }

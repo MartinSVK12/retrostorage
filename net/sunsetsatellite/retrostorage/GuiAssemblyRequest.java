@@ -26,7 +26,16 @@ public class GuiAssemblyRequest extends GuiContainer
     {
         fontRenderer.drawString("Assembly Request", 45, 6, 0x404040);
         fontRenderer.drawString(count + "x " /*+ StringTranslate.getInstance().translateNamedKey(request.getItemName())*/, 10, 34, 0x404040);
-        fontRenderer.drawString(request.stackSize+"x "+StringTranslate.getInstance().translateNamedKey(request.getItemName()), 55, 34, 0x404040);
+        if(request.getItem() instanceof ItemAdvRecipeDisc){
+            NBTTagCompound data = request.getItemData();
+            if (data.size() != 0 && data.hasKey("processName") && data.hasKey("tasks")) {
+                fontRenderer.drawString(request.getItemData().getString("processName"),55,34,0x404040);
+            } else {
+                fontRenderer.drawString(request.stackSize+"x "+StringTranslate.getInstance().translateNamedKey(request.getItemName()), 55, 34, 0x404040);
+            }
+        } else{
+            fontRenderer.drawString(request.stackSize+"x "+StringTranslate.getInstance().translateNamedKey(request.getItemName()), 55, 34, 0x404040);
+        }
         drawItemStack(request,30,30);
     }
 

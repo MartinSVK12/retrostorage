@@ -174,7 +174,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 						TileEntityInNetwork network_tile = (TileEntityInNetwork) tile;
 						network_tile.controller = this;
 						if(tile != this) {
-							if (tile instanceof TileEntityAssembler || tile instanceof TileEntityInterface){
+							if (tile instanceof TileEntityAssembler || tile instanceof TileEntityInterface || tile instanceof TileEntityAdvInterface){
 								for(int l = 0;l<9;l++){
 									ItemStack recipeDisc = ((TileEntityInNetworkWithInv) tile).getStackInSlot(l);
 									if(recipeDisc != null) {
@@ -190,6 +190,12 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 												}
 											}
 											else if (tile instanceof TileEntityInterface){
+												List<Object> value = new ArrayList<>();
+												value.add(tile);
+												value.add(l);
+												itemAssembly.put(recipeDisc,value);
+											}
+											else if (tile instanceof TileEntityAdvInterface){
 												List<Object> value = new ArrayList<>();
 												value.add(tile);
 												value.add(l);

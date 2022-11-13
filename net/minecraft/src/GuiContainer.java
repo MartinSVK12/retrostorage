@@ -1,9 +1,6 @@
 package net.minecraft.src;
 
-import net.sunsetsatellite.retrostorage.DiscManipulator;
-import net.sunsetsatellite.retrostorage.GuiDigitalChest;
-import net.sunsetsatellite.retrostorage.ItemRecipeDisc;
-import net.sunsetsatellite.retrostorage.ItemStorageDisc;
+import net.sunsetsatellite.retrostorage.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -135,7 +132,21 @@ public abstract class GuiContainer extends GuiScreen {
 					drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
 					fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
 					fontRenderer.drawStringWithShadow(str, i9, i10 + 12, 0xFFFF00FF);
-				} else {
+				} else if(slot6.getStack().getItem() instanceof ItemAdvRecipeDisc && slot6.getStack().getItemData().hasKey("processName")){
+					i9 = i1 - i4 + 12;
+					i10 = i2 - i5 - 12;
+					int i11 = this.fontRenderer.getStringWidth(string13);
+					ItemStack stack = slot6.getStack();
+					String str = "Processes: "+stack.getItemData().getString("processName");
+					int w = mc.fontRenderer.getStringWidth(str);
+					if (i11 < w) {
+						i11 = w;
+					}
+					drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
+					fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+					fontRenderer.drawStringWithShadow(str, i9, i10 + 12, 0xFFFF00FF);
+				}
+				else {
 					i9 = i1 - i4 + 12;
 					i10 = i2 - i5 - 12;
 					int i11 = this.fontRenderer.getStringWidth(string13);

@@ -3,6 +3,7 @@ package net.minecraft.src;
 import ic2.RenderBlockCable;
 import net.sunsetsatellite.retrostorage.*;
 
+import java.util.HashMap;
 import java.util.Random;
 
 
@@ -31,6 +32,11 @@ public class mod_RetroStorage extends BaseMod {
 		digitalControllerTex = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("digitalcontroller.png").toString());
 		importerTex = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("importer.png").toString());
 		exporterTex = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("exporter.png").toString());
+		advInterfaceSide = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("advinterfaceside.png").toString());
+		processProgrammerTop = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("processprogrammertopfilled.png").toString());
+		processProgrammerFront = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("processprogrammerfront.png").toString());
+		advMachineSide = ModLoader.addOverride("/terrain.png", (new StringBuilder()).append("/retrostorage/").append("advmachineside.png").toString());
+
 
 		sprites = new int[][]{
 				{
@@ -74,6 +80,15 @@ public class mod_RetroStorage extends BaseMod {
 						mod_RetroStorage.recipeEncoderTop,
 						mod_RetroStorage.digitalChestSide,
 						mod_RetroStorage.recipeEncoderFront,
+				},
+				{
+						mod_RetroStorage.advInterfaceSide
+				},
+				{
+						mod_RetroStorage.advMachineSide,
+						mod_RetroStorage.processProgrammerTop,
+						mod_RetroStorage.advMachineSide,
+						mod_RetroStorage.processProgrammerFront,
 				}
 
 		};
@@ -102,6 +117,8 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityRequestTerminal.class, "Request Terminal");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityInterface.class, "Interface");
 		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityStorageContainer.class,"Storage Container",new TileEntityContainerRenderer());
+		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityProcessProgrammer.class,"Process Programmer");
+		ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityAdvInterface.class,"Adv. Interface");
 		ModLoader.AddName(digitalChest, "Digital Chest");
 		ModLoader.AddName(blankDisc, "Blank Storage Disc");
 		ModLoader.AddName(storageDisc1, "Storage Disc MK I");
@@ -135,12 +152,15 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddLocalization("tile.requestTerminal.name", "Request Terminal");
 		ModLoader.AddName(itemCable,"Network Cable");
 		ModLoader.AddLocalization("tile.interface.name","Item Interface");
+		ModLoader.AddLocalization("tile.advInterface.name","Adv. Item Interface");
 		ModLoader.AddName(mobileTerminal,"Mobile Terminal");
 		ModLoader.AddName(mobileRequestTerminal,"Mobile Request Terminal");
 		ModLoader.AddName(blankCard,"Blank Card");
 		ModLoader.AddName(boosterCard,"Booster Card");
 		ModLoader.AddName(lockingCard,"Locking Card");
 		ModLoader.AddName(storageContainer,"Storage Container");
+		ModLoader.AddName(advRecipeDisc,"Adv. Recipe Disc");
+		ModLoader.AddLocalization("tile.processProgrammer.name","Process Programmer");
 
 		ModLoader.RegisterBlock(digitalChest);
 		//ModLoader.RegisterBlock(digitalController);
@@ -213,6 +233,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static ItemStorageDisc virtualDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("virtualDisc",143), (Short.MAX_VALUE*2)+1)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("virtualdisc.png").toString())).setItemName("virtualdisc").setMaxStackSize(1);
 	public static ItemStorageDisc goldenDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("goldenDisc",144), 1024)).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("goldendisc.png").toString())).setItemName("goldendisc").setMaxStackSize(1);
 	public static ItemRecipeDisc recipeDisc = (ItemRecipeDisc) (new ItemRecipeDisc(getId("recipeDisc",145))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("recipedisc.png").toString())).setItemName("recipedisc");
+	public static ItemAdvRecipeDisc advRecipeDisc = (ItemAdvRecipeDisc) (new ItemAdvRecipeDisc(getId("advRecipeDisc",152))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("advrecipedisc.png").toString())).setItemName("advrecipedisc");
 	public static ItemTerminal mobileTerminal = (ItemTerminal) (new ItemTerminal(getId("mobileTerminal",147))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobileterminal.png").toString())).setItemName("mobileterminal").setMaxStackSize(1);
 	public static ItemRequestTerminal mobileRequestTerminal = (ItemRequestTerminal) (new ItemRequestTerminal(getId("mobileRequestTerminal",148))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("mobilerequestterminal.png").toString())).setItemName("mobilerequestterminal").setMaxStackSize(1);
 	public static Item blankCard = (new Item(getId("blankCard",149))).setIconIndex(ModLoader.addOverride("/gui/items.png", (new StringBuilder()).append("/retrostorage/").append("blankcard.png").toString())).setItemName("blankcard");
@@ -264,13 +285,17 @@ public class mod_RetroStorage extends BaseMod {
 	public static int storageContainerFront;
 	public static int importerTex;
 	public static int exporterTex;
+	public static int advInterfaceSide;
+	public static int processProgrammerFront;
+	public static int processProgrammerTop;
+	public static int advMachineSide;
 	public static int cableRenderID;
 
 	public static int[][] sprites;
 
 	public enum machines {
 		digitalController,digitalTerminal,discDrive,assembler,importer,exporter,requestTerminal,digitalInterface,
-		recipeEncoder
+		recipeEncoder,advInterface,processProgrammer
 	}
 
 	
@@ -286,6 +311,34 @@ public class mod_RetroStorage extends BaseMod {
 		return ((ModLoader.isModLoaded("mod_IC2")||ModLoader.isModLoaded("net.minecraft.src.mod_IC2")));
 	}
 
+
+	public static void printCompound(NBTTagCompound tag){
+		printCompound(tag, 0);
+	}
+
+	public static void printCompound(NBTTagCompound tag, int n){
+		HashMap<Object,Object> map;
+		n++;
+		StringBuilder str = new StringBuilder();
+		for(int i = 0;i<n;i++){
+			str.append(" ");
+		}
+		try {
+			map = (HashMap<Object, Object>) ModLoader.getPrivateValue(NBTTagCompound.class,tag,0);
+			if(map != null){
+				int finalN = n;
+				map.forEach((K, V)->{
+					System.out.println(str.toString()+K+": "+V);
+					//entityPlayer.addChatMessage(str.toString()+K + ": " + V);
+					if(V instanceof NBTTagCompound){
+						printCompound((NBTTagCompound) V, finalN);
+					}
+				});
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public String Version() {

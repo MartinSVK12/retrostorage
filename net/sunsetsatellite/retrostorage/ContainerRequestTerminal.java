@@ -42,7 +42,7 @@ public class ContainerRequestTerminal extends Container
         {
             for(int l = 0; l < 9; l++)
             {
-                addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
+                addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 2 , 8 + l * 18, 18 + i * 18));
             }
 
         }

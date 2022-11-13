@@ -29,10 +29,10 @@ public class GuiAssemblyQueue extends GuiContainer
                 {
                     for(int l = 0; l < 9; l++)
                     {
-                        j++;
                         if(q.size() > j){
                             drawItemStack((ItemStack)q.get(j), 8 + l * 18, 18 + i * 18);
                         }
+                        j++;
                         //addSlot(new SlotViewOnly(TileEntityRequestTerminal,l + i * 9 + 3 , 8 + l * 18, 18 + i * 18));
                     }
 
@@ -89,6 +89,9 @@ public class GuiAssemblyQueue extends GuiContainer
                     TileEntity tile = (TileEntity) entry.getValue().values().toArray()[0];
                     if(tile instanceof TileEntityInterface){
                         ((TileEntityInterface) tile).cancelProcessing();
+                    }
+                    if(tile instanceof TileEntityAdvInterface){
+                        ((TileEntityAdvInterface) tile).cancelProcessing();
                     }
                 }
 

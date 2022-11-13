@@ -46,6 +46,10 @@ public class BlockDigitalMachine extends BlockContainer {
                 return new TileEntityInterface();
             case 8:
                 return new TileEntityRecipeEncoder();
+            case 9:
+                return new TileEntityAdvInterface();
+            case 10:
+                return new TileEntityProcessProgrammer();
             default:
                 return null;
         }
@@ -116,6 +120,8 @@ public class BlockDigitalMachine extends BlockContainer {
             case 6:
             case 7:
             case 8:
+            case 9:
+            case 10:
                 return meta;
             default:
                 return 0;
@@ -207,6 +213,10 @@ public class BlockDigitalMachine extends BlockContainer {
                 return new GuiInterface(entityplayer.inventory, (TileEntityInterface) tile);
             case 8:
                 return new GuiRecipeEncoder(entityplayer.inventory, (TileEntityRecipeEncoder) tile);
+            case 9:
+                return new GuiAdvInterface(entityplayer.inventory, (TileEntityAdvInterface) tile);
+            case 10:
+                return new GuiProcessProgrammer(entityplayer.inventory, (TileEntityProcessProgrammer) tile);
             default:
                 return null;
         }

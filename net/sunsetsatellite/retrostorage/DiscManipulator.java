@@ -182,7 +182,7 @@ public class DiscManipulator {
     }
 
 	public static void readItemAssembly(int page, TileEntityInNetworkWithInv reader, TileEntityDigitalController controller){
-		int i = 3;
+		int i = 2;
 
 		for (int j = 0 + page*36;j < controller.itemAssembly.size()+1;j++) {
 			if(j < controller.itemAssembly.size()) {
@@ -723,6 +723,17 @@ public class DiscManipulator {
 				}
 			} else {
 				entityplayer.addChatMessage("Request failed! Not enough resources.");
+			}
+			return false;
+		}
+		if(controller.itemAssembly.get(item).get(0) instanceof TileEntityAdvInterface) {
+			EntityPlayer entityplayer = ModLoader.getMinecraftInstance().thePlayer;
+			NBTTagCompound data = item.getItemData();
+			if (data.size() != 0 && data.hasKey("processName") && data.hasKey("tasks")) {
+				entityplayer.addChatMessage("Requesting adv. processing: " + item.getItemData().getString("processName"));
+				for(int i = 0;i<count;i++) {
+					controller.assemblyQueue.add(item);
+				}
 			}
 			return false;
 		}
