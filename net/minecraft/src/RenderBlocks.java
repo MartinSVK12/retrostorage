@@ -172,53 +172,7 @@ public class RenderBlocks {
 	public boolean renderBlockByRenderType(Block block, int i, int j, int k) {
 		int l = block.getRenderType();
 		block.setBlockBoundsBasedOnState(this.blockAccess, i, j, k);
-		return l == 0 ? this.renderStandardBlock(block, i, j, k) : (l == 4 ? this.renderBlockFluids(block, i, j, k) : (l == 13 ? this.renderBlockCactus(block, i, j, k) : (l == 1 ? this.renderBlockReed(block, i, j, k) : (l == 6 ? this.renderBlockCrops(block, i, j, k) : (l == 2 ? this.renderBlockTorch(block, i, j, k) : (l == 3 ? this.renderBlockFire(block, i, j, k) : (l == 5 ? this.renderBlockRedstoneWire(block, i, j, k) : (l == 8 ? this.renderBlockLadder(block, i, j, k) : (l == 7 ? this.renderBlockDoor(block, i, j, k) : (l == 9 ? this.renderBlockMinecartTrack((BlockRail)block, i, j, k) : (l == 10 ? this.renderBlockStairs(block, i, j, k) : (l == 11 ? this.renderBlockFence(block, i, j, k) : (l == 12 ? this.renderBlockLever(block, i, j, k) : (l == 14 ? this.renderBlockBed(block, i, j, k) : (l == 15 ? this.renderBlockRepeater(block, i, j, k) : (l == 16 ? this.func_31074_b(block, i, j, k, false) : (l == 17 ? this.func_31080_c(block, i, j, k, true) : (l == 18 ? this.renderBlockCable(block, i, j, k) : ModLoader.RenderWorldBlock(this, this.blockAccess, i, j, k, block, l)))))))))))))))))));
-	}
-
-	private boolean renderBlockCable(Block block, int i, int j, int k) {
-
-		float f = 0.4f;
-		float f1 = (1.0F - f) / 2.0F;
-		block.setBlockBounds(f1, f1, f1, f1 + f, f1 + f, f1 + f);
-		renderStandardBlock(block, i, j, k);
-		boolean flag = blockAccess.getBlockId(i + 1, j, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i + 1, j, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag1 = blockAccess.getBlockId(i - 1, j, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i - 1, j, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag2 = blockAccess.getBlockId(i, j + 1, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j + 1, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag3 = blockAccess.getBlockId(i, j - 1, k) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j - 1, k) instanceof TileEntityInNetwork ? true : false;
-		boolean flag4 = blockAccess.getBlockId(i, j, k + 1) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j, k + 1) instanceof TileEntityInNetwork ? true : false;
-		boolean flag5 = blockAccess.getBlockId(i , j, k - 1) == block.blockID ? true : false || blockAccess.getBlockTileEntity(i, j, k - 1) instanceof TileEntityInNetwork ? true : false;
-		if(flag)
-		{
-			block.setBlockBounds(f1 + f, f1, f1, 1.0F, f1 + f, f1 + f);
-			renderStandardBlock(block, i, j, k);
-		}
-		if(flag2)
-		{
-			block.setBlockBounds(f1, f1 + f, f1, f1 + f, 1.0F, f1 + f);
-			renderStandardBlock(block, i, j, k);
-		}
-		if(flag4)
-		{
-			block.setBlockBounds(f1, f1, f1 + f, f1 + f, f1 + f, 1.0F);
-			renderStandardBlock(block, i, j, k);
-		}
-		if(flag1)
-		{
-			block.setBlockBounds(0.0F, f1, f1, f1, f1 + f, f1 + f);
-			renderStandardBlock(block, i, j, k);
-		}
-		if(flag3)
-		{
-			block.setBlockBounds(f1, 0.0F, f1, f1 + f, f1, f1 + f);
-			renderStandardBlock(block, i, j, k);
-		}
-		if(flag5)
-		{
-			block.setBlockBounds(f1, f1, 0.0F, f1 + f, f1 + f, f1);
-			renderStandardBlock(block, i, j, k);
-		}
-		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-		return true;
+		return l == 0 ? this.renderStandardBlock(block, i, j, k) : (l == 4 ? this.renderBlockFluids(block, i, j, k) : (l == 13 ? this.renderBlockCactus(block, i, j, k) : (l == 1 ? this.renderBlockReed(block, i, j, k) : (l == 6 ? this.renderBlockCrops(block, i, j, k) : (l == 2 ? this.renderBlockTorch(block, i, j, k) : (l == 3 ? this.renderBlockFire(block, i, j, k) : (l == 5 ? this.renderBlockRedstoneWire(block, i, j, k) : (l == 8 ? this.renderBlockLadder(block, i, j, k) : (l == 7 ? this.renderBlockDoor(block, i, j, k) : (l == 9 ? this.renderBlockMinecartTrack((BlockRail)block, i, j, k) : (l == 10 ? this.renderBlockStairs(block, i, j, k) : (l == 11 ? this.renderBlockFence(block, i, j, k) : (l == 12 ? this.renderBlockLever(block, i, j, k) : (l == 14 ? this.renderBlockBed(block, i, j, k) : (l == 15 ? this.renderBlockRepeater(block, i, j, k) : (l == 16 ? this.func_31074_b(block, i, j, k, false) : (l == 17 ? this.func_31080_c(block, i, j, k, true) : ModLoader.RenderWorldBlock(this, this.blockAccess, i, j, k, block, l))))))))))))))))));
 	}
 
 	public boolean renderBlockBed(Block block, int i, int j, int k) {

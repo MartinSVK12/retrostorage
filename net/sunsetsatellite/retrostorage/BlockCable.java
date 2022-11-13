@@ -85,7 +85,7 @@ public class BlockCable extends Block {
     
     public int getRenderType()
     {
-        return 18;
+        return mod_RetroStorage.cableRenderID;
     }
 
 }

@@ -1,5 +1,6 @@
 package net.minecraft.src;
 
+import ic2.RenderBlockCable;
 import net.sunsetsatellite.retrostorage.*;
 
 import java.util.Random;
@@ -191,6 +192,7 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(storageContainer,1),"SSS","ICI","SSS", 'S', Block.stone, 'I', Item.ingotIron, 'C', Block.chest);
 		ModLoader.AddRecipe(new ItemStack(blankCard, 4),"ISI","SPS","ISI",'I',Item.ingotIron,'S',Block.stone,'P',Block.pressurePlateStone);
 		ModLoader.AddRecipe(new ItemStack(lockingCard, 1),"RTR","TCT","RTR",'R',Item.redstone,'T',Block.torchRedstoneActive,'C',blankCard);
+		cableRenderID = ModLoader.getUniqueBlockModelID(this, false);
 		System.out.println("[RetroStorage] IC2 Installed: "+IC2Available());
 	}
 
@@ -262,6 +264,7 @@ public class mod_RetroStorage extends BaseMod {
 	public static int storageContainerFront;
 	public static int importerTex;
 	public static int exporterTex;
+	public static int cableRenderID;
 
 	public static int[][] sprites;
 
@@ -273,6 +276,10 @@ public class mod_RetroStorage extends BaseMod {
 	
 	public void GenerateSurface(World world, Random random, int i, int j){
     }
+
+	public boolean RenderWorldBlock(RenderBlocks renderblocks, IBlockAccess iblockaccess, int i, int j, int k, Block block, int l) {
+		return block.getRenderType() == cableRenderID && RenderCable.render(renderblocks, iblockaccess, i, j, k, block, l);
+	}
 
 
 	public static boolean IC2Available(){
