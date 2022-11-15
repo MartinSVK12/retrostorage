@@ -85,7 +85,7 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
 
     public String getInvName()
     {
-        return "Item Exporter";
+        return "Item Interface";
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound)
@@ -125,7 +125,7 @@ public class TileEntityInterface extends TileEntityInNetworkWithInv {
         if(processing != null) {
             NBTTagCompound compound = new NBTTagCompound();
             processing.writeToNBT(compound);
-            nbttagcompound.setCompoundTag("processung", compound);
+            nbttagcompound.setCompoundTag("processing", compound);
             nbttagcompound.setInteger("processingAmount", processingAmount);
         }
         nbttagcompound.setTag("Items", nbttaglist);

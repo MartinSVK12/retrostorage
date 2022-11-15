@@ -212,6 +212,10 @@ public class mod_RetroStorage extends BaseMod {
 		ModLoader.AddRecipe(new ItemStack(storageContainer,1),"SSS","ICI","SSS", 'S', Block.stone, 'I', Item.ingotIron, 'C', Block.chest);
 		ModLoader.AddRecipe(new ItemStack(blankCard, 4),"ISI","SPS","ISI",'I',Item.ingotIron,'S',Block.stone,'P',Block.pressurePlateStone);
 		ModLoader.AddRecipe(new ItemStack(lockingCard, 1),"RTR","TCT","RTR",'R',Item.redstone,'T',Block.torchRedstoneActive,'C',blankCard);
+		ModLoader.AddRecipe(new ItemStack(multiID,1,machines.advInterface.ordinal()),"ODO","PIP","OCO",'O',Block.obsidian,'D',advRecipeDisc,'I',new ItemStack(multiID,1,machines.digitalInterface.ordinal()),'C',itemCable,'P',new ItemStack(Item.dyePowder,1,5));
+		ModLoader.AddRecipe(new ItemStack(advRecipeDisc,1),"OPO","RDR","OPO",'R',Item.redstone,'D',recipeDisc,'P',new ItemStack(Item.dyePowder,1,5),'O',Block.obsidian);
+		ModLoader.AddRecipe(new ItemStack(multiID,1,machines.processProgrammer.ordinal()),"ODO","CRC","OIO",'O',Block.obsidian,'D',advRecipeDisc,'C',Block.workbench,'I',new ItemStack(multiID,1,machines.advInterface.ordinal()),'R',new ItemStack(multiID,1,machines.recipeEncoder.ordinal()));
+
 		cableRenderID = ModLoader.getUniqueBlockModelID(this, false);
 		System.out.println("[RetroStorage] IC2 Installed: "+IC2Available());
 	}

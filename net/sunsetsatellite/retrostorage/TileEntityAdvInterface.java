@@ -84,7 +84,7 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
 
     public String getInvName()
     {
-        return "Item Exporter";
+        return "Adv. Item Interface";
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound)
@@ -101,10 +101,13 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
                 contents[j] = new ItemStack(nbttagcompound1);
             }
         }
-        /*if(!Objects.equals(nbttagcompound.getCompoundTag("processing"), new NBTTagCompound())){
+        if(!Objects.equals(nbttagcompound.getCompoundTag("processing"), new NBTTagCompound())){
             processing = new ItemStack(nbttagcompound.getCompoundTag("processing"));
-            processingAmount = nbttagcompound.getInteger("processingAmount");
-        }*/
+            NBTTagCompound tasks = nbttagcompound.getCompoundTag("tasks");
+            tasks.getKeys().forEach((key)->{
+                processTasks.add(tasks.getCompoundTag((String) key));
+            });
+        }
     }
 
     public void writeToNBT(NBTTagCompound nbttagcompound)
@@ -121,12 +124,17 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
                 nbttaglist.setTag(nbttagcompound1);
             }
         }
-        /*if(processing != null) {
+        if(processing != null) {
             NBTTagCompound compound = new NBTTagCompound();
+            NBTTagCompound tasks = new NBTTagCompound();
             processing.writeToNBT(compound);
-            nbttagcompound.setCompoundTag("processung", compound);
-            nbttagcompound.setInteger("processingAmount", processingAmount);
-        }*/
+            nbttagcompound.setCompoundTag("processing", compound);
+            processTasks.forEach((nbt)->{
+                tasks.setCompoundTag(nbt.getKey(),nbt);
+            });
+            nbttagcompound.setCompoundTag("tasks",tasks);
+            //nbttagcompound.setInteger("processingAmount", processingAmount);
+        }
         nbttagcompound.setTag("Items", nbttaglist);
     }
 
@@ -213,6 +221,9 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
         }
         if(!(attachedTileEntity instanceof IInventory)){
             failTask(task,"Incompatible attachment",true);
+            return;
+        }
+        if(controller == null || controller.network_inv == null){
             return;
         }
         IInventory inv = ((IInventory) attachedTileEntity);
