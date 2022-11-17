@@ -119,7 +119,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
     {
         if(enabled){
             if(controller != null && controller.isActive() && controller.network_disc != null) {
-                TileEntity tile = findAnyTileEntityAroundBlock();
+                TileEntity tile = findAnyTileEntityAroundBlock(this.getClass());
                 if (tile instanceof IInventory){
                     IInventory chest = (IInventory) tile;
                     ItemStack item = null;
@@ -177,7 +177,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                             }
                         }
                     }
-                } else if(tile instanceof TileEntityStorageContainer){
+                } /*else if(tile instanceof TileEntityStorageContainer){
                     TileEntityStorageContainer container = (TileEntityStorageContainer) tile;
                     if(container.storedID != 0 && isEmpty()){
                         int filter = controller.network_inv.getInventorySlotContainItem(container.storedID,container.storedMetadata);
@@ -202,7 +202,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                             container.storedAmount += network_item.stackSize;
                         }
                     }
-                }
+                }*/
             }
         }
     }

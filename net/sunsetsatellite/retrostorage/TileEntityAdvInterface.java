@@ -60,16 +60,7 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
     
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
-    	if(i != 9) {
-    		for(int j = 0;j < contents.length;j++) {
-        		if (contents[j] == null) { 
-        			contents[j] = itemstack;
-        			break;
-        		}
-        	}
-    	} else {
-    		contents[i] = itemstack;
-    	}
+        contents[i] = itemstack;
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
             itemstack.stackSize = getInventoryStackLimit();
@@ -154,7 +145,7 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
     }
 
     public void updateEntity(){
-        TileEntity tile = findTileEntityAroundBlock(IInventory.class);
+        TileEntity tile = findTileEntityAroundBlock(IInventory.class,this.getClass());
         attachedTileEntity = tile;
         //System.out.println(tile);
         if(processing == null){
