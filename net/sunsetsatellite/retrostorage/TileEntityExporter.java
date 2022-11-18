@@ -117,9 +117,11 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 
 	public void updateEntity()
     {
-        if(enabled){
+        workTicks++;
+        if(enabled && workTicks >= workMaxTicks){
+            workTicks = 0;
             if(controller != null && controller.isActive() && controller.network_disc != null) {
-                TileEntity tile = findAnyTileEntityAroundBlock(this.getClass());
+                TileEntity tile = findAnyTileEntityAroundBlock(TileEntityInNetworkWithInv.class);
                 if (tile instanceof IInventory){
                     IInventory chest = (IInventory) tile;
                     ItemStack item = null;
@@ -177,7 +179,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                             }
                         }
                     }
-                } /*else if(tile instanceof TileEntityStorageContainer){
+                } else if(tile instanceof TileEntityStorageContainer){
                     TileEntityStorageContainer container = (TileEntityStorageContainer) tile;
                     if(container.storedID != 0 && isEmpty()){
                         int filter = controller.network_inv.getInventorySlotContainItem(container.storedID,container.storedMetadata);
@@ -202,7 +204,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
                             container.storedAmount += network_item.stackSize;
                         }
                     }
-                }*/
+                }
             }
         }
     }
@@ -218,5 +220,7 @@ public class TileEntityExporter extends TileEntityInNetworkWithInv {
 	
 	private ItemStack[] contents;
     boolean enabled = true;
+    private int workTicks = 0;
+    private int workMaxTicks = 20;
     int slot = 0;
 }

@@ -57,10 +57,6 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
     }
 
     public void updateContents(){
-        if(getStackInSlot(0) != null && controller != null && controller.network_disc != null){
-            DiscManipulator.clearDigitalInv(this);
-            DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
-        }
     }
 
     public void updateEntity()
@@ -69,7 +65,7 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
         if(ticksSinceUpdate >= 60){
             ticksSinceUpdate = 0;
             if(controller != null && controller.isActive()){
-                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv,page);
+                DiscManipulator.saveDisc(controller.network_disc,controller.network_inv);
             }
         }
         if(controller == null || !controller.isActive()){
@@ -80,21 +76,9 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
         }
         if(controller != null){
             contents = controller.network_inv.inventoryContents;
+            setInventorySlotContents(0, controller.network_disc);
         }
-        if(getStackInSlot(0) != null && controller.network_disc != null){
-            if(!controller.network_disc.isStackEqual(getStackInSlot(0))){
-                controller.clearing = true;
-                DiscManipulator.clearDigitalInv(this);
-                DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
-                controller.clearing = false;
-            }
-        } else if(getStackInSlot(0) == null && controller.network_disc != null){
-            controller.clearing = true;
-            DiscManipulator.clearDigitalInv(this);
-            DiscManipulator.loadDisc(controller.network_disc, controller.network_inv, page);
-            controller.clearing = false;
-        }
-        setInventorySlotContents(0, controller.network_disc);
+
         if(controller.network_disc != null) {
             this.pages = ((int) Math.floor((double) controller.network_disc.getItemData().size() / (36)));
         }
