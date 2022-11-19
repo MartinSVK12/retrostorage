@@ -227,7 +227,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 	}
 
 	public void forceReload(){
-		controller.reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord, yCoord, zCoord, null);
+		reloadNetwork(ModLoader.getMinecraftInstance().theWorld, xCoord, yCoord, zCoord, null);
 	}
 
 	public void reloadNetwork(World world, int i, int j, int k, EntityPlayer entityplayer) {

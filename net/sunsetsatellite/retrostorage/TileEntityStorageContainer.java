@@ -25,6 +25,11 @@ public class TileEntityStorageContainer extends TileEntity {
                 storedData = new NBTTagCompound();
             }
         }
+        if(storedID == 0){
+            storedAmount = 0;
+            storedMetadata = 0;
+            storedData = new NBTTagCompound();
+        }
     }
 
 

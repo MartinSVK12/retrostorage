@@ -140,6 +140,7 @@ public class BlockStorageContainer extends BlockContainer{
                         entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
                         entityitem.motionZ = 0;
                         world.entityJoinedWorld(entityitem);
+                        return;
                     }
                 }
             } else {
@@ -157,6 +158,7 @@ public class BlockStorageContainer extends BlockContainer{
                         entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
                         entityitem.motionZ = 0;
                         world.entityJoinedWorld(entityitem);
+                        return;
                     }
                 }
             }
@@ -185,6 +187,7 @@ public class BlockStorageContainer extends BlockContainer{
                                     tile.storedData = entityplayer.getCurrentEquippedItem().getItemData();
                                     tile.storedAmount += 1;
                                     entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, 1);
+                                    return true;
                                 }
                             }
                         } else {
@@ -195,13 +198,16 @@ public class BlockStorageContainer extends BlockContainer{
                                     tile.storedData = entityplayer.getCurrentEquippedItem().getItemData();
                                     tile.storedAmount += entityplayer.getCurrentEquippedItem().stackSize;
                                     entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, entityplayer.getCurrentEquippedItem().stackSize);
-                                } else if(tile.storedAmount < tile.maxAmount) {
+                                    return true;
+                                } else if(tile.storedAmount + entityplayer.getCurrentEquippedItem().stackSize > tile.maxAmount) {
+                                    int overflow = tile.storedAmount + entityplayer.getCurrentEquippedItem().stackSize - tile.maxAmount;
+                                    int amount = entityplayer.getCurrentEquippedItem().stackSize - overflow;
                                     tile.storedID = entityplayer.getCurrentEquippedItem().itemID;
                                     tile.storedMetadata = entityplayer.getCurrentEquippedItem().getItemDamage();
                                     tile.storedData = entityplayer.getCurrentEquippedItem().getItemData();
-                                    entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, tile.maxAmount - tile.storedAmount);
-                                    tile.storedAmount += tile.maxAmount - tile.storedAmount;
-
+                                    entityplayer.inventory.decrStackSize(entityplayer.inventory.currentItem, amount);
+                                    tile.storedAmount += amount;
+                                    return true;
                                 }
                             }
                         }

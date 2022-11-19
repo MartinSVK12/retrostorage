@@ -79,8 +79,8 @@ public class TileEntityDigitalTerminal extends TileEntityInNetworkWithInv
             setInventorySlotContents(0, controller.network_disc);
         }
 
-        if(controller.network_disc != null) {
-            this.pages = ((int) Math.floor((double) controller.network_disc.getItemData().size() / (36)));
+        if(controller != null) {
+            this.pages = controller.network_inv.getLastOccupiedStack()/36;//((int) Math.floor((double) controller.network_disc.getItemData().size() / (36)));
         }
     }
 

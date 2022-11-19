@@ -7,7 +7,6 @@ package net.sunsetsatellite.retrostorage;
 import net.minecraft.src.*;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 // Referenced classes of package net.minecraft.src:
 //            TileEntity, IInventory, ItemStack, NBTTagCompound, 
@@ -58,27 +57,29 @@ public class TileEntityDiscDrive extends TileEntityStorage
     
     public void updateEntity()
     {
-        if (getStackInSlot(2) != null){
-            if (getStackInSlot(2).getItem() == mod_RetroStorage.virtualDisc){
-                virtualDisc = getStackInSlot(2);
-            }
-        }
         setInventorySlotContents(2,virtualDisc);
-        if (getStackInSlot(0) != null){
-            if (getStackInSlot(0).getItem() instanceof ItemStorageDisc){
-                virtualDriveMaxStacks += ((ItemStorageDisc) getStackInSlot(0).getItem()).getMaxStackCapacity();
-                Object[] vDiscData = virtualDisc.getItemData().getValues().toArray();
-                NBTTagCompound vDiscNBT = virtualDisc.getItemData();
-                ItemStack disc = getStackInSlot(0);
-                Object[] discNBT = disc.getItemData().getValues().toArray();
-                for (Object o : discNBT) {
-                    controller.network_inv.addItemStackToInventory(new ItemStack((NBTTagCompound) o));
-                    //vDiscNBT.setCompoundTag(String.valueOf(vDiscData.length+i1+1), (NBTTagCompound) o);
+        if(controller != null && controller.network_drive != null){
+            if (getStackInSlot(2) != null){
+                if (getStackInSlot(2).getItem() == mod_RetroStorage.virtualDisc){
+                    virtualDisc = getStackInSlot(2);
                 }
-                setInventorySlotContents(0,null);
-                discsUsed.add(disc);
-                DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
-                controller.forceReload();
+            }
+            if (getStackInSlot(0) != null){
+                if (getStackInSlot(0).getItem() instanceof ItemStorageDisc){
+                    virtualDriveMaxStacks += ((ItemStorageDisc) getStackInSlot(0).getItem()).getMaxStackCapacity();
+                    Object[] vDiscData = virtualDisc.getItemData().getValues().toArray();
+                    NBTTagCompound vDiscNBT = virtualDisc.getItemData();
+                    ItemStack disc = getStackInSlot(0);
+                    Object[] discNBT = disc.getItemData().getValues().toArray();
+                    for (Object o : discNBT) {
+                        controller.network_inv.addItemStackToInventory(new ItemStack((NBTTagCompound) o));
+                        //vDiscNBT.setCompoundTag(String.valueOf(vDiscData.length+i1+1), (NBTTagCompound) o);
+                    }
+                    setInventorySlotContents(0,null);
+                    discsUsed.add(disc);
+                    DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
+                    controller.forceReload();
+                }
             }
         }
     }
