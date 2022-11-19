@@ -163,54 +163,55 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 
 	private void addToNetwork(World world, int i, int j, int k) {
 		HashMap<String, ArrayList<Integer>> neighbors = scanNeighboringBlocks(world, i, j, k);
-		Iterator<Entry<String, ArrayList<Integer>>> itrt = neighbors.entrySet().iterator();
-		while (itrt.hasNext()) {
-			Map.Entry<String, ArrayList<Integer>> element = (Map.Entry<String, ArrayList<Integer>>)itrt.next();
-			if(element.getValue() != null && !network.containsKey(element.getValue())) {
+		for (Entry<String, ArrayList<Integer>> element : neighbors.entrySet()) {
+			if (element.getValue() != null && !network.containsKey(element.getValue())) {
 				HashMap<String, Object> block = new HashMap<String, Object>();
 				block.put("id", world.getBlockId(element.getValue().get(0), element.getValue().get(1), element.getValue().get(2)));
 				block.put("tile", world.getBlockTileEntity(element.getValue().get(0), element.getValue().get(1), element.getValue().get(2)));
 				TileEntity tile = world.getBlockTileEntity(element.getValue().get(0), element.getValue().get(1), element.getValue().get(2));
-				if(tile != null) {
-					if(tile instanceof TileEntityInNetwork) {
+				if (tile != null) {
+					if (tile instanceof TileEntityInNetwork) {
 						TileEntityInNetwork network_tile = (TileEntityInNetwork) tile;
 						network_tile.controller = this;
-						if(tile != this) {
-							if (tile instanceof TileEntityAssembler || tile instanceof TileEntityInterface || tile instanceof TileEntityAdvInterface){
-								for(int l = 0;l<9;l++){
+						if (tile != this) {
+							if (tile instanceof TileEntityAssembler || tile instanceof TileEntityInterface || tile instanceof TileEntityAdvInterface) {
+								for (int l = 0; l < 9; l++) {
 									ItemStack recipeDisc = ((TileEntityInNetworkWithInv) tile).getStackInSlot(l);
-									if(recipeDisc != null) {
-											if (recipeDisc.getItem() instanceof ItemRecipeDisc){
-												CraftingManager crafter = CraftingManager.getInstance();
-												ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(recipeDisc.getItemData());
-												ItemStack item = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
-												List<Object> value = new ArrayList<>();
-												value.add(tile);
-												value.add(l);
-												if(item != null) {
-													itemAssembly.put(item, value);
-												}
+									if (recipeDisc != null) {
+										if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
+											CraftingManager crafter = CraftingManager.getInstance();
+											ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(recipeDisc.getItemData());
+											ItemStack item = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+											List<Object> value = new ArrayList<>();
+											value.add(tile);
+											value.add(l);
+											if (item != null) {
+												itemAssembly.put(item, value);
 											}
-											else if (tile instanceof TileEntityInterface){
-												List<Object> value = new ArrayList<>();
-												value.add(tile);
-												value.add(l);
-												itemAssembly.put(recipeDisc,value);
-											}
-											else if (tile instanceof TileEntityAdvInterface){
-												List<Object> value = new ArrayList<>();
-												value.add(tile);
-												value.add(l);
-												itemAssembly.put(recipeDisc,value);
-											}
+										} else if (tile instanceof TileEntityInterface) {
+											List<Object> value = new ArrayList<>();
+											value.add(tile);
+											value.add(l);
+											itemAssembly.put(recipeDisc, value);
+										} else if (tile instanceof TileEntityAdvInterface) {
+											List<Object> value = new ArrayList<>();
+											value.add(tile);
+											value.add(l);
+											itemAssembly.put(recipeDisc, value);
 										}
 									}
 								}
-								devicesConnected += 1;
+							} else if(tile instanceof TileEntityWirelessLink){
+								TileEntityWirelessLink link = (TileEntityWirelessLink) tile;
+								if(link.remoteLink != null){
+									addToNetwork(world,link.remoteLink.xCoord,link.remoteLink.yCoord,link.remoteLink.zCoord);
+								}
 							}
-							network_tile.updateEntity();
+							devicesConnected += 1;
 						}
+						network_tile.updateEntity();
 					}
+				}
 				network.put(element.getValue(), block);
 				addToNetwork(world, element.getValue().get(0), element.getValue().get(1), element.getValue().get(2));
 			} else if (element.getValue() != null && network.containsKey(element.getValue())) {

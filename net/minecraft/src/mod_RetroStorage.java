@@ -37,7 +37,7 @@ public class mod_RetroStorage extends BaseMod {
         processProgrammerTop = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "processprogrammertopfilled.png");
         processProgrammerFront = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "processprogrammerfront.png");
         advMachineSide = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "advmachineside.png");
-
+        wirelessLinkTex = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "wirelesslink.png");
 
         sprites = new int[][]{
                 {
@@ -90,6 +90,9 @@ public class mod_RetroStorage extends BaseMod {
                         mod_RetroStorage.processProgrammerTop,
                         mod_RetroStorage.advMachineSide,
                         mod_RetroStorage.processProgrammerFront,
+                },
+                {
+                        mod_RetroStorage.wirelessLinkTex
                 }
 
         };
@@ -111,6 +114,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityStorageContainer.class, "Storage Container", new TileEntityContainerRenderer());
         ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityProcessProgrammer.class, "Process Programmer");
         ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityAdvInterface.class, "Adv. Interface");
+        ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityWirelessLink.class,"Wireless Link");
         ModLoader.AddName(digitalChest, "Digital Chest");
         ModLoader.AddName(blankDisc, "Blank Storage Disc");
         ModLoader.AddName(storageDisc1, "Storage Disc MK I");
@@ -141,7 +145,9 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddName(lockingCard, "Locking Card");
         ModLoader.AddName(storageContainer, "Storage Container");
         ModLoader.AddName(advRecipeDisc, "Adv. Recipe Disc");
+        ModLoader.AddName(linkingCard,"Linking Card");
         ModLoader.AddLocalization("tile.processProgrammer.name", "Process Programmer");
+        ModLoader.AddLocalization("tile.wirelessLink.name","Wireless Link");
 
         ModLoader.RegisterBlock(digitalChest);
         ModLoader.RegisterBlock(cable);
@@ -204,6 +210,7 @@ public class mod_RetroStorage extends BaseMod {
     public static Item blankCard = (new Item(getId("blankCard", 149))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "blankcard.png")).setItemName("blankcard");
     public static Item boosterCard = (new Item(getId("boosterCard", 150))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "boostercard.png")).setItemName("boostercard");
     public static Item lockingCard = (new Item(getId("lockingCard", 151))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "lockingcard.png")).setItemName("lockingcard");
+    public static ItemLinkingCard linkingCard = (ItemLinkingCard) (new ItemLinkingCard(getId("linkingCard", 152))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "linkingcard.png")).setItemName("linkingcard");
 
     public static Block digitalChest = (new BlockDigitalChest(getId("digitalChest", 165), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("digitalChest"));
     public static Block cable = (new BlockCable(getId("cable", 167)).setHardness(0.2F).setResistance(1F).setStepSound(Block.soundClothFootstep).setBlockName("cable"));
@@ -234,13 +241,14 @@ public class mod_RetroStorage extends BaseMod {
     public static int processProgrammerFront;
     public static int processProgrammerTop;
     public static int advMachineSide;
+    public static int wirelessLinkTex;
     public static int cableRenderID;
 
     public static int[][] sprites;
 
     public enum machines {
         digitalController, digitalTerminal, discDrive, assembler, importer, exporter, requestTerminal, digitalInterface,
-        recipeEncoder, advInterface, processProgrammer
+        recipeEncoder, advInterface, processProgrammer, wirelessLink
     }
 
 

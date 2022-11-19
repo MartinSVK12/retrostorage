@@ -50,6 +50,8 @@ public class BlockDigitalMachine extends BlockContainer {
                 return new TileEntityAdvInterface();
             case 10:
                 return new TileEntityProcessProgrammer();
+            case 11:
+                return new TileEntityWirelessLink();
             default:
                 return null;
         }
@@ -122,6 +124,7 @@ public class BlockDigitalMachine extends BlockContainer {
             case 8:
             case 9:
             case 10:
+            case 11:
                 return meta;
             default:
                 return 0;
@@ -142,12 +145,28 @@ public class BlockDigitalMachine extends BlockContainer {
                 ((TileEntityDigitalController) tile).reloadNetwork(world,i,j,k,entityplayer);
                 return true;
             }
+            if(meta == mod_RetroStorage.machines.wirelessLink.ordinal()){
+                if(entityplayer.isSneaking()){
+                    return false;
+                }
+                TileEntityWirelessLink link = (TileEntityWirelessLink) tile;
+                if(link.remoteLink == null){
+                    entityplayer.addChatMessage("No link.");
+                } else {
+                    TileEntityWirelessLink remoteLink = link.remoteLink;
+                    entityplayer.addChatMessage("Link established with Wireless Link at "+remoteLink.xCoord+", "+remoteLink.yCoord+", "+remoteLink.zCoord+".");
+                }
+
+                return true;
+            }
             return false;
         } else if(world.multiplayerWorld) {
             return true;
         } else {
             if(entityplayer.getCurrentEquippedItem() != null){
-                if((meta == mod_RetroStorage.machines.digitalTerminal.ordinal() && entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.mobileTerminal) || (meta == mod_RetroStorage.machines.requestTerminal.ordinal() && entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.mobileRequestTerminal)){
+                if((meta == mod_RetroStorage.machines.digitalTerminal.ordinal() && entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.mobileTerminal)
+                        || (meta == mod_RetroStorage.machines.requestTerminal.ordinal() && entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.mobileRequestTerminal)
+                        || (meta == mod_RetroStorage.machines.wirelessLink.ordinal() && entityplayer.getCurrentEquippedItem().getItem() == mod_RetroStorage.linkingCard)){
                     return false;
                 }
             }
@@ -217,6 +236,8 @@ public class BlockDigitalMachine extends BlockContainer {
                 return new GuiAdvInterface(entityplayer.inventory, (TileEntityAdvInterface) tile);
             case 10:
                 return new GuiProcessProgrammer(entityplayer.inventory, (TileEntityProcessProgrammer) tile);
+            case 11:
+                return null;
             default:
                 return null;
         }
