@@ -2,6 +2,8 @@ package net.sunsetsatellite.retrostorage;
 
 import ic2.TileEntityElectricBlock;
 import net.minecraft.src.*;
+import org.lwjgl.Sys;
+import org.omg.CORBA.SystemException;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -307,6 +309,7 @@ public class TileEntityDigitalController extends TileEntityInNetwork {
 						if (drive.getStackInSlot(drive.getSizeInventory() - 1) != null) {
 							if (drive.getStackInSlot(drive.getSizeInventory() - 1).getItem() instanceof ItemStorageDisc) {
 								network_disc = drive.getStackInSlot(drive.getSizeInventory() - 1);
+								DiscManipulator.loadDisc(network_disc,network_inv);
 								break;
 							} else {
 								network_disc = null;

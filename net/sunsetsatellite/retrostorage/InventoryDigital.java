@@ -98,6 +98,28 @@ public class InventoryDigital implements IInventory {
 		return -1;
 	}
 
+	public int getLastOccupiedStack(){
+		int i2 = -1;
+		for(int i1 = 1; i1 < this.inventoryContents.length; ++i1) {
+			if(this.inventoryContents[i1] != null) {
+				i2 = i1;
+			}
+		}
+
+		return i2;
+	}
+
+	public int getStackAmount(){
+		int i2 = 0;
+		for(int i1 = 1; i1 < this.inventoryContents.length; ++i1) {
+			if(this.inventoryContents[i1] != null) {
+				i2++;
+			}
+		}
+
+		return i2;
+	}
+
 	public int storePartialItemStack(ItemStack itemStack1) {
 		int i2 = itemStack1.itemID;
 		int i3 = itemStack1.stackSize;

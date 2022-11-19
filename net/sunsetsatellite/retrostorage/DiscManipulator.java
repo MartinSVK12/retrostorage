@@ -127,7 +127,7 @@ public class DiscManipulator {
 
 	public static void loadDisc(ItemStack disc, IInventory inv){
 		NBTTagCompound discNBT = disc.getItemData();
-		for(int i = 1; i < discNBT.size();i++){
+		for(int i = 0; i <= discNBT.size();i++){
 			if(discNBT.hasKey(String.valueOf(i))){
 				ItemStack item = new ItemStack(discNBT.getCompoundTag(String.valueOf(i)));
 				inv.setInventorySlotContents(i,item);
