@@ -264,6 +264,20 @@ public class BlockDigitalMachine extends BlockContainer {
                         world.entityJoinedWorld(entityitem);
                     } while (true);
                 }
+                if(meta == mod_RetroStorage.machines.discDrive.ordinal()){
+                   TileEntityDiscDrive drive = (TileEntityDiscDrive) tile;
+                   drive.discsUsed.forEach((itemstack) -> {
+                       float f = world.rand.nextFloat() * 0.8F + 0.1F;
+                       float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
+                       float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
+                       EntityItem entityitem = new EntityItem(world, (float) i + f, (float) j + f1, (float) k + f2, itemstack);
+                       float f3 = 0.05F;
+                       entityitem.motionX = (float) world.rand.nextGaussian() * f3;
+                       entityitem.motionY = (float) world.rand.nextGaussian() * f3 + 0.2F;
+                       entityitem.motionZ = (float) world.rand.nextGaussian() * f3;
+                       world.entityJoinedWorld(entityitem);
+                   });
+                }
             }
         }
         world.removeBlockTileEntity(i, j, k);

@@ -68,6 +68,9 @@ public class DiscManipulator {
 
 
 	public static void saveDisc(ItemStack disc, IInventory inv){
+		if(disc == null || inv == null){
+			return;
+		}
 		NBTTagCompound discNBT = disc.getItemData();
 		for(int i = 1; i < inv.getSizeInventory();i++){
 			ItemStack item = inv.getStackInSlot(i);
@@ -120,6 +123,16 @@ public class DiscManipulator {
 			}
 		}
 
+	}
+
+	public static void loadDisc(ItemStack disc, IInventory inv){
+		NBTTagCompound discNBT = disc.getItemData();
+		for(int i = 1; i < discNBT.size();i++){
+			if(discNBT.hasKey(String.valueOf(i))){
+				ItemStack item = new ItemStack(discNBT.getCompoundTag(String.valueOf(i)));
+				inv.setInventorySlotContents(i,item);
+			}
+		}
 	}
 
 	public static void clearDigitalInv(IInventory inv){

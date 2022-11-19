@@ -195,7 +195,7 @@ public class TileEntityDiscDrive extends TileEntityStorage
     }
 
     private ItemStack contents[];
-    private ArrayList<ItemStack> discsUsed = new ArrayList<>();
+    public ArrayList<ItemStack> discsUsed = new ArrayList<>();
     public ItemStack virtualDisc = (new ItemStack(mod_RetroStorage.virtualDisc));
     public int virtualDriveMaxStacks = 0;
 }

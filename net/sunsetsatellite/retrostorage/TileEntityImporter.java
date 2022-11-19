@@ -73,11 +73,13 @@ public class TileEntityImporter extends TileEntityInNetwork {
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		enabled = nbttagcompound.getBoolean("enabled");
+		slot = nbttagcompound.getInteger("slot");
 	}
 
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("enabled",enabled);
+		nbttagcompound.setInteger("slot",slot);
 	}
 
 	boolean enabled = true;
