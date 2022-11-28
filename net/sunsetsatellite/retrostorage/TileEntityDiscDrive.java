@@ -1,16 +1,8 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 
 import java.util.ArrayList;
-
-// Referenced classes of package net.minecraft.src:
-//            TileEntity, IInventory, ItemStack, NBTTagCompound, 
-//            NBTTagList, World, EntityPlayer
 
 public class TileEntityDiscDrive extends TileEntityStorage
     implements IInventory
@@ -148,6 +140,10 @@ public class TileEntityDiscDrive extends TileEntityStorage
             discsUsed.add(new ItemStack(nbttagcompound1));
         }
         virtualDriveMaxStacks = nbttagcompound.getInteger("MaxStacks");
+        if(nbttagcompound.hasKey("virtualDisc")){
+            virtualDisc = new ItemStack(nbttagcompound.getCompoundTag("virtualDisc"));
+        }
+
 
     }
 
@@ -177,8 +173,11 @@ public class TileEntityDiscDrive extends TileEntityStorage
                 nbttaglist.setTag(nbttagcompound1);
             }
         }
+        NBTTagCompound virtualDiscNBT = new NBTTagCompound();
+        virtualDisc.writeToNBT(virtualDiscNBT);
         nbttagcompound.setTag("DiscsUsed", nbttaglist);
         nbttagcompound.setTag("MaxStacks",new NBTTagInt(virtualDriveMaxStacks));
+        nbttagcompound.setTag("virtualDisc",virtualDiscNBT);
     }
 
     public int getInventoryStackLimit()

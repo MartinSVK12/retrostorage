@@ -2,7 +2,7 @@ package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 
-import java.util.ArrayList;;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class BlockDigitalMachine extends BlockContainer {

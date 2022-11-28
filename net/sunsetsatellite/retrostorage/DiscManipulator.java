@@ -3,6 +3,7 @@ package net.sunsetsatellite.retrostorage;
 import net.minecraft.src.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DiscManipulator {
 
@@ -115,24 +116,35 @@ public class DiscManipulator {
 
 	public static void loadDisc(ItemStack disc, IInventory inv, int page){
 		//System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
-		NBTTagCompound discNBT = disc.getItemData();
-		for(int i = 1; i < 37;i++){
-			if(discNBT.hasKey(String.valueOf(i+(page*36)))){
-				ItemStack item = new ItemStack(discNBT.getCompoundTag(String.valueOf(i+(page*36))));
-				inv.setInventorySlotContents(i,item);
+		AtomicInteger i = new AtomicInteger();
+		Collection<?> values = disc.getItemData().getValues();
+		values.forEach((V)->{
+			if(i.get() < 37) {
+				String K = ((NBTBase) V).getKey();
+				ItemStack itemStack = new ItemStack((NBTTagCompound) V);
+				inv.setInventorySlotContents(Integer.parseInt(K) * page, itemStack);
+				i.getAndIncrement();
 			}
-		}
+		});
 
 	}
 
 	public static void loadDisc(ItemStack disc, IInventory inv){
-		NBTTagCompound discNBT = disc.getItemData();
-		for(int i = 0; i <= discNBT.size();i++){
+		Collection<?> values = disc.getItemData().getValues();
+		values.forEach((V)->{
+			String K = ((NBTBase) V).getKey();
+			ItemStack itemStack = new ItemStack((NBTTagCompound) V);
+			inv.setInventorySlotContents(Integer.parseInt(K),itemStack);
+		});
+		/*for(int i = 0; i <= discNBT.size();i++){
+			System.out.println(i);
 			if(discNBT.hasKey(String.valueOf(i))){
+				System.out.println(i+"*");
 				ItemStack item = new ItemStack(discNBT.getCompoundTag(String.valueOf(i)));
 				inv.setInventorySlotContents(i,item);
 			}
-		}
+		}*/
+
 	}
 
 	public static void clearDigitalInv(IInventory inv){

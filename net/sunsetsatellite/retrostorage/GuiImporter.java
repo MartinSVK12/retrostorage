@@ -1,6 +1,4 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
+
 
 package net.sunsetsatellite.retrostorage;
 
@@ -8,10 +6,6 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-
-// Referenced classes of package net.minecraft.src:
-//            GuiContainer, ContainerDispenser, FontRenderer, RenderEngine, 
-//            InventoryPlayer, TileEntityDispenser
 
 public class GuiImporter extends GuiContainer
 {

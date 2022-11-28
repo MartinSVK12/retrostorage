@@ -2,8 +2,6 @@ package net.sunsetsatellite.retrostorage;
 
 import ic2.TileEntityElectricBlock;
 import net.minecraft.src.*;
-import org.lwjgl.Sys;
-import org.omg.CORBA.SystemException;
 
 import java.util.*;
 import java.util.Map.Entry;
