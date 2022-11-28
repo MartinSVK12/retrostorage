@@ -12,11 +12,6 @@ Requires Modloader (+ Forge 1.0.6 for versions a1.5pre1 and above.). Currently, 
  - Autocrafting using Recipe Discs and Assemblers
  - I/O that allows you to somewhat automate machines from other mods.
  - and more to come.
- 
- **Planned**:
- - [X] Finish crafting recipes
- - [X] Config file with ID's
- - [X] Documentation
 
 **WARNING**
 Experimental *Alpha* release, many things are either not yet implemented or they could/will be done better in the future.
@@ -56,7 +51,8 @@ Step 4: Profit!
 
 ## Special Thanks
 - [@rythin-sr](https://github.com/rythin-sr) - based bug finder
-- [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.  
+- [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
+- [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
  
 ## License
 Please credit if using parts in your own mods/modpacks (like ItemNBT for example)
