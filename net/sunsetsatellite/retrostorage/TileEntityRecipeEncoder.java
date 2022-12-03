@@ -1,8 +1,14 @@
 package net.sunsetsatellite.retrostorage;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import net.minecraft.src.*;
+import org.lwjgl.Sys;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TileEntityRecipeEncoder extends TileEntityDigitalContainer
 	implements IInventory{
@@ -123,12 +129,13 @@ public class TileEntityRecipeEncoder extends TileEntityDigitalContainer
     }
 	
 	public void encodeDisc() {
-		ItemStack recipeDisc = getStackInSlot(9);
-		if (recipeDisc != null) {
-    			if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
-    				ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
-    				for(int i = 0;i<9;i++) {
-    					ItemStack item = getStackInSlot(i);
+        if(!debug){
+            ItemStack recipeDisc = getStackInSlot(9);
+            if (recipeDisc != null) {
+                if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
+                    ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
+                    for(int i = 0;i<9;i++) {
+                        ItemStack item = getStackInSlot(i);
                         if(item != null) {
                             item = item.copy();
                             item.stackSize = 1;
@@ -136,15 +143,159 @@ public class TileEntityRecipeEncoder extends TileEntityDigitalContainer
                         } else {
                             itemList.add(i, null);
                         }
-    				}
-    				//System.out.println(itemList.toString());
-    				NBTTagCompound nbt = DiscManipulator.convertRecipeToNBT(itemList);
-    				recipeDisc.setItemData(nbt);
-    				//System.out.println(recipeDisc.getItemData().toString());
-    			}
-		}
+                    }
+                    //System.out.println(itemList.toString());
+                    NBTTagCompound nbt = DiscManipulator.convertRecipeToNBT(itemList);
+                    recipeDisc.setItemData(nbt);
+                    //System.out.println(recipeDisc.getItemData().toString());
+                }
+            }
+        } else {
+            /*//plan A (hard coded ids, recipe will be wack if they're changed)
+            StringBuilder s = new StringBuilder("ModLoader.AddRecipe(new ItemStack(");
+            ItemStack output = getStackInSlot(9);
+            s.append(output.itemID).append(",1,").append(output.getItemDamage()).append(")");
+            s.append(",\"123\",\"456\",\"789\"");
+            for(int i = 0;i<9;i++){
+                ItemStack item = getStackInSlot(i);
+                if(item != null){
+                    s.append(",'").append(i).append("',").append("new ItemStack(").append(item.itemID).append(",1,").append(item.getItemDamage()).append(")");
+                }
+            }
+            s.append(");");
+            System.out.println(s);*/
+
+            //plan B (reflection)
+            StringBuilder s = new StringBuilder("ModLoader.AddRecipe(new ItemStack(");
+            ItemStack output = getStackInSlot(9);
+            Object item;
+            if(output.itemID > 255){
+                item = output.getItem();
+                s.append(getItemFieldName((Item) item));
+                s.append(",1,");
+                s.append(output.getItemDamage());
+                s.append(")");
+                s.append(",\"123\",\"456\",\"789\"");
+                for(int i = 0;i<9;i++){
+                    ItemStack itemstack = getStackInSlot(i);
+                    if(itemstack != null && itemstack.getItemDamage() == 0){
+                        Object item2;
+                        if(itemstack.itemID > 255) {
+                            item2 = itemstack.getItem();
+                            s.append(",'").append(i+1).append("',").append(getItemFieldName((Item) item2));
+                        }
+                        if(itemstack.itemID < 256) {
+                            item2 = Block.blocksList[itemstack.itemID];
+                            s.append(",'").append(i+1).append("',").append(getBlockFieldName((Block) item2));
+                        }
+                    } else if(itemstack != null && itemstack.getItemDamage() > 0){
+                        Object item2;
+                        if(itemstack.itemID < 256) {
+                            item2 = Block.blocksList[itemstack.itemID];
+                            s.append(",'").append(i+1).append("',new ItemStack(").append(getBlockFieldName((Block) item2)).append(",1,").append(itemstack.getItemDamage()).append(")");
+                        }
+                        if(itemstack.itemID > 255) {
+                            item2 = itemstack.getItem();
+                            s.append(",'").append(i+1).append("',new ItemStack(").append(getItemFieldName((Item) item2)).append(",1,").append(itemstack.getItemDamage()).append(")");
+                        }
+                    }
+                }
+
+            } else {
+                item = Block.blocksList[output.itemID];
+                s.append(getBlockFieldName((Block)item));
+                s.append(",1,");
+                s.append(output.getItemDamage());
+                s.append(")");
+                s.append(",\"123\",\"456\",\"789\"");
+                for(int i = 0;i<9;i++){
+                    ItemStack itemstack = getStackInSlot(i);
+                    if(itemstack != null && itemstack.getItemDamage() == 0){
+                        Object item2;
+                        if(itemstack.itemID < 256) {
+                            item2 = Block.blocksList[itemstack.itemID];
+                            s.append(",'").append(i+1).append("',").append(getBlockFieldName((Block) item2));
+                        }
+                        if(itemstack.itemID > 255) {
+                            item2 = itemstack.getItem();
+                            s.append(",'").append(i+1).append("',").append(getItemFieldName((Item) item2));
+                        }
+                    } else if(itemstack != null && itemstack.getItemDamage() > 0){
+                        Object item2;
+                        if(itemstack.itemID < 256) {
+                            item2 = Block.blocksList[itemstack.itemID];
+                            s.append(",'").append(i+1).append("',new ItemStack(").append(getBlockFieldName((Block) item2)).append(",1,").append(itemstack.getItemDamage()).append(")");
+                        }
+                        if(itemstack.itemID > 255) {
+                            item2 = itemstack.getItem();
+                            s.append(",'").append(i+1).append("',new ItemStack(").append(getItemFieldName((Item) item2)).append(",1,").append(itemstack.getItemDamage()).append(")");
+                        }
+                    }
+                }
+            }
+            s.append(");");
+            System.out.println(s);
+        }
 	}
-	
+
+    private String getItemFieldName(Item item){
+        try{
+            ArrayList<Field> fields = new ArrayList<>(Arrays.asList(Item.class.getDeclaredFields()));
+            //fields.addAll(Arrays.asList(mod_RetroStorage.class.getDeclaredFields()));
+            for (Field field : fields) {
+                if(field.getType().isAssignableFrom(Item.class) && Modifier.isStatic(field.getModifiers())){
+                    field.setAccessible(true);
+                    Item fieldItem = (Item) field.get(null);
+                    if(fieldItem.equals(item)){
+                        return "Item."+field.getName();
+                    }
+                }
+            }
+            fields = new ArrayList<>(Arrays.asList(mod_RetroStorage.class.getDeclaredFields()));
+            for (Field field : fields) {
+                if(field.getType().isAssignableFrom(Item.class) && Modifier.isStatic(field.getModifiers())){
+                    field.setAccessible(true);
+                    Item fieldItem = (Item) field.get(null);
+                    if(fieldItem.equals(item)){
+                        return "mod_RetroStorage."+field.getName();
+                    }
+                }
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private String getBlockFieldName(Block item){
+        try{
+            ArrayList<Field> fields = new ArrayList<>(Arrays.asList(Block.class.getDeclaredFields()));
+            //fields.addAll(Arrays.asList(mod_RetroStorage.class.getDeclaredFields()));
+            for (Field field : fields) {
+                if(field.getType().isAssignableFrom(Block.class) && Modifier.isStatic(field.getModifiers())){
+                    field.setAccessible(true);
+                    Block fieldItem = (Block) field.get(null);
+                    if(fieldItem.equals(item)){
+                        return "Block."+field.getName();
+                    }
+                }
+            }
+            fields = new ArrayList<>(Arrays.asList(mod_RetroStorage.class.getDeclaredFields()));
+            for (Field field : fields) {
+                if(field.getType().isAssignableFrom(Block.class) && Modifier.isStatic(field.getModifiers())){
+                    field.setAccessible(true);
+                    Block fieldItem = (Block) field.get(null);
+                    if(fieldItem.equals(item)){
+                        return "mod_RetroStorage."+field.getName();
+                    }
+                }
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 	public boolean canInteractWith(EntityPlayer entityplayer)
     {
         if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
@@ -155,4 +306,5 @@ public class TileEntityRecipeEncoder extends TileEntityDigitalContainer
     }
 	
 	private ItemStack[] contents;
+    private boolean debug = false;
 }

@@ -148,6 +148,26 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddName(linkingCard,"Linking Card");
         ModLoader.AddLocalization("tile.processProgrammer.name", "Process Programmer");
         ModLoader.AddLocalization("tile.wirelessLink.name","Wireless Link");
+        ModLoader.AddName(machineCasing,"Machine Casing");
+        ModLoader.AddName(advNachineCasing,"Adv. Machine Casing");
+        ModLoader.AddName(energyCore,"Energy Core");
+        ModLoader.AddName(chipShell,"Chip Shell");
+        ModLoader.AddName(chipShellFilled,"Filled Chip Shell");
+        ModLoader.AddName(chipDigitizer,"Digitizer Chip");
+        ModLoader.AddName(chipCrafting,"Crafting Processor");
+        ModLoader.AddName(chipRematerializer,"Rematerializer Chip");
+        ModLoader.AddName(chipDematerializer,"Dematerializer Chip");
+        ModLoader.AddName(chipDieDigitizer,"Digitizer Chip Die");
+        ModLoader.AddName(chipDieCrafting,"Crafting Processor Die");
+        ModLoader.AddName(chipDieDematerializer,"Dematerializer Chip Die");
+        ModLoader.AddName(chipDieRematerializer,"Rematerializer Chip Die");
+        ModLoader.AddName(silicon,"Raw Silicon");
+        ModLoader.AddName(siliconWafer,"Silicon Wafer");
+        ModLoader.AddName(ceramicPlate,"Ceramic Plate");
+        ModLoader.AddName(ceramicPlateUnfired,"Unfired Ceramic Plate");
+        ModLoader.AddName(chipWireless,"Wireless Networking Chip");
+        ModLoader.AddName(chipDieWireless,"Wireless Networking Chip Die");
+        ModLoader.AddName(wirelessAntenna,"Wireless Antenna");
 
         ModLoader.RegisterBlock(digitalChest);
         ModLoader.RegisterBlock(cable);
@@ -155,12 +175,12 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.RegisterBlock(multiID, ItemDigitalMachineBlock.class);
 
 
-        ModLoader.AddRecipe(new ItemStack(digitalChest, 1), "ISI", "RCR", "IDI", 'S', blankDisc, 'I', Item.ingotIron, 'R', Item.redstone, 'C', Block.chest, 'D', Block.blockDiamond);
+        //ModLoader.AddRecipe(new ItemStack(digitalChest, 1), "ISI", "RCR", "IDI", 'S', blankDisc, 'I', Item.ingotIron, 'R', Item.redstone, 'C', Block.chest, 'D', Block.blockDiamond);
         ModLoader.AddRecipe(new ItemStack(blankDisc, 1), "GGG", "GRG", "GGG", 'G', Block.glass, 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(recipeDisc, 1), "GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.redstone, 'P', new ItemStack(Item.dyePowder, 1, 5));
         ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), "RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(itemCable, 16), "WLW", "GGG", "WLW", 'W', Block.cloth, 'G', Block.glass, 'L', new ItemStack(Item.dyePowder, 1, 4));
-        ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.digitalController.ordinal()), "ILI", "LDL", "ILI", 'I', Block.blockSteel, 'L', Block.blockLapis, 'D', Block.blockDiamond);
+        /*ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.digitalController.ordinal()), "ILI", "LDL", "ILI", 'I', Block.blockSteel, 'L', Block.blockLapis, 'D', Block.blockDiamond);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.discDrive.ordinal()), "III", "DDD", "III", 'I', Item.ingotIron, 'D', blankDisc);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.digitalTerminal.ordinal()), "III", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.importer.ordinal()), "ILI", "GHG", "ICI", 'I', Item.ingotIron, 'L', Block.blockLapis, 'G', new ItemStack(Item.dyePowder, 1, 10), 'H', Block.chest, 'C', itemCable);
@@ -168,20 +188,66 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.digitalInterface.ordinal()), "IRI", "PHP", "ICI", 'I', Item.ingotIron, 'P', new ItemStack(Item.dyePowder, 1, 5), 'R', recipeDisc, 'H', Block.chest, 'C', itemCable);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.assembler.ordinal()), "ICI", "CRC", "ICI", 'I', Block.blockSteel, 'C', Block.workbench, 'R', recipeDisc);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.recipeEncoder.ordinal()), "IRI", "PCP", "IcI", 'I', Item.ingotIron, 'C', Block.workbench, 'R', recipeDisc, 'P', new ItemStack(Item.dyePowder, 1, 5), 'c', itemCable);
-        ModLoader.AddRecipe(new ItemStack(multiID, 1, 6), "ITI", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable, 'T', Block.workbench);
+        ModLoader.AddRecipe(new ItemStack(multiID, 1, 6), "ITI", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable, 'T', Block.workbench);*/
         ModLoader.AddRecipe(new ItemStack(storageDisc2, 1), "RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc1, '#', new ItemStack(Item.dyePowder, 1, 14), 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(storageDisc3, 1), "RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc2, '#', new ItemStack(Item.dyePowder, 1, 11), 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(storageDisc4, 1), "RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc3, '#', new ItemStack(Item.dyePowder, 1, 10), 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(storageDisc5, 1), "RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc4, '#', new ItemStack(Item.dyePowder, 1, 4), 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(storageDisc6, 1), "RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc5, '#', new ItemStack(Item.dyePowder, 1, 5), 'R', Item.redstone);
-        ModLoader.AddRecipe(new ItemStack(mobileTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass, 'I', Item.ingotIron, 'D', Item.diamond, 'T', new ItemStack(multiID, 1, 1));
-        ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass, 'I', Item.ingotIron, 'D', Item.diamond, 'T', new ItemStack(multiID, 1, 6));
-        ModLoader.AddRecipe(new ItemStack(storageContainer, 1), "SSS", "ICI", "SSS", 'S', Block.stone, 'I', Item.ingotIron, 'C', Block.chest);
+        //ModLoader.AddRecipe(new ItemStack(mobileTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass, 'I', Item.ingotIron, 'D', Item.diamond, 'T', new ItemStack(multiID, 1, 1));
+        //ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal, 1), "IGI", "ITI", "IDI", 'G', Block.glass, 'I', Item.ingotIron, 'D', Item.diamond, 'T', new ItemStack(multiID, 1, 6));
+        //ModLoader.AddRecipe(new ItemStack(storageContainer, 1), "SSS", "ICI", "SSS", 'S', Block.stone, 'I', Item.ingotIron, 'C', Block.chest);
         ModLoader.AddRecipe(new ItemStack(blankCard, 4), "ISI", "SPS", "ISI", 'I', Item.ingotIron, 'S', Block.stone, 'P', Block.pressurePlateStone);
         ModLoader.AddRecipe(new ItemStack(lockingCard, 1), "RTR", "TCT", "RTR", 'R', Item.redstone, 'T', Block.torchRedstoneActive, 'C', blankCard);
-        ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.advInterface.ordinal()), "ODO", "PIP", "OCO", 'O', Block.obsidian, 'D', advRecipeDisc, 'I', new ItemStack(multiID, 1, machines.digitalInterface.ordinal()), 'C', itemCable, 'P', new ItemStack(Item.dyePowder, 1, 5));
+        //ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.advInterface.ordinal()), "ODO", "PIP", "OCO", 'O', Block.obsidian, 'D', advRecipeDisc, 'I', new ItemStack(multiID, 1, machines.digitalInterface.ordinal()), 'C', itemCable, 'P', new ItemStack(Item.dyePowder, 1, 5));
         ModLoader.AddRecipe(new ItemStack(advRecipeDisc, 1), "OPO", "RDR", "OPO", 'R', Item.redstone, 'D', recipeDisc, 'P', new ItemStack(Item.dyePowder, 1, 5), 'O', Block.obsidian);
-        ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.processProgrammer.ordinal()), "ODO", "CRC", "OIO", 'O', Block.obsidian, 'D', advRecipeDisc, 'C', Block.workbench, 'I', new ItemStack(multiID, 1, machines.advInterface.ordinal()), 'R', new ItemStack(multiID, 1, machines.recipeEncoder.ordinal()));
+        //ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.processProgrammer.ordinal()), "ODO", "CRC", "OIO", 'O', Block.obsidian, 'D', advRecipeDisc, 'C', Block.workbench, 'I', new ItemStack(multiID, 1, machines.advInterface.ordinal()), 'R', new ItemStack(multiID, 1, machines.recipeEncoder.ordinal()));
+       // ModLoader.AddRecipe(new ItemStack(linkingCard,1), "lLl","LCL","lLl",'L',new ItemStack(Item.dyePowder,1,4),'l',new ItemStack(Item.dyePowder,1,12),'C',blankCard);
+        //ModLoader.AddRecipe(new ItemStack(multiID,1,machines.wirelessLink.ordinal()),"ILI","ClC","ILI",'I',Item.ingotIron,'L',Block.blockLapis,'C',itemCable,'l',linkingCard);
+        ModLoader.AddRecipe(new ItemStack(siliconWafer,1),"SS","SS",'S',silicon);
+
+        //these were autogenerated
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.ceramicPlateUnfired,1),"123","456","789",'4',Item.clay,'5',Item.clay,'6',Item.clay,'7',Item.clay,'8',Item.clay,'9',Item.clay);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.energyCore,1,0),"123","456","789",'1',Block.glass,'2',Block.glowStone,'3',Block.glass,'4',Block.glowStone,'5',Block.blockDiamond,'6',Block.glowStone,'7',Block.glass,'8',Block.glowStone,'9',Block.glass);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.machineCasing,1,0),"123","456","789",'1',Block.stone,'2',Item.ingotIron,'3',Block.stone,'4',Item.ingotIron,'6',Item.ingotIron,'7',Block.stone,'8',Item.ingotIron,'9',Block.stone);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.advNachineCasing,1,0),"123","456","789",'1',Block.obsidian,'2',Item.diamond,'3',Block.obsidian,'4',Item.diamond,'5',mod_RetroStorage.machineCasing,'6',Item.diamond,'7',Block.obsidian,'8',Item.diamond,'9',Block.obsidian);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipShell,1,0),"123","456","789",'1',Item.ingotGold,'3',Item.ingotGold,'5',mod_RetroStorage.ceramicPlate,'7',Item.ingotGold,'9',Item.ingotGold);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipShellFilled,1,0),"123","456","789",'1',Item.redstone,'2',Item.redstone,'3',Item.redstone,'4',Item.redstone,'5',mod_RetroStorage.chipShell,'6',Item.redstone,'7',Item.redstone,'8',Item.redstone,'9',Item.redstone);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDieRematerializer,1,0),"2","5","8",'2',Block.obsidian,'5',mod_RetroStorage.siliconWafer,'8',new ItemStack(Item.dyePowder,1,10));
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDieDematerializer,1,0),"2","5","8",'2',Item.bucketLava,'5',mod_RetroStorage.siliconWafer,'8',Item.redstone);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDieCrafting,1,0),"2","5","8",'2',mod_RetroStorage.recipeDisc,'5',mod_RetroStorage.siliconWafer,'8',new ItemStack(Item.dyePowder,1,5));
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDieDigitizer,1,0),"2","5","8",'2',Item.diamond,'5',mod_RetroStorage.siliconWafer,'8',new ItemStack(Item.dyePowder,1,4));
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDematerializer,1,0),"2","5","8",'2',mod_RetroStorage.ceramicPlate,'5',mod_RetroStorage.chipDieDematerializer,'8',mod_RetroStorage.chipShellFilled);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipRematerializer,1,0),"2","5","8",'2',mod_RetroStorage.ceramicPlate,'5',mod_RetroStorage.chipDieRematerializer,'8',mod_RetroStorage.chipShellFilled);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipCrafting,1,0),"2","5","8",'2',mod_RetroStorage.ceramicPlate,'5',mod_RetroStorage.chipDieCrafting,'8',mod_RetroStorage.chipShellFilled);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDigitizer,1,0),"2","5","8",'2',mod_RetroStorage.ceramicPlate,'5',mod_RetroStorage.chipDieDigitizer,'8',mod_RetroStorage.chipShellFilled);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDieWireless,1,0),"123","456","789",'2',Item.diamond,'4',Block.blockLapis,'5',mod_RetroStorage.siliconWafer,'6',Block.blockLapis,'8',Item.diamond);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipWireless,1,0),"123","456","789",'2',mod_RetroStorage.ceramicPlate,'5',mod_RetroStorage.chipDieWireless,'8',mod_RetroStorage.chipShellFilled);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.wirelessAntenna,1,0),"123","456","789",'2',Block.blockLapis,'4',Block.blockLapis,'5',Item.diamond,'6',Block.blockLapis,'7',Item.ingotIron,'8',Item.stick,'9',Item.ingotIron);
+
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,0),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.itemCable,'3',Block.blockLapis,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.energyCore,'6',mod_RetroStorage.itemCable,'7',Block.blockLapis,'8',mod_RetroStorage.itemCable,'9',mod_RetroStorage.machineCasing);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,2),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.blankDisc,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.blankDisc,'8',mod_RetroStorage.itemCable);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.digitalChest,1,0),"123","456","789",'2',mod_RetroStorage.blankDisc,'4',mod_RetroStorage.chipRematerializer,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.chipDematerializer,'8',Block.chest);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.storageContainer,1,0),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.machineCasing,'3',mod_RetroStorage.machineCasing,'4',Item.ingotIron,'5',Block.chest,'6',Item.ingotIron,'7',mod_RetroStorage.machineCasing,'8',mod_RetroStorage.machineCasing,'9',mod_RetroStorage.machineCasing);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,1),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.chipRematerializer,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.chipDematerializer,'7',mod_RetroStorage.itemCable,'8',Block.chest,'9',mod_RetroStorage.itemCable);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,3),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.chipCrafting,'3',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.chipCrafting,'5',recipeDisc,'6',mod_RetroStorage.chipCrafting,'7',mod_RetroStorage.machineCasing,'8',mod_RetroStorage.chipCrafting,'9',mod_RetroStorage.machineCasing);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,4),"123","456","789",'2',mod_RetroStorage.chipRematerializer,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.itemCable,'8',mod_RetroStorage.chipDigitizer);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,5),"123","456","789",'2',mod_RetroStorage.chipDematerializer,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.itemCable,'8',mod_RetroStorage.chipDigitizer);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,7),"123","456","789",'2',new ItemStack(mod_RetroStorage.multiID,1,5),'3',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.itemCable,'7',mod_RetroStorage.chipCrafting,'8',new ItemStack(mod_RetroStorage.multiID,1,4));
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,6),"123","456","789",'2',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,1),'6',mod_RetroStorage.chipCrafting,'8',mod_RetroStorage.itemCable);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,8),"123","456","789",'2',mod_RetroStorage.machineCasing,'4',recipeDisc,'5',Block.workbench,'6',recipeDisc,'8',mod_RetroStorage.chipCrafting);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,10),"123","456","789",'1',Block.workbench,'2',advRecipeDisc,'3',Block.workbench,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,8),'6',mod_RetroStorage.chipCrafting,'7',Block.workbench,'8',mod_RetroStorage.advNachineCasing,'9',Block.workbench);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,9),"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,7),'6',mod_RetroStorage.chipDigitizer,'7',Block.obsidian,'8',mod_RetroStorage.advNachineCasing,'9',Block.obsidian);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,11),"123","456","789",'2',mod_RetroStorage.chipWireless,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.wirelessAntenna,'8',mod_RetroStorage.chipWireless);
+
+        ModLoader.AddRecipe(new ItemStack(mobileTerminal,1,0),"123","456","789",'1',Item.ingotIron,'2',mod_RetroStorage.wirelessAntenna,'3',Item.ingotIron,'4',Block.glass,'5',new ItemStack(mod_RetroStorage.multiID,1,1),'6',Block.glass,'7',Item.ingotIron,'8',mod_RetroStorage.chipWireless,'9',Item.ingotIron);
+        ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal,1,0),"123","456","789",'1',Item.ingotIron,'2',mod_RetroStorage.wirelessAntenna,'3',Item.ingotIron,'4',Block.glass,'5',new ItemStack(mod_RetroStorage.multiID,1,6),'6',Block.glass,'7',Item.ingotIron,'8',mod_RetroStorage.chipWireless,'9',Item.ingotIron);
+
+        ModLoader.AddRecipe(new ItemStack(linkingCard,1,0),"123","456","789",'1',new ItemStack(Item.dyePowder,1,12),'2',new ItemStack(Item.dyePowder,1,4),'3',new ItemStack(Item.dyePowder,1,12),'4',new ItemStack(Item.dyePowder,1,4),'5',mod_RetroStorage.blankCard,'6',new ItemStack(Item.dyePowder,1,4),'7',new ItemStack(Item.dyePowder,1,12),'8',mod_RetroStorage.chipWireless,'9',new ItemStack(Item.dyePowder,1,12));
+        //these were autogenerated
+
+        ModLoader.AddSmelting(Block.sand.blockID,new ItemStack(silicon,1));
+        ModLoader.AddSmelting(ceramicPlateUnfired.shiftedIndex,new ItemStack(ceramicPlate,1));
 
         cableRenderID = ModLoader.getUniqueBlockModelID(this, false);
         System.out.println("[RetroStorage] IC2 Installed: " + IC2Available());
@@ -204,7 +270,7 @@ public class mod_RetroStorage extends BaseMod {
     public static ItemStorageDisc virtualDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("virtualDisc", 143), (Short.MAX_VALUE * 2) + 1)).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "virtualdisc.png")).setItemName("virtualdisc").setMaxStackSize(1);
     public static ItemStorageDisc goldenDisc = (ItemStorageDisc) (new ItemStorageDisc(getId("goldenDisc", 144), 1024)).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "goldendisc.png")).setItemName("goldendisc").setMaxStackSize(1);
     public static ItemRecipeDisc recipeDisc = (ItemRecipeDisc) (new ItemRecipeDisc(getId("recipeDisc", 145))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "recipedisc.png")).setItemName("recipedisc");
-    public static ItemAdvRecipeDisc advRecipeDisc = (ItemAdvRecipeDisc) (new ItemAdvRecipeDisc(getId("advRecipeDisc", 152))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "advrecipedisc.png")).setItemName("advrecipedisc");
+    public static ItemAdvRecipeDisc advRecipeDisc = (ItemAdvRecipeDisc) (new ItemAdvRecipeDisc(getId("advRecipeDisc", 153))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "advrecipedisc.png")).setItemName("advrecipedisc");
     public static ItemTerminal mobileTerminal = (ItemTerminal) (new ItemTerminal(getId("mobileTerminal", 147))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "mobileterminal.png")).setItemName("mobileterminal").setMaxStackSize(1);
     public static ItemRequestTerminal mobileRequestTerminal = (ItemRequestTerminal) (new ItemRequestTerminal(getId("mobileRequestTerminal", 148))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "mobilerequestterminal.png")).setItemName("mobilerequestterminal").setMaxStackSize(1);
     public static Item blankCard = (new Item(getId("blankCard", 149))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "blankcard.png")).setItemName("blankcard");
@@ -218,6 +284,28 @@ public class mod_RetroStorage extends BaseMod {
     public static Block multiID = (new BlockDigitalMachine(getId("multiID", 173)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("multiID"));
 
     public static Item itemCable = (new ItemReed(getId("itemCable", 146), cable).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "itemcable.png")).setItemName("itemCable"));
+
+    public static Item machineCasing = addSimpleItem("machineCasing","machinecasing",154);
+    public static Item advNachineCasing = addSimpleItem("advMachineCasing","advmachinecasing",155);
+    public static Item energyCore = addSimpleItem("energyCore","energycore",156);
+    public static Item chipShell = addSimpleItem("chipShell","chipshell",157);
+    public static Item chipShellFilled = addSimpleItem("chipShellFilled","filledchipshell",158);
+    public static Item chipDigitizer = addSimpleItem("chipDigitizer","digitizerchip",159);
+    public static Item chipCrafting = addSimpleItem("chipCrafting","craftingprocessor",160);
+    public static Item chipDematerializer = addSimpleItem("chupDematerializer","dematerializerchip",161);
+    public static Item chipRematerializer = addSimpleItem("chipRematerializer","rematerializerchip",162);
+    public static Item chipDieDigitizer = addSimpleItem("chipDieDigitizer","digitizerdie",163);
+    public static Item chipDieCrafting = addSimpleItem("chipDieCraftng","craftingdie",164);
+    public static Item chipDieRematerializer = addSimpleItem("chipDieRematerializer","rematerializerdie",165);
+    public static Item chipDieDematerializer = addSimpleItem("chipDieDematerializer","dematerializerdie",166);
+    public static Item silicon = addSimpleItem("silicon","silicon",167);
+    public static Item siliconWafer = addSimpleItem("siliconWafer","siliconwafer",168);
+    public static Item ceramicPlate = addSimpleItem("ceramicPlate","ceramicplate",169);
+    public static Item ceramicPlateUnfired = addSimpleItem("ceramicPlateUnfired","ceramicplateunfired",170);
+    public static Item chipDieWireless = addSimpleItem("chipDieWireless","wirelessnetworkingdie",171);
+    public static Item chipWireless = addSimpleItem("chipWireless","wirelessnetworkingchip",172);
+    public static Item wirelessAntenna = addSimpleItem("wirelessAntenna","wirelessAntenna",173);
+
 
     public static int digitalControllerTex;
     public static int digitalChestFront;
@@ -262,6 +350,11 @@ public class mod_RetroStorage extends BaseMod {
 
     public static boolean IC2Available() {
         return ((ModLoader.isModLoaded("mod_IC2") || ModLoader.isModLoaded("net.minecraft.src.mod_IC2")));
+    }
+
+
+    public static Item addSimpleItem(String internalName, String textureFile, int id){
+        return (new Item(getId(internalName, id))).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + textureFile + ".png")).setItemName(internalName);
     }
 
 
