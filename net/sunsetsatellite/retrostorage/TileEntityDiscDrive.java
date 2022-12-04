@@ -88,12 +88,15 @@ public class TileEntityDiscDrive extends TileEntityStorage
             int j = Math.min(virtualDisc.getItemData().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
             for(int i = 0; i < j; i++) {
                 discData.setCompoundTag(String.valueOf(i + 1), (NBTTagCompound) virtualDiscDataV[i]);
+                if(controller != null)
                 controller.network_inv.setInventorySlotContents(i + 1, null);
                 //virtualDisc.getItemData().removeTag((String) virtualDiscDataK[i]);
             }
             disc.setItemData(discData);
-            DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
-            controller.forceReload();
+            if(controller != null){
+                DiscManipulator.saveDisc(controller.network_disc, controller.network_inv);
+                controller.forceReload();
+            }
         }
         //DiscManipulator.saveDisc(virtualDisc,controller.network_inv);
     }
