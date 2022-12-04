@@ -1,14 +1,11 @@
 package net.sunsetsatellite.retrostorage;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import net.minecraft.src.*;
-import org.lwjgl.Sys;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class TileEntityRecipeEncoder extends TileEntityDigitalContainer
 	implements IInventory{

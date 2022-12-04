@@ -716,3 +716,7 @@
 /net/minecraft/src/mod_BuildCraftTransport.java
 /net/minecraft/src/mod_BuildCraftEnergy.java
 /net/minecraft/src/buildcraft/
+/net/minecraft/src/mod_FluidAPI.java
+/net/sunsetsatellite/fluidapi/
+/fluidapi/
+/net/minecraft/src/GuiException.java
