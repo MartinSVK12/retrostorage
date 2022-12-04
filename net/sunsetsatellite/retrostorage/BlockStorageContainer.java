@@ -1,6 +1,7 @@
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
+import org.lwjgl.Sys;
 
 import java.util.Random;
 
@@ -230,11 +231,26 @@ public class BlockStorageContainer extends BlockContainer{
         if (tile != null){
             if(tile.storedID != 0 && tile.storedAmount > 0){
                 if(!tile.isItemLocked){
-                    for(int l=0;l<tile.storedAmount;l++) {
+                    int stacks = (tile.storedAmount/64) * 64;
+                    int remainder = tile.storedAmount - stacks;
+                    for(int l=0;l<(stacks / 64);l++) {
                         float f = world.rand.nextFloat() * 0.8F + 0.1F;
                         float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
                         float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
-                        ItemStack itemstack = new ItemStack(tile.storedID, 1, tile.storedMetadata, tile.storedData);
+                        ItemStack itemstack = new ItemStack(tile.storedID, 64, tile.storedMetadata, tile.storedData);
+                        EntityItem entityitem = new EntityItem(world, (float) i + f, (float) j + f1, (float) k + f2, itemstack);
+
+                        float f3 = 0.05F;
+                        entityitem.motionX = 0;
+                        entityitem.motionY = (float) world.rand.nextGaussian() * f3 + 0.2F;
+                        entityitem.motionZ = 0;
+                        world.entityJoinedWorld(entityitem);
+                    }
+                    if(remainder > 0){
+                        float f = world.rand.nextFloat() * 0.8F + 0.1F;
+                        float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
+                        float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
+                        ItemStack itemstack = new ItemStack(tile.storedID, remainder, tile.storedMetadata, tile.storedData);
                         EntityItem entityitem = new EntityItem(world, (float) i + f, (float) j + f1, (float) k + f2, itemstack);
 
                         float f3 = 0.05F;
