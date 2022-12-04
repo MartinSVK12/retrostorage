@@ -304,7 +304,7 @@ public class mod_RetroStorage extends BaseMod {
     public static Item ceramicPlateUnfired = addSimpleItem("ceramicPlateUnfired","ceramicplateunfired",170);
     public static Item chipDieWireless = addSimpleItem("chipDieWireless","wirelessnetworkingdie",171);
     public static Item chipWireless = addSimpleItem("chipWireless","wirelessnetworkingchip",172);
-    public static Item wirelessAntenna = addSimpleItem("wirelessAntenna","wirelessAntenna",173);
+    public static Item wirelessAntenna = addSimpleItem("wirelessAntenna","wirelessantenna",173);
 
 
     public static int digitalControllerTex;
