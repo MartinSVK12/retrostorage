@@ -3,8 +3,6 @@ Digital storage system mod for Minecraft b1.7.3.
 
 Requires Modloader (+ Forge 1.0.6 for versions a1.5pre1 and above.). Currently, singleplayer only.
 
-*Versions a1.5pre2 and above also include support for IC2 machines*
-
 **Features**:
 
  - ItemNBT (Allows items to carry NBT data, available as a standalone mod.)
@@ -35,7 +33,7 @@ Install as a jar mod using 'Add to minecraft.jar' in MultiMC.
 Does edit some base classes for now:
  - `ItemStack.java` and classes that call `ItemStack()`to implement ItemNBT including `Entity/InventoryPlayer.java` and `BlockFurnace/Dispenser/Chest.java`
  - Recipe related class such as `IRecipe.java, Shaped/ShapelessRecipes.java, CraftingManager.java` to implement autocrafting
- - `Container & GuiContainer.java` moves GUI's higher to make the custom ones fit + adds item lore (used for displaying capacity of discs)
+ - `Container & GuiContainer.java` adds item descriptions/lore (used for displaying capacity of discs and other stuff)
  - All `NBTTag*.java` classes to implement proper `equals()` and some other fuctions.
  
 Versions a1.5pre2 and above support IC2 energy storage for powering the Digital Controller and IC2 machines in Interface processing.
