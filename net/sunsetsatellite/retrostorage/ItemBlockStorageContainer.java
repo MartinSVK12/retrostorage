@@ -2,7 +2,9 @@ package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 
-public class ItemBlockStorageContainer extends ItemBlock {
+public class ItemBlockStorageContainer extends ItemBlock
+    implements IDataItem
+{
     private int blockID;
 
     public ItemBlockStorageContainer(int i1) {
@@ -60,6 +62,16 @@ public class ItemBlockStorageContainer extends ItemBlock {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public String getDescription(ItemStack stack) {
+        if(stack.getItemData().hasKey("locked")){
+            return stack.getItemData().getInteger("storedAmount") + "x " + StringTranslate.getInstance().translateNamedKey(new ItemStack(stack.getItemData().getInteger("storedId"),1,stack.getItemData().getInteger("storedDamage")).getItemName());
+        } else {
+            return "";
+        }
+
     }
 }
 

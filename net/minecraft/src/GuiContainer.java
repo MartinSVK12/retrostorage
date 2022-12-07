@@ -88,7 +88,7 @@ public abstract class GuiContainer extends GuiScreen {
 		if(inventoryPlayer12.getItemStack() == null && slot6 != null && slot6.getHasStack()) {
 			String string13 = ("" + StringTranslate.getInstance().translateNamedKey(slot6.getStack().getItemName())).trim();
 			if(string13.length() > 0) {
-				if (slot6.getStack().getItem() instanceof ItemStorageDisc) {
+				/*if (slot6.getStack().getItem() instanceof ItemStorageDisc) {
 					i9 = i1 - i4 + 12;
 					i10 = i2 - i5 - 12;
 					int i11 = this.fontRenderer.getStringWidth(string13);
@@ -145,6 +145,27 @@ public abstract class GuiContainer extends GuiScreen {
 					drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
 					fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
 					fontRenderer.drawStringWithShadow(str, i9, i10 + 12, 0xFFFF00FF);
+				}*/
+				if(slot6.getStack().getItem() instanceof IDataItem) {
+					i9 = i1 - i4 + 12;
+					i10 = i2 - i5 - 12;
+					int i11 = this.fontRenderer.getStringWidth(string13);
+					ItemStack stack = slot6.getStack();
+					String str = ((IDataItem) slot6.getStack().getItem()).getDescription(stack);
+					int w = mc.fontRenderer.getStringWidth(str);
+					if (i11 < w) {
+						i11 = w;
+					}
+
+					if(str.length() > 0){
+						drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
+						this.fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+						fontRenderer.drawStringWithShadow(str, i9, i10 + 12, 0xFFFF00FF);
+					} else {
+						drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 3, 0xc0000000, 0xc0000000);
+						fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+					}
+
 				}
 				else {
 					i9 = i1 - i4 + 12;

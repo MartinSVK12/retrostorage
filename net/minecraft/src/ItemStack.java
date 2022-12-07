@@ -61,6 +61,14 @@ public final class ItemStack {
 		return Item.itemsList[this.itemID];
 	}
 
+	public Block getBlock(){
+		if(this.itemID < 256){
+			return Block.blocksList[this.itemID];
+		} else {
+			return null;
+		}
+	}
+
 	public int getIconIndex() {
 		return this.getItem().getIconIndex(this);
 	}

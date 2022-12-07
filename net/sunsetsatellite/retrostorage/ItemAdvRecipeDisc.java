@@ -5,6 +5,7 @@ import net.minecraft.src.*;
 import java.util.HashMap;
 
 public class ItemAdvRecipeDisc extends Item
+    implements IDataItem
 {
 
     public ItemAdvRecipeDisc(int i)
@@ -28,5 +29,15 @@ public class ItemAdvRecipeDisc extends Item
         }
         //entityplayer.addChatMessage(itemstack.getItemData().toStringExtended());
         return super.onItemRightClick(itemstack, world, entityplayer);
+    }
+
+    @Override
+    public String getDescription(ItemStack stack) {
+        if(stack.getItemData().hasKey("processName")){
+            return "Processes: "+stack.getItemData().getString("processName");
+        } else {
+            return "";
+        }
+
     }
 }

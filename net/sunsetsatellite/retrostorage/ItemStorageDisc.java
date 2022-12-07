@@ -3,8 +3,10 @@
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.Item;
+import net.minecraft.src.ItemStack;
 
 public class ItemStorageDisc extends Item
+    implements IDataItem
 {
 
     public ItemStorageDisc(int i, int j)
@@ -21,7 +23,12 @@ public class ItemStorageDisc extends Item
     	maxStackCapacity = i;
     	return this;
     }
-    
+
+    @Override
+    public String getDescription(ItemStack stack) {
+        return stack.getItemData().toString() + " out of " + getMaxStackCapacity();
+    }
+
     public int maxStackCapacity;
 
 }
