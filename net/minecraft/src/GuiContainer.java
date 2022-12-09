@@ -1,11 +1,9 @@
 package net.minecraft.src;
 
-import net.sunsetsatellite.retrostorage.*;
+import net.sunsetsatellite.itemnbt.IDataItem;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import java.util.ArrayList;
 
 public abstract class GuiContainer extends GuiScreen {
 	protected static RenderItem itemRenderer = new RenderItem();
@@ -159,11 +157,11 @@ public abstract class GuiContainer extends GuiScreen {
 
 					if(str.length() > 0){
 						drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 15, 0xc0000000, 0xc0000000);
-						this.fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
-						fontRenderer.drawStringWithShadow(str, i9, i10 + 12, 0xFFFF00FF);
+						this.fontRenderer.drawStringWithShadow(string13, i9, i10, ((IDataItem)stack.getItem()).getNameColor(stack));
+						fontRenderer.drawStringWithShadow(str, i9, i10 + 12, ((IDataItem)stack.getItem()).getDescriptionColor(stack));
 					} else {
 						drawGradientRect(i9 - 3, i10 - 3, i9 + i11 + 3, i10 + 8 + 3, 0xc0000000, 0xc0000000);
-						fontRenderer.drawStringWithShadow(string13, i9, i10, -1);
+						fontRenderer.drawStringWithShadow(string13, i9, i10, ((IDataItem)stack.getItem()).getNameColor(stack));
 					}
 
 				}

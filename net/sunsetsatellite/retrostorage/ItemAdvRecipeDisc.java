@@ -1,8 +1,7 @@
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
-
-import java.util.HashMap;
+import net.sunsetsatellite.itemnbt.IDataItem;
 
 public class ItemAdvRecipeDisc extends Item
     implements IDataItem
@@ -39,5 +38,15 @@ public class ItemAdvRecipeDisc extends Item
             return "";
         }
 
+    }
+
+    @Override
+    public int getDescriptionColor(ItemStack stack) {
+        return 0xFFFF00FF;
+    }
+
+    @Override
+    public int getNameColor(ItemStack stack) {
+        return -1;
     }
 }

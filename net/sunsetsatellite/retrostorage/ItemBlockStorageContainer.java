@@ -1,6 +1,7 @@
 package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
+import net.sunsetsatellite.itemnbt.IDataItem;
 
 public class ItemBlockStorageContainer extends ItemBlock
     implements IDataItem
@@ -71,7 +72,16 @@ public class ItemBlockStorageContainer extends ItemBlock
         } else {
             return "";
         }
+    }
 
+    @Override
+    public int getDescriptionColor(ItemStack stack) {
+        return 0xFFFF00FF;
+    }
+
+    @Override
+    public int getNameColor(ItemStack stack) {
+        return -1;
     }
 }
 
