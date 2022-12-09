@@ -8,12 +8,11 @@ Requires Modloader (+ Forge 1.0.6 for versions a1.5pre1 and above.). Currently, 
  - ItemNBT (Allows items to carry NBT data, available as a standalone mod.)
  - Digital Network (Store your items on a disc, no more chests!)
  - Autocrafting using Recipe Discs and Assemblers
- - I/O that allows you to somewhat automate machines from other mods.
+ - Simple and Advanced I/O that can help you automate various machines!
  - and more to come.
 
-**WARNING**
-Experimental *Alpha* release, many things are either not yet implemented or they could/will be done better in the future.
-**There might be a LOT of bugs, you've been warned.**
+**WARNING!**
+Mod is in a potentially buggy **beta** state, there might be bugs even in the latest releases that haven't been found/fixed yet. Backup your worlds regularly! 
 
 Please report bugs in Github Issues, and if you have any questions, I'm in the [Modification Station](https://discord.gg/8Qky5XY) discord server as MartinSVK12#0075.
 
