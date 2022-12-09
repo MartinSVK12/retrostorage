@@ -388,7 +388,7 @@ public class mod_RetroStorage extends BaseMod {
 
     @Override
     public String Version() {
-        return "a1.5";
+        return "b1.0";
     }
 
     public String Name() {
@@ -396,7 +396,7 @@ public class mod_RetroStorage extends BaseMod {
     }
 
     public String Description() {
-        return "A digital storage solution for b1.7.3";
+        return "A digital storage solution for b1.7.3!";
     }
 
     public String Icon() {

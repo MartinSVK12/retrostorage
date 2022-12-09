@@ -214,7 +214,7 @@ public class DiscManipulator {
 			Integer value = entry.getValue();
 			entry.setValue(entry.getValue() * count);
 		}
-		System.out.println("Craft requirements: "+ requirements);
+		//System.out.println("Craft requirements: "+ requirements);
 		for (Map.Entry<ArrayList<Integer> , Integer> i1 : requirements.entrySet()) {
 			ItemStack stack = new ItemStack(i1.getKey().get(0),1,i1.getKey().get(1));
 			int networkItemCount = controller.network_inv.getItemCount(i1.getKey().get(0),i1.getKey().get(1));
@@ -225,7 +225,7 @@ public class DiscManipulator {
 					ItemStack assemblyStack = assemblyItems.get(stack.getItem());
 					int reqCount = requirements.get(i1.getKey())/assemblyStack.stackSize;
 					if(reqCount <= 0) reqCount = 1;
-					System.out.println("Calling subrequest for: "+ assemblyStack);
+					//System.out.println("Calling subrequest for: "+ assemblyStack);
 					boolean result = addCraftRequest(assemblyStack,reqCount,controller);
 					if(result){
 						s++;

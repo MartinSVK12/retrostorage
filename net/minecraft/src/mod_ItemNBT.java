@@ -8,7 +8,7 @@ public class mod_ItemNBT extends BaseMod {
 
 	@Override
 	public String Version() {
-		return "1.2";
+		return "1.3";
 	}
 	
 	public String Name() {
