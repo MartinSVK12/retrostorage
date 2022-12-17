@@ -52,6 +52,8 @@ public class BlockDigitalMachine extends BlockContainer {
                 return new TileEntityProcessProgrammer();
             case 11:
                 return new TileEntityWirelessLink();
+            case 12:
+                return new TileEntityRedstoneEmitter();
             default:
                 return null;
         }
@@ -83,6 +85,12 @@ public class BlockDigitalMachine extends BlockContainer {
         if(meta >= mod_RetroStorage.sprites.length) {
             return mod_RetroStorage.digitalChestSide;
         } else if(mod_RetroStorage.sprites[meta].length == 1){
+            TileEntity tile = iblockaccess.getBlockTileEntity(i,j,k);
+            if(tile instanceof TileEntityRedstoneEmitter){
+                if(((TileEntityRedstoneEmitter) tile).isActive){
+                    return mod_RetroStorage.emitterActive;
+                }
+            }
             return mod_RetroStorage.sprites[meta][0];
         } else {
             return side < 2 ? mod_RetroStorage.sprites[meta][side] : (side != getFacing(iblockaccess, i, j, k) ? mod_RetroStorage.sprites[meta][2] : mod_RetroStorage.sprites[meta][3]);
@@ -125,6 +133,7 @@ public class BlockDigitalMachine extends BlockContainer {
             case 9:
             case 10:
             case 11:
+            case 12:
                 return meta;
             default:
                 return 0;
@@ -238,6 +247,8 @@ public class BlockDigitalMachine extends BlockContainer {
                 return new GuiProcessProgrammer(entityplayer.inventory, (TileEntityProcessProgrammer) tile);
             case 11:
                 return null;
+            case 12:
+                return new GuiRedstoneEmitter(entityplayer.inventory, (TileEntityRedstoneEmitter) tile);
             default:
                 return null;
         }
@@ -314,5 +325,40 @@ public class BlockDigitalMachine extends BlockContainer {
 
     public static void setFacing(IBlockAccess iblockaccess, int i, int j, int k, int f) {
         ((TileEntityDigitalContainer)iblockaccess.getBlockTileEntity(i, j, k)).facing = f;
+    }
+
+    @Override
+    public boolean isPoweringTo(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+        TileEntity tile = iblockaccess.getBlockTileEntity(i,j,k);
+        if(tile instanceof TileEntityRedstoneEmitter){
+            if(((TileEntityRedstoneEmitter) tile).isActive){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isIndirectlyPoweringTo(World world, int i, int j, int k, int side) {
+        TileEntity tile = world.getBlockTileEntity(i,j,k);
+        if(tile instanceof TileEntityRedstoneEmitter){
+            if(((TileEntityRedstoneEmitter) tile).isActive){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canProvidePower() {
+        return true;
+    }
+
+    @Override
+    public boolean isBlockNormalCube(World world, int i, int j, int k) {
+        TileEntity tile = world.getBlockTileEntity(i,j,k);
+        if(tile instanceof TileEntityRedstoneEmitter){
+            return false;
+        }
+        return true;
     }
 }

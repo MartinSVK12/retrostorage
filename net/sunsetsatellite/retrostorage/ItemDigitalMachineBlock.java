@@ -40,6 +40,8 @@ public class ItemDigitalMachineBlock extends ItemBlock {
                 return "tile.processProgrammer";
             case 11:
                 return "tile.wirelessLink";
+            case 12:
+                return "tile.emitter";
         }
         return null;
     }

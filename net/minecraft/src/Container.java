@@ -1,9 +1,6 @@
 package net.minecraft.src;
 
-import net.sunsetsatellite.retrostorage.ContainerDigitalChest;
-import net.sunsetsatellite.retrostorage.ContainerDigitalTerminal;
-import net.sunsetsatellite.retrostorage.ContainerRequestTerminal;
-import net.sunsetsatellite.retrostorage.SlotViewOnly;
+import net.sunsetsatellite.retrostorage.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -178,6 +175,9 @@ public abstract class Container {
                                 inventoryplayer.setItemStack(null);
                             }
                             itemstack2.stackSize += k1;
+                            if(slot instanceof SlotDigital){
+                                slot.putStack(itemstack2);
+                            }
                         }
                     } else
                     if(itemstack2.itemID == itemstack3.itemID && itemstack3.getMaxStackSize() > 1 && (!itemstack2.getHasSubtypes() || itemstack2.getItemDamage() == itemstack3.getItemDamage()) && itemstack2.getItemData().equals(itemstack3.getItemData()))

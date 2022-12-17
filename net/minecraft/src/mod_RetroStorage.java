@@ -38,6 +38,8 @@ public class mod_RetroStorage extends BaseMod {
         processProgrammerFront = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "processprogrammerfront.png");
         advMachineSide = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "advmachineside.png");
         wirelessLinkTex = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "wirelesslink.png");
+        emitterActive = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "emitteractive.png");
+        emitterInactive = ModLoader.addOverride("/terrain.png", "/retrostorage/" + "emitterinactive.png");
 
         sprites = new int[][]{
                 {
@@ -92,7 +94,10 @@ public class mod_RetroStorage extends BaseMod {
                         mod_RetroStorage.processProgrammerFront,
                 },
                 {
-                        mod_RetroStorage.wirelessLinkTex
+                        mod_RetroStorage.wirelessLinkTex,
+                },
+                {
+                        mod_RetroStorage.emitterInactive,
                 }
 
         };
@@ -115,6 +120,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityProcessProgrammer.class, "Process Programmer");
         ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityAdvInterface.class, "Adv. Interface");
         ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityWirelessLink.class,"Wireless Link");
+        ModLoader.RegisterTileEntity(net.sunsetsatellite.retrostorage.TileEntityRedstoneEmitter.class, "Redstone Emitter");
         ModLoader.AddName(digitalChest, "Digital Chest");
         ModLoader.AddName(blankDisc, "Blank Storage Disc");
         ModLoader.AddName(storageDisc1, "Storage Disc MK I");
@@ -148,6 +154,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddName(linkingCard,"Linking Card");
         ModLoader.AddLocalization("tile.processProgrammer.name", "Process Programmer");
         ModLoader.AddLocalization("tile.wirelessLink.name","Wireless Link");
+        ModLoader.AddLocalization("tile.emitter.name","Redstone Emitter");
         ModLoader.AddName(machineCasing,"Machine Casing");
         ModLoader.AddName(advNachineCasing,"Adv. Machine Casing");
         ModLoader.AddName(energyCore,"Energy Core");
@@ -330,13 +337,15 @@ public class mod_RetroStorage extends BaseMod {
     public static int processProgrammerTop;
     public static int advMachineSide;
     public static int wirelessLinkTex;
+    public static int emitterActive;
+    public static int emitterInactive;
     public static int cableRenderID;
 
     public static int[][] sprites;
 
     public enum machines {
         digitalController, digitalTerminal, discDrive, assembler, importer, exporter, requestTerminal, digitalInterface,
-        recipeEncoder, advInterface, processProgrammer, wirelessLink
+        recipeEncoder, advInterface, processProgrammer, wirelessLink, emitter
     }
 
 
