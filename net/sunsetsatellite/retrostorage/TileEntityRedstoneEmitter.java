@@ -10,7 +10,7 @@ public class TileEntityRedstoneEmitter extends TileEntityInNetworkWithInv {
     public boolean isActive = false;
     public int mode = 0;
     public int amount = 0;
-    public boolean useMeta = false;
+    public boolean useMeta = true;
     public boolean useData = false;
 
     public TileEntityRedstoneEmitter()
