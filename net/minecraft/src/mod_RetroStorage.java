@@ -175,6 +175,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddName(chipWireless,"Wireless Networking Chip");
         ModLoader.AddName(chipDieWireless,"Wireless Networking Chip Die");
         ModLoader.AddName(wirelessAntenna,"Wireless Antenna");
+        ModLoader.AddName(redstoneCore, "Redstone Core");
 
         ModLoader.RegisterBlock(digitalChest);
         ModLoader.RegisterBlock(cable);
@@ -231,6 +232,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipDieWireless,1,0),"123","456","789",'2',Item.diamond,'4',Block.blockLapis,'5',mod_RetroStorage.siliconWafer,'6',Block.blockLapis,'8',Item.diamond);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.chipWireless,1,0),"123","456","789",'2',mod_RetroStorage.ceramicPlate,'5',mod_RetroStorage.chipDieWireless,'8',mod_RetroStorage.chipShellFilled);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.wirelessAntenna,1,0),"123","456","789",'2',Block.blockLapis,'4',Block.blockLapis,'5',Item.diamond,'6',Block.blockLapis,'7',Item.ingotIron,'8',Item.stick,'9',Item.ingotIron);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.redstoneCore,1,0),"RRR","RRR","RRR",'R',Item.redstone);
 
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,0),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.itemCable,'3',Block.blockLapis,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.energyCore,'6',mod_RetroStorage.itemCable,'7',Block.blockLapis,'8',mod_RetroStorage.itemCable,'9',mod_RetroStorage.machineCasing);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,2),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.blankDisc,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.blankDisc,'8',mod_RetroStorage.itemCable);
@@ -246,6 +248,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,10),"123","456","789",'1',Block.workbench,'2',advRecipeDisc,'3',Block.workbench,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,8),'6',mod_RetroStorage.chipCrafting,'7',Block.workbench,'8',mod_RetroStorage.advNachineCasing,'9',Block.workbench);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,9),"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,7),'6',mod_RetroStorage.chipDigitizer,'7',Block.obsidian,'8',mod_RetroStorage.advNachineCasing,'9',Block.obsidian);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,11),"123","456","789",'2',mod_RetroStorage.chipWireless,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.wirelessAntenna,'8',mod_RetroStorage.chipWireless);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,12),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',Block.torchRedstoneActive,'3',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.redstoneCore,'6',mod_RetroStorage.chipDigitizer,'7',mod_RetroStorage.machineCasing,'8',Item.redstoneRepeater,'9',mod_RetroStorage.machineCasing);
 
         ModLoader.AddRecipe(new ItemStack(mobileTerminal,1,0),"123","456","789",'1',Item.ingotIron,'2',mod_RetroStorage.wirelessAntenna,'3',Item.ingotIron,'4',Block.glass,'5',new ItemStack(mod_RetroStorage.multiID,1,1),'6',Block.glass,'7',Item.ingotIron,'8',mod_RetroStorage.chipWireless,'9',Item.ingotIron);
         ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal,1,0),"123","456","789",'1',Item.ingotIron,'2',mod_RetroStorage.wirelessAntenna,'3',Item.ingotIron,'4',Block.glass,'5',new ItemStack(mod_RetroStorage.multiID,1,6),'6',Block.glass,'7',Item.ingotIron,'8',mod_RetroStorage.chipWireless,'9',Item.ingotIron);
@@ -312,7 +315,7 @@ public class mod_RetroStorage extends BaseMod {
     public static Item chipDieWireless = addSimpleItem("chipDieWireless","wirelessnetworkingdie",171);
     public static Item chipWireless = addSimpleItem("chipWireless","wirelessnetworkingchip",172);
     public static Item wirelessAntenna = addSimpleItem("wirelessAntenna","wirelessantenna",173);
-
+    public static Item redstoneCore = addSimpleItem("redstoneCore","redstonecore",174);
 
     public static int digitalControllerTex;
     public static int digitalChestFront;
@@ -397,7 +400,7 @@ public class mod_RetroStorage extends BaseMod {
 
     @Override
     public String Version() {
-        return "b1.0";
+        return "b1.1";
     }
 
     public String Name() {

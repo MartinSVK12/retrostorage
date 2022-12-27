@@ -15,7 +15,7 @@ public class ContainerRedstoneEmitter extends Container
     {
     	tile = tileEntityRedstoneEmitter;
 
-        addSlot(new Slot(tileEntityRedstoneEmitter, 0, 46, 35));
+        addSlot(new Slot(tileEntityRedstoneEmitter, 0, 45, 35));
 
         for(int j = 0; j < 3; j++)
         {
