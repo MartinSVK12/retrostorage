@@ -1,5 +1,5 @@
 # RetroStorage 
-Digital storage system mod for Minecraft b1.7.3.
+Digital storage system mod for Minecraft b1.7.3. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
 Requires Modloader (+ Forge 1.0.6 for versions a1.5pre1 and above.). Currently, singleplayer only.
 
@@ -16,7 +16,7 @@ Mod is in a potentially buggy **beta** state, there might be bugs even in the la
 
 Please report bugs in Github Issues, and if you have any questions, I'm in the [Modification Station](https://discord.gg/8Qky5XY) discord server as MartinSVK12#0075.
 
-Have fun! :D
+_Have fun! :D_
 
 
 ## Installation
@@ -48,8 +48,10 @@ Step 4: Profit!
 
 ## Special Thanks
 - [@rythin-sr](https://github.com/rythin-sr) - based bug finder
+- [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE) - helped with a couple things
 - [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
 - [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
+
  
 ## License
-Please credit if using parts in your own mods/modpacks (like ItemNBT for example)
+Please credit if using parts in your own mods/modpacks (like ItemNBT for example).
