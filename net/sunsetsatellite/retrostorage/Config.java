@@ -35,7 +35,7 @@ public class Config {
                 } else if (field.getType().getSuperclass() == Item.class || field.getType() == Item.class) {
                     try {
                         configWriter.write(System.getProperty("line.separator") + field.getName()
-                                + "=" + ((Item) field.get(null)).shiftedIndex);
+                                + "=" + (((Item) field.get(null)).shiftedIndex-256));
                         //idMap.put(field.getName(),((Item) field.get(null)).shiftedIndex);
                     } catch (Exception exception) {
                         exception.printStackTrace();
