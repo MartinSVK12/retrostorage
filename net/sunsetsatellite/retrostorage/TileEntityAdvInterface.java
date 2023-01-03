@@ -267,13 +267,15 @@ public class TileEntityAdvInterface extends TileEntityInNetworkWithInv {
             if(inv.getSizeInventory() > slot) {
                 ItemStack slotStack = ((IInventory) attachedTileEntity).getStackInSlot(slot);
                 if (slotStack != null) {
-                    if(slotStack.isItemEqual(stack) && slotStack.getItemData().equals(stack.getItemData())){
-                        if (controller.network_inv.addItemStackToInventory(slotStack.copy())) {
-                            inv.setInventorySlotContents(slot, null);
-                            DiscManipulator.saveDisc(controller);
-                            finishTask(task);
-                        } else {failTask(task,"Failed to add to network",false);}
-                    } else {failTask(task,"Stack mismatch",false);}
+                    if(slotStack.stackSize == stack.stackSize ){
+                        if(slotStack.isItemEqual(stack) && slotStack.getItemData().equals(stack.getItemData())){
+                            if (controller.network_inv.addItemStackToInventory(slotStack.copy())) {
+                                inv.setInventorySlotContents(slot, null);
+                                DiscManipulator.saveDisc(controller);
+                                finishTask(task);
+                            } else {failTask(task,"Failed to add to network",false);}
+                        } else {failTask(task,"Stack mismatch",false);}
+                    }
                 } //else {failTask(task, "Empty slot",false);}
             } else {failTask(task, "Invalid slot",true);}
         }

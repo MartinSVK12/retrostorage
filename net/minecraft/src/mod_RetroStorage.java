@@ -400,7 +400,7 @@ public class mod_RetroStorage extends BaseMod {
 
     @Override
     public String Version() {
-        return "b1.1";
+        return "b1.1.1";
     }
 
     public String Name() {
