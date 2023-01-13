@@ -40,7 +40,7 @@ Versions a1.5pre2 and above support IC2 energy storage for powering the Digital 
 ## Building
 Step 1: Download source.
 
-Step 2: Yeet into a [RetroMCP](https://github.com/MCPHackers/RetroMCP-Java/releases) workspace with Modloader + Forge preinstalled.
+Step 2: Yeet into a [RetroMCP](https://github.com/MCPHackers/RetroMCP-Java/releases) workspace with Modloader, Forge and IC2.
 
 Step 3: ???
 
