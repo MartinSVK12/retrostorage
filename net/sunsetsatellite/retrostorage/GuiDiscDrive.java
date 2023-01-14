@@ -47,7 +47,9 @@ public class GuiDiscDrive extends GuiContainer
             return;
         }
         if (guibutton.id == 0) {
-            tile.removeLastDisc();
+            if(tile.getStackInSlot(1) == null){
+                tile.removeLastDisc();
+            }
         }
 
     }
