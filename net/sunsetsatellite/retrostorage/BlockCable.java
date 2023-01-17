@@ -80,7 +80,7 @@ public class BlockCable extends Block {
 
     public int idDropped(int i, Random random)
     {
-        return mod_RetroStorage.itemCable.shiftedIndex;
+        return mod_RetroStorage.cable.blockID;
     }
     
     public int getRenderType()

@@ -51,7 +51,6 @@ public class GuiDiscDrive extends GuiContainer
                 tile.removeLastDisc();
             }
         }
-
     }
 
     private TileEntityDiscDrive tile;

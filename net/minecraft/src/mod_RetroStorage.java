@@ -141,7 +141,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddLocalization("tile.recipeEncoder.name", "Recipe Encoder");
         ModLoader.AddLocalization("tile.assembler.name", "Assembler");
         ModLoader.AddLocalization("tile.requestTerminal.name", "Request Terminal");
-        ModLoader.AddName(itemCable, "Network Cable");
+        //ModLoader.AddName(itemCable, "Network Cable");
         ModLoader.AddLocalization("tile.interface.name", "Item Interface");
         ModLoader.AddLocalization("tile.advInterface.name", "Adv. Item Interface");
         ModLoader.AddName(mobileTerminal, "Mobile Terminal");
@@ -178,7 +178,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddName(redstoneCore, "Redstone Core");
 
         ModLoader.RegisterBlock(digitalChest);
-        ModLoader.RegisterBlock(cable);
+        ModLoader.RegisterBlock(cable, ItemBlockCable.class);
         ModLoader.RegisterBlock(storageContainer, ItemBlockStorageContainer.class);
         ModLoader.RegisterBlock(multiID, ItemDigitalMachineBlock.class);
 
@@ -187,7 +187,7 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddRecipe(new ItemStack(blankDisc, 1), "GGG", "GRG", "GGG", 'G', Block.glass, 'R', Item.redstone);
         ModLoader.AddRecipe(new ItemStack(recipeDisc, 1), "GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.redstone, 'P', new ItemStack(Item.dyePowder, 1, 5));
         ModLoader.AddRecipe(new ItemStack(storageDisc1, 1), "RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.redstone);
-        ModLoader.AddRecipe(new ItemStack(itemCable, 16), "WLW", "GGG", "WLW", 'W', Block.cloth, 'G', Block.glass, 'L', new ItemStack(Item.dyePowder, 1, 4));
+        ModLoader.AddRecipe(new ItemStack(cable, 16), "WLW", "GGG", "WLW", 'W', Block.cloth, 'G', Block.glass, 'L', new ItemStack(Item.dyePowder, 1, 4));
         /*ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.digitalController.ordinal()), "ILI", "LDL", "ILI", 'I', Block.blockSteel, 'L', Block.blockLapis, 'D', Block.blockDiamond);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.discDrive.ordinal()), "III", "DDD", "III", 'I', Item.ingotIron, 'D', blankDisc);
         ModLoader.AddRecipe(new ItemStack(multiID, 1, machines.digitalTerminal.ordinal()), "III", "RHR", "ICI", 'I', Item.ingotIron, 'R', Item.redstone, 'H', Block.chest, 'C', itemCable);
@@ -234,21 +234,21 @@ public class mod_RetroStorage extends BaseMod {
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.wirelessAntenna,1,0),"123","456","789",'2',Block.blockLapis,'4',Block.blockLapis,'5',Item.diamond,'6',Block.blockLapis,'7',Item.ingotIron,'8',Item.stick,'9',Item.ingotIron);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.redstoneCore,1,0),"RRR","RRR","RRR",'R',Item.redstone);
 
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,0),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.itemCable,'3',Block.blockLapis,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.energyCore,'6',mod_RetroStorage.itemCable,'7',Block.blockLapis,'8',mod_RetroStorage.itemCable,'9',mod_RetroStorage.machineCasing);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,2),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.blankDisc,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.blankDisc,'8',mod_RetroStorage.itemCable);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,0),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.cable,'3',Block.blockLapis,'4',mod_RetroStorage.cable,'5',mod_RetroStorage.energyCore,'6',mod_RetroStorage.cable,'7',Block.blockLapis,'8',mod_RetroStorage.cable,'9',mod_RetroStorage.machineCasing);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,2),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.blankDisc,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.blankDisc,'8',mod_RetroStorage.cable);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.digitalChest,1,0),"123","456","789",'2',mod_RetroStorage.blankDisc,'4',mod_RetroStorage.chipRematerializer,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.chipDematerializer,'8',Block.chest);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.storageContainer,1,0),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.machineCasing,'3',mod_RetroStorage.machineCasing,'4',Item.ingotIron,'5',Block.chest,'6',Item.ingotIron,'7',mod_RetroStorage.machineCasing,'8',mod_RetroStorage.machineCasing,'9',mod_RetroStorage.machineCasing);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,1),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.chipRematerializer,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.chipDematerializer,'7',mod_RetroStorage.itemCable,'8',Block.chest,'9',mod_RetroStorage.itemCable);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,1),"123","456","789",'2',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.chipRematerializer,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.chipDematerializer,'7',mod_RetroStorage.cable,'8',Block.chest,'9',mod_RetroStorage.cable);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,3),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',mod_RetroStorage.chipCrafting,'3',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.chipCrafting,'5',recipeDisc,'6',mod_RetroStorage.chipCrafting,'7',mod_RetroStorage.machineCasing,'8',mod_RetroStorage.chipCrafting,'9',mod_RetroStorage.machineCasing);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,4),"123","456","789",'2',mod_RetroStorage.chipRematerializer,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.itemCable,'8',mod_RetroStorage.chipDigitizer);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,5),"123","456","789",'2',mod_RetroStorage.chipDematerializer,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.itemCable,'8',mod_RetroStorage.chipDigitizer);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,7),"123","456","789",'2',new ItemStack(mod_RetroStorage.multiID,1,5),'3',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.itemCable,'7',mod_RetroStorage.chipCrafting,'8',new ItemStack(mod_RetroStorage.multiID,1,4));
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,6),"123","456","789",'2',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,1),'6',mod_RetroStorage.chipCrafting,'8',mod_RetroStorage.itemCable);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,4),"123","456","789",'2',mod_RetroStorage.chipRematerializer,'4',mod_RetroStorage.cable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.cable,'8',mod_RetroStorage.chipDigitizer);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,5),"123","456","789",'2',mod_RetroStorage.chipDematerializer,'4',mod_RetroStorage.cable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.cable,'8',mod_RetroStorage.chipDigitizer);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,7),"123","456","789",'2',new ItemStack(mod_RetroStorage.multiID,1,5),'3',mod_RetroStorage.chipDigitizer,'4',mod_RetroStorage.cable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.cable,'7',mod_RetroStorage.chipCrafting,'8',new ItemStack(mod_RetroStorage.multiID,1,4));
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,6),"123","456","789",'2',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,1),'6',mod_RetroStorage.chipCrafting,'8',mod_RetroStorage.cable);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,8),"123","456","789",'2',mod_RetroStorage.machineCasing,'4',recipeDisc,'5',Block.workbench,'6',recipeDisc,'8',mod_RetroStorage.chipCrafting);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,10),"123","456","789",'1',Block.workbench,'2',advRecipeDisc,'3',Block.workbench,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,8),'6',mod_RetroStorage.chipCrafting,'7',Block.workbench,'8',mod_RetroStorage.advNachineCasing,'9',Block.workbench);
         ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,9),"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',mod_RetroStorage.chipCrafting,'5',new ItemStack(mod_RetroStorage.multiID,1,7),'6',mod_RetroStorage.chipDigitizer,'7',Block.obsidian,'8',mod_RetroStorage.advNachineCasing,'9',Block.obsidian);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,11),"123","456","789",'2',mod_RetroStorage.chipWireless,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.wirelessAntenna,'8',mod_RetroStorage.chipWireless);
-        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,12),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',Block.torchRedstoneActive,'3',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.itemCable,'5',mod_RetroStorage.redstoneCore,'6',mod_RetroStorage.chipDigitizer,'7',mod_RetroStorage.machineCasing,'8',Item.redstoneRepeater,'9',mod_RetroStorage.machineCasing);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,11),"123","456","789",'2',mod_RetroStorage.chipWireless,'4',mod_RetroStorage.cable,'5',mod_RetroStorage.machineCasing,'6',mod_RetroStorage.wirelessAntenna,'8',mod_RetroStorage.chipWireless);
+        ModLoader.AddRecipe(new ItemStack(mod_RetroStorage.multiID,1,12),"123","456","789",'1',mod_RetroStorage.machineCasing,'2',Block.torchRedstoneActive,'3',mod_RetroStorage.machineCasing,'4',mod_RetroStorage.cable,'5',mod_RetroStorage.redstoneCore,'6',mod_RetroStorage.chipDigitizer,'7',mod_RetroStorage.machineCasing,'8',Item.redstoneRepeater,'9',mod_RetroStorage.machineCasing);
 
         ModLoader.AddRecipe(new ItemStack(mobileTerminal,1,0),"123","456","789",'1',Item.ingotIron,'2',mod_RetroStorage.wirelessAntenna,'3',Item.ingotIron,'4',Block.glass,'5',new ItemStack(mod_RetroStorage.multiID,1,1),'6',Block.glass,'7',Item.ingotIron,'8',mod_RetroStorage.chipWireless,'9',Item.ingotIron);
         ModLoader.AddRecipe(new ItemStack(mobileRequestTerminal,1,0),"123","456","789",'1',Item.ingotIron,'2',mod_RetroStorage.wirelessAntenna,'3',Item.ingotIron,'4',Block.glass,'5',new ItemStack(mod_RetroStorage.multiID,1,6),'6',Block.glass,'7',Item.ingotIron,'8',mod_RetroStorage.chipWireless,'9',Item.ingotIron);
@@ -293,7 +293,7 @@ public class mod_RetroStorage extends BaseMod {
     public static Block storageContainer = (new BlockStorageContainer(getId("container", 172), false).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("container"));
     public static Block multiID = (new BlockDigitalMachine(getId("multiID", 173)).setHardness(1F).setResistance(5F).setStepSound(Block.soundStoneFootstep).setBlockName("multiID"));
 
-    public static Item itemCable = (new ItemReed(getId("itemCable", 146), cable).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "itemcable.png")).setItemName("itemCable"));
+    //public static Item itemCable = (new ItemReed(getId("itemCable", 146), cable).setIconIndex(ModLoader.addOverride("/gui/items.png", "/retrostorage/" + "itemcable.png")).setItemName("itemCable"));
 
     public static Item machineCasing = addSimpleItem("machineCasing","machinecasing",154);
     public static Item advNachineCasing = addSimpleItem("advMachineCasing","advmachinecasing",155);
