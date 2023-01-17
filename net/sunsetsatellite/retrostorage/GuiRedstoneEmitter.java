@@ -21,6 +21,10 @@ public class GuiRedstoneEmitter extends GuiContainer
         fontRenderer.drawString("Redstone Emitter", 45, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
         fontRenderer.drawString(String.valueOf(tile.amount), 120, 40, 0x404040);
+        if(tile.connectedTile instanceof TileEntityAssembler){
+            fontRenderer.drawString("ASM", 9, 6, 0x404040);
+            fontRenderer.drawString(String.valueOf(tile.asmSlot), 10, 40, 0x404040);
+        }
     }
 
     public void initGui()
@@ -30,6 +34,10 @@ public class GuiRedstoneEmitter extends GuiContainer
         controlList.add(guibutton);
         controlList.add(new GuiButton(1, Math.round(width / 2 + 30) , Math.round(height / 2 - 65), 20, 20, "+"));
         controlList.add(new GuiButton(2, Math.round(width / 2 + 30), Math.round(height / 2 - 35), 20, 20, "-"));
+        if(tile.connectedTile instanceof TileEntityAssembler){
+            controlList.add(new GuiButton(5, Math.round(width / 2 - 80) , Math.round(height / 2 - 65), 20, 20, "+"));
+            controlList.add(new GuiButton(6, Math.round(width / 2 - 80), Math.round(height / 2 - 35), 20, 20, "-"));
+        }
         controlList.add(new GuiButton(3, Math.round(width / 2 + 60) , Math.round(height / 2) - 75, 20, 20, tile.useMeta ? "M" : "!M"));
         //controlList.add(new GuiButton(4, Math.round(width / 2 + 60) , Math.round(height / 2) - 55, 20, 20, "D"));
         switch (tile.mode){
@@ -86,6 +94,16 @@ public class GuiRedstoneEmitter extends GuiContainer
         if(guibutton.id == 4){
             tile.useData = !tile.useData;
             guibutton.displayString = tile.useData ? "D" : "!D";
+        }
+        if(guibutton.id == 5){
+            if(tile.asmSlot < 8){
+                tile.asmSlot++;
+            }
+        }
+        if(guibutton.id == 6){
+            if(tile.asmSlot > 0){
+                tile.asmSlot--;
+            }
         }
         if(guibutton.id == 0) {
             tile.mode++;

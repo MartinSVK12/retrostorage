@@ -155,7 +155,7 @@ public class DiscManipulator {
 	}
 
 	public static boolean addCraftRequest(ItemStack item, int count, TileEntityDigitalController controller){
-		if(controller == null){
+		if(controller == null || item == null){
 			return false;
 		}
 		if(controller.itemAssembly.get(item).get(0) instanceof TileEntityInterface){

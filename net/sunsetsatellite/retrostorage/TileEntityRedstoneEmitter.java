@@ -2,6 +2,7 @@ package net.sunsetsatellite.retrostorage;
 
 import net.minecraft.src.*;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class TileEntityRedstoneEmitter extends TileEntityInNetworkWithInv {
@@ -54,6 +55,24 @@ public class TileEntityRedstoneEmitter extends TileEntityInNetworkWithInv {
 
     @Override
     public void updateEntity() {
+        sendRecipeTicks++;
+        if(sendRecipeTicks >= sendRecipeMaxTicks){
+            sendRecipeTicks = 0;
+        }
+        connectedTile = findTileEntityAroundBlock(TileEntityAssembler.class);
+        if(connectedTile instanceof TileEntityAssembler){
+            if(sendRecipeTicks == 0 && controller != null && isActive) {
+                if (((TileEntityAssembler) connectedTile).getStackInSlot(asmSlot) != null && ((TileEntityAssembler) connectedTile).getStackInSlot(asmSlot).getItem() == mod_RetroStorage.recipeDisc) {
+                    ItemStack recipeDisc = ((TileEntityAssembler) connectedTile).getStackInSlot(asmSlot);
+                    CraftingManager crafter = CraftingManager.getInstance();
+                    ArrayList<?> recipe = DiscManipulator.convertRecipeToArray(recipeDisc.getItemData());
+                    ItemStack item = crafter.findMatchingRecipeFromArray((ArrayList<ItemStack>) recipe);
+                    if(item != null) {
+                        DiscManipulator.addCraftRequest(item, 1, controller);
+                    }
+                }
+            }
+        }
         World world = ModLoader.getMinecraftInstance().theWorld;
         world.markBlocksDirty(xCoord,yCoord,zCoord,xCoord,yCoord,zCoord);
         world.notifyBlocksOfNeighborChange(xCoord,yCoord,zCoord,isActive ? 15 : 0);
@@ -126,6 +145,7 @@ public class TileEntityRedstoneEmitter extends TileEntityInNetworkWithInv {
         mode = nbttagcompound.getInteger("mode");
         amount = nbttagcompound.getInteger("checkAmount");
         useMeta = nbttagcompound.getBoolean("useMeta");
+        asmSlot = nbttagcompound.getInteger("asmSlot");
         for(int i = 0; i < nbttaglist.tagCount(); i++)
         {
             NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
@@ -158,6 +178,7 @@ public class TileEntityRedstoneEmitter extends TileEntityInNetworkWithInv {
         nbttagcompound.setInteger("checkAmount",amount);
         nbttagcompound.setInteger("mode",mode);
         nbttagcompound.setBoolean("useMeta",useMeta);
+        nbttagcompound.setInteger("asmSlot",asmSlot);
     }
 
 
@@ -174,5 +195,10 @@ public class TileEntityRedstoneEmitter extends TileEntityInNetworkWithInv {
     {
         return 64;
     }
+
+    public TileEntity connectedTile;
+    public int asmSlot = 0;
+    public int sendRecipeTicks = 0;
+    public int sendRecipeMaxTicks = 100;
 
 }
