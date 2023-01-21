@@ -1,32 +1,40 @@
-# Minimal Mod
+# RetroStorage
+Digital storage system mod for Minecraft b1.7.3. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
-Babric example mod, without the examples.
+# This version is for Babric/BTA! Go to the "main" branch for the Modloader version.
 
-## Prerequisites
-- JDK for Java 17 ([Eclipse Temurin](https://adoptium.net/temurin/releases/) recommended)
-- IntelliJ IDEA
-- Minecraft Development plugin (Optional, but highly recommended)
+Requires Babric, designed for Better than Adventure.
 
-## Setup instructions
+**Features**:
 
-1. Download or clone this repository and put it somewhere.
-```
-git clone https://github.com/Turnip-Labs/bta-minimal-mod.git
-```
+- Digital Network (Store your items on a disc, no more chests!)
+- Autocrafting using Recipe Discs and Assemblers
+- Simple and Advanced I/O that can help you automate various machines!
+- and more to come.
 
-2. Import the project in IntelliJ IDEA, close it and open it again.
+**WARNING!**
+Mod is in a potentially buggy **beta** state, there might be bugs even in the latest releases that haven't been found/fixed yet. Backup your worlds regularly!
+**This version might have bugs not present in the main branch or may lack latest features.**
 
+Please report bugs in Github Issues, and if you have any questions, I'm in the [Modification Station](https://discord.gg/8Qky5XY) discord server as MartinSVK12#0075.
 
-3. Create a new run configuration by going in `Run > Edit Configurations`  
-   Then click on the plus icon and select Gradle. In the `Tasks and Arguments` field enter `build`  
-   Running it will build your finished jar files and put them in `build/libs/`
-
-
-4. Open `File > Settings` and head to `Build, Execution, Development > Build Tools > Gradle`  
-   Change `Build and run using` and `Run tests using` to `IntelliJ IDEA`
+_Have fun! :D_
 
 
-5. Open `File > Project Structure`, select `Project` and set `Compiler output` to your project's path/out.
+## Installation
+[MultiMC](https://multimc.org/) or [PrismLauncher](https://prismlauncher.org/) recommended.
+
+Requires [BTA+Babric](https://drive.google.com/file/d/1d_VocjEW2ItjIzbUAsrX_pBThH_zkZAn/view).
+
+Add into "Loader Mods" and you're done!
 
 
-6. Done! Now all that's left is to change every mention of `examplemod` to your own mod id. Happy modding!
+## Special Thanks
+- [@rythin-sr](https://github.com/rythin-sr) - based bug finder
+- [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE) - helped with a couple things
+- [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
+- [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
+
+
+## License
+Please credit if using parts in your own mods/modpacks (like ItemNBT for example).
