@@ -1,0 +1,89 @@
+plugins {
+	id 'babric-loom' version '0.12-SNAPSHOT'
+	id 'java'
+}
+
+group = project.mod_group
+archivesBaseName = project.mod_name
+version = project.mod_version
+
+loom {
+	gluedMinecraftJar()
+	noIntermediateMappings()
+	customMinecraftManifest.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		name = 'Babric'
+		url = 'https://maven.glass-launcher.net/babric'
+	}
+	maven {
+		name = 'Fabric'
+		url = 'https://maven.fabricmc.net/'
+	}
+	ivy {
+		url = "https://github.com/Better-than-Adventure"
+		patternLayout {
+			artifact "[organisation]/releases/download/v[revision]/[module].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://github.com/Turnip-Labs"
+		patternLayout {
+			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://piston-data.mojang.com"
+		patternLayout {
+			artifact "v1/[organisation]/[revision]/[module].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+}
+
+dependencies {
+	minecraft "bta-download-repo:bta:${project.bta_version}"
+	mappings loom.layered() {}
+
+	modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45" // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
+	modImplementation "babric:fabric-loader:${project.loader_version}"
+
+	// Helper library
+	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
+
+	modImplementation "org.slf4j:slf4j-api:1.8.0-beta4"
+	modImplementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"
+
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+	withSourcesJar()
+}
+
+tasks.withType(JavaCompile) {
+	options.release.set 8
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${archivesBaseName}" }
+	}
+}
+
+processResources {
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}

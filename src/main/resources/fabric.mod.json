@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "retrostorage",
+  "version": "1.0",
+
+  "name": "RetroStorage",
+  "description": "RetroStorage for BTA! This is a version of ReS designed for Better Than Adventure and might be more outdated that the ModLoader version.",
+  "icon": "icon.png",
+  "authors": [
+    "MartinSVK12"
+  ],
+  "contact": {
+    "homepage": "https://github.com/MartinSVK12/retrostorage/tree/bta",
+    "sources": ""
+  },
+
+  "license": "CC0-1.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+        "sunsetsatellite.retrostorage.RetroStorage"
+    ]
+  },
+  "mixins": [
+    "retrostorage.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.13.3"
+  },
+  "suggests": {
+  }
+}

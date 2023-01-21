@@ -1,0 +1,6 @@
+item.retrostorage.blankDisc.name=Blank Disc
+item.retrostorage.blankDisc.desc=A blank disc.
+item.retrostorage.storageDisc1.name=Storage Disc MK I
+item.retrostorage.storageDisc1.desc=Holds 64 stacks.
+tile.retrostorage.digitalChest.name=Digital Chest
+tile.retrostorage.digitalChest.desc=Allows you to manipulate the contents of Storage Discs.
