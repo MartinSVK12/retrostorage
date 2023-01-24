@@ -1,6 +1,9 @@
-package sunsetsatellite.retrostorage;
+package sunsetsatellite.retrostorage.blocks;
 
 import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.gui.GuiDigitalChest;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
+import sunsetsatellite.retrostorage.util.IOpenGUI;
 
 public class BlockDigitalChest extends BlockContainerRotatable {
     public BlockDigitalChest(int i, Material material) {
@@ -22,7 +25,6 @@ public class BlockDigitalChest extends BlockContainerRotatable {
             TileEntityDigitalChest tile = (TileEntityDigitalChest)world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                System.out.println("Tile entity alive!");
                 ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalChest(entityplayer.inventory,tile));
             }
             return true;

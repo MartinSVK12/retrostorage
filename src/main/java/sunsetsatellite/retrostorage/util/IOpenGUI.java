@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage;
+package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.src.GuiScreen;
 

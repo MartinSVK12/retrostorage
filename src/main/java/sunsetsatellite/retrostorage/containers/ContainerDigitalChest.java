@@ -1,9 +1,11 @@
-package sunsetsatellite.retrostorage;
+package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.src.Container;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Slot;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
+import sunsetsatellite.retrostorage.util.SlotDigital;
 
 public class ContainerDigitalChest extends Container
 {

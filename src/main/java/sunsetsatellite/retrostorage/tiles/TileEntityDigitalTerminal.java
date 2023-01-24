@@ -1,28 +1,36 @@
-package sunsetsatellite.retrostorage;
+
+
+package sunsetsatellite.retrostorage.tiles;
 
 import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.items.ItemStorageDisc;
+import sunsetsatellite.retrostorage.util.DiscManipulator;
+import sunsetsatellite.retrostorage.util.TickTimer;
 
-public class TileEntityDigitalChest extends TileEntity
+public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     implements IInventory
 {
-    public TileEntityDigitalChest()
+
+    public TileEntityDigitalTerminal()
     {
         contents = new ItemStack[37];
+        try {
+            saveTimer = new TickTimer(this,this.getClass().getMethod("save"),40,true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    public int page = 0;
-    public int pages = 0;
 
     public int getSizeInventory()
     {
-        return contents.length;
+        return 37;
     }
 
     public ItemStack getStackInSlot(int i)
     {
         return contents[i];
     }
-
+    
     public ItemStack decrStackSize(int i, int j)
     {
         if(contents[i] != null)
@@ -47,18 +55,29 @@ public class TileEntityDigitalChest extends TileEntity
         }
     }
 
+    public void save(){
+        if(network != null && network.drive != null){
+            DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
+        }
+    }
+
     public void updateEntity()
     {
-        if(getStackInSlot(0) != null){
-            this.pages = ((int) Math.floor((double) getStackInSlot(0).tag.func_28110_c().size()/(getSizeInventory()-1)));
+        saveTimer.tick();
+        if(network != null && network.drive != null){
+            contents = network.inventory.inventoryContents;
+            setInventorySlotContents(0, network.drive.virtualDisc);
+            this.pages = (network.inventory.getLastOccupiedStack()/36)+1;
         } else {
-            this.page = 0;
-            this.pages = 0;
+            contents = new ItemStack[37];
         }
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
+        /*if(i == 0 && itemstack == null){
+            DiscManipulator.clearDigitalInv(this);
+        }*/
         contents[i] = itemstack;
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
@@ -66,14 +85,14 @@ public class TileEntityDigitalChest extends TileEntity
         }
         onInventoryChanged();
     }
-
+    
     public void onInventoryChanged() {
-        super.onInventoryChanged();
+    	super.onInventoryChanged();
     }
 
     public String getInvName()
     {
-        return "Digital Chest";
+        return "Digital Terminal";
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound)
@@ -118,10 +137,8 @@ public class TileEntityDigitalChest extends TileEntity
 
     public int getAmountOfUsedSlots(){
         int j = 0;
-        for (ItemStack content : contents) {
-            if (content != null) {
-                j++;
-            }
+        if(network != null && network.drive != null){
+            j = network.drive.virtualDisc.tag.func_28110_c().size();
         }
         return j;
     }
@@ -132,8 +149,11 @@ public class TileEntityDigitalChest extends TileEntity
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 8000D;
     }
 
     private ItemStack[] contents;
+    private TickTimer saveTimer;
+    public int page = 1;
+    public int pages = 1;
 }

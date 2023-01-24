@@ -1,7 +1,8 @@
-package sunsetsatellite.retrostorage;
+package sunsetsatellite.retrostorage.items;
 
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
 
 public class ItemStorageDisc extends Item
 {
@@ -19,6 +20,11 @@ public class ItemStorageDisc extends Item
     public Item setMaxStackCapacity(int i) {
         maxStackCapacity = i;
         return this;
+    }
+
+    @Override
+    public NBTTagCompound getDefaultTag() {
+        return new NBTTagCompound();
     }
 
     @Override

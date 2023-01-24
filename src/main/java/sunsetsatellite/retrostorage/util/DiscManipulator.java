@@ -1,12 +1,11 @@
-package sunsetsatellite.retrostorage;
+package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
-import sunsetsatellite.retrostorage.INBTCompound;
+import sunsetsatellite.retrostorage.util.INBTCompound;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +28,8 @@ public class DiscManipulator {
                 itemNBT.setByte("Count", (byte)item.stackSize);
                 itemNBT.setShort("id", (short)item.itemID);
                 itemNBT.setShort("Damage", (short)item.getMetadata());
+                itemNBT.setByte("Expanded", (byte)1);
+                itemNBT.setInteger("Version", 19133);
                 itemNBT.setCompoundTag("Data", item.tag);
                 discNBT.setCompoundTag(String.valueOf(i),itemNBT);
             } else {
@@ -73,7 +74,7 @@ public class DiscManipulator {
                     String K = ((NBTBase) V).getKey();
                     ItemStack itemStack = new ItemStack((NBTTagCompound) V);
                     if(itemStack.getItem() != null){
-                        inv.setInventorySlotContents((Integer.parseInt(K) * page) + 1, itemStack);
+                        inv.setInventorySlotContents((Integer.parseInt(K) * page), itemStack);
                     }
                     i.getAndIncrement();
                 }
