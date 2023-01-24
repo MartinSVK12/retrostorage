@@ -29,6 +29,10 @@ public class BlockDigitalController extends BlockContainerRotatable {
                     entityplayer.inventory.getCurrentItem().stackSize--;
                     tile.energy += 20*60;
                 }
+                if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.blockRedstone.blockID) {
+                    entityplayer.inventory.getCurrentItem().stackSize--;
+                    tile.energy += 20*60*9;
+                }
                 if(tile.network != null){
                     /*RetroStorage.LOGGER.info(tile.active ? "Network online!" : "Network offline.");
                     RetroStorage.LOGGER.info(String.format("Network energy: %d", Math.round(tile.energy)));

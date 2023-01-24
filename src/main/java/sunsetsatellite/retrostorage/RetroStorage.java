@@ -2,13 +2,10 @@ package sunsetsatellite.retrostorage;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.src.*;
-import org.lwjgl.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sunsetsatellite.retrostorage.blocks.BlockDigitalChest;
-import sunsetsatellite.retrostorage.blocks.BlockDigitalController;
-import sunsetsatellite.retrostorage.blocks.BlockDigitalTerminal;
-import sunsetsatellite.retrostorage.blocks.BlockDiscDrive;
+import sunsetsatellite.retrostorage.blocks.*;
+import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.NBTEditCommand;
@@ -19,9 +16,11 @@ import turniplabs.halplibe.helper.EntityHelper;
 import turniplabs.halplibe.helper.ItemHelper;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-
+//TODO: Finish auto-crafting system.
 public class RetroStorage implements ModInitializer {
     public static final String MOD_ID = "retrostorage";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -39,6 +38,10 @@ public class RetroStorage implements ModInitializer {
     public static final Block networkCable = BlockHelper.createBlock(MOD_ID,new Block(902, Material.rock),"networkCable","blockcable.png",Block.soundClothFootstep,1,1,0);
     public static final Block discDrive = BlockHelper.createBlock(MOD_ID,new BlockDiscDrive(903, Material.rock),"discDrive","digitalchestside.png","digitalchestside.png","discdrive.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block digitalTerminal = BlockHelper.createBlock(MOD_ID,new BlockDigitalTerminal(904, Material.rock),"digitalTerminal","digitalchestside.png","digitalchestside.png","digitalchestfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
+    public static final Item recipeDisc = ItemHelper.createItem(MOD_ID,new ItemRecipeDisc(308),"recipeDisc","recipedisc.png").setMaxStackSize(1);
+    public static final Block recipeEncoder = BlockHelper.createBlock(MOD_ID,new BlockRecipeEncoder(905,Material.rock),"recipeEncoder","recipeencodertopfilled.png","digitalchestside.png","recipeencoderfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
+    public static final Block assembler = BlockHelper.createBlock(MOD_ID,new BlockAssembler(906,Material.rock),"assembler","recipeencodertopfilled.png","digitalchestside.png","assemblerside.png",Block.soundStoneFootstep,2,5,1);
+
 
     public static HashMap<String, Vec3> directions = new HashMap<>();
 
@@ -73,6 +76,8 @@ public class RetroStorage implements ModInitializer {
         EntityHelper.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
         EntityHelper.createTileEntity(TileEntityDigitalController.class, "Digital COntroller");
         EntityHelper.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
+        EntityHelper.createTileEntity(TileEntityRecipeEncoder.class,"Recipe Encoder");
+        EntityHelper.createTileEntity(TileEntityAssembler.class,"Assembler");
         LOGGER.info("RetroStorage: BTA Edition initialized.");
     }
 
@@ -130,7 +135,7 @@ public class RetroStorage implements ModInitializer {
         }
     }
 
-    public ItemStack findRecipeFromNBT(NBTTagCompound nbt){
+    public static ItemStack findRecipeResultFromNBT(NBTTagCompound nbt){
         InventoryAutocrafting crafting = new InventoryAutocrafting(3,3);
         for(Object tag : nbt.func_28110_c()){
             if(tag instanceof NBTTagCompound){
@@ -141,7 +146,65 @@ public class RetroStorage implements ModInitializer {
             }
         }
         CraftingManager craftingManager = CraftingManager.getInstance();
-        return craftingManager.findMatchingRecipe(crafting);
+        ItemStack result = craftingManager.findMatchingRecipe(crafting);
+        if(result != null){
+            return result.copy();
+        } else {
+            return null;
+        }
+    }
+
+    public static IRecipe findRecipeFromNBT(NBTTagCompound nbt){
+        InventoryAutocrafting crafting = new InventoryAutocrafting(3,3);
+        for(Object tag : nbt.func_28110_c()){
+            if(tag instanceof NBTTagCompound){
+                ItemStack stack = new ItemStack((NBTTagCompound) tag);
+                if(stack.itemID != 0 && stack.stackSize != 0){
+                    crafting.setInventorySlotContents(Integer.parseInt(((NBTTagCompound) tag).getKey()),stack);
+                }
+            }
+        }
+        CraftingManager craftingManager = CraftingManager.getInstance();
+        return findMatchingRecipe(crafting, craftingManager);
+    }
+
+    public static IRecipe findMatchingRecipe(InventoryCrafting inventorycrafting, CraftingManager manager) {
+        List recipes;
+        try {
+            recipes = (List) getPrivateValue(manager.getClass(),manager,"recipes");
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        if (recipes != null) {
+            for (Object recipe : recipes) {
+                IRecipe irecipe = (IRecipe) recipe;
+                if (irecipe.matches(inventorycrafting)) {
+                    return irecipe;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static ArrayList<ItemStack> itemsNBTToArray(NBTTagCompound nbt){
+        return null;
+    }
+
+    public static NBTTagCompound itemsArrayToNBT(ArrayList<ItemStack> list){
+        NBTTagCompound recipeNBT = (new NBTTagCompound());
+        //System.out.println(recipe.size());
+        for(int i = 0;i<list.size();i++) {
+            NBTTagCompound itemNBT = (new NBTTagCompound());
+            ItemStack item = list.get(i);
+            if (item == null) {
+                recipeNBT.setCompoundTag(Integer.toString(i), itemNBT);
+                continue;
+            }
+            item.writeToNBT(itemNBT);
+            recipeNBT.setCompoundTag(Integer.toString(i), itemNBT);
+        }
+        return recipeNBT;
     }
 
 }

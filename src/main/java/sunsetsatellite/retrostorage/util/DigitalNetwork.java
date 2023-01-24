@@ -5,6 +5,8 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 
+import java.util.ArrayDeque;
+
 /**
  * Class for a digital storage network.
  */
@@ -15,6 +17,7 @@ public class DigitalNetwork extends Network {
      * @param controller  Controller of the network
      */
     public InventoryDigital inventory;
+    public ArrayDeque<Task> requestQueue = new ArrayDeque<>();
     public TileEntityDiscDrive drive;
 
     public DigitalNetwork(TileEntityDigitalController controller) {

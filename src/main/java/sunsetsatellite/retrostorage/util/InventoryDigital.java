@@ -2,8 +2,11 @@ package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
+
+import java.util.ArrayList;
 
 public class InventoryDigital implements IInventory {
 	public String inventoryTitle;
@@ -207,6 +210,36 @@ public class InventoryDigital implements IInventory {
 		}
 
 		this.onInventoryChanged();
+	}
+
+	public boolean hasItems(ArrayList<ItemStack> stacks){
+		for (ItemStack stack : stacks) {
+			if (getItemCount(stack.itemID, stack.getMetadata()) < stack.stackSize) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean removeItems(ArrayList<ItemStack> stacks){
+		boolean valid = hasItems(stacks);
+		if(!valid){
+			return false;
+		}
+		for (ItemStack stack : stacks){
+			int slot = getInventorySlotContainItem(stack.itemID,stack.getMetadata());
+			int count = getItemCount(stack.itemID,stack.getMetadata());
+			if(slot != -1 && count >= stack.stackSize){
+				ItemStack invStack = inventoryContents[slot];
+				if(invStack.getItem().hasContainerItem()){
+					addItemStackToInventory(new ItemStack(invStack.getItem().getContainerItem(),1));
+				}
+				decrStackSize(slot,stack.stackSize);
+			} else {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public int getSizeInventory() {

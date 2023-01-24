@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.util;
 
 public class Vec3 {
-    int x;
-    int y;
-    int z;
+    public int x;
+    public int y;
+    public int z;
 
     public Vec3(int x, int y, int z){
         this.x = x;
