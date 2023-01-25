@@ -37,4 +37,4 @@ Add into "Loader Mods" and you're done!
 
 
 ## License
-Please credit if using parts in your own mods/modpacks (like ItemNBT for example).
+Please credit if using mod or its parts in your own mods/modpacks.
