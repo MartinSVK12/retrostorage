@@ -96,6 +96,26 @@ public class Network {
     }
 
     /**
+     * Searches the network for all devices that match <code>device instanceof cls</code>
+     * @param cls Class of the tile entity to search for
+     * @return <code>ArrayList(BlockInstance)</code> of all valid devices or <code>null</code> if no devices can be found
+     */
+    public ArrayList<BlockInstance> searchAll(Class<? extends TileEntity> cls){
+        ArrayList<BlockInstance> list = new ArrayList<>();
+        for (BlockInstance V : data) {
+            if(V.tile.getClass().isAssignableFrom(cls)){
+                list.add(V);
+            }
+        }
+        if(list.size() == 0){
+            return null;
+        } else {
+            return list;
+        }
+    }
+
+
+    /**
      * Scans neighboring blocks around <i>pos</i> for valid network devices
      * @param world <code>World</code> provided by this network's <code>controller</code>
      * @param pos <code>Vec3</code> position of block whose neighbors will be scanned
