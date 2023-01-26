@@ -103,15 +103,13 @@ public class Network {
     public ArrayList<BlockInstance> searchAll(Class<? extends TileEntity> cls){
         ArrayList<BlockInstance> list = new ArrayList<>();
         for (BlockInstance V : data) {
-            if(V.tile.getClass().isAssignableFrom(cls)){
-                list.add(V);
+            if(V.tile != null){
+                if(V.tile.getClass().isAssignableFrom(cls)){
+                    list.add(V);
+                }
             }
         }
-        if(list.size() == 0){
-            return null;
-        } else {
-            return list;
-        }
+        return list;
     }
 
 

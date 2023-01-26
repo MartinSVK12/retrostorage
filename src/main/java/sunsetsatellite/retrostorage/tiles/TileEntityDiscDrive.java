@@ -4,7 +4,6 @@ import net.minecraft.src.*;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.INBTCompound;
 
 import java.util.ArrayList;
 

@@ -3,11 +3,9 @@ package sunsetsatellite.retrostorage.blocks;
 import net.minecraft.src.*;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiAssembler;
-import sunsetsatellite.retrostorage.gui.GuiRecipeEncoder;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
-import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
-import sunsetsatellite.retrostorage.util.IOpenGUI;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 
 public class BlockAssembler extends BlockContainerRotatable {

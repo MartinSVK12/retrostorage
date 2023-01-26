@@ -3,7 +3,7 @@ package sunsetsatellite.retrostorage.blocks;
 import net.minecraft.src.*;
 import sunsetsatellite.retrostorage.gui.GuiDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
-import sunsetsatellite.retrostorage.util.IOpenGUI;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
 public class BlockDiscDrive extends BlockContainerRotatable {
     public BlockDiscDrive(int i, Material material) {

@@ -1,16 +1,12 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.InventoryPlayer;
-import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.RetroStorage;
+import net.minecraft.src.*;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.containers.ContainerDigitalChest;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
-import sunsetsatellite.retrostorage.util.IOpenGUI;
+import sunsetsatellite.retrostorage.util.BlockInstance;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GuiDigitalController extends GuiScreen
 {
@@ -43,6 +39,16 @@ public class GuiDigitalController extends GuiScreen
             if(tile.network.drive != null){
                 fontRenderer.drawString(String.format("Drive detected: %s", tile.network.drive),2,i,0xFFFFFFFF);
             }
+            fontRenderer.drawString(String.format("Assemblers: %d",tile.network.getAssemblers().size()),2,i+=10,0xFFFFFFFF);
+            HashMap<BlockInstance, ArrayList<IRecipe>> recipes = tile.network.getAvailableRecipesWithSource();
+            int recipeCount = 0;
+            for (Map.Entry<BlockInstance, ArrayList<IRecipe>> entry : recipes.entrySet()) {
+                ArrayList<IRecipe> V = entry.getValue();
+                recipeCount += V.size();
+            }
+            fontRenderer.drawString(String.format("Available recipes: %d",recipeCount),2,i+=10,0xFFFFFFFF);
+            fontRenderer.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()),2,i+=10,0xFFFFFFFF);
+            fontRenderer.drawString(String.format("Request queue: %s", tile.network.requestQueue),2,i+=10,0xFFFFFFFF);
             //RetroStorage.LOGGER.info(tile.network.toString());
         }
     }

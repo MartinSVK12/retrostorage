@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage.util;
+package sunsetsatellite.retrostorage.interfaces.mixins;
 
 import net.minecraft.src.GuiScreen;
 

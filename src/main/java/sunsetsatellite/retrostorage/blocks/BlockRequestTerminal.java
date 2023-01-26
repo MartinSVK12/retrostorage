@@ -1,18 +1,18 @@
 package sunsetsatellite.retrostorage.blocks;
 
 import net.minecraft.src.*;
-import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
+import sunsetsatellite.retrostorage.gui.GuiRequestTerminal;
+import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
-public class BlockDigitalTerminal extends BlockContainerRotatable {
-    public BlockDigitalTerminal(int i, Material material) {
+public class BlockRequestTerminal extends BlockContainerRotatable {
+    public BlockRequestTerminal(int i, Material material) {
         super(i, material);
     }
 
     @Override
     protected TileEntity getBlockEntity() {
-        return new TileEntityDigitalTerminal();
+        return new TileEntityRequestTerminal();
     }
 
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
@@ -22,10 +22,10 @@ public class BlockDigitalTerminal extends BlockContainerRotatable {
             return true;
         } else
         {
-            TileEntityDigitalTerminal tile = (TileEntityDigitalTerminal) world.getBlockTileEntity(i, j, k);
+            TileEntityRequestTerminal tile = (TileEntityRequestTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalTerminal(entityplayer.inventory,tile));
+                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer.inventory,tile));
             }
             return true;
         }

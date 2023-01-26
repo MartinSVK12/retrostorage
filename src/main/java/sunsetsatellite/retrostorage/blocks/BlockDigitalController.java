@@ -1,10 +1,9 @@
 package sunsetsatellite.retrostorage.blocks;
 
 import net.minecraft.src.*;
-import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiDigitalController;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.util.IOpenGUI;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
 public class BlockDigitalController extends BlockContainerRotatable {
     public BlockDigitalController(int i, Material material) {
@@ -32,6 +31,10 @@ public class BlockDigitalController extends BlockContainerRotatable {
                 if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.blockRedstone.blockID) {
                     entityplayer.inventory.getCurrentItem().stackSize--;
                     tile.energy += 20*60*9;
+                }
+                if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.bedrock.blockID) {
+                    entityplayer.inventory.getCurrentItem().stackSize--;
+                    tile.energy += 20*60*65535;
                 }
                 if(tile.network != null){
                     /*RetroStorage.LOGGER.info(tile.active ? "Network online!" : "Network offline.");

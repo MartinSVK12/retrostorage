@@ -2,7 +2,6 @@ package sunsetsatellite.retrostorage.tiles;
 
 import net.minecraft.src.*;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 import sunsetsatellite.retrostorage.util.Task;
 import sunsetsatellite.retrostorage.util.TickTimer;
@@ -13,9 +12,9 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     implements IInventory
 {
     public TileEntityAssembler() {
-        contents = new ItemStack[10];
+        contents = new ItemStack[9];
         try {
-            this.workTimer = new TickTimer(this,this.getClass().getMethod("work"),60,true);
+            this.workTimer = new TickTimer(this,this.getClass().getMethod("work"),10,true);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -144,10 +143,15 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     public void work(){
         if(network != null){
             if(task == null){
-                if(requestCopy == null || requestCopy.size() == 0){
-                    requestCopy = network.requestQueue.clone();
+                /*if(stack == null || stack.size() == 0){
+                    stack = network.requestQueue.clone();
+                }*/
+                if(network.requestQueue.size() > 0){
+                    boolean result = acceptNextTask();
+                    if(result){
+                        RetroStorage.LOGGER.info(this+" Accepted task "+task+".");
+                    }
                 }
-                //RetroStorage.LOGGER.info(this+" Accepted task: "+acceptNextTask());
             } else {
                 fulfillRequest();
             }
@@ -156,103 +160,126 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     public void fulfillRequest(){
         if(task != null){
-            ArrayList<ItemStack> inputs = null;
-            if(task.recipe instanceof RecipeShapeless){
-                inputs = new ArrayList<>(((RecipeShapeless) task.recipe).recipeItems);
-            }
-            if(task.recipe instanceof RecipeShaped){
-                inputs = new ArrayList<>();
-                Collections.addAll(inputs, ((RecipeShaped) task.recipe).recipeItems);
-            }
-            if (inputs != null) {
-                inputs.removeIf(Objects::isNull);
-            }
-            if(inputs != null){
-                if(network.inventory.hasItems(inputs)){
-                    if(network.inventory.removeItems(inputs)){
-                        ItemStack result = task.recipe.getRecipeOutput().copy();
-                        if(result.stackSize == 0){result.stackSize = 1;}
-                        if(result != null){
-                            if(network.inventory.addItemStackToInventory(result)){
-                                RetroStorage.LOGGER.info(this+" Task fulfilled.");
-                                task.completed = true;
-                                if(task.parent == null && task.requirementsMet()){
-                                    network.requestQueue.remove(task);
-                                }
-                                task = null;
-                            } else {
-                                RetroStorage.LOGGER.error(this+" Failed to fulfill task: Failed to add items to network.");
-                                if(task.parent == null && task.requirementsMet()){
-                                    network.requestQueue.remove(task);
-                                }
-                                task = null;
-                            }
-                        } else {
-                            RetroStorage.LOGGER.warn(this+" Task produced no result.");
-                            if(task.parent == null && task.requirementsMet()){
-                                network.requestQueue.remove(task);
-                            }
-                            task = null;
-                        }
-                    } else {
-                        RetroStorage.LOGGER.error(this+" Failed to fulfill task: failed to remove items from network.");
-                        if(task.parent == null && task.requirementsMet()){
-                            network.requestQueue.remove(task);
+            ArrayList<ItemStack> inputs = RetroStorage.condenseItemList(RetroStorage.getRecipeItems(task.recipe));
+            if (network.inventory.hasItems(inputs)) {
+                if (network.inventory.removeItems(inputs)) {
+                    ItemStack result = task.recipe.getRecipeOutput().copy();
+                    if (result.stackSize == 0) {
+                        result.stackSize = 1;
+                    }
+                    if (network.inventory.addItemStackToInventory(result)) {
+                        RetroStorage.LOGGER.info(this + " Task fulfilled.");
+                        task.completed = true;
+                        network.requestQueue.remove(task);
+                        if (task.parent == null && task.requirementsMet()) {
+                            RetroStorage.LOGGER.info(this + " Request fulfilled.");
                         }
                         task = null;
+                    } else {
+                        failTask(task,"Failed to add items to the network.");
                     }
                 } else {
-                    RetroStorage.LOGGER.error(this+" Failed to fulfill task: Not enough resources!");
-                    if(task.parent == null && task.requirementsMet()){
-                        network.requestQueue.remove(task);
-                    }
-                    task = null;
+                    failTask(task,"Failed to remove items from the network.");
                 }
             } else {
-                RetroStorage.LOGGER.warn(this+" Task had no inputs.");
-                if(task.parent == null && task.requirementsMet()){
+                if(task.attempts <= 0){
+                    RetroStorage.LOGGER.error("Too many failed attempts, cancelling task!");
+                    network.requestQueue.clone().forEach((V)->{
+                        if(V.requires.contains(task) || V.parent == task){
+                            network.requestQueue.remove(V);
+                        }
+                    });
                     network.requestQueue.remove(task);
+                    task.processor = null;
+                    task = null;
+                    return;
                 }
-                task = null;
+                RetroStorage.LOGGER.info("Not enough resources for task "+task+", attempting to create subtasks..");
+                ArrayList<Task> subtasks = network.getSubtask(task);
+                if(subtasks == null){
+                    RetroStorage.LOGGER.error("No subtasks could be created for "+task+"!");
+                    network.requestQueue.remove(task);
+                    task.processor = null;
+                    task = null;
+                } else {
+                    task.attempts -= 1;
+                    for (Task subtask : subtasks) {
+                        if(task != null){
+                            task.requires.add(subtask);
+                        }
+                        network.requestQueue.addFirst(subtask);
+                        if(task != null){
+                            task.processor = null;
+                            task = null;
+                        }
+                    }
+                }
             }
         }
     }
 
-    public boolean acceptNextTask(){
-        if(requestCopy.size() > 0){
-            Task t = requestCopy.peek();
-            if(t instanceof RecipeTask && t.processor == null && t.requirementsMet()){
-                boolean success = false;
-                for (int i = 0; i < 8; i++) {
-                    ItemStack recipeDisc = contents[i];
-                    if(recipeDisc != null && recipeDisc.getItem() instanceof ItemRecipeDisc){
-                        IRecipe recipe = RetroStorage.findRecipeFromNBT(recipeDisc.tag.getCompoundTag("recipe"));
-                        if(recipe.equals(((RecipeTask) t).recipe)){
-                            success = true;
-                            break;
-                        }
-                    }
+    public void failTask(Task task, String message){
+        RetroStorage.LOGGER.error(this + " Failed to fulfill task " + task + ": "+message);
+        network.requestQueue.remove(task);
+        this.task.processor = null;
+        this.task = null;
+    }
+
+    public ArrayList<IRecipe> getRecipes(){
+        ArrayList<IRecipe> recipes = new ArrayList<>();
+        for (ItemStack stack : contents) {
+            if (stack != null && stack.getItem() == RetroStorage.recipeDisc) {
+                IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.tag.getCompoundTag("recipe"));
+                if (recipe != null) {
+                    recipes.add(recipe);
                 }
-                if(success) {
-                    task = (RecipeTask) t;
-                    t.processor = this;
-                    requestCopy.remove(t);
-                    return true;
+            }
+        }
+        return recipes.size() > 0 ? recipes : null;
+    }
+
+    public boolean acceptNextTask() {
+        Task t = network.requestQueue.peek();
+        boolean success = false;
+        if (t instanceof RecipeTask) {
+            if (t.processor == null) {
+                if (!t.completed) {
+                    if (t.requirementsMet()) {
+                        for (IRecipe aRecipe : network.getAvailableRecipes()) {
+                            if (aRecipe.equals(((RecipeTask) t).recipe)) {
+                                success = true;
+                                break;
+                            }
+                        }
+                        if (success) {
+                            this.task = (RecipeTask) t;
+                            t.processor = this;
+                            return true;
+                        } else {
+                            //RetroStorage.LOGGER.error(this+" Network doesn't know how to handle task! "+t);
+                            return false;
+                        }
+                    } else {
+                        //RetroStorage.LOGGER.error(this+" Not all requirements met for tasks! "+t);
+                        return false;
+                    }
                 } else {
-                    requestCopy.remove(t);
+                    //RetroStorage.LOGGER.error(this+ " Task is already completed! "+t);
                     return false;
                 }
             } else {
-                requestCopy.remove(t);
+                //RetroStorage.LOGGER.error(this + " Task is taken already! "+t);
                 return false;
             }
+        } else {
+            return false;
         }
-        return false;
     }
+
 
     private ItemStack[] contents;
     public RecipeTask task;
     public TickTimer workTimer;
-    public ArrayDeque<Task> requestCopy;
+    public ArrayDeque<Task> stack;
     public HashMap<String,TileEntity> connectedTiles = new HashMap<>();
 }

@@ -9,6 +9,7 @@ public abstract class Task {
     public Task parent;
     public boolean completed = false;
     public TileEntity processor;
+    public int attempts = 5;
 
     public boolean requirementsMet(){
         return requires.stream().allMatch((R)->R.completed);

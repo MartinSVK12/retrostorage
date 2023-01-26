@@ -4,7 +4,7 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
-import sunsetsatellite.retrostorage.util.INBTCompound;
+import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -4,7 +4,7 @@ import net.minecraft.src.EntityPlayerSP;
 import net.minecraft.src.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import sunsetsatellite.retrostorage.util.IOpenGUI;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import net.minecraft.client.Minecraft;
 
 @Mixin(

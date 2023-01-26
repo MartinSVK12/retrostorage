@@ -4,6 +4,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class InventoryDigital implements IInventory {
 
 	public int storeItemStack(ItemStack stack) {
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
-			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && this.inventoryContents[i2].tag.equals(stack.tag) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && ((INBTCompound)this.inventoryContents[i2].tag).equals(stack.tag) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
 				return i2;
 			}
 		}
@@ -155,25 +156,25 @@ public class InventoryDigital implements IInventory {
 		}
 	}
 
-	public boolean addItemStackToInventory(ItemStack stack) {
-		int i2;
-		if(stack.isItemDamaged()) {
-			i2 = this.getFirstEmptyStack();
-			if(i2 >= 0) {
-				this.inventoryContents[i2] = ItemStack.copyItemStack(stack);
-				this.inventoryContents[i2].animationsToGo = 5;
-				stack.stackSize = 0;
+	public boolean addItemStackToInventory(ItemStack itemstack) {
+		int i;
+		if (itemstack.isItemDamaged()) {
+			i = this.getFirstEmptyStack();
+			if (i >= 0) {
+				this.inventoryContents[i] = ItemStack.copyItemStack(itemstack);
+				this.inventoryContents[i].animationsToGo = 5;
+				itemstack.stackSize = 0;
 				return true;
 			} else {
 				return false;
 			}
 		} else {
 			do {
-				i2 = stack.stackSize;
-				stack.stackSize = this.storePartialItemStack(stack);
-			} while(stack.stackSize > 0 && stack.stackSize < i2);
+				i = itemstack.stackSize;
+				itemstack.stackSize = this.storePartialItemStack(itemstack);
+			} while(itemstack.stackSize > 0 && itemstack.stackSize < i);
 
-			return stack.stackSize < i2;
+			return itemstack.stackSize < i;
 		}
 	}
 
@@ -221,21 +222,56 @@ public class InventoryDigital implements IInventory {
 		return true;
 	}
 
+	public ArrayList<ItemStack> hasItemsReturnMissing(ArrayList<ItemStack> stacks){
+		ArrayList<ItemStack> missing = new ArrayList<>();
+		for (ItemStack stack : stacks) {
+			if (getItemCount(stack.itemID, stack.getMetadata()) < stack.stackSize) {
+				boolean alreadyMissing = false;
+				for(ItemStack misStack : missing){
+					if(misStack.isItemEqual(stack)){
+						misStack.stackSize += stack.stackSize - getItemCount(stack.itemID, stack.getMetadata());
+						alreadyMissing = true;
+						break;
+					}
+				}
+				if(alreadyMissing){
+					continue;
+				}
+				ItemStack missingStack = stack.copy();
+				missingStack.stackSize = stack.stackSize - getItemCount(stack.itemID, stack.getMetadata());
+				missing.add(missingStack);
+			}
+		}
+		return missing;
+	}
+
 	public boolean removeItems(ArrayList<ItemStack> stacks){
 		boolean valid = hasItems(stacks);
 		if(!valid){
 			return false;
 		}
 		for (ItemStack stack : stacks){
-			int slot = getInventorySlotContainItem(stack.itemID,stack.getMetadata());
-			int count = getItemCount(stack.itemID,stack.getMetadata());
-			if(slot != -1 && count >= stack.stackSize){
-				ItemStack invStack = inventoryContents[slot];
-				if(invStack.getItem().hasContainerItem()){
-					addItemStackToInventory(new ItemStack(invStack.getItem().getContainerItem(),1));
-				}
-				decrStackSize(slot,stack.stackSize);
-			} else {
+			ItemStack copy = stack.copy();
+			int slot;
+			int count;
+			int fullCount = getItemCount(stack.itemID,stack.getMetadata());
+			if(fullCount >= stack.stackSize){
+				do{
+					fullCount = getItemCount(stack.itemID,stack.getMetadata());
+					if(fullCount < copy.stackSize){
+						return false;
+					}
+					slot = getInventorySlotContainItem(stack.itemID,stack.getMetadata());
+					count = inventoryContents[slot].stackSize;
+					ItemStack invStack = inventoryContents[slot];
+					if(invStack.getItem().hasContainerItem()){
+						addItemStackToInventory(new ItemStack(invStack.getItem().getContainerItem(),1));
+					}
+					decrStackSize(slot,Math.min(stack.stackSize,count));
+					copy.stackSize -= Math.min(stack.stackSize,count);
+				} while(copy.stackSize > 0);
+			}
+			else {
 				return false;
 			}
 		}
@@ -255,7 +291,9 @@ public class InventoryDigital implements IInventory {
 	}
 
 	public void onInventoryChanged() {
-
+		if(owner.network.drive != null){
+			DiscManipulator.saveDisc(owner.network.drive.virtualDisc,this);
+		}
 	}
 
 	public boolean canInteractWith(EntityPlayer entityPlayer1) {
