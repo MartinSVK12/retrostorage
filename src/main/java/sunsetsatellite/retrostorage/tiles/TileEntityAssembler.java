@@ -202,7 +202,9 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
                     task.processor = null;
                     task = null;
                 } else {
-                    task.attempts -= 1;
+                    if(subtasks.size() == 0){
+                        task.attempts -= 1;
+                    }
                     for (Task subtask : subtasks) {
                         if(task != null){
                             task.requires.add(subtask);
