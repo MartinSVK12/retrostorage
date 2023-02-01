@@ -135,7 +135,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     @Override
     public void updateEntity() {
         workTimer.tick();
-        ArrayList<Class<? extends TileEntity>> tiles = new ArrayList<>();
+        ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(TileEntityChest.class);
         connectedTiles = getConnectedTileEntity(tiles);
     }

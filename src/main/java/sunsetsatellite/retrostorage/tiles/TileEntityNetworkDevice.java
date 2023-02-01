@@ -14,7 +14,7 @@ import java.util.Map;
 public abstract class TileEntityNetworkDevice extends TileEntity {
     public DigitalNetwork network = null;
 
-    public HashMap<String,TileEntity> getConnectedTileEntity(ArrayList<Class<? extends TileEntity>> allowedTileList){
+    public HashMap<String,TileEntity> getConnectedTileEntity(ArrayList<Class<?>> allowedTileList){
         HashMap<String, TileEntity> sides = new HashMap<>();
         sides.put("X+", null);
         sides.put("X-", null);

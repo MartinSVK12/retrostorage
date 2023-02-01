@@ -28,7 +28,7 @@ public class Config {
                 if (field.getType() == Block.class) {
                     try {
                         configWriter.write(System.getProperty("line.separator") + field.getName()
-                                + "=" + ((Block) field.get(null)).blockID);
+                                + "=" + "null");
                         //idMap.put(field.getName(),((Block) field.get(null)).blockID);
                     } catch (Exception exception) {
                         configWriter.write(System.getProperty("line.separator") + field.getName()
@@ -37,7 +37,7 @@ public class Config {
                 } else if (field.getType().getSuperclass() == Item.class || field.getType() == Item.class) {
                     try {
                         configWriter.write(System.getProperty("line.separator") + field.getName()
-                                + "=" + ((Item) field.get(null)).itemID);
+                                + "=" + "null");
                         //idMap.put(field.getName(),((Item) field.get(null)).shiftedIndex);
                     } catch (Exception exception) {
                         configWriter.write(System.getProperty("line.separator") + field.getName()

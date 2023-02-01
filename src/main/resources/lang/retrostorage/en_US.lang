@@ -32,6 +32,10 @@ tile.retrostorage.recipeEncoder.name=Recipe Encoder
 tile.retrostorage.recipeEncoder.desc=Encodes crafting recipes onto [Recipe Discs].
 tile.retrostorage.requestTerminal.name=Request Terminal
 tile.retrostorage.requestTerminal.desc=Used to request crafting tasks from the network.
+tile.retrostorage.importer.name=Item Importer
+tile.retrostorage.importer.desc=Imports items from external inventories into the network.
+tile.retrostorage.exporter.name=Item Exporter
+tile.retrostorage.exporter.desc=Exports items from the network into external inventories.
 
 item.retrostorage.machineCasing.desc=
 item.retrostorage.advMachineCasing.desc=

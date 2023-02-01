@@ -61,6 +61,8 @@ public class RetroStorage implements ModInitializer {
     public static final Block recipeEncoder = BlockHelper.createBlock(MOD_ID,new BlockRecipeEncoder(Config.getFromConfig("recipeEncoder",905),Material.rock),"recipeEncoder","recipeencodertopfilled.png","digitalchestside.png","recipeencoderfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block assembler = BlockHelper.createBlock(MOD_ID,new BlockAssembler(Config.getFromConfig("assembler",906),Material.rock),"assembler","recipeencodertopfilled.png","digitalchestside.png","assemblerside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block requestTerminal = BlockHelper.createBlock(MOD_ID,new BlockRequestTerminal(Config.getFromConfig("requestTerminal",907),Material.rock),"requestTerminal","digitalchestside.png","digitalchestside.png","requestterminalfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
+    public static final Block importer = BlockHelper.createBlock(MOD_ID,new BlockImporter(Config.getFromConfig("importer",908),Material.rock),"importer","importer.png",Block.soundStoneFootstep,2,5,1);
+    public static final Block exporter = BlockHelper.createBlock(MOD_ID,new BlockExporter(Config.getFromConfig("exporter",909),Material.rock),"exporter","exporter.png",Block.soundStoneFootstep,2,5,1);
 
     public static HashMap<String, Vec3> directions = new HashMap<>();
 
@@ -109,6 +111,8 @@ public class RetroStorage implements ModInitializer {
         EntityHelper.createTileEntity(TileEntityRecipeEncoder.class,"Recipe Encoder");
         EntityHelper.createTileEntity(TileEntityAssembler.class,"Assembler");
         EntityHelper.createTileEntity(TileEntityRequestTerminal.class,"Request Terminal");
+        EntityHelper.createTileEntity(TileEntityImporter.class,"Item Importer");
+        EntityHelper.createTileEntity(TileEntityExporter.class,"Item Exporter");
         LOGGER.info("RetroStorage: BTA Edition initialized.");
     }
 
