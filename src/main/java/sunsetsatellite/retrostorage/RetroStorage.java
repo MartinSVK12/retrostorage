@@ -65,6 +65,7 @@ public class RetroStorage implements ModInitializer {
     public static HashMap<String, Vec3> directions = new HashMap<>();
 
     public RetroStorage(){
+        Config.init();
         directions.put("X+",new Vec3(1,0,0));
         directions.put("X-",new Vec3(-1,0,0));
         directions.put("Y+",new Vec3(0,1,0));
