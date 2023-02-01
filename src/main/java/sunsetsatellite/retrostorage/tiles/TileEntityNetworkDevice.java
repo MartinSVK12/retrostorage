@@ -46,4 +46,11 @@ public abstract class TileEntityNetworkDevice extends TileEntity {
                 ", z=" + zCoord +
                 '}';
     }
+
+    public String toStringFormatted(){
+        return this.getClass().getSimpleName()+" at "+
+                "X=" + xCoord +
+                ",Y=" + yCoord +
+                ",Z=" + zCoord;
+    }
 }

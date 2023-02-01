@@ -25,7 +25,7 @@ public class BlockRequestTerminal extends BlockContainerRotatable {
             TileEntityRequestTerminal tile = (TileEntityRequestTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer.inventory,tile));
+                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer,tile));
             }
             return true;
         }

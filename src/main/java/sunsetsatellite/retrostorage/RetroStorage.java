@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage;
 
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 public class RetroStorage implements ModInitializer {
     public static final String MOD_ID = "retrostorage";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    public static Minecraft mc = null;
 
     public static final Item blankDisc = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("blankDisc",300)),"blankDisc","blankdisc.png");
     public static final Item storageDisc1 = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("storageDisc1",301),64),"storageDisc1","disc1.png").setMaxStackSize(1);

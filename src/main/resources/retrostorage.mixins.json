@@ -6,6 +6,7 @@
   "mixins": [
     "mixins.EntityPlayerSPMixin",
     "mixins.GuiContainerMixin",
+    "mixins.MinecraftMixin",
     "mixins.NBTTagCompoundMixin"
   ],
   "client": [

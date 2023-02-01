@@ -1,12 +1,10 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.GuiSlider;
-import net.minecraft.src.InventoryPlayer;
+import net.minecraft.src.*;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.containers.ContainerRequestTerminal;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
@@ -16,11 +14,12 @@ import sunsetsatellite.retrostorage.util.SlotDigital;
 public class GuiRequestTerminal extends GuiContainer
 {
 
-    public GuiRequestTerminal(InventoryPlayer inventoryplayer, TileEntityRequestTerminal tile)
+    public GuiRequestTerminal(EntityPlayer player, TileEntityRequestTerminal tile)
     {
-        super(new ContainerRequestTerminal(inventoryplayer, tile));
+        super(new ContainerRequestTerminal(player.inventory, tile));
         ySize = 220;
         this.tile = tile;
+        this.player = player;
     }
 
 	protected void drawGuiContainerForegroundLayer()
@@ -92,6 +91,9 @@ public class GuiRequestTerminal extends GuiContainer
                 }
             }
         }
+        if(guibutton.id == 2){
+            ((IOpenGUI)player).displayGUI(new GuiRequestQueue(tile.network, this));
+        }
         if(guibutton.id == 3){
             if(tile.network != null) {
                 tile.network.clearRequestQueue();
@@ -111,5 +113,6 @@ public class GuiRequestTerminal extends GuiContainer
         }*/
     }
     
-    private TileEntityRequestTerminal tile;
+    public TileEntityRequestTerminal tile;
+    public EntityPlayer player;
 }
