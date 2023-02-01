@@ -6,6 +6,7 @@ import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -107,9 +108,7 @@ public class DiscManipulator {
 
     public static void clearDigitalInv(IInventory inv){
         //System.out.printf("Clearing digital inventory %s%n",inv.toString());
-        for (int i = 1; i < inv.getSizeInventory(); i++){
-            inv.setInventorySlotContents(i,null);
-        }
+        Arrays.fill(((InventoryDigital)inv).inventoryContents,null);
     }
 
 }

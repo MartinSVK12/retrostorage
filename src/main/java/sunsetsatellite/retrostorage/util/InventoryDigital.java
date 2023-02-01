@@ -2,7 +2,6 @@ package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
-import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
@@ -121,6 +120,7 @@ public class InventoryDigital implements IInventory {
 		return i2;
 	}
 
+
 	public int storePartialItemStack(ItemStack stack) {
 		int i2 = stack.itemID;
 		int i3 = stack.stackSize;
@@ -158,24 +158,25 @@ public class InventoryDigital implements IInventory {
 
 	public boolean addItemStackToInventory(ItemStack itemstack) {
 		int i;
-		if (itemstack.isItemDamaged()) {
+		/*if (itemstack.isItemDamaged()) {
 			i = this.getFirstEmptyStack();
 			if (i >= 0) {
 				this.inventoryContents[i] = ItemStack.copyItemStack(itemstack);
 				this.inventoryContents[i].animationsToGo = 5;
 				itemstack.stackSize = 0;
+				this.onInventoryChanged();
 				return true;
 			} else {
 				return false;
 			}
-		} else {
+		} else {*/
 			do {
 				i = itemstack.stackSize;
 				itemstack.stackSize = this.storePartialItemStack(itemstack);
 			} while(itemstack.stackSize > 0 && itemstack.stackSize < i);
-
+			this.onInventoryChanged();
 			return itemstack.stackSize < i;
-		}
+		//}
 	}
 
 	public ItemStack getStackInSlot(int id) {
@@ -279,7 +280,7 @@ public class InventoryDigital implements IInventory {
 	}
 
 	public int getSizeInventory() {
-		return this.slotsCount;
+		return inventoryContents.length;
 	}
 
 	public String getInvName() {

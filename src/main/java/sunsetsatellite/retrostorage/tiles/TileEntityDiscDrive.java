@@ -91,12 +91,15 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
                 Object[] V = virtualDisc.tag.func_28110_c().toArray();
                 int stacksToRemove = Math.min(virtualDisc.tag.func_28110_c().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
                 for (int i = 0; i < stacksToRemove; i++) {
-                    nbt.setCompoundTag(String.valueOf(i+1),(NBTTagCompound) V[i]);
-                    network.inventory.setInventorySlotContents(i+1,null);
+                    nbt.setCompoundTag(String.valueOf(i),(NBTTagCompound) V[i]);
+                    network.inventory.inventoryContents[i] = null;
                 }
                 disc.tag = nbt;
                 disc.stackSize = 1;
                 setInventorySlotContents(1,disc);
+                if(virtualDriveMaxStacks == 0){
+                    DiscManipulator.clearDigitalInv(network.inventory);
+                }
                 DiscManipulator.saveDisc(virtualDisc, network.inventory);
             }
         }
