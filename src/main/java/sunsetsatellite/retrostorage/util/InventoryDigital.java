@@ -122,22 +122,22 @@ public class InventoryDigital implements IInventory {
 
 
 	public int storePartialItemStack(ItemStack stack) {
-		int i2 = stack.itemID;
-		int i3 = stack.stackSize;
+		int id = stack.itemID;
+		int stackSize = stack.stackSize;
 		int i4 = this.storeItemStack(stack);
 		if(i4 < 0) {
 			i4 = this.getFirstEmptyStack();
 		}
 
 		if(i4 < 0) {
-			return i3;
+			return stackSize;
 		} else {
 			if(this.inventoryContents[i4] == null) {
-				this.inventoryContents[i4] = new ItemStack(i2, 0, stack.getMetadata(), stack.tag);
+				this.inventoryContents[i4] = new ItemStack(id, 0, stack.getMetadata(), stack.tag);
 			}
 
-			int i5 = i3;
-			if(i3 > this.inventoryContents[i4].getMaxStackSize() - this.inventoryContents[i4].stackSize) {
+			int i5 = stackSize;
+			if(stackSize > this.inventoryContents[i4].getMaxStackSize() - this.inventoryContents[i4].stackSize) {
 				i5 = this.inventoryContents[i4].getMaxStackSize() - this.inventoryContents[i4].stackSize;
 			}
 
@@ -146,12 +146,12 @@ public class InventoryDigital implements IInventory {
 			}
 
 			if(i5 == 0) {
-				return i3;
+				return stackSize;
 			} else {
-				i3 -= i5;
+				stackSize -= i5;
 				this.inventoryContents[i4].stackSize += i5;
 				this.inventoryContents[i4].animationsToGo = 5;
-				return i3;
+				return stackSize;
 			}
 		}
 	}

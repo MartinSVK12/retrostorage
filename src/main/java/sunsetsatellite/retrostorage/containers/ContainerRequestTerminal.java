@@ -3,6 +3,8 @@
 package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.gui.GuiTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
@@ -14,7 +16,6 @@ public class ContainerRequestTerminal extends Container
 
     public ContainerRequestTerminal(IInventory iinventory, TileEntityRequestTerminal tile)
     {
-
     	addSlot(new SlotViewOnly(tile, 0, 60, 108));
     	
     	for(int k = 0; k < 9; k++)
@@ -57,7 +58,8 @@ public class ContainerRequestTerminal extends Container
         Slot slot = this.getSlot(slotID);
         if(slot instanceof SlotViewOnly){
             if(tile.network != null){
-                tile.network.requestCrafting(tile.recipeContents[((SlotViewOnly) slot).variableIndex]);
+                RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile,slot.getStack(),((SlotViewOnly) slot).variableIndex));
+                //tile.network.requestCrafting(tile.recipeContents[((SlotViewOnly) slot).variableIndex]);
             }
             return null;
         }

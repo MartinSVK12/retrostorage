@@ -16,7 +16,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: Finish auto-crafting system.
 public class RetroStorage implements ModInitializer {
     public static final String MOD_ID = "retrostorage";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -258,6 +257,33 @@ public class RetroStorage implements ModInitializer {
            if(recipe.getRecipeOutput().isItemEqual(output)){
                foundRecipes.add(recipe);
            }
+        }
+        return foundRecipes;
+    }
+
+    public static ArrayList<IRecipe> findRecipesByOutputUsingList(ItemStack output,ArrayList<IRecipe> list){
+        ArrayList<IRecipe> foundRecipes = new ArrayList<>();;
+        for(IRecipe recipe : list){
+            if(recipe.getRecipeOutput().isItemEqual(output)){
+                foundRecipes.add(recipe);
+            }
+        }
+        return foundRecipes;
+    }
+
+
+    public static ArrayList<IRecipe> findRecipesByInput(ItemStack input){
+        CraftingManager craftingManager = CraftingManager.getInstance();
+        ArrayList<IRecipe> foundRecipes = new ArrayList<>();
+        List<IRecipe> recipes = craftingManager.getRecipeList();
+        for(IRecipe recipe : recipes){
+            ArrayList<ItemStack> inputs = getRecipeItems(recipe);
+            for(ItemStack recipeInput : inputs){
+                if(recipeInput.isItemEqual(input)){
+                    foundRecipes.add(recipe);
+                    break;
+                }
+            }
         }
         return foundRecipes;
     }

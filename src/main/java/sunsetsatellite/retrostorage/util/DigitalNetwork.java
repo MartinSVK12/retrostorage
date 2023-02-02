@@ -127,6 +127,28 @@ public class DigitalNetwork extends Network {
         return null;
     }
 
+    public ArrayList<ItemStack> getRequirements(ItemStack item, int depth){
+        ArrayList<IRecipe> recipes = RetroStorage.findRecipesByOutputUsingList(item,getAvailableRecipes());
+        //HashMap<Integer,ArrayList<ItemStack>> req = new HashMap<>();
+        ArrayList<ItemStack> inputs = new ArrayList<>();
+        if(recipes.size() > 0){
+            inputs = RetroStorage.getRecipeItems(recipes.get(0));
+            /*for(ItemStack input : (ArrayList<ItemStack>)inputs.clone()){
+                int availableAmount = inventory.getItemCount(input.itemID,input.getMetadata());
+                if(availableAmount < input.stackSize){
+                    ArrayList<ItemStack> subInputs = getRequirements(input,depth++);
+                    inputs.addAll(subInputs);
+                }
+            }*/
+        }
+        inputs = RetroStorage.condenseItemList(inputs);
+        return inputs;
+    }
+
+    /*public ArrayList<ItemStack> getRequirements(ItemStack item){
+        return RetroStorage.condenseItemList(RetroStorage.getRecipeItems(RetroStorage.findRecipesByOutputUsingList(item,getAvailableRecipes()).get(0)));
+    }*/
+
     public void clearRequestQueue() {
         RetroStorage.LOGGER.info("Clearing request queue!");
         requestQueue = new ArrayDeque<>();

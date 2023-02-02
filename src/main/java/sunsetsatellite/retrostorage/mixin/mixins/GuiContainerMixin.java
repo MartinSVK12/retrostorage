@@ -2,13 +2,17 @@ package sunsetsatellite.retrostorage.mixin.mixins;
 
 import net.minecraft.src.*;
 import net.minecraft.src.command.ChatColor;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import sunsetsatellite.retrostorage.interfaces.mixins.IGuiContainer;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 
@@ -16,7 +20,11 @@ import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 @Mixin(
         value = GuiContainer.class
 )
-public class GuiContainerMixin extends GuiScreen {
+public class GuiContainerMixin extends GuiScreen
+    implements IGuiContainer
+{
+
+    @Shadow private static RenderItem itemRenderer;
 
     @Inject(
             method = "drawScreen",
@@ -30,5 +38,24 @@ public class GuiContainerMixin extends GuiScreen {
             text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc")).append("\n");
         }
     };
+
+    public void drawItemStack(ItemStack stack, int x, int y) {
+        if(stack != null) {
+            GL11.glPushMatrix();
+            GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
+            RenderHelper.enableStandardItemLighting();
+            GL11.glPopMatrix();
+            GL11.glPushMatrix();
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            GL11.glTranslatef(0.0F, 0.0F, 32.0F);
+            itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, stack, x, y, 1.0F);
+            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+            RenderHelper.disableStandardItemLighting();
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GL11.glPopMatrix();
+        }
+    }
 
 }
