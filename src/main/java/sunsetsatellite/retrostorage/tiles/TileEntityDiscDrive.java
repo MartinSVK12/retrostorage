@@ -63,7 +63,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
                         ItemStorageDisc item = (ItemStorageDisc) getStackInSlot(0).getItem();
                         virtualDriveMaxStacks += item.getMaxStackCapacity();
                         ItemStack stack = getStackInSlot(0);
-                        Object[] nbt = stack.tag.func_28110_c().toArray();
+                        Object[] nbt = stack.tag.getCompoundTag("disc").func_28110_c().toArray();
                         for(Object tag : nbt){
                             if(tag instanceof NBTTagCompound){
                                 //RetroStorage.printCompound((NBTTagCompound) tag);
@@ -88,13 +88,13 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
                 discsUsed.remove(0);
                 virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
                 NBTTagCompound nbt = new NBTTagCompound();
-                Object[] V = virtualDisc.tag.func_28110_c().toArray();
-                int stacksToRemove = Math.min(virtualDisc.tag.func_28110_c().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+                Object[] V = virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray();
+                int stacksToRemove = Math.min(virtualDisc.tag.getCompoundTag("disc").func_28110_c().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
                 for (int i = 0; i < stacksToRemove; i++) {
                     nbt.setCompoundTag(String.valueOf(i),(NBTTagCompound) V[i]);
                     network.inventory.inventoryContents[i] = null;
                 }
-                disc.tag = nbt;
+                disc.tag.setCompoundTag("disc",nbt);
                 disc.stackSize = 1;
                 setInventorySlotContents(1,disc);
                 if(virtualDriveMaxStacks == 0){

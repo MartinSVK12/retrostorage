@@ -7,7 +7,8 @@
     "mixins.EntityPlayerSPMixin",
     "mixins.GuiContainerMixin",
     "mixins.MinecraftMixin",
-    "mixins.NBTTagCompoundMixin"
+    "mixins.NBTTagCompoundMixin",
+    "mixins.WorldGenLabyrinthMixin"
   ],
   "client": [
   ],

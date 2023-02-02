@@ -21,7 +21,7 @@ public class DiscManipulator {
         if(disc == null || inv == null){
             return;
         }
-        NBTTagCompound discNBT = disc.tag;
+        NBTTagCompound discNBT = disc.tag.getCompoundTag("disc");
         for(int i = 1; i < inv.getSizeInventory();i++){
             ItemStack item = inv.getStackInSlot(i);
             NBTTagCompound itemNBT = new NBTTagCompound();
@@ -38,7 +38,7 @@ public class DiscManipulator {
             }
         }
         //System.out.printf("Data: %s%n",discNBT.toStringExtended());
-        disc.tag = discNBT;
+        disc.tag.setCompoundTag("disc",discNBT);
     }
 
     /*public static void saveDisc(TileEntityDigitalController controller){
@@ -68,7 +68,7 @@ public class DiscManipulator {
     public static void loadDisc(ItemStack disc, IInventory inv, int page){
         //System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
         AtomicInteger i = new AtomicInteger();
-        Collection<?> values = disc.tag.func_28110_c();
+        Collection<?> values = disc.tag.getCompoundTag("disc").func_28110_c();
         values.forEach((V)->{
             if(i.get() < 37) {
                 if(V instanceof NBTTagCompound){
@@ -85,7 +85,7 @@ public class DiscManipulator {
     }
 
     public static void loadDisc(ItemStack disc, IInventory inv){
-        Collection<?> values = disc.tag.func_28110_c();
+        Collection<?> values = disc.tag.getCompoundTag("disc").func_28110_c();
         values.forEach((V)->{
             if(V instanceof NBTTagCompound) {
                 String K = ((NBTBase) V).getKey();

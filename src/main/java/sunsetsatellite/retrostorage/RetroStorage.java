@@ -31,7 +31,8 @@ public class RetroStorage implements ModInitializer {
     public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("storageDisc5",305),320),"storageDisc5","disc5.png").setMaxStackSize(1);
     public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("storageDisc6",306),384),"storageDisc6","disc6.png").setMaxStackSize(1);
     public static final Item virtualDisc = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("virtualDisc",307),Short.MAX_VALUE*2),"virtualDisc","virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
-    public static final Item recipeDisc = ItemHelper.createItem(MOD_ID,new ItemRecipeDisc(308),"recipeDisc","recipedisc.png").setMaxStackSize(1);
+    public static final Item recipeDisc = ItemHelper.createItem(MOD_ID,new ItemRecipeDisc(Config.getFromConfig("recipeDisc",308)),"recipeDisc","recipedisc.png").setMaxStackSize(1);
+    public static final Item goldenDisc = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("goldenDisc",330),1024),"goldenDisc","goldendisc.png").setMaxStackSize(1);
 
     public static Item machineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("machineCasing",309)),"machineCasing","machinecasing.png");
     public static Item advNachineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("advMachineCasing",310)),"advMachineCasing","advmachinecasing.png");

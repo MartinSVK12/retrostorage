@@ -27,7 +27,7 @@ public class GuiContainerMixin extends GuiScreen {
     private void setDescription(int x, int y, float renderPartialTicks, CallbackInfo ci, int centerX, int centerY, Slot slot, InventoryPlayer inventoryplayer, StringTranslate trans, StringBuilder text, boolean multiLine, boolean control, boolean shift, boolean showDescription, boolean isCrafting, String itemName, String itemNick, boolean debug){
         ItemStack stack = slot.getStack();
         if(stack != null && stack.getItem() instanceof ItemStorageDisc){
-            text.append(ChatColor.magenta).append(stack.tag).append("\n");
+            text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc")).append("\n");
         }
     };
 

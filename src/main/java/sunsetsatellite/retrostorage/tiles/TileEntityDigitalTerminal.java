@@ -138,7 +138,7 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     public int getAmountOfUsedSlots(){
         int j = 0;
         if(network != null && network.drive != null){
-            j = network.drive.virtualDisc.tag.func_28110_c().size();
+            j = network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().size();
         }
         return j;
     }
