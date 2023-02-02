@@ -4,6 +4,7 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
@@ -33,6 +34,12 @@ public class GuiDigitalTerminal extends GuiContainer
     public void initGui()
     {
     	super.initGui();
+        for(Object slot : inventorySlots.inventorySlots){
+            if(slot instanceof SlotDigital){
+                ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + (36*(tile.page-1));
+                //RetroStorage.LOGGER.info(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
+            }
+        }
     	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
     	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
     }
@@ -60,13 +67,10 @@ public class GuiDigitalTerminal extends GuiContainer
                     tile.page++;
                     for(Object slot : inventorySlots.inventorySlots){
                         if(slot instanceof SlotDigital){
-                            ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + ((tile.page-1) * 37) + 1;
+                            ((SlotDigital) slot).variableIndex += 36;
+                            //RetroStorage.LOGGER.info(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
                         }
                     }
-                    //DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
-
-                    //DiscManipulator.clearDigitalInv(tile);
-                    //DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
                 }
             }
         }
@@ -77,13 +81,10 @@ public class GuiDigitalTerminal extends GuiContainer
                     tile.page--;
                     for(Object slot : inventorySlots.inventorySlots){
                         if(slot instanceof SlotDigital){
-                            ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + ((tile.page-1) * 37) + 1;
+                            ((SlotDigital) slot).variableIndex -= 36;
+                            //RetroStorage.LOGGER.info(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
                         }
                     }
-                    //DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
-
-                    //DiscManipulator.clearDigitalInv(tile);
-                    //DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
                 }
             }
         }
@@ -96,9 +97,6 @@ public class GuiDigitalTerminal extends GuiContainer
     }
 
     public void onGuiClosed(){
-        if(tile.getStackInSlot(0) != null){
-            DiscManipulator.saveDisc(tile.getStackInSlot(0), tile, tile.page);
-        }
     }
     
     private TileEntityDigitalTerminal tile;

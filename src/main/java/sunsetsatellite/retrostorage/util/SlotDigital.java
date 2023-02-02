@@ -11,11 +11,12 @@ import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 
 public class SlotDigital extends Slot{
     public int variableIndex = 0;
-    public int slotIndex;
+    public final int slotIndex;
 
     public SlotDigital(IInventory iInventory1, int id, int x, int y) {
         super( iInventory1, id, x, y);
         variableIndex = id;
+        slotIndex = id;
     }
 
     public boolean canPutStackInSlot(ItemStack itemstack)

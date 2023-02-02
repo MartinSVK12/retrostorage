@@ -4,6 +4,7 @@ package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.src.*;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
@@ -49,19 +50,23 @@ public class ContainerDigitalTerminal extends Container
 
     @Override
     public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
-        RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
-        ItemStack item = this.getSlot(i).getStack().copy();
-        ItemStack original = this.getSlot(i).getStack();
-        if(i > 0 && i < 37){
-            this.onStackMergeShiftClick(this.getSlot(i).getStack(),37,72,false);
-        } else {
-            this.onStackMergeShiftClick(this.getSlot(i).getStack(),1,36,false);
-            this.getSlot(i).onPickupFromSlot(item);
-        }
-        if (original.stackSize == 0) {
-            this.getSlot(i).putStack(null);
-        } else {
-            this.getSlot(i).onSlotChanged();
+        if(tile.network != null){
+            if(tile.getAmountOfUsedSlots() < tile.network.drive.virtualDriveMaxStacks){
+                RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+                ItemStack item = this.getSlot(i).getStack().copy();
+                ItemStack original = this.getSlot(i).getStack();
+                if(i > 0 && i < 37){
+                    this.onStackMergeShiftClick(this.getSlot(i).getStack(),37,73,false);
+                } else {
+                    this.onStackMergeShiftClick(this.getSlot(i).getStack(),1,36,false);
+                    this.getSlot(i).onPickupFromSlot(item);
+                }
+                if (original.stackSize == 0) {
+                    this.getSlot(i).putStack(null);
+                } else {
+                    this.getSlot(i).onSlotChanged();
+                }
+            }
         }
     }
 
