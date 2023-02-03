@@ -2,10 +2,8 @@
 
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.Container;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Slot;
+import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
 
@@ -45,8 +43,23 @@ public class ContainerAssembler extends Container
     }
 
     @Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
-
+    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
+        if(tile.network != null){
+            //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+            ItemStack item = this.getSlot(i).getStack().copy();
+            ItemStack original = this.getSlot(i).getStack();
+            if(i > 0 && i < 9){
+                this.onStackMergeShiftClick(this.getSlot(i).getStack(),9,44,false);
+            } else {
+                this.onStackMergeShiftClick(this.getSlot(i).getStack(),0,9,false);
+                this.getSlot(i).onPickupFromSlot(item);
+            }
+            if (original.stackSize == 0) {
+                this.getSlot(i).putStack(null);
+            } else {
+                this.getSlot(i).onSlotChanged();
+            }
+        }
     }
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)

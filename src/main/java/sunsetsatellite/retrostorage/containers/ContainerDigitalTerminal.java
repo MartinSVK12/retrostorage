@@ -52,7 +52,7 @@ public class ContainerDigitalTerminal extends Container
     public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
         if(tile.network != null){
             if(tile.getAmountOfUsedSlots() < tile.network.drive.virtualDriveMaxStacks){
-                RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+                //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
                 ItemStack item = this.getSlot(i).getStack().copy();
                 ItemStack original = this.getSlot(i).getStack();
                 if(i > 0 && i < 37){

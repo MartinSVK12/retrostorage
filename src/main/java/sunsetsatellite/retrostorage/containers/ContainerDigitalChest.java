@@ -1,9 +1,8 @@
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.Container;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Slot;
+import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 
@@ -46,7 +45,25 @@ public class ContainerDigitalChest extends Container
     }
 
     @Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
+    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
+        if(tile.getStackInSlot(0) != null){
+            if(tile.getAmountOfUsedSlots() < ((ItemStorageDisc)tile.getStackInSlot(0).getItem()).getMaxStackCapacity()){
+                //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+                ItemStack item = this.getSlot(i).getStack().copy();
+                ItemStack original = this.getSlot(i).getStack();
+                if(i > 0 && i < 37){
+                    this.onStackMergeShiftClick(this.getSlot(i).getStack(),37,73,false);
+                } else {
+                    this.onStackMergeShiftClick(this.getSlot(i).getStack(),1,36,false);
+                    this.getSlot(i).onPickupFromSlot(item);
+                }
+                if (original.stackSize == 0) {
+                    this.getSlot(i).putStack(null);
+                } else {
+                    this.getSlot(i).onSlotChanged();
+                }
+            }
+        }
     }
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)

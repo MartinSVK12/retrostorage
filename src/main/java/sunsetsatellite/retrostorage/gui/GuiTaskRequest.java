@@ -78,6 +78,7 @@ public class GuiTaskRequest extends GuiContainer {
         ((IGuiContainer)this).drawItemStack(requestedItem,32,32);
         fontRenderer.drawString(requestAmount+"x",10,36,0x404040);
         fontRenderer.drawString(requestedItem.stackSize+"x "+StringTranslate.getInstance().translateKey(requestedItem.getItemName()+".name"), 55, 36, 0x404040);
+        fontRenderer.drawString(this.screenTitle,95,10,0x404040);
     }
 
     @Override
@@ -106,7 +107,6 @@ public class GuiTaskRequest extends GuiContainer {
             list.addAll(network.requestQueue);
         }*/
         this.slotContainer.drawScreen(x, y, renderPartialTicks);
-        this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
 
     }
 

@@ -23,7 +23,6 @@ public class BlockDigitalChest extends BlockContainerRotatable {
         } else
         {
             TileEntityDigitalChest tile = (TileEntityDigitalChest)world.getBlockTileEntity(i, j, k);
-            //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
                 ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalChest(entityplayer.inventory,tile));
             }
