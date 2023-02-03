@@ -20,9 +20,9 @@ public class Config {
         try {
             BufferedWriter configWriter = new BufferedWriter(new FileWriter(configFile));
             configWriter.write("// RetroStorage configuration file. Configure options here.");
-            configWriter.write(System.getProperty("line.separator") +"//No options for now.");
-            configWriter.write(System.getProperty("line.separator") +"//");
-            configWriter.write(System.getProperty("line.separator") +"//Configure ID's here. Note: 'null' means a default value will be used.");
+            configWriter.write(System.getProperty("line.separator") +"enableGoldenDiscLoot=0");
+            configWriter.write(System.getProperty("line.separator") +"enableGoldenDiscRecipe=0");
+            configWriter.write(System.getProperty("line.separator") +"//Configure IDs here. Note: null means a default value will be used.");
 
             for (Field field : RetroStorage.class.getFields()) {
                 if (field.getType() == Block.class) {

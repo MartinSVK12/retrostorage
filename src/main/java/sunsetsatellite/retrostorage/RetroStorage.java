@@ -34,7 +34,7 @@ public class RetroStorage implements ModInitializer {
     public static final Item goldenDisc = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("goldenDisc",330),1024),"goldenDisc","goldendisc.png").setMaxStackSize(1);
 
     public static Item machineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("machineCasing",309)),"machineCasing","machinecasing.png");
-    public static Item advNachineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("advMachineCasing",310)),"advMachineCasing","advmachinecasing.png");
+    public static Item advMachineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("advMachineCasing",310)),"advMachineCasing","advmachinecasing.png");
     public static Item energyCore = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("energyCore",311)),"energyCore","energycore.png");
     public static Item chipShell = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("chipShell",312)),"chipShell","chipshell.png");
     public static Item chipShellFilled = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("chipShellFilled",313)),"chipShellFilled","filledchipshell.png");
@@ -105,6 +105,50 @@ public class RetroStorage implements ModInitializer {
         RecipeHelper.Crafting.createRecipe(storageDisc4,1,new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc3, '#', new ItemStack(Item.dye, 1, 10), 'R', Item.dustRedstone});
         RecipeHelper.Crafting.createRecipe(storageDisc5,1,new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc4, '#', new ItemStack(Item.dye, 1, 4), 'R', Item.dustRedstone});
         RecipeHelper.Crafting.createRecipe(storageDisc6,1,new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc5, '#', new ItemStack(Item.dye, 1, 5), 'R', Item.dustRedstone});
+        if(Config.getFromConfig("enableGoldenDiscRecipe",0)==1){
+            RecipeHelper.Crafting.createRecipe(goldenDisc,1,new Object[]{"GgG","6R6","GgG",'G',Block.blockGold,'g',Block.glass,'R',Block.blockRedstone,'6',storageDisc6});
+        }
+
+        RecipeHelper.Crafting.createRecipe(siliconWafer,1,new Object[]{"SS","SS",'S',silicon});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.ceramicPlateUnfired,1,new Object[]{"123","456","789",'4',Item.clay,'5',Item.clay,'6',Item.clay,'7',Item.clay,'8',Item.clay,'9',Item.clay});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.energyCore,1,new Object[]{"123","456","789",'1',Block.glass,'2',Block.glowstone,'3',Block.glass,'4',Block.glowstone,'5',Block.blockDiamond,'6',Block.glowstone,'7',Block.glass,'8',Block.glowstone,'9',Block.glass});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.machineCasing,1,new Object[]{"123","456","789",'1',Block.stone,'2',Item.ingotIron,'3',Block.stone,'4',Item.ingotIron,'6',Item.ingotIron,'7',Block.stone,'8',Item.ingotIron,'9',Block.stone});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.advMachineCasing,1,new Object[]{"123","456","789",'1',Block.obsidian,'2',Item.diamond,'3',Block.obsidian,'4',Item.diamond,'5',RetroStorage.machineCasing,'6',Item.diamond,'7',Block.obsidian,'8',Item.diamond,'9',Block.obsidian});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipShell,1,new Object[]{"123","456","789",'1',Item.ingotGold,'3',Item.ingotGold,'5',RetroStorage.ceramicPlate,'7',Item.ingotGold,'9',Item.ingotGold});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipShellFilled,1,new Object[]{"123","456","789",'1',Item.dustRedstone,'2',Item.dustRedstone,'3',Item.dustRedstone,'4',Item.dustRedstone,'5',RetroStorage.chipShell,'6',Item.dustRedstone,'7',Item.dustRedstone,'8',Item.dustRedstone,'9',Item.dustRedstone});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieRematerializer,1,new Object[]{"2","5","8",'2',Block.obsidian,'5',RetroStorage.siliconWafer,'8',new ItemStack(Item.dye,1,10)});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieDematerializer,1,new Object[]{"2","5","8",'2',Item.bucketLava,'5',RetroStorage.siliconWafer,'8',Item.dustRedstone});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieCrafting,1,new Object[]{"2","5","8",'2',RetroStorage.recipeDisc,'5',RetroStorage.siliconWafer,'8',new ItemStack(Item.dye,1,5)});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieDigitizer,1,new Object[]{"2","5","8",'2',Item.diamond,'5',RetroStorage.siliconWafer,'8',new ItemStack(Item.dye,1,4)});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDematerializer,1,new Object[]{"2","5","8",'2',RetroStorage.ceramicPlate,'5',RetroStorage.chipDieDematerializer,'8',RetroStorage.chipShellFilled});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipRematerializer,1,new Object[]{"2","5","8",'2',RetroStorage.ceramicPlate,'5',RetroStorage.chipDieRematerializer,'8',RetroStorage.chipShellFilled});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipCrafting,1,new Object[]{"2","5","8",'2',RetroStorage.ceramicPlate,'5',RetroStorage.chipDieCrafting,'8',RetroStorage.chipShellFilled});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDigitizer,1,new Object[]{"2","5","8",'2',RetroStorage.ceramicPlate,'5',RetroStorage.chipDieDigitizer,'8',RetroStorage.chipShellFilled});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieWireless,1,new Object[]{"123","456","789",'2',Item.diamond,'4',Block.blockLapis,'5',RetroStorage.siliconWafer,'6',Block.blockLapis,'8',Item.diamond});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.chipWireless,1,new Object[]{"123","456","789",'2',RetroStorage.ceramicPlate,'5',RetroStorage.chipDieWireless,'8',RetroStorage.chipShellFilled});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.wirelessAntenna,1,new Object[]{"123","456","789",'2',Block.blockLapis,'4',Block.blockLapis,'5',Item.diamond,'6',Block.blockLapis,'7',Item.ingotIron,'8',Item.stick,'9',Item.ingotIron});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.redstoneCore,1,new Object[]{"RRR","RRR","RRR",'R',Item.dustRedstone});
+        
+        RecipeHelper.Smelting.createRecipe(silicon,Block.glass);
+        RecipeHelper.Smelting.createRecipe(ceramicPlateUnfired,ceramicPlate);
+
+        RecipeHelper.Crafting.createRecipe(networkCable,8,new Object[]{"WLW", "GGG", "WLW", 'W', Block.wool, 'G', Block.glass, 'L', new ItemStack(Item.dye, 1, 4)});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.digitalController,1,new Object[]{"123","456","789",'1',RetroStorage.machineCasing,'2',RetroStorage.networkCable,'3',Block.blockLapis,'4',RetroStorage.networkCable,'5',RetroStorage.energyCore,'6',RetroStorage.networkCable,'7',Block.blockLapis,'8',RetroStorage.networkCable,'9',RetroStorage.machineCasing});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.digitalTerminal,1,new Object[]{"123","456","789",'2',RetroStorage.chipDigitizer,'4',RetroStorage.chipRematerializer,'5',RetroStorage.machineCasing,'6',RetroStorage.chipDematerializer,'7',RetroStorage.networkCable,'8',Block.chestPlanksOak,'9',RetroStorage.networkCable});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.discDrive,1,new Object[]{"123","456","789",'2',RetroStorage.chipDigitizer,'4',RetroStorage.blankDisc,'5',RetroStorage.machineCasing,'6',RetroStorage.blankDisc,'8',RetroStorage.networkCable});
+        //ModLoader.AddRecipe(new ItemStack(RetroStorage.digitalChest,1,0),"123","456","789",'2',RetroStorage.blankDisc,'4',RetroStorage.chipRematerializer,'5',RetroStorage.machineCasing,'6',RetroStorage.chipDematerializer,'8',Block.chestPlanksOak});
+        //ModLoader.AddRecipe(new ItemStack(RetroStorage.storageContainer,1,0),"123","456","789",'1',RetroStorage.machineCasing,'2',RetroStorage.machineCasing,'3',RetroStorage.machineCasing,'4',Item.ingotIron,'5',Block.chestPlanksOak,'6',Item.ingotIron,'7',RetroStorage.machineCasing,'8',RetroStorage.machineCasing,'9',RetroStorage.machineCasing});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.assembler,1,new Object[]{"123","456","789",'1',RetroStorage.machineCasing,'2',RetroStorage.chipCrafting,'3',RetroStorage.machineCasing,'4',RetroStorage.chipCrafting,'5',recipeDisc,'6',RetroStorage.chipCrafting,'7',RetroStorage.machineCasing,'8',RetroStorage.chipCrafting,'9',RetroStorage.machineCasing});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.importer,1,new Object[]{"123","456","789",'2',RetroStorage.chipRematerializer,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.networkCable,'8',RetroStorage.chipDigitizer});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.exporter,1,new Object[]{"123","456","789",'2',RetroStorage.chipDematerializer,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.networkCable,'8',RetroStorage.chipDigitizer});
+        //RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'2',new ItemStack(RetroStorage.multiID,1,5),'3',RetroStorage.chipDigitizer,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.networkCable,'7',RetroStorage.chipCrafting,'8',new ItemStack(RetroStorage.multiID,1,4)});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.requestTerminal,1,new Object[]{"123","456","789",'2',RetroStorage.machineCasing,'4',RetroStorage.chipCrafting,'5',RetroStorage.digitalTerminal,'6',RetroStorage.chipCrafting,'8',RetroStorage.networkCable});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.recipeEncoder,1,new Object[]{"123","456","789",'2',RetroStorage.machineCasing,'4',recipeDisc,'5',Block.workbench,'6',recipeDisc,'8',RetroStorage.chipCrafting});
+        /*RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',Block.workbench,'2',advRecipeDisc,'3',Block.workbench,'4',RetroStorage.chipCrafting,'5',new ItemStack(RetroStorage.multiID,1,8),'6',RetroStorage.chipCrafting,'7',Block.workbench,'8',RetroStorage.advMachineCasing,'9',Block.workbench});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',RetroStorage.chipCrafting,'5',new ItemStack(RetroStorage.multiID,1,7),'6',RetroStorage.chipDigitizer,'7',Block.obsidian,'8',RetroStorage.advMachineCasing,'9',Block.obsidian});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'2',RetroStorage.chipWireless,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.wirelessAntenna,'8',RetroStorage.chipWireless});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',RetroStorage.machineCasing,'2',Block.torchRedstoneActive,'3',RetroStorage.machineCasing,'4',RetroStorage.networkCable,'5',RetroStorage.redstoneCore,'6',RetroStorage.chipDigitizer,'7',RetroStorage.machineCasing,'8',Item.redstoneRepeater,'9',RetroStorage.machineCasing});*/
+
 
         CommandHelper.createCommand(new NBTEditCommand());
         EntityHelper.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");

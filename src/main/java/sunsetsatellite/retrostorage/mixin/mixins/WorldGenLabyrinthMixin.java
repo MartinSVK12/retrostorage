@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.util.Config;
 
 import java.util.Random;
 
@@ -22,9 +23,11 @@ public class WorldGenLabyrinthMixin {
             cancellable = true
     )
     public void pickCheckLootItem(Random random, CallbackInfoReturnable<ItemStack> cir){
-        int i = random.nextInt(200);
-        if(i == 0){
-            cir.setReturnValue(new ItemStack(RetroStorage.goldenDisc,1));
+        if(Config.getFromConfig("enableGoldenDiscLoot",0) == 1){
+            int i = random.nextInt(200);
+            if(i == 0){
+                cir.setReturnValue(new ItemStack(RetroStorage.goldenDisc,1));
+            }
         }
     }
 }
