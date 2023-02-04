@@ -97,6 +97,7 @@ public class GuiRequestTerminal extends GuiContainer
         if(guibutton.id == 3){
             if(tile.network != null) {
                 tile.network.clearRequestQueue();
+                player.addChatMessage("action.retrostorage.clearTaskQueue");
             }
         }
         //System.out.println(tile.page);

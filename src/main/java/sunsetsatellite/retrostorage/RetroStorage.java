@@ -6,16 +6,13 @@ import net.minecraft.src.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sunsetsatellite.retrostorage.blocks.*;
-import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
-import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
-import sunsetsatellite.retrostorage.items.ItemStorageDisc;
+import sunsetsatellite.retrostorage.items.*;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.*;
 import turniplabs.halplibe.helper.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RetroStorage implements ModInitializer {
     public static final String MOD_ID = "retrostorage";
@@ -33,7 +30,7 @@ public class RetroStorage implements ModInitializer {
     public static final Item virtualDisc = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("virtualDisc",307),Short.MAX_VALUE*2),"virtualDisc","virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
     public static final Item recipeDisc = ItemHelper.createItem(MOD_ID,new ItemRecipeDisc(Config.getFromConfig("recipeDisc",308)),"recipeDisc","recipedisc.png").setMaxStackSize(1);
     public static final Item goldenDisc = ItemHelper.createItem(MOD_ID,new ItemStorageDisc(Config.getFromConfig("goldenDisc",330),1024),"goldenDisc","goldendisc.png").setMaxStackSize(1);
-    public static final Item AdvRecipeDisc = ItemHelper.createItem(MOD_ID,new ItemAdvRecipeDisc(Config.getFromConfig("advRecipeDisc",331)),"advRecipeDisc","advrecipedisc.png").setMaxStackSize(1);
+    public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID,new ItemAdvRecipeDisc(Config.getFromConfig("advRecipeDisc",331)),"advRecipeDisc","advrecipedisc.png").setMaxStackSize(1);
 
     public static Item machineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("machineCasing",309)),"machineCasing","machinecasing.png");
     public static Item advMachineCasing = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("advMachineCasing",310)),"advMachineCasing","advmachinecasing.png");
@@ -57,8 +54,11 @@ public class RetroStorage implements ModInitializer {
     public static Item wirelessAntenna = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("wirelessAntenna",328)),"wirelessAntenna","wirelessantenna.png");
     public static Item redstoneCore = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("redstoneCore",329)),"redstoneCore","redstonecore.png");
 
-    public static Item slotIdFinder = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("slotIdFinder",332)),"slotIdFinder","wirelessantenna.png").setMaxStackSize(1);
-    
+    public static Item slotIdFinder = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("slotIdFinder",332)),"slotIdFinder","idfinder.png").setMaxStackSize(1);
+    public static Item portableCell = ItemHelper.createItem(MOD_ID,new ItemPortableCell(Config.getFromConfig("portableCell",333)),"portableCell","portablecell.png").setMaxStackSize(1);
+    public static Item mobileTerminal = ItemHelper.createItem(MOD_ID,new ItemMobileTerminal(Config.getFromConfig("mobileTerminal",334)),"mobileTerminal","mobileterminal.png").setMaxStackSize(1);
+    public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID,new ItemMobileTerminal(Config.getFromConfig("mobileRequestTerminal",335)),"mobileRequestTerminal","mobilerequestterminal.png").setMaxStackSize(1);
+
     public static final Block digitalChest = BlockHelper.createBlock(MOD_ID,new BlockDigitalChest(Config.getFromConfig("digitalChest",900), Material.rock),"digitalChest","digitalchesttopfilled.png","digitalchestside.png","digitalchestfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block digitalController = BlockHelper.createBlock(MOD_ID,new BlockDigitalController(Config.getFromConfig("digitalController",901), Material.rock),"digitalController","digitalcontroller.png",Block.soundStoneFootstep,2,5,1);
     public static final Block networkCable = BlockHelper.createBlock(MOD_ID,new Block(Config.getFromConfig("networkCable",902), Material.rock),"networkCable","blockcable.png",Block.soundClothFootstep,1,1,0);
@@ -149,9 +149,9 @@ public class RetroStorage implements ModInitializer {
         //RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'2',new ItemStack(RetroStorage.multiID,1,5),'3',RetroStorage.chipDigitizer,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.networkCable,'7',RetroStorage.chipCrafting,'8',new ItemStack(RetroStorage.multiID,1,4)});
         RecipeHelper.Crafting.createRecipe(RetroStorage.requestTerminal,1,new Object[]{"123","456","789",'2',RetroStorage.machineCasing,'4',RetroStorage.chipCrafting,'5',RetroStorage.digitalTerminal,'6',RetroStorage.chipCrafting,'8',RetroStorage.networkCable});
         RecipeHelper.Crafting.createRecipe(RetroStorage.recipeEncoder,1,new Object[]{"123","456","789",'2',RetroStorage.machineCasing,'4',recipeDisc,'5',Block.workbench,'6',recipeDisc,'8',RetroStorage.chipCrafting});
-        /*RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',Block.workbench,'2',advRecipeDisc,'3',Block.workbench,'4',RetroStorage.chipCrafting,'5',new ItemStack(RetroStorage.multiID,1,8),'6',RetroStorage.chipCrafting,'7',Block.workbench,'8',RetroStorage.advMachineCasing,'9',Block.workbench});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',RetroStorage.chipCrafting,'5',new ItemStack(RetroStorage.multiID,1,7),'6',RetroStorage.chipDigitizer,'7',Block.obsidian,'8',RetroStorage.advMachineCasing,'9',Block.obsidian});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'2',RetroStorage.chipWireless,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.wirelessAntenna,'8',RetroStorage.chipWireless});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.processProgrammer,1,new Object[]{"123","456","789",'1',Block.workbench,'2',advRecipeDisc,'3',Block.workbench,'4',RetroStorage.chipCrafting,'5',recipeEncoder,'6',RetroStorage.chipCrafting,'7',Block.workbench,'8',RetroStorage.advMachineCasing,'9',Block.workbench});
+        RecipeHelper.Crafting.createRecipe(RetroStorage.advInterface,1,new Object[]{"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',RetroStorage.chipCrafting,'5',assembler,'6',RetroStorage.chipDigitizer,'7',Block.obsidian,'8',RetroStorage.advMachineCasing,'9',Block.obsidian});
+        /*RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'2',RetroStorage.chipWireless,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.wirelessAntenna,'8',RetroStorage.chipWireless});
         RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',RetroStorage.machineCasing,'2',Block.torchRedstoneActive,'3',RetroStorage.machineCasing,'4',RetroStorage.networkCable,'5',RetroStorage.redstoneCore,'6',RetroStorage.chipDigitizer,'7',RetroStorage.machineCasing,'8',Item.redstoneRepeater,'9',RetroStorage.machineCasing});*/
 
 

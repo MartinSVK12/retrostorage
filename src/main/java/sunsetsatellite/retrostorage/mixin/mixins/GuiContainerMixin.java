@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.interfaces.mixins.IGuiContainer;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
+import sunsetsatellite.retrostorage.items.ItemPortableCell;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 
@@ -39,9 +40,18 @@ public class GuiContainerMixin extends GuiScreen
     private void setDescription(int x, int y, float renderPartialTicks, CallbackInfo ci, int centerX, int centerY, Slot slot, InventoryPlayer inventoryplayer, StringTranslate trans, StringBuilder text, boolean multiLine, boolean control, boolean shift, boolean showDescription, boolean isCrafting, String itemName, String itemNick, boolean debug){
         ItemStack stack = slot.getStack();
         if(stack != null && stack.getItem() == RetroStorage.slotIdFinder){
-            text.append(ChatColor.magenta).append("ID of this slot is: ").append(slot.id).append("\n");
+            text.append(ChatColor.magenta).append("ID of this slot is: ").append(slot.id).append(" (").append(slot.getClass().getSimpleName()).append(")").append("\n");
         }
-        if(stack != null && stack.getItem() instanceof ItemStorageDisc){
+        if(stack != null && (stack.getItem() == RetroStorage.mobileTerminal || stack.getItem() == RetroStorage.mobileRequestTerminal)){
+            if(stack.tag.hasKey("position")){
+                if(stack.tag.getCompoundTag("position").hasKey("x") && stack.tag.getCompoundTag("position").hasKey("y") && stack.tag.getCompoundTag("position").hasKey("z")){
+                    text.append(ChatColor.magenta).append("Bound to block at X:").append(stack.tag.getCompoundTag("position").getInteger("x")).append(" Y:").append(stack.tag.getCompoundTag("position").getInteger("y")).append(" Z:").append(stack.tag.getCompoundTag("position").getInteger("z")).append(".\n");
+                }
+            } else {
+                text.append(ChatColor.magenta).append("Unbound.\n");
+            }
+        }
+        if(stack != null && (stack.getItem() instanceof ItemStorageDisc || stack.getItem() instanceof ItemPortableCell)){
             text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc")).append("\n");
         }
         if(stack != null && stack.getItem() instanceof ItemAdvRecipeDisc){

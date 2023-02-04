@@ -8,17 +8,17 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 
 import java.util.ArrayList;
 
-public class InventoryDigital implements IInventory {
+public class InventoryPortable implements IInventory {
 	public String inventoryTitle;
 	private final int slotsCount;
-	public TileEntityDigitalController owner;
+	public ItemStack owner;
 	public ItemStack[] inventoryContents;
 
-	public InventoryDigital(String string1, TileEntityDigitalController controller) {
+	public InventoryPortable(String string1, ItemStack owner) {
 		this.inventoryTitle = string1;
 		this.slotsCount = Short.MAX_VALUE*2;
 		this.inventoryContents = new ItemStack[Short.MAX_VALUE*2];
-		this.owner = controller;
+		this.owner = owner;
 	}
 
 	public int getInventorySlotContainItem(int itemID) {
@@ -75,11 +75,6 @@ public class InventoryDigital implements IInventory {
 
 	public int getFirstEmptyStack() {
 		for(int i1 = 0; i1 < this.inventoryContents.length; ++i1) {
-			if(owner.network != null && owner.network.drive != null){
-				if(i1 > owner.network.drive.virtualDriveMaxStacks){
-					return -1;
-				}
-			}
 			if(this.inventoryContents[i1] == null) {
 				return i1;
 			}
@@ -292,11 +287,7 @@ public class InventoryDigital implements IInventory {
 	}
 
 	public void onInventoryChanged() {
-		if(owner != null){
-			if(owner.network.drive != null){
-				DiscManipulator.saveDisc(owner.network.drive.virtualDisc,this);
-			}
-		}
+		DiscManipulator.saveDisc(owner,this);
 	}
 
 	public boolean canInteractWith(EntityPlayer entityPlayer1) {

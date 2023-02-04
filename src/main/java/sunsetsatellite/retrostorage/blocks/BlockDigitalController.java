@@ -1,7 +1,9 @@
 package sunsetsatellite.retrostorage.blocks;
 
 import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.containers.ContainerPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiDigitalController;
+import sunsetsatellite.retrostorage.gui.GuiPlayerExtra;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
@@ -51,6 +53,7 @@ public class BlockDigitalController extends BlockContainerRotatable {
                         RetroStorage.LOGGER.info(String.format("Drive detected: %s", tile.network.drive));
                     }
                     RetroStorage.LOGGER.info(tile.network.toString());*/
+                    //((IOpenGUI)entityplayer).displayGUI(new GuiPlayerExtra(entityplayer,new ContainerPlayerExtra(entityplayer.inventory)));
                     ((IOpenGUI)entityplayer).displayGUI(new GuiDigitalController(tile));
                 }
             }

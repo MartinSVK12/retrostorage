@@ -21,6 +21,9 @@ public class SlotDigital extends Slot{
 
     public boolean canPutStackInSlot(ItemStack itemstack)
     {
+        if(inventory instanceof InventoryPortable){
+            return !((InventoryPortable) inventory).owner.isItemEqual(itemstack);
+        }
         if(this.slotIndex == 0 && itemstack != null && itemstack.getItem() instanceof ItemStorageDisc){
             return true;
         }
@@ -53,39 +56,10 @@ public class SlotDigital extends Slot{
             }
             DiscManipulator.saveDisc(((TileEntityNetworkDevice) inventory).network.drive.virtualDisc,((TileEntityNetworkDevice) inventory).network.inventory);
             super.onPickupFromSlot(itemStack1);
+        } else if(inventory instanceof InventoryPortable){
+            DiscManipulator.saveDisc(((InventoryPortable)inventory).owner,inventory);
+            super.onPickupFromSlot(itemStack1);
         }
-        /*if(inventory instanceof TileEntityNetworkDevice){
-            if(this.slotIndex == 0 && itemStack1 != null && itemStack1.getItem() instanceof ItemStorageDisc){
-                int page;
-                try {
-                    page = (int) inventory.getClass().getField("page").get(inventory);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                DiscManipulator.saveDisc(itemStack1,((TileEntityNetworkDevice) inventory).network.inventory, page);
-                DiscManipulator.clearDigitalInv(((TileEntityNetworkDevice) inventory).network.inventory);
-            } else if(this.slotIndex != 0 && this.inventory.getStackInSlot(0) != null && this.inventory.getStackInSlot(0).getItem() instanceof ItemStorageDisc){
-                int page;
-                try {
-                    page = (int) inventory.getClass().getField("page").get(inventory);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),((TileEntityNetworkDevice) inventory).network.inventory,page);
-            }
-            //System.out.println((itemStack1 != null ? itemStack1.toString() : "null") +" picked up from slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
-            super.onPickupFromSlot(itemStack1);
-        } else if(inventory instanceof TileEntityDigitalChest) {
-            if(this.slotIndex == 0 && itemStack1 != null && itemStack1.getItem() instanceof ItemStorageDisc){
-                DiscManipulator.saveDisc(itemStack1,this.inventory, ((TileEntityDigitalChest) inventory).page);
-                DiscManipulator.clearDigitalInv(this.inventory);
-            } else if(this.slotIndex != 0 && this.inventory.getStackInSlot(0) != null && this.inventory.getStackInSlot(0).getItem() instanceof ItemStorageDisc){
-                DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),this.inventory,((TileEntityDigitalChest)inventory).page);
-            }
-            //System.out.println((itemStack1 != null ? itemStack1.toString() : "null") +" picked up from slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
-            super.onPickupFromSlot(itemStack1);
-        }*/
-
     }
 
     public ItemStack decrStackSize(int i1) {
@@ -104,45 +78,10 @@ public class SlotDigital extends Slot{
             this.onSlotChanged();
             this.inventory.setInventorySlotContents(this.variableIndex, itemStack1);
             DiscManipulator.saveDisc(((TileEntityNetworkDevice) inventory).network.drive.virtualDisc,((TileEntityNetworkDevice) inventory).network.inventory);
+        } else if (inventory instanceof InventoryPortable){
+            this.onSlotChanged();
+            this.inventory.setInventorySlotContents(this.variableIndex, itemStack1);
+            DiscManipulator.saveDisc(((InventoryPortable)this.inventory).owner,this.inventory);
         }
-        /*if(inventory instanceof TileEntityNetworkDevice){
-            if(itemStack1 != null){
-                //System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
-            }
-            this.onSlotChanged();
-            this.inventory.setInventorySlotContents(this.variableIndex, itemStack1);
-//            super.putStack(itemStack1);
-            if(this.slotIndex == 0 && itemStack1.getItem() instanceof ItemStorageDisc){
-                DiscManipulator.clearDigitalInv(((TileEntityNetworkDevice) inventory).network.inventory);
-                int page;
-                try {
-                    page = (int) inventory.getClass().getField("page").get(inventory);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                DiscManipulator.loadDisc(itemStack1,((TileEntityNetworkDevice) inventory).network.inventory,page);
-            } else if(this.slotIndex != 0 && this.inventory.getStackInSlot(0) != null && this.inventory.getStackInSlot(0).getItem() instanceof ItemStorageDisc){
-                int page;
-                try {
-                    page = (int) inventory.getClass().getField("page").get(inventory);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),((TileEntityNetworkDevice) inventory).network.inventory,page);
-            }
-        } else if(inventory instanceof TileEntityDigitalChest) {
-            if(itemStack1 != null) {
-                //System.out.println(itemStack1 +" inserted into slot "+ this +" (index "+ this.slotIndex +"/"+ this.variableIndex +")");
-            }
-            this.onSlotChanged();
-            this.inventory.setInventorySlotContents(this.variableIndex, itemStack1);
-//            super.putStack(itemStack1);
-            if(this.slotIndex == 0 && itemStack1.getItem() instanceof ItemStorageDisc){
-                DiscManipulator.clearDigitalInv(this.inventory);
-                DiscManipulator.loadDisc(itemStack1,this.inventory,((TileEntityDigitalChest)inventory).page);
-            } else if(this.slotIndex != 0 && this.inventory.getStackInSlot(0) != null && this.inventory.getStackInSlot(0).getItem() instanceof ItemStorageDisc){
-                DiscManipulator.saveDisc(this.inventory.getStackInSlot(0),this.inventory,((TileEntityDigitalChest)inventory).page);
-            }
-        }*/
     }
 }
