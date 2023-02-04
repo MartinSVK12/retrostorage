@@ -40,6 +40,7 @@ public class GuiDigitalController extends GuiScreen
                 fontRenderer.drawString(String.format("Drive detected: %s", tile.network.drive),2,i,0xFFFFFFFF);
             }
             fontRenderer.drawString(String.format("Assemblers: %d",tile.network.getAssemblers().size()),2,i+=10,0xFFFFFFFF);
+            fontRenderer.drawString(String.format("Interfaces: %d",tile.network.getInterfaces().size()),2,i+=10,0xFFFFFFFF);
             HashMap<BlockInstance, ArrayList<IRecipe>> recipes = tile.network.getAvailableRecipesWithSource();
             int recipeCount = 0;
             for (Map.Entry<BlockInstance, ArrayList<IRecipe>> entry : recipes.entrySet()) {
@@ -47,6 +48,7 @@ public class GuiDigitalController extends GuiScreen
                 recipeCount += V.size();
             }
             fontRenderer.drawString(String.format("Available recipes: %d",recipeCount),2,i+=10,0xFFFFFFFF);
+            fontRenderer.drawString(String.format("Available processes: %d",tile.network.getAvailableProcesses().size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Request queue: %s", tile.network.requestQueue),2,i+=10,0xFFFFFFFF);
             //RetroStorage.LOGGER.info(tile.network.toString());

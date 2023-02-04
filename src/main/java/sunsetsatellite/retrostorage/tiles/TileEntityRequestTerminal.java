@@ -3,7 +3,9 @@
 package sunsetsatellite.retrostorage.tiles;
 
 import net.minecraft.src.*;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.BlockInstance;
+import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.TickTimer;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
     public TileEntityRequestTerminal()
     {
         contents = new ItemStack[37];
-        recipeContents = new IRecipe[37];
+        recipeContents = new Object[37];
         try {
             saveTimer = new TickTimer(this,this.getClass().getMethod("save"),40,true);
         } catch (NoSuchMethodException e) {
@@ -74,6 +76,14 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
                             recipeContents[i] = recipe;
                             i++;
                         }
+                    }
+                }
+                ArrayList<ArrayList<NBTTagCompound>> processes = network.getAvailableProcesses();
+                for(ArrayList<NBTTagCompound> process : processes){
+                    if(i < 37){
+                        setInventorySlotContents(i, RetroStorage.getMainOutputOfProcess(process));
+                        recipeContents[i] = process;
+                        i++;
                     }
                 }
             } else {
@@ -203,7 +213,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
     }
 
     private ItemStack[] contents;
-    public IRecipe[] recipeContents;
+    public Object[] recipeContents;
     private TickTimer saveTimer;
     public int page = 1;
     public int pages = 1;

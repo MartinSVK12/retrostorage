@@ -31,6 +31,9 @@ public class TickTimer {
                 timeout.invoke(owner);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
+                if(e.getCause() instanceof Error){
+                    throw new Error("Fatal error occurred when invoking method.");
+                }
             }
         }
     }

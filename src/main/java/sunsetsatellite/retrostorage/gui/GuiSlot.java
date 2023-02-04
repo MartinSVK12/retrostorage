@@ -205,7 +205,7 @@ public abstract class GuiSlot {
         for(l2 = 0; l2 < k; ++l2) {
             i3 = i2 + l2 * this.posZ + this.field_27261_r;
             l3 = this.posZ - 4;
-            if (i3 <= this.bottom && i3 + l3 >= this.top) {
+            if (true/*i3 <= this.bottom && i3 + l3 >= this.top*/) {
                 if (this.field_25123_p) {
                     l4 = this.width / 2 - 110;
                     int i5 = this.width / 2 + 110;

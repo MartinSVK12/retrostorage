@@ -6,6 +6,7 @@ import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -109,6 +110,13 @@ public class DiscManipulator {
     public static void clearDigitalInv(IInventory inv){
         //System.out.printf("Clearing digital inventory %s%n",inv.toString());
         Arrays.fill(((InventoryDigital)inv).inventoryContents,null);
+    }
+
+    public static ArrayList<NBTTagCompound> getProcessesFromDisc(ItemStack disc){
+        NBTTagCompound tasksNBT = disc.tag.getCompoundTag("disc").getCompoundTag("tasks");
+        ArrayList<NBTTagCompound> tasks = new ArrayList<>();
+        tasks.addAll(tasksNBT.func_28110_c());
+        return tasks;
     }
 
 }

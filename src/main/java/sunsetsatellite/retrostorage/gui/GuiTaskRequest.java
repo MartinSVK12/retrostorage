@@ -30,13 +30,12 @@ public class GuiTaskRequest extends GuiContainer {
         this.requestedItem = request;
         this.tile = tile;
         this.requestedSlotId = slotId;
-
     }
 
     public void initGui() {
         StringTranslate stringtranslate = StringTranslate.getInstance();
         this.screenTitle = "Task Request";
-        this.slotContainer = new GuiItemSlot(this.mc, this.width, this.height, 140, this.height - 72, 36, this);
+        this.slotContainer = new GuiItemSlot(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
 
         this.slotContainer.registerScrollButtons(this.controlList, 4, 5);
         this.initButtons();
@@ -61,7 +60,12 @@ public class GuiTaskRequest extends GuiContainer {
             }
             if(guibutton.id == 2){
                 for (int i = 0; i < requestAmount; i++) {
-                    tile.network.requestCrafting(tile.recipeContents[requestedSlotId]);
+                    if(tile.recipeContents[requestedSlotId] instanceof ArrayList){
+                        //RetroStorage.LOGGER.info("Processing requests work in progress!");
+                        tile.network.requestProcessing((ArrayList<NBTTagCompound>) tile.recipeContents[requestedSlotId]);
+                    } else {
+                        tile.network.requestCrafting((IRecipe) tile.recipeContents[requestedSlotId]);
+                    }
                 }
                 RetroStorage.mc.displayGuiScreen(null);
             }
@@ -93,11 +97,28 @@ public class GuiTaskRequest extends GuiContainer {
 
     public void drawScreen(int x, int y, float renderPartialTicks) {
         super.drawScreen(x, y, renderPartialTicks);
-        if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
-            this.list.clear();
-            list.addAll(tile.network.getRequirements(requestedItem,0));
-            lastRequestedItem = requestedItem;
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(140,this.height-175,this.width*2, this.height+100); //TODO: fix this breaking at lower resolutions than 1080p
+        if(tile.recipeContents[requestedSlotId] instanceof ArrayList) {
+            if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
+                this.list.clear();
+                ArrayList<NBTTagCompound> tasks = (ArrayList<NBTTagCompound>) tile.recipeContents[requestedSlotId];
+                for(NBTTagCompound task : tasks){
+                    if(!task.getBoolean("isOutput")){
+                        ItemStack stack = new ItemStack(task.getCompoundTag("stack"));
+                        list.add(stack);
+                    }
+                }
+                lastRequestedItem = requestedItem;
+            }
+        } else {
+            if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
+                this.list.clear();
+                list.addAll(tile.network.getRequirements(requestedItem));
+                lastRequestedItem = requestedItem;
+            }
         }
+
 
         /*list.addAll(RetroStorage.condenseItemList(RetroStorage.getRecipeItems(RetroStorage.findRecipesByOutputUsingList(requestedItem,tile.network.getAvailableRecipes()).get(0))));
         if(list.size() == 0){
@@ -107,7 +128,7 @@ public class GuiTaskRequest extends GuiContainer {
             list.addAll(network.requestQueue);
         }*/
         this.slotContainer.drawScreen(x, y, renderPartialTicks);
-
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
 }

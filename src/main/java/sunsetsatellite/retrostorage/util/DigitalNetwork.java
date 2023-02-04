@@ -1,12 +1,11 @@
 package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.src.IRecipe;
+import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
-import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
+import sunsetsatellite.retrostorage.tiles.*;
 
 import java.util.*;
 
@@ -54,6 +53,19 @@ public class DigitalNetwork extends Network {
         return searchAll(TileEntityAssembler.class);
     }
 
+    public ArrayList<BlockInstance> getInterfaces(){
+        return searchAll(TileEntityAdvInterface.class);
+    }
+
+    public HashMap<BlockInstance, ArrayList<ArrayList<NBTTagCompound>>> getAvailableProcessesWithSource(){
+        HashMap<BlockInstance, ArrayList<ArrayList<NBTTagCompound>>> processes = new HashMap<>();
+        ArrayList<BlockInstance> interfaces = getInterfaces();
+        for(BlockInstance inf : interfaces){
+            processes.put(inf,((TileEntityAdvInterface)inf.tile).getProcesses());
+        }
+        return processes;
+    }
+
     public HashMap<BlockInstance, ArrayList<IRecipe>> getAvailableRecipesWithSource(){
         HashMap<BlockInstance, ArrayList<IRecipe>> recipes = new HashMap<>();
         ArrayList<BlockInstance> assemblers = getAssemblers();
@@ -78,10 +90,29 @@ public class DigitalNetwork extends Network {
         return recipes;
     }
 
+    public ArrayList<ArrayList<NBTTagCompound>> getAvailableProcesses(){
+        ArrayList<ArrayList<NBTTagCompound>> processes = new ArrayList<>();
+        ArrayList<BlockInstance> interfaces = getInterfaces();
+        for(BlockInstance inf : interfaces){
+            ArrayList<ArrayList<NBTTagCompound>> interfaceProcesses = ((TileEntityAdvInterface)inf.tile).getProcesses();
+            processes.addAll(interfaceProcesses);
+        }
+        return processes;
+    }
+
     public void requestCrafting(IRecipe recipe) {
         if(recipe != null) {
             RetroStorage.LOGGER.info("Requesting: " + RetroStorage.recipeToString(recipe));
             RecipeTask task = new RecipeTask(recipe, null, null);
+            requestQueue.add(task);
+        }
+    }
+
+    public void requestProcessing(ArrayList<NBTTagCompound> tasks){
+        if(tasks != null){
+            RetroStorage.LOGGER.info("Requesting: " + RetroStorage.getMainOutputOfProcess(tasks));
+            ProcessTask task = new ProcessTask(tasks,null,null);
+            //RecipeTask task = new RecipeTask(recipe, null, null);
             requestQueue.add(task);
         }
     }
@@ -102,6 +133,7 @@ public class DigitalNetwork extends Network {
                     RetroStorage.LOGGER.info(String.format("Missing %d different items (%s) for %s, creating subtasks..",missing.size(),missing,RetroStorage.recipeToString(recipe)));
                     for(ItemStack missingStack : missing) {
                         ArrayList<IRecipe> allRecipes = RetroStorage.findRecipesByOutput(missingStack);
+                        ArrayList<ArrayList<NBTTagCompound>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
                         if (allRecipes.size() > 0) {
                             ArrayList<IRecipe> knownRecipes = getAvailableRecipes();
                             allRecipes.retainAll(knownRecipes);
@@ -109,11 +141,19 @@ public class DigitalNetwork extends Network {
                                 IRecipe subtaskRecipe = allRecipes.get(0);
                                 RecipeTask subtask = new RecipeTask(subtaskRecipe,task,null);
                                 subtasks.add(subtask);
+                            } else if(allProcesses.size() > 0) {
+                                ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                                ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
+                                subtasks.add(subtask);
                             } else {
-                                RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft %s!",missingStack));
+                                RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft or process %s!",missingStack));
                             }
+                        } else if(allProcesses.size() > 0) {
+                            ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                            ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
+                            subtasks.add(subtask);
                         } else {
-                            RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted.",missingStack));
+                            RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted nor processed.",missingStack));
                         }
                     }
                     RetroStorage.LOGGER.info(String.format("Got %d subtasks.",subtasks.size()));
@@ -121,13 +161,57 @@ public class DigitalNetwork extends Network {
                 }
             }
         } else if(task instanceof ProcessTask){
-            RetroStorage.LOGGER.error("Work in progress.");
-            return null;
+            ArrayList<Task> subtasks = new ArrayList<>();
+            ArrayList<NBTTagCompound> steps = ((ProcessTask) task).tasks;
+            if(steps != null){
+                ArrayList<ItemStack> inputs = new ArrayList<>();
+                for(NBTTagCompound step : steps){
+                    ItemStack stack = new ItemStack(step.getCompoundTag("stack"));
+                    if(!step.getBoolean("isOutput")){
+                        inputs.add(stack);
+                    }
+                }
+                inputs = RetroStorage.condenseItemList(inputs);
+                ArrayList<ItemStack> missing = inventory.hasItemsReturnMissing(inputs);
+                if(missing.size() == 0){
+                    RetroStorage.LOGGER.info("No subtasks needed, all items available.");
+                    return null;
+                } else {
+                    RetroStorage.LOGGER.info(String.format("Missing %d different items (%s), creating subtasks..",missing.size(),missing));
+                    for(ItemStack missingStack : missing) {
+                        ArrayList<IRecipe> allRecipes = RetroStorage.findRecipesByOutput(missingStack);
+                        ArrayList<ArrayList<NBTTagCompound>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
+                        if (allRecipes.size() > 0) {
+                            ArrayList<IRecipe> knownRecipes = getAvailableRecipes();
+                            allRecipes.retainAll(knownRecipes);
+                            if (allRecipes.size() > 0) {
+                                IRecipe subtaskRecipe = allRecipes.get(0);
+                                RecipeTask subtask = new RecipeTask(subtaskRecipe,task,null);
+                                subtasks.add(subtask);
+                            } else if(allProcesses.size() > 0) {
+                                ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                                ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
+                                subtasks.add(subtask);
+                            } else {
+                                RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft or process %s!",missingStack));
+                            }
+                        } else if(allProcesses.size() > 0) {
+                            ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                            ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
+                            subtasks.add(subtask);
+                        } else {
+                            RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted nor processed.",missingStack));
+                        }
+                    }
+                    RetroStorage.LOGGER.info(String.format("Got %d subtasks.",subtasks.size()));
+                    return subtasks;
+                }
+            }
         }
         return null;
     }
 
-    public ArrayList<ItemStack> getRequirements(ItemStack item, int depth){
+    public ArrayList<ItemStack> getRequirements(ItemStack item){
         ArrayList<IRecipe> recipes = RetroStorage.findRecipesByOutputUsingList(item,getAvailableRecipes());
         //HashMap<Integer,ArrayList<ItemStack>> req = new HashMap<>();
         ArrayList<ItemStack> inputs = new ArrayList<>();

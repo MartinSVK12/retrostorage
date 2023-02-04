@@ -143,9 +143,9 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     public void work(){
         if(network != null){
             if(task == null){
-                /*if(stack == null || stack.size() == 0){
+                if(stack == null || stack.size() == 0){
                     stack = network.requestQueue.clone();
-                }*/
+                }
                 if(network.requestQueue.size() > 0){
                     boolean result = acceptNextTask();
                     if(result){
@@ -241,41 +241,44 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     public boolean acceptNextTask() {
-        Task t = network.requestQueue.peek();
-        boolean success = false;
-        if (t instanceof RecipeTask) {
-            if (t.processor == null) {
-                if (!t.completed) {
-                    if (t.requirementsMet()) {
-                        for (IRecipe aRecipe : network.getAvailableRecipes()) {
-                            if (aRecipe.equals(((RecipeTask) t).recipe)) {
-                                success = true;
-                                break;
+        if(stack.size() > 0){
+            Task t = stack.pop();
+            boolean success = false;
+            if (t instanceof RecipeTask) {
+                if (t.processor == null) {
+                    if (!t.completed) {
+                        if (t.requirementsMet()) {
+                            for (IRecipe aRecipe : network.getAvailableRecipes()) {
+                                if (aRecipe.equals(((RecipeTask) t).recipe)) {
+                                    success = true;
+                                    break;
+                                }
                             }
-                        }
-                        if (success) {
-                            this.task = (RecipeTask) t;
-                            t.processor = this;
-                            return true;
+                            if (success) {
+                                this.task = (RecipeTask) t;
+                                t.processor = this;
+                                return true;
+                            } else {
+                                //RetroStorage.LOGGER.error(this+" Network doesn't know how to handle task! "+t);
+                                return false;
+                            }
                         } else {
-                            //RetroStorage.LOGGER.error(this+" Network doesn't know how to handle task! "+t);
+                            //RetroStorage.LOGGER.error(this+" Not all requirements met for tasks! "+t);
                             return false;
                         }
                     } else {
-                        //RetroStorage.LOGGER.error(this+" Not all requirements met for tasks! "+t);
+                        //RetroStorage.LOGGER.error(this+ " Task is already completed! "+t);
                         return false;
                     }
                 } else {
-                    //RetroStorage.LOGGER.error(this+ " Task is already completed! "+t);
+                    //RetroStorage.LOGGER.error(this + " Task is taken already! "+t);
                     return false;
                 }
             } else {
-                //RetroStorage.LOGGER.error(this + " Task is taken already! "+t);
-                return false;
+                acceptNextTask();
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
 

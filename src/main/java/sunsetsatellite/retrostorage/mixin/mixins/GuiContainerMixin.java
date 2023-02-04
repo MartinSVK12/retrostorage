@@ -12,9 +12,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.interfaces.mixins.IGuiContainer;
+import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
+
+import java.util.ArrayList;
 
 @Debug( export = true )
 @Mixin(
@@ -34,8 +38,25 @@ public class GuiContainerMixin extends GuiScreen
     )
     private void setDescription(int x, int y, float renderPartialTicks, CallbackInfo ci, int centerX, int centerY, Slot slot, InventoryPlayer inventoryplayer, StringTranslate trans, StringBuilder text, boolean multiLine, boolean control, boolean shift, boolean showDescription, boolean isCrafting, String itemName, String itemNick, boolean debug){
         ItemStack stack = slot.getStack();
+        if(stack != null && stack.getItem() == RetroStorage.slotIdFinder){
+            text.append(ChatColor.magenta).append("ID of this slot is: ").append(slot.id).append("\n");
+        }
         if(stack != null && stack.getItem() instanceof ItemStorageDisc){
             text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc")).append("\n");
+        }
+        if(stack != null && stack.getItem() instanceof ItemAdvRecipeDisc){
+            if(stack.tag.getCompoundTag("disc").func_28110_c().size() > 0){
+                text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc").getCompoundTag("tasks").func_28110_c().size()).append(" tasks.").append("\n");
+            } else if(stack.tag.getCompoundTag("disc").func_28110_c().size() == 0){
+                text.append(ChatColor.magenta).append("0 tasks.").append("\n");
+            }
+            NBTTagCompound tasksNBT = stack.tag.getCompoundTag("disc").getCompoundTag("tasks");
+            ArrayList<NBTTagCompound> tasks = new ArrayList<>();
+            tasks.addAll(tasksNBT.func_28110_c());
+            ItemStack output = RetroStorage.getMainOutputOfProcess(tasks);
+            if(output != null){
+                text.append(ChatColor.purple).append("Output: ").append(output).append("\n");
+            }
         }
     };
 
