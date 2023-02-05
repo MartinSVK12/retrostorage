@@ -4,11 +4,11 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DiscManipulator {
@@ -92,7 +92,12 @@ public class DiscManipulator {
                 String K = ((NBTBase) V).getKey();
                 ItemStack itemStack = new ItemStack((NBTTagCompound) V);
                 if(itemStack.getItem() != null) {
-                    inv.setInventorySlotContents(Integer.parseInt(K), itemStack);
+                    if (inv instanceof TileEntityDigitalChest && Integer.parseInt(K) == 0) {
+                        inv.setInventorySlotContents(Integer.parseInt(K) + 1, itemStack);
+                    } else if (inv instanceof TileEntityDigitalChest && Integer.parseInt(K) >= inv.getSizeInventory()) {
+                    } else {
+                        inv.setInventorySlotContents(Integer.parseInt(K), itemStack);
+                    }
                 }
             }
         });

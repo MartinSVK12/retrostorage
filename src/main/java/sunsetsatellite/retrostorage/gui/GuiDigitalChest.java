@@ -22,7 +22,11 @@ public class GuiDigitalChest extends GuiContainer
     {
         fontRenderer.drawString("Digital Chest", 60, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
-        fontRenderer.drawString((new StringBuilder().append("Page: ").append(tile.page).append("/").append(tile.pages)).toString(), 65, 93, 0x404040);
+        int color = 0xFFFFFF;
+        if(tile.page >= tile.pages){
+            color = 0xFF4040;
+        }
+        fontRenderer.drawCenteredString((new StringBuilder().append(tile.page).append("/").append(tile.pages)).toString(), 87, 93, color);
     }
 
     public void initGui()

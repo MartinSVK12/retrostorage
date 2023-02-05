@@ -51,21 +51,21 @@ public class ContainerDigitalTerminal extends Container
     @Override
     public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
         if(tile.network != null){
-            if(tile.getAmountOfUsedSlots() < tile.network.drive.virtualDriveMaxStacks){
-                //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
-                ItemStack item = this.getSlot(i).getStack().copy();
-                ItemStack original = this.getSlot(i).getStack();
-                if(i > 0 && i < 37){
-                    this.onStackMergeShiftClick(this.getSlot(i).getStack(),37,73,false);
-                } else {
-                    this.onStackMergeShiftClick(this.getSlot(i).getStack(),1,36,false);
-                    this.getSlot(i).onPickupFromSlot(item);
+            //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+            ItemStack item = this.getSlot(i).getStack().copy();
+            ItemStack original = this.getSlot(i).getStack();
+            if(i > 0 && i < 37){
+                if(tile.getAmountOfUsedSlots() < tile.network.drive.virtualDriveMaxStacks) {
+                    this.onStackMergeShiftClick(this.getSlot(i).getStack(), 37, 73, false);
                 }
-                if (original.stackSize == 0) {
-                    this.getSlot(i).putStack(null);
-                } else {
-                    this.getSlot(i).onSlotChanged();
-                }
+            } else {
+                this.onStackMergeShiftClick(this.getSlot(i).getStack(),1,36,false);
+                this.getSlot(i).onPickupFromSlot(item);
+            }
+            if (original.stackSize == 0) {
+                this.getSlot(i).putStack(null);
+            } else {
+                this.getSlot(i).onSlotChanged();
             }
         }
     }

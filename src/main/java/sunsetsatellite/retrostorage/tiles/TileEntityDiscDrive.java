@@ -147,7 +147,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
             discsUsed.add(new ItemStack(nbttagcompound1));
         }
         virtualDriveMaxStacks = nbttagcompound.getInteger("MaxStacks");
-        virtualDisc.tag = nbttagcompound.getCompoundTag("VirtualDisc");
+        virtualDisc.tag.setCompoundTag("disc", nbttagcompound.getCompoundTag("VirtualDisc"));
     }
 
     public void writeToNBT(NBTTagCompound nbttagcompound)
@@ -179,7 +179,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         }
         nbttagcompound.setTag("DiscsUsed", nbttaglist);
         nbttagcompound.setTag("MaxStacks",new NBTTagInt(virtualDriveMaxStacks));
-        nbttagcompound.setTag("VirtualDisc",virtualDisc.tag);
+        nbttagcompound.setCompoundTag("VirtualDisc",virtualDisc.tag.getCompoundTag("disc"));
     }
 
     public int getInventoryStackLimit()

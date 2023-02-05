@@ -28,7 +28,11 @@ public class GuiRequestTerminal extends GuiContainer
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
         fontRenderer.drawString((new StringBuilder().append("Page: ").append(tile.page).append("/").append(tile.pages)).toString(), 65, 93, 0x404040);
         if(tile.network != null && tile.network.drive != null){
-            fontRenderer.drawString(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 80, 112, 0x404040);
+            int color = 0xFFFFFF;
+            if(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
+                color = 0xFF4040;
+            }
+            fontRenderer.drawCenteredString(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 95, 112, color);
         }
     }
 

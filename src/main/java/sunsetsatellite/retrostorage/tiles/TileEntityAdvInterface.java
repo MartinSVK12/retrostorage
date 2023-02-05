@@ -196,7 +196,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
             runTask(tasks.get(i));
         }
         if(request != null && request.tasks.size() == 0){
-            RetroStorage.LOGGER.info(this+" Request fulfilled!");
+            RetroStorage.LOGGER.info(this+" Task fulfilled!");
             this.request.completed = true;
             this.request.processor = null;
             network.requestQueue.remove(request);
@@ -362,13 +362,13 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     public void finishTask(NBTTagCompound task){
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Task "+task.getInteger("id")+" succeeded!");
-        RetroStorage.LOGGER.info(this+" "+"Task "+task.getInteger("id")+" succeeded!");
+        RetroStorage.LOGGER.info(this+" "+"Step "+task.getInteger("id")+" succeeded!");
         request.tasks.remove(task);
     }
 
     public void failTask(NBTTagCompound task, String reason, boolean fatal){
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage((fatal ? "FATAL! " : "")+"Task "+task.getInteger("id")+" failed: "+reason+"!");
-        RetroStorage.LOGGER.error(this+" "+(fatal ? "FATAL! " : "")+"Task "+task.getInteger("id")+" failed: "+reason+"!");
+        RetroStorage.LOGGER.error(this+" "+(fatal ? "FATAL! " : "")+"Step "+task.getInteger("id")+" failed: "+reason+"!");
         if(fatal){
             //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing failed!");
             if(request.attempts > 0){
@@ -434,170 +434,6 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         }
         return processes;
     }
-
-    /*public void updateEntity(){
-        TileEntity tile = findTileEntityAroundBlock(IInventory.class,this.getClass());
-        attachedTileEntity = tile;
-        //System.out.println(tile);
-        if(processing == null){
-            processTasks.clear();
-        }
-        if(processing != null && processTasks.size() == 0){
-            finishProcessing();
-        }
-        requestSearchTicks++;
-        if(requestSearchTicks >= requestSearchMaxTicks){
-            requestSearchTicks = 0;
-            acceptRequest();
-            if(processTasks.size() > 0){
-                int i = 0;
-                while(processTasks.get(i).getBoolean("isOutput")){
-                    if(processTasks.size()-1 == i){
-                        break;
-                    }
-                    i++;
-                }
-                runTask(processTasks.get(i));
-            }
-        }
-    }*/
-
-    /*public void acceptRequest(){
-        //System.out.println("Accepting request..");
-        if(controller != null && controller.isActive() && controller.network_disc != null && controller.network_disc.getItem() instanceof ItemStorageDisc) {
-            if(attachedTileEntity != null){
-                if (!controller.assemblyQueue.isEmpty()) {
-                    ItemStack item = controller.assemblyQueue.peekFirst();
-                    NBTTagCompound tasks = item.getItemData().getCompoundTag("tasks");
-                    if (processing == null && getInventorySlotContainItem(item.itemID, item.getItemDamage()) != -1) {
-                        System.out.println("Accepted request: "+item.getItemData().getString("processName"));
-                        processing = item;
-                        controller.assemblyQueue.remove(item);
-                        for(int i = 0;i<tasks.size();i++){
-                            NBTTagCompound task = tasks.getCompoundTag("task"+i);
-                            processTasks.add(task);
-                        }
-                    } else if(processing.isItemEqual(item) && processing.getItemData().equals(item.getItemData())) {
-                        System.out.println("Accepted request: "+item.getItemData().getString("processName"));
-                        //processing = item;
-                        controller.assemblyQueue.remove(item);
-                        for(int i = 0;i<tasks.size();i++){
-                            NBTTagCompound task = tasks.getCompoundTag("task"+i);
-                            processTasks.add(task);
-                        }
-                    }
-                    //else {System.out.println("Already processing!");}
-                } //else {System.out.println("No requests..");}
-            } //else {System.out.println("Interface not attached.");};
-        } //else {System.out.println("Network offline.");}
-    }*/
-
-    /*public void runTask(NBTTagCompound task){
-        //System.out.println("Running task: "+task.getInteger("id"));
-        boolean isOutput = task.getBoolean("isOutput");
-        int slot = task.getInteger("slot");
-        ItemStack stack = new ItemStack(task.getCompoundTag("stack"));
-        if(attachedTileEntity == null){
-            failTask(task,"Interface not attached",true);
-            return;
-        }
-        if(!(attachedTileEntity instanceof IInventory)){
-            failTask(task,"Incompatible attachment",true);
-            return;
-        }
-        if(controller == null || network.inventory == null){
-            return;
-        }
-        IInventory inv = ((IInventory) attachedTileEntity);
-        if(!isOutput){
-            if(inv.getSizeInventory() > slot){
-                ItemStack slotStack = ((IInventory) attachedTileEntity).getStackInSlot(slot);
-                if(slotStack != null){
-                    if(slotStack.isItemEqual(stack) && slotStack.getItemData().equals(stack.getItemData())){
-                        if(slotStack.stackSize + stack.stackSize <= 64){
-                            int networkSlot = network.inventory.getInventorySlotContainItem(stack.itemID,stack.getItemDamage());
-                            int networkAmount = network.inventory.getItemCount(stack.itemID,stack.getItemDamage());
-                            if(networkSlot != -1){
-                                if(networkAmount >= stack.stackSize){
-                                    network.inventory.decrStackSize(networkSlot,stack.stackSize);
-                                    DiscManipulator.saveDisc(controller.network_disc,network.inventory);
-                                    slotStack.stackSize += stack.stackSize;
-                                    finishTask(task);
-                                } else {
-                                    failTask(task, "Not enough resources", true);
-                                }
-                            } else {
-                                failTask(task, "Not enough resources",true);
-                            }
-                        } else {
-                            failTask(task, "Slot full",false);
-                        }
-                    } else {
-                        failTask(task, "Slot already occupied",false);
-                    }
-                } else {
-                    int networkSlot = network.inventory.getInventorySlotContainItem(stack.itemID,stack.getItemDamage());
-                    int networkAmount = network.inventory.getItemCount(stack.itemID,stack.getItemDamage());
-                    if(networkSlot != -1){
-                        if(networkAmount >= stack.stackSize) {
-                            network.inventory.decrStackSize(networkSlot, stack.stackSize);
-                            DiscManipulator.saveDisc(controller.network_disc, network.inventory);
-                            inv.setInventorySlotContents(slot, stack.copy());
-                            finishTask(task);
-                        } else {
-                            failTask(task, "Not enough resources", true);
-                        }
-                    } else {
-                        failTask(task, "Not enough resources",true);
-                    }
-                }
-            } else {
-                failTask(task, "Invalid slot",true);
-            }
-        } else {
-            if(inv.getSizeInventory() > slot) {
-                ItemStack slotStack = ((IInventory) attachedTileEntity).getStackInSlot(slot);
-                if (slotStack != null) {
-                    if(slotStack.stackSize == stack.stackSize ){
-                        if(slotStack.isItemEqual(stack) && slotStack.getItemData().equals(stack.getItemData())){
-                            if (network.inventory.addItemStackToInventory(slotStack.copy())) {
-                                inv.setInventorySlotContents(slot, null);
-                                DiscManipulator.saveDisc(controller);
-                                finishTask(task);
-                            } else {failTask(task,"Failed to add to network",false);}
-                        } else {failTask(task,"Stack mismatch",false);}
-                    }
-                } //else {failTask(task, "Empty slot",false);}
-            } else {failTask(task, "Invalid slot",true);}
-        }
-    }*/
-
-    /*public void cancelProcessing(){
-        processing = null;
-        processTasks.clear();
-    }
-
-    public void finishProcessing(){
-        ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing successful!");
-        processing = null;
-    }
-
-
-    public void finishTask(NBTTagCompound task){
-        ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Task "+task.getInteger("id")+" succeeded!");
-        System.out.println("Task "+task.getInteger("id")+" succeeded!");
-        processTasks.remove(task);
-    }
-
-    public void failTask(NBTTagCompound task, String reason, boolean fatal){
-        ModLoader.getMinecraftInstance().thePlayer.addChatMessage((fatal ? "FATAL! " : "")+"Task "+task.getInteger("id")+" failed: "+reason+"!");
-        System.out.println((fatal ? "FATAL! " : "")+"Task "+task.getInteger("id")+" failed: "+reason+"!");
-        if(fatal){
-            ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing failed!");
-            processTasks.remove(task);
-            processing = null;
-        }
-    }*/
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {

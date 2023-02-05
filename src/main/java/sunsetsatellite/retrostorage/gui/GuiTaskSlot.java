@@ -57,7 +57,7 @@ public class GuiTaskSlot extends GuiSlot {
             } else {
                 this.parent.drawString(this.parent.fontRenderer, "Task failed! Too many unsuccessful attempts!", j + 2, k + 12, 0xFF8080);
             }
-            this.parent.drawString(this.parent.fontRenderer,"Processor: "+(task.processor == null ? "None" : ((TileEntityNetworkDevice)task.processor).toStringFormatted()), j + 2, k + 12 + 10, 0x808080);
+            this.parent.drawString(this.parent.fontRenderer,"Processor: "+(task.processor == null ? "None" : ((TileEntityNetworkDevice)task.processor).toStringFormatted().replace("TileEntity","")), j + 2, k + 12 + 10, 0x808080);
         } else if(task instanceof ProcessTask){
             int color = 0x87CEFA;
             if(task.processor != null){
@@ -74,7 +74,7 @@ public class GuiTaskSlot extends GuiSlot {
             } else {
                 this.parent.drawString(this.parent.fontRenderer, "Task failed! Too many unsuccessful attempts!", j + 2, k + 12, 0xFF8080);
             }
-            this.parent.drawString(this.parent.fontRenderer,"Processor: "+(task.processor == null ? "None" : ((TileEntityNetworkDevice)task.processor).toStringFormatted()), j + 2, k + 12 + 10, 0x808080);
+            this.parent.drawString(this.parent.fontRenderer,"Processor: "+(task.processor == null ? "None" : ((TileEntityNetworkDevice)task.processor).toStringFormatted().replace("TileEntity","")), j + 2, k + 12 + 10, 0x808080);
         }
     }
 }

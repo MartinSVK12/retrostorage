@@ -50,11 +50,18 @@ public class TileEntityDigitalChest extends TileEntity
     public void updateEntity()
     {
         if(getStackInSlot(0) != null){
-            this.pages = ((int) Math.floor((double) getStackInSlot(0).tag.func_28110_c().size()/(getSizeInventory()-1))) + 1;
+            this.pages = 36;
+            this.page = getStackInSlot(0).tag.getCompoundTag("disc").func_28110_c().size();
+        } else {
+            this.pages = 0;
+            this.page = 0;
+        }
+        /*if(getStackInSlot(0) != null){
+            this.pages = ((int) Math.floor((double) getStackInSlot(0).tag.getCompoundTag("disc").func_28110_c().size()/(getSizeInventory()-1))) + 1;
         } else {
             this.page = 1;
             this.pages = 1;
-        }
+        }*/
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)

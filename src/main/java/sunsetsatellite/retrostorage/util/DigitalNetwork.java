@@ -36,6 +36,12 @@ public class DigitalNetwork extends Network {
         if(device.tile instanceof TileEntityDiscDrive){
             DiscManipulator.loadDisc(((TileEntityDiscDrive) device.tile).virtualDisc,inventory);
         }
+        if(device.tile instanceof TileEntityWirelessLink){
+            if(((TileEntityWirelessLink) device.tile).remoteLink != null){
+                HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3(((TileEntityWirelessLink) device.tile).remoteLink.xCoord,((TileEntityWirelessLink) device.tile).remoteLink.yCoord,((TileEntityWirelessLink) device.tile).remoteLink.zCoord));
+                addRecursive(candidates);
+            }
+        }
     }
 
     @Override

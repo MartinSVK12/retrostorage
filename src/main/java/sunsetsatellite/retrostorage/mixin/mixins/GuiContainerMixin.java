@@ -42,10 +42,12 @@ public class GuiContainerMixin extends GuiScreen
         if(stack != null && stack.getItem() == RetroStorage.slotIdFinder){
             text.append(ChatColor.magenta).append("ID of this slot is: ").append(slot.id).append(" (").append(slot.getClass().getSimpleName()).append(")").append("\n");
         }
-        if(stack != null && (stack.getItem() == RetroStorage.mobileTerminal || stack.getItem() == RetroStorage.mobileRequestTerminal)){
+        if(stack != null && (stack.getItem() == RetroStorage.mobileTerminal || stack.getItem() == RetroStorage.mobileRequestTerminal || stack.getItem() == RetroStorage.linkingCard)){
             if(stack.tag.hasKey("position")){
                 if(stack.tag.getCompoundTag("position").hasKey("x") && stack.tag.getCompoundTag("position").hasKey("y") && stack.tag.getCompoundTag("position").hasKey("z")){
                     text.append(ChatColor.magenta).append("Bound to block at X:").append(stack.tag.getCompoundTag("position").getInteger("x")).append(" Y:").append(stack.tag.getCompoundTag("position").getInteger("y")).append(" Z:").append(stack.tag.getCompoundTag("position").getInteger("z")).append(".\n");
+                } else {
+                    text.append(ChatColor.magenta).append("Unbound.\n");
                 }
             } else {
                 text.append(ChatColor.magenta).append("Unbound.\n");
@@ -56,16 +58,17 @@ public class GuiContainerMixin extends GuiScreen
         }
         if(stack != null && stack.getItem() instanceof ItemAdvRecipeDisc){
             if(stack.tag.getCompoundTag("disc").func_28110_c().size() > 0){
-                text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc").getCompoundTag("tasks").func_28110_c().size()).append(" tasks.").append("\n");
+                text.append(ChatColor.magenta).append(stack.tag.getCompoundTag("disc").getCompoundTag("tasks").func_28110_c().size()).append(" steps.").append("\n");
             } else if(stack.tag.getCompoundTag("disc").func_28110_c().size() == 0){
-                text.append(ChatColor.magenta).append("0 tasks.").append("\n");
+                text.append(ChatColor.magenta).append("0 steps.").append("\n");
             }
             NBTTagCompound tasksNBT = stack.tag.getCompoundTag("disc").getCompoundTag("tasks");
             ArrayList<NBTTagCompound> tasks = new ArrayList<>();
             tasks.addAll(tasksNBT.func_28110_c());
             ItemStack output = RetroStorage.getMainOutputOfProcess(tasks);
             if(output != null){
-                text.append(ChatColor.purple).append("Output: ").append(output).append("\n");
+                String name = StringTranslate.getInstance().translateKey(output.getItemName() + ".name");
+                text.append(ChatColor.purple).append("Output: ").append(output.stackSize).append("x ").append(name).append("\n");
             }
         }
     };

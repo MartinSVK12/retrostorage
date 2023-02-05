@@ -20,7 +20,7 @@ public class GuiProcessProgrammer extends GuiContainer
     {
         fontRenderer.drawString("Process Programmer", 35, 6, 0x404040);
         fontRenderer.drawString("Process:", 10, 24, 0x404040);
-        fontRenderer.drawString("Task: "+tile.currentTask, 42, 50, 0x404040);
+        fontRenderer.drawString("Step: "+tile.currentTask, 42, 50, 0x404040);
         fontRenderer.drawString("Slot: "+tile.currentSlot, 42, 75, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
 

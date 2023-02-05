@@ -26,7 +26,7 @@ public class ItemStorageDisc extends Item
     @Override
     public NBTTagCompound getDefaultTag() {
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setCompoundTag("disc",new NBTTagCompound());
+        //nbt.setCompoundTag("disc",new NBTTagCompound());
         if(itemID == RetroStorage.goldenDisc.itemID){
             nbt.setBoolean("overrideColor",true);
             nbt.setByte("color", (byte) 0x4);
