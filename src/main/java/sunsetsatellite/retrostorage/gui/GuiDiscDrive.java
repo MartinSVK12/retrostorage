@@ -24,7 +24,7 @@ public class GuiDiscDrive extends GuiContainer
         fontRenderer.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
         if(tile.virtualDisc != null && tile.network != null){
             int color = 0xFFFFFF;
-            if(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
+            if(tile.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length >= tile.virtualDriveMaxStacks){
                 color = 0xFF4040;
             }
             fontRenderer.drawCenteredString(tile.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length +"/"+tile.virtualDriveMaxStacks, 88, 20, color);

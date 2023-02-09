@@ -23,7 +23,8 @@ import java.util.ArrayList;
 
 @Debug( export = true )
 @Mixin(
-        value = GuiContainer.class
+        value = GuiContainer.class,
+        remap = false
 )
 public class GuiContainerMixin extends GuiScreen
     implements IGuiContainer

@@ -23,6 +23,9 @@ repositories {
 		name = 'Fabric'
 		url = 'https://maven.fabricmc.net/'
 	}
+	maven {
+		url = "https://jitpack.io"
+	}
 	ivy {
 		url = "https://github.com/Better-than-Adventure"
 		patternLayout {

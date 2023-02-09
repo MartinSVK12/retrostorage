@@ -8,6 +8,7 @@
     "mixins.GuiContainerMixin",
     "mixins.MinecraftMixin",
     "mixins.NBTTagCompoundMixin",
+    "mixins.RenderBlocksMixin",
     "mixins.WorldGenLabyrinthMixin"
   ],
   "client": [

@@ -9,7 +9,9 @@ import sunsetsatellite.retrostorage.blocks.*;
 import sunsetsatellite.retrostorage.items.*;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.*;
+import turniplabs.halplibe.HalpLibe;
 import turniplabs.halplibe.helper.*;
+import turniplabs.halplibe.mixin.accessors.BlockAccessor;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -63,9 +65,10 @@ public class RetroStorage implements ModInitializer {
     public static final Item linkingCard = ItemHelper.createItem(MOD_ID,new ItemLinkingCard(Config.getFromConfig("linkingCard",336)),"linkingCard","linkingcard.png").setMaxStackSize(1);
     public static final Item blankCard = ItemHelper.createItem(MOD_ID,new Item(Config.getFromConfig("blankCard",337)),"blankCard","blankcard.png");
 
+
     public static final Block digitalChest = BlockHelper.createBlock(MOD_ID,new BlockDigitalChest(Config.getFromConfig("digitalChest",900), Material.rock),"digitalChest","digitalchesttopfilled.png","digitalchestside.png","digitalchestfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block digitalController = BlockHelper.createBlock(MOD_ID,new BlockDigitalController(Config.getFromConfig("digitalController",901), Material.rock),"digitalController","digitalcontroller.png",Block.soundStoneFootstep,2,5,1);
-    public static final Block networkCable = BlockHelper.createBlock(MOD_ID,new Block(Config.getFromConfig("networkCable",902), Material.rock),"networkCable","blockcable.png",Block.soundClothFootstep,1,1,0);
+    public static final Block networkCable = BlockHelper.createBlock(MOD_ID,new BlockNetworkCable(Config.getFromConfig("networkCable",902)),"networkCable","blockcable.png",Block.soundClothFootstep,1,1,0);
     public static final Block discDrive = BlockHelper.createBlock(MOD_ID,new BlockDiscDrive(Config.getFromConfig("discDrive",903), Material.rock),"discDrive","digitalchestside.png","digitalchestside.png","discdrive.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block digitalTerminal = BlockHelper.createBlock(MOD_ID,new BlockDigitalTerminal(Config.getFromConfig("digitalTerminal",904), Material.rock),"digitalTerminal","digitalchestside.png","digitalchestside.png","digitalchestfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block recipeEncoder = BlockHelper.createBlock(MOD_ID,new BlockRecipeEncoder(Config.getFromConfig("recipeEncoder",905),Material.rock),"recipeEncoder","recipeencodertopfilled.png","digitalchestside.png","recipeencoderfront.png","digitalchestside.png","digitalchestside.png","digitalchestside.png",Block.soundStoneFootstep,2,5,1);
@@ -79,6 +82,25 @@ public class RetroStorage implements ModInitializer {
 
     public static HashMap<String, Vec3> directions = new HashMap<>();
 
+    public int[] cableTex = TextureHelper.registerItemTexture(RetroStorage.MOD_ID,"itemcable.png");
+
+
+    public static Block createBlockWithItem(String modId, Block block, ItemBlock itemblock, String translationKey, String texture, StepSound stepSound, float hardness, float resistance, float lightValue) {
+        int[] one = TextureHelper.registerBlockTexture(modId, texture);
+        return createBlockWithItem(modId, block, itemblock, translationKey, one[0], one[1], one[0], one[1], one[0], one[1], one[0], one[1], one[0], one[1], one[0], one[1], stepSound, hardness, resistance, lightValue);
+    }
+
+    public static Block createBlockWithItem(String modId, Block block, ItemBlock itemblock, String translationKey, int topX, int topY, int bottomX, int bottomY, int northX, int northY, int southX, int southY, int eastX, int eastY, int westX, int westY, StepSound stepSound, float hardness, float resistance, float lightValue) {
+        block.setTexCoords(topX, topY, bottomX, bottomY, northX, northY, eastX, eastY, southX, southY, westX, westY);
+        block.setBlockName(HalpLibe.addModId(modId, translationKey));
+        ((BlockAccessor)block).callSetStepSound(stepSound);
+        ((BlockAccessor)block).callSetHardness(hardness);
+        ((BlockAccessor)block).callSetResistance(resistance);
+        ((BlockAccessor)block).callSetLightValue(lightValue);
+        Item.itemsList[block.blockID] = itemblock;
+        return block;
+    }
+
     public RetroStorage(){
         Config.init();
         directions.put("X+",new Vec3(1,0,0));
@@ -91,21 +113,6 @@ public class RetroStorage implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        //NBT -> Recipe -> Result test: PASSED!!
-        /*NBTTagCompound recipe = new NBTTagCompound();
-        NBTTagCompound stackNBT = new NBTTagCompound();
-        new ItemStack(Block.cobbleStone, 1).writeToNBT(stackNBT);
-        recipe.setCompoundTag("0", stackNBT);
-        stackNBT = new NBTTagCompound();
-        new ItemStack(Block.cobbleStone, 1).writeToNBT(stackNBT);
-        recipe.setCompoundTag("1", stackNBT);
-        ItemStack result = findRecipeFromNBT(recipe);
-        if (result.itemID != 0) {
-            RetroStorage.LOGGER.info("Result: " + result);
-        } else {
-            RetroStorage.LOGGER.info("Result: null");
-        }*/
-
         RecipeHelper.Crafting.createRecipe(blankDisc, 1, new Object[]{"GGG", "GRG", "GGG", 'G', Block.glass, 'R', Item.dustRedstone});
         RecipeHelper.Crafting.createRecipe(recipeDisc, 1,  new Object[]{"GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.dustRedstone, 'P', new ItemStack(Item.dye, 1, 5)});
         RecipeHelper.Crafting.createRecipe(storageDisc1, 1, new Object[]{"RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.dustRedstone});
@@ -179,7 +186,7 @@ public class RetroStorage implements ModInitializer {
         EntityHelper.createTileEntity(TileEntityProcessProgrammer.class,"Process Programmer");
         EntityHelper.createTileEntity(TileEntityAdvInterface.class,"Adv. Interface");
         EntityHelper.createTileEntity(TileEntityWirelessLink.class,"Wireless Link");
-        LOGGER.info("RetroStorage: BTA Edition initialized.");
+        LOGGER.info("RetroStorage initialized.");
     }
 
     public static void printTaskTree(Task rootTask){
