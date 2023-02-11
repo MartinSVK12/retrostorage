@@ -34,6 +34,7 @@ Add into "Loader Mods" and you're done!
 - [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE) - helped with a couple things
 - [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
 - [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
+- [Better than Adventure](https://discord.com/invite/kGvmzZuG2p) - what would happen if b1.8 never happened?
 
 
 ## License
