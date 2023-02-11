@@ -1,7 +1,7 @@
 # RetroStorage
 Digital storage system mod for Minecraft b1.7.3. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
-# This version is for Babric/BTA! Go to the "main" branch for the Modloader version.
+# Maybe you're looking for the [b1.7.3 Modloader](https://github.com/MartinSVK12/retrostorage) version instead?
 
 Requires Babric, designed for Better than Adventure.
 
