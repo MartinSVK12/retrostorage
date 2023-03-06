@@ -144,10 +144,10 @@ public class TileEntityRecipeEncoder extends TileEntity
                     }
                 }
                 NBTTagCompound nbt = RetroStorage.itemsArrayToNBT(itemList);//DiscManipulator.convertRecipeToNBT(itemList);
-                RetroStorage.printCompound(nbt);
+                //RetroStorage.printCompound(nbt);
                 recipeDisc.tag.setCompoundTag("recipe",nbt);
                 ItemStack result = RetroStorage.findRecipeResultFromNBT(nbt);
-                RetroStorage.LOGGER.info(String.valueOf(result));
+                //RetroStorage.LOGGER.info(String.valueOf(result));
                 if(result != null && result.itemID != 0 && result.stackSize != 0){
                     String itemName = StringTranslate.getInstance().translateKey(result.getItemName() + ".name");
                     recipeDisc.tag.setString("name","Recipe Disc: "+result.stackSize+"x "+itemName);

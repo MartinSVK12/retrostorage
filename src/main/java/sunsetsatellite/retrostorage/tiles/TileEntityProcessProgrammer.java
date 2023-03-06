@@ -132,7 +132,7 @@ public class TileEntityProcessProgrammer extends TileEntity
         } else {
             tasks.remove(currentTask);
         }
-        System.out.println(tasks);
+        //System.out.println(tasks);
     }
 
     public void clearDisc() {

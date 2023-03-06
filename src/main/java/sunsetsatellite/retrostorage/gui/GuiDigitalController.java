@@ -50,7 +50,7 @@ public class GuiDigitalController extends GuiScreen
             fontRenderer.drawString(String.format("Available recipes: %d",recipeCount),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Available processes: %d",tile.network.getAvailableProcesses().size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()),2,i+=10,0xFFFFFFFF);
-            fontRenderer.drawString(String.format("Request queue: %s", tile.network.requestQueue),2,i+=10,0xFFFFFFFF);
+            //fontRenderer.drawString(String.format("Request queue: %s", tile.network.requestQueue),2,i+=10,0xFFFFFFFF);
             //RetroStorage.LOGGER.info(tile.network.toString());
         }
     }

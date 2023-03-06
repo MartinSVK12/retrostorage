@@ -7,7 +7,7 @@ import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 
 public class RenderCableBlock {
     public static boolean render(RenderBlocks renderblocks, IBlockAccess blockAccess, int i, int j, int k, Block block, int l) {
-        float width = 0.4f;
+        float width = 0.5f;
 
         float halfWidth = (1.0F - width) / 2.0F;
         block.setBlockBounds(halfWidth, halfWidth, halfWidth, halfWidth + width, halfWidth + width, halfWidth + width);
