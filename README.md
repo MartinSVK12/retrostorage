@@ -1,7 +1,7 @@
 # RetroStorage
 Digital storage system mod for Minecraft b1.7.3. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
-# This version is for Babric/BTA! Go to the "main" branch for the Modloader version.
+# Maybe you're looking for the [b1.7.3 Modloader](https://github.com/MartinSVK12/retrostorage) version instead?
 
 Requires Babric, designed for Better than Adventure.
 
@@ -34,6 +34,7 @@ Add into "Loader Mods" and you're done!
 - [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE) - helped with a couple things
 - [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
 - [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
+- [Better than Adventure](https://discord.com/invite/kGvmzZuG2p) - what would happen if b1.8 never happened?
 
 
 ## License
