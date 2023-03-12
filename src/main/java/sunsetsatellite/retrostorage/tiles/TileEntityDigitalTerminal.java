@@ -28,6 +28,9 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
 
     public ItemStack getStackInSlot(int i)
     {
+        if(i > contents.length){
+            return null;
+        }
         return contents[i];
     }
     

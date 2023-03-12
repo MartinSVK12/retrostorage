@@ -38,6 +38,24 @@ public abstract class TileEntityNetworkDevice extends TileEntity {
         return sides;
     }
 
+    public TileEntity getConnectedTileEntity(Class<?> allowedTile){
+        HashMap<String, TileEntity> sides = new HashMap<>();
+
+        for (Map.Entry<String, Vec3> entry : RetroStorage.directions.entrySet()) {
+            String K = entry.getKey();
+            Vec3 V = entry.getValue();
+
+            TileEntity tile = worldObj.getBlockTileEntity(xCoord+V.x, yCoord+V.y, zCoord+V.z);
+            if(tile != null){
+                if(allowedTile.isAssignableFrom(tile.getClass())){
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return this.getClass().getTypeName()+"{" +

@@ -20,25 +20,45 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
     @Override
     public void updateEntity() {
         networkReload.tick();
+        externalEnergy = (TileEntityEnergyAcceptor) getConnectedTileEntity(TileEntityEnergyAcceptor.class);
         if(network != null){
-            if(energy > 0){
-                energy -= network.devicesSize()+1;
-            }
-            if(energy <= 0){
-                if(energy < 0){
-                    energy = 0;
+            if(externalEnergy == null){
+                if(energy > 0){
+                    energy -= network.devicesSize()+1;
                 }
-                if(!networkReload.isPaused()){
-                    network.removeAll();
-                    networkReload.pause();
+                if(energy <= 0){
+                    if(energy < 0){
+                        energy = 0;
+                    }
+                    if(!networkReload.isPaused()){
+                        network.removeAll();
+                        networkReload.pause();
+                    }
+                    active = false;
+                } else {
+                    if(networkReload.isPaused()){
+                        networkReload.unpause();
+                    }
+                    active = true;
                 }
-                active = false;
             } else {
-                if(networkReload.isPaused()){
-                    networkReload.unpause();
+                if(externalEnergy.energy > 0){
+                    externalEnergy.modifyEnergy((int) (-(network.devicesSize()+1)));
                 }
-                active = true;
+                if(externalEnergy.energy <= 0){
+                    if(!networkReload.isPaused()){
+                        network.removeAll();
+                        networkReload.pause();
+                    }
+                    active = false;
+                } else {
+                    if(networkReload.isPaused()){
+                        networkReload.unpause();
+                    }
+                    active = true;
+                }
             }
+
         } else {
             active = false;
         }
@@ -58,8 +78,8 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
 
     public double energy = 0;
     public boolean active = false;
-    //HashMap<Block Position>, HashMap<Tile Name, Tile Object>>
 
 
     public TickTimer networkReload;
+    public TileEntityEnergyAcceptor externalEnergy;
 }

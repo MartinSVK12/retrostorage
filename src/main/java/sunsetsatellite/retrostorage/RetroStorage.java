@@ -79,6 +79,8 @@ public class RetroStorage implements ModInitializer {
     public static final Block processProgrammer = BlockHelper.createBlock(MOD_ID,new BlockProcessProgrammer(Config.getFromConfig("processProgrammer",910),Material.rock),"processProgrammer","processprogrammertopfilled.png","advmachineside.png","processprogrammerfront.png","advmachineside.png","advmachineside.png","advmachineside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block advInterface = BlockHelper.createBlock(MOD_ID,new BlockAdvInterface(Config.getFromConfig("advInterface",911),Material.rock),"advInterface","advinterfaceside.png",Block.soundStoneFootstep,2,5,1);
     public static final Block wirelessLink = BlockHelper.createBlock(MOD_ID,new BlockWirelessLink(Config.getFromConfig("wirelessLink",912),Material.rock),"wirelessLink","wirelesslink.png",Block.soundStoneFootstep,2,5,1);
+    public static final Block energyAcceptor = BlockHelper.createBlock(MOD_ID,new BlockEnergyAcceptor(Config.getFromConfig("energyAcceptor",913),Material.rock),"energyAcceptor","energyacceptor.png",Block.soundStoneFootstep,2,5,1);
+
 
     public static HashMap<String, Vec3> directions = new HashMap<>();
 
@@ -165,6 +167,7 @@ public class RetroStorage implements ModInitializer {
         RecipeHelper.Crafting.createRecipe(RetroStorage.advInterface,1,new Object[]{"123","456","789",'1',Block.obsidian,'2',advRecipeDisc,'3',Block.obsidian,'4',RetroStorage.chipCrafting,'5',assembler,'6',RetroStorage.chipDigitizer,'7',Block.obsidian,'8',RetroStorage.advMachineCasing,'9',Block.obsidian});
         RecipeHelper.Crafting.createRecipe(RetroStorage.wirelessLink,1,new Object[]{"123","456","789",'2',RetroStorage.chipWireless,'4',RetroStorage.networkCable,'5',RetroStorage.machineCasing,'6',RetroStorage.wirelessAntenna,'8',RetroStorage.chipWireless});
         //RecipeHelper.Crafting.createRecipe(RetroStorage.,1,new Object[]{"123","456","789",'1',RetroStorage.machineCasing,'2',Block.torchRedstoneActive,'3',RetroStorage.machineCasing,'4',RetroStorage.networkCable,'5',RetroStorage.redstoneCore,'6',RetroStorage.chipDigitizer,'7',RetroStorage.machineCasing,'8',Item.redstoneRepeater,'9',RetroStorage.machineCasing});*/
+        RecipeHelper.Crafting.createRecipe(RetroStorage.energyAcceptor,1,new Object[]{"SRS","RER","SRS",'S',machineCasing,'R',redstoneCore,'E',energyCore});
 
         RecipeHelper.Crafting.createRecipe(linkingCard,1,new Object[]{"123","456","789",'1',new ItemStack(Item.dye,1,12),'2',new ItemStack(Item.dye,1,4),'3',new ItemStack(Item.dye,1,12),'4',new ItemStack(Item.dye,1,4),'5',blankCard,'6',new ItemStack(Item.dye,1,4),'7',new ItemStack(Item.dye,1,12),'8',chipWireless,'9',new ItemStack(Item.dye,1,12)});
         RecipeHelper.Crafting.createRecipe(RetroStorage.mobileTerminal,1,new Object[]{"A","T","W",'A',wirelessAntenna,'T',digitalTerminal,'W',chipWireless});
@@ -186,6 +189,7 @@ public class RetroStorage implements ModInitializer {
         EntityHelper.createTileEntity(TileEntityProcessProgrammer.class,"Process Programmer");
         EntityHelper.createTileEntity(TileEntityAdvInterface.class,"Adv. Interface");
         EntityHelper.createTileEntity(TileEntityWirelessLink.class,"Wireless Link");
+        EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
         LOGGER.info("RetroStorage initialized.");
     }
 

@@ -46,6 +46,8 @@ tile.retrostorage.advInterface.name=Adv. Interface
 tile.retrostorage.advInterface.desc=Executes tasks from [Adv. Recipe Discs] on demand.
 tile.retrostorage.wirelessLink.name=Wireless Link
 tile.retrostorage.wirelessLink.desc=A pair of these can allow you to connect remote parts of a network together wirelessly.
+tile.retrostorage.energyAcceptor.name=Energy Acceptor
+tile.retrostorage.energyAcceptor.desc=External energy source for [Digital Controller].
 
 item.retrostorage.machineCasing.desc=Standard casing for most machines.
 item.retrostorage.advMachineCasing.desc=Casing for more advanced machines.
