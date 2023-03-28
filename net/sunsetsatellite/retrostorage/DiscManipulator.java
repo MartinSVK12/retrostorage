@@ -123,7 +123,7 @@ public class DiscManipulator {
 			if(i.get() < 37) {
 				String K = ((NBTBase) V).getKey();
 				ItemStack itemStack = new ItemStack((NBTTagCompound) V);
-				inv.setInventorySlotContents(Integer.parseInt(K)+page, itemStack);
+				inv.setInventorySlotContents(Integer.parseInt(K) * page, itemStack);
 				i.getAndIncrement();
 			}
 		});
