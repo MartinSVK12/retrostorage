@@ -82,24 +82,28 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     }
 
     public void removeLastDisc() {
-        if(network != null){
-            if(discsUsed.size() > 0){
-                ItemStack disc = discsUsed.get(0).copy();
-                discsUsed.remove(0);
-                virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
-                NBTTagCompound nbt = new NBTTagCompound();
-                Object[] V = virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray();
-                int stacksToRemove = Math.min(virtualDisc.tag.getCompoundTag("disc").func_28110_c().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
-                for (int i = 0; i < stacksToRemove; i++) {
-                    nbt.setCompoundTag(String.valueOf(i),(NBTTagCompound) V[i]);
+        if(discsUsed.size() > 0){
+            ItemStack disc = discsUsed.get(0).copy();
+            discsUsed.remove(0);
+            virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            NBTTagCompound nbt = new NBTTagCompound();
+            Object[] V = virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray();
+            int stacksToRemove = Math.min(virtualDisc.tag.getCompoundTag("disc").func_28110_c().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            for (int i = 0; i < stacksToRemove; i++) {
+                nbt.setCompoundTag(String.valueOf(i),(NBTTagCompound) V[i]);
+                if(network != null) {
                     network.inventory.inventoryContents[i] = null;
                 }
-                disc.tag.setCompoundTag("disc",nbt);
-                disc.stackSize = 1;
-                setInventorySlotContents(1,disc);
-                if(virtualDriveMaxStacks == 0){
+            }
+            disc.tag.setCompoundTag("disc",nbt);
+            disc.stackSize = 1;
+            setInventorySlotContents(1,disc);
+            if(virtualDriveMaxStacks == 0){
+                if(network != null) {
                     DiscManipulator.clearDigitalInv(network.inventory);
                 }
+            }
+            if(network != null) {
                 DiscManipulator.saveDisc(virtualDisc, network.inventory);
             }
         }

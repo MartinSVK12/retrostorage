@@ -8,10 +8,7 @@ import sunsetsatellite.retrostorage.util.BlockInstance;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.TickTimer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TileEntityRequestTerminal extends TileEntityNetworkDevice
     implements IInventory
@@ -66,23 +63,20 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
         if(network != null){
             if(getStackAmount() == 0){
                 int i = 1;
-                HashMap<BlockInstance, ArrayList<IRecipe>> recipes = network.getAvailableRecipesWithSource();
-                for (Map.Entry<BlockInstance, ArrayList<IRecipe>> entry : recipes.entrySet()) {
-                    BlockInstance K = entry.getKey();
-                    ArrayList<IRecipe> V = entry.getValue();
-                    for(IRecipe recipe : V){
-                        if(i < 37){
-                            setInventorySlotContents(i,recipe.getRecipeOutput());
-                            recipeContents[i] = recipe;
-                            i++;
-                        }
-                    }
-                }
+                ArrayList<IRecipe> recipes = network.getAvailableRecipes();
                 ArrayList<ArrayList<NBTTagCompound>> processes = network.getAvailableProcesses();
-                for(ArrayList<NBTTagCompound> process : processes){
-                    if(i < 37){
-                        setInventorySlotContents(i, RetroStorage.getMainOutputOfProcess(process));
-                        recipeContents[i] = process;
+                ArrayList<Object> allCraftables = new ArrayList<>();
+                allCraftables.addAll(recipes);
+                allCraftables.addAll(processes);
+                List<Object> pageCraftables = allCraftables.subList(((page-1)*36),Math.min(allCraftables.size(),page*36));
+                for (Object craftable : pageCraftables) {
+                    if(craftable instanceof IRecipe){
+                        setInventorySlotContents(i,((IRecipe)craftable).getRecipeOutput());
+                        recipeContents[i] = craftable;
+                        i++;
+                    } else if (craftable instanceof ArrayList) {
+                        setInventorySlotContents(i, RetroStorage.getMainOutputOfProcess((ArrayList<NBTTagCompound>) craftable));
+                        recipeContents[i] = craftable;
                         i++;
                     }
                 }
@@ -95,18 +89,14 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
             Arrays.fill(contents, null);
             Arrays.fill(recipeContents,null);
         }
-        /*if(network != null && network.drive != null){
-            DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-        }*/
     }
 
     public void updateEntity()
     {
         saveTimer.tick();
         if(network != null && network.drive != null){
-            //contents = network.inventory.inventoryContents;
             setInventorySlotContents(0, network.drive.virtualDisc);
-            //this.pages = (network.inventory.getLastOccupiedStack()/36)+1;
+            this.pages = ((network.getAvailableRecipes().size()+network.getAvailableProcesses().size())/36)+1;
         } else {
             contents = new ItemStack[37];
         }
@@ -199,6 +189,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
         int j = 0;
         if(network != null && network.drive != null){
             j = network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().size();
+
         }
         return j;
     }

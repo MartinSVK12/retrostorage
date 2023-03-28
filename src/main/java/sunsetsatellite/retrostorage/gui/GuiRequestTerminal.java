@@ -66,15 +66,6 @@ public class GuiRequestTerminal extends GuiContainer
             if(tile.network != null){
                 if(tile.page<tile.pages) {
                     tile.page++;
-                    for(Object slot : inventorySlots.inventorySlots){
-                        if(slot instanceof SlotDigital){
-                            ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + ((tile.page-1) * 37) + 1;
-                        }
-                    }
-                    //DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
-
-                    //DiscManipulator.clearDigitalInv(tile);
-                    //DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
                 }
             }
         }
@@ -83,15 +74,6 @@ public class GuiRequestTerminal extends GuiContainer
             if(tile.network != null) {
                 if (tile.page > 1) {
                     tile.page--;
-                    for(Object slot : inventorySlots.inventorySlots){
-                        if(slot instanceof SlotDigital){
-                            ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + ((tile.page-1) * 37) + 1;
-                        }
-                    }
-                    //DiscManipulator.saveDisc(tile.controller.network_disc, tile, tile.page);
-
-                    //DiscManipulator.clearDigitalInv(tile);
-                    //DiscManipulator.loadDisc(tile.controller.network_disc, tile, tile.page);
                 }
             }
         }
