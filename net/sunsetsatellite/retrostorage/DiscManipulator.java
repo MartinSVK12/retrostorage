@@ -117,12 +117,13 @@ public class DiscManipulator {
 	public static void loadDisc(ItemStack disc, IInventory inv, int page){
 		//System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
 		AtomicInteger i = new AtomicInteger();
+		i.getAndAdd(1);
 		Collection<?> values = disc.getItemData().getValues();
 		values.forEach((V)->{
 			if(i.get() < 37) {
 				String K = ((NBTBase) V).getKey();
 				ItemStack itemStack = new ItemStack((NBTTagCompound) V);
-				inv.setInventorySlotContents(Integer.parseInt(K) * page, itemStack);
+				inv.setInventorySlotContents(Integer.parseInt(K)+page, itemStack);
 				i.getAndIncrement();
 			}
 		});
