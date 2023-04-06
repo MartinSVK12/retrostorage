@@ -162,7 +162,17 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(IInventory.class);
         connectedTiles = getConnectedTileEntity(tiles);
-        workingTile = (TileEntity) connectedTiles.values().toArray()[0];
+        int i = 0;
+        for (TileEntity tile : connectedTiles.values()) {
+            if(tile != null){
+                workingTile = tile;
+                break;
+            }
+            i++;
+        }
+        if(i >= 6){
+            workingTile = null;
+        }
     }
 
     public void work(){
