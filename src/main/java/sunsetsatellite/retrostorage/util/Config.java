@@ -7,6 +7,7 @@ import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 
 public class Config {
 
@@ -54,29 +55,33 @@ public class Config {
 
     public static Integer getFromConfig(String s2, Integer base){
         try {
+            RetroStorage.LOGGER.info("Getting id for: "+s2+" (base: "+base+")");
             BufferedReader configReader = new BufferedReader(new FileReader(configFile));
-            String s;
-            while ((s = configReader.readLine()) != null) {
-                if (s.charAt(0) == '/' && s.charAt(1) == '/') {
-                    continue; // Ignore comments
-                }
-                else if (s.contains("=")) {
-                    String as[] = s.split("=");
+            for (String s : Files.readAllLines(configFile.toPath())) {
+                if (s.contains("=") && !s.startsWith("//")) {
+                    String[] as = s.split("=");
                     String name = as[0];
-                    int id = Integer.parseInt(as[1]);
-                    //System.out.println(name +" ("+s2+") "+": "+id);
-                    if (name.equals(s2)){
-                        return id;
-                    } else {
+                    int id;
+                    try {
+                        id = Integer.parseInt(as[1]);
+                    } catch (NumberFormatException e){
                         continue;
+                    }
+                    if (id > 16384){
+                        id -= 16384;
+                    }
+                    if (name.equalsIgnoreCase(s2)){
+                        RetroStorage.LOGGER.info("Id: "+id);
+                        return id;
                     }
                 }
             }
 
             configReader.close();
         } catch (Exception exception) {
-           // exception.printStackTrace();
+           exception.printStackTrace();
         }
+        RetroStorage.LOGGER.info("No id defined, returning base: "+base);
         return base;
     }
 

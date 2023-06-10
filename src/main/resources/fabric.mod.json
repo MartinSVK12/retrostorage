@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "retrostorage",
-  "version": "1.1.1",
+  "version": "1.1.2",
 
   "name": "RetroStorage (BTA)",
   "description": "Digital storage mod for old versions of Minecraft, adapted to work with Better than Adventure.",
