@@ -29,7 +29,9 @@
   "depends": {
     "fabricloader": ">=0.13.3",
     "halplibe": ">=2.1.6",
-    "energyapi": ">=1.1.4"
+    "energyapi": ">=1.1.4",
+    "sunsetutils": ">=1.8.0",
+    "minecraft": ">=1.7.7.0"
   },
   "suggests": {
   }
