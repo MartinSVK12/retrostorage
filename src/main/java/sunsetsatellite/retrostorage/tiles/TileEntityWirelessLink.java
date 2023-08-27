@@ -1,8 +1,11 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
+
+
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 public class TileEntityWirelessLink extends TileEntityNetworkDevice {
@@ -19,16 +22,16 @@ public class TileEntityWirelessLink extends TileEntityNetworkDevice {
         }
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagCompound remoteLinkNBT = nbttagcompound.getCompoundTag("remoteLink");
-        if(remoteLinkNBT.hasKey("x") && remoteLinkNBT.hasKey("y") && remoteLinkNBT.hasKey("z")){
+        super.readFromNBT(CompoundTag);
+        CompoundTag remoteLinkNBT = CompoundTag.getCompound("remoteLink");
+        if(remoteLinkNBT.containsKey("x") && remoteLinkNBT.containsKey("y") && remoteLinkNBT.containsKey("z")){
             tempRemoteLinkNBT = remoteLinkNBT;
         }
     }
 
-    public void initSavedLink(NBTTagCompound remoteLinkNBT)
+    public void initSavedLink(CompoundTag remoteLinkNBT)
     {
         TileEntity tile = RetroStorage.mc.theWorld.getBlockTileEntity(remoteLinkNBT.getInteger("x"),remoteLinkNBT.getInteger("y"),remoteLinkNBT.getInteger("z"));
         if(tile instanceof TileEntityWirelessLink){
@@ -36,16 +39,16 @@ public class TileEntityWirelessLink extends TileEntityNetworkDevice {
         }
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        NBTTagCompound remoteLinkNBT = new NBTTagCompound();
+        CompoundTag remoteLinkNBT = new CompoundTag();
         if(remoteLink != null){
-            remoteLinkNBT.setInteger("x",remoteLink.xCoord);
-            remoteLinkNBT.setInteger("y",remoteLink.yCoord);
-            remoteLinkNBT.setInteger("z",remoteLink.zCoord);
+            remoteLinkNBT.putInt("x",remoteLink.xCoord);
+            remoteLinkNBT.putInt("y",remoteLink.yCoord);
+            remoteLinkNBT.putInt("z",remoteLink.zCoord);
         }
-        nbttagcompound.setCompoundTag("remoteLink",remoteLinkNBT);
-        super.writeToNBT(nbttagcompound);
+        CompoundTag.putCompound("remoteLink",remoteLinkNBT);
+        super.writeToNBT(CompoundTag);
     }
 
 
@@ -55,9 +58,9 @@ public class TileEntityWirelessLink extends TileEntityNetworkDevice {
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
 
-    private NBTTagCompound tempRemoteLinkNBT = null;
+    private CompoundTag tempRemoteLinkNBT = null;
     public TileEntityWirelessLink remoteLink = null;
 }

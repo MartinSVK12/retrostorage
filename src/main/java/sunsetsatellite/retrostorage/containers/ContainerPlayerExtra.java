@@ -1,6 +1,12 @@
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.lang.I18n;
+import net.minecraft.core.player.inventory.ContainerPlayer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
+import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.InventoryDigital;
 import sunsetsatellite.retrostorage.util.InventoryPortable;
@@ -74,10 +80,10 @@ public class ContainerPlayerExtra extends ContainerPlayer {
         this.searchText = search;
         this.searchedItems.clear();
         this.page = 0;
-        StringTranslate t = StringTranslate.getInstance();
+        I18n t = I18n.getInstance();
         for (ItemStack inventoryContent : inventory.inventoryContents) {
             if(inventoryContent != null){
-                if (t.translateNamedKey(inventoryContent.getItemName()).toLowerCase().contains(search.toLowerCase())) {
+                if (t.translateNameKey(inventoryContent.getItemName()).toLowerCase().contains(search.toLowerCase())) {
                     this.searchedItems.add(inventoryContent);
                 }
             }
@@ -118,7 +124,7 @@ public class ContainerPlayerExtra extends ContainerPlayer {
         //this.playerInv.player.updateCreativeInventory(this.page, this.searchText);
     }
 
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
+    /*public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
         ItemStack item = this.getSlot(i).getStack().copy();
         ItemStack original = this.getSlot(i).getStack();
         if(inventory.owner.isItemEqual(original)){
@@ -137,7 +143,7 @@ public class ContainerPlayerExtra extends ContainerPlayer {
             this.getSlot(i).onSlotChanged();
         }
         super.quickMoveItems(i,entityPlayer,shift,ctrl);
-    }
+    }*/
 
     static {
         int count = 0;

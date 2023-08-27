@@ -2,10 +2,17 @@
 
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.TickTimer;
+import sunsetsatellite.sunsetutils.util.TickTimer;
+
 
 public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     implements IInventory
@@ -14,11 +21,8 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     public TileEntityDigitalTerminal()
     {
         contents = new ItemStack[37];
-        try {
-            saveTimer = new TickTimer(this,this.getClass().getMethod("save"),40,true);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        saveTimer = new TickTimer(this,"save",40,true);
+
     }
 
     public int getSizeInventory()
@@ -98,39 +102,39 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
         return "Digital Terminal";
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = CompoundTag1.getByte("Slot") & 0xff;
             if(j >= 0 && j < contents.length)
             {
-                contents[j] = new ItemStack(nbttagcompound1);
+                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
 
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        super.writeToNBT(nbttagcompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
             if(contents[i] != null)
             {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                contents[i].writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                contents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
 
-        nbttagcompound.setTag("Items", nbttaglist);
+        CompoundTag.put("Items", listTag);
     }
 
     public int getInventoryStackLimit()
@@ -141,7 +145,7 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     public int getAmountOfUsedSlots(){
         int j = 0;
         if(network != null && network.drive != null){
-            j = network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().size();
+            j = network.drive.virtualDisc.tag.getCompound("disc").getValues().size();
         }
         return j;
     }
@@ -152,7 +156,7 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 8000D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 8000D;
     }
 
     private ItemStack[] contents;

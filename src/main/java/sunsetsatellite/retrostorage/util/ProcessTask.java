@@ -1,25 +1,29 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+
+
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.ArrayList;
 
 public class ProcessTask extends Task{
-    public ArrayList<NBTTagCompound> tasks;
+    public ArrayList<CompoundTag> tasks;
     public ItemStack output;
 
-    public ProcessTask(ArrayList<NBTTagCompound> tasks, Task parent, ArrayList<Task> requires) {
+    public ProcessTask(ArrayList<CompoundTag> tasks, Task parent, ArrayList<Task> requires) {
         this.tasks = tasks;
         this.parent = parent;
         if(parent != null){
             parent.requires.add(this);
         }
         this.requires = requires != null ? requires : new ArrayList<>();
-        for(NBTTagCompound task : tasks){
+        for(CompoundTag task : tasks){
             boolean isOutput = task.getBoolean("isOutput");
             if(isOutput){
-                output = new ItemStack(task.getCompoundTag("stack"));
+                output = ItemStack.readItemStackFromNbt(task.getCompound("stack"));
                 break;
             }
         }

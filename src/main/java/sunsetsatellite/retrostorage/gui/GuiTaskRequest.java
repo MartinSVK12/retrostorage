@@ -1,13 +1,18 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.client.render.FontRenderer;
+import net.minecraft.core.crafting.recipe.IRecipe;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerTaskRequest;
-import sunsetsatellite.retrostorage.interfaces.mixins.IGuiContainer;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
-import sunsetsatellite.retrostorage.util.Task;
 
 import java.util.ArrayList;
 
@@ -33,7 +38,7 @@ public class GuiTaskRequest extends GuiContainer {
     }
 
     public void initGui() {
-        StringTranslate stringtranslate = StringTranslate.getInstance();
+        I18n stringtranslate = I18n.getInstance();
         this.screenTitle = "Task Request";
         this.slotContainer = new GuiItemSlot(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
 
@@ -42,13 +47,13 @@ public class GuiTaskRequest extends GuiContainer {
     }
 
     public void initButtons() {
-        StringTranslate stringtranslate = StringTranslate.getInstance();
+        I18n stringtranslate = I18n.getInstance();
         controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 64), 20, 20, "-"));
         controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 64), 20, 20, "+"));// /2 - 34, - 150
         controlList.add(new GuiButton(2, Math.round(width / 2 - 30), Math.round(height / 2 - 64), 60, 20, "Request"));
     }
 
-    protected void actionPerformed(GuiButton guibutton) {
+    protected void buttonPressed(GuiButton guibutton) {
         if (guibutton.enabled) {
             if(guibutton.id == 0){
                 if(requestAmount > 1){
@@ -61,8 +66,12 @@ public class GuiTaskRequest extends GuiContainer {
             if(guibutton.id == 2){
                 for (int i = 0; i < requestAmount; i++) {
                     if(tile.recipeContents[requestedSlotId] instanceof ArrayList){
-                        //RetroStorage.LOGGER.info("Processing requests work in progress!");
-                        tile.network.requestProcessing((ArrayList<NBTTagCompound>) tile.recipeContents[requestedSlotId]);
+                        //RetroStorage.LOGGER.debug("Processing requests work in progress!");
+                        ArrayList<CompoundTag> processList = new ArrayList<>();
+                        for (CompoundTag tagCompound : (ArrayList<CompoundTag>) tile.recipeContents[requestedSlotId]) {
+                            processList.add(new CompoundTag(tagCompound));
+                        }
+                        tile.network.requestProcessing(processList);
                     } else {
                         tile.network.requestCrafting((IRecipe) tile.recipeContents[requestedSlotId]);
                     }
@@ -73,15 +82,10 @@ public class GuiTaskRequest extends GuiContainer {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
-        return false;
-    }
-
-    @Override
     protected void drawGuiContainerForegroundLayer() {
-        ((IGuiContainer)this).drawItemStack(requestedItem,32,32);
+        //TODO: drawItemStack(requestedItem,32,32);
         fontRenderer.drawString(requestAmount+"x",10,36,0x404040);
-        fontRenderer.drawString(requestedItem.stackSize+"x "+StringTranslate.getInstance().translateKey(requestedItem.getItemName()+".name"), 55, 36, 0x404040);
+        fontRenderer.drawString(requestedItem.stackSize+"x "+I18n.getInstance().translateKey(requestedItem.getItemName()+".name"), 55, 36, 0x404040);
         fontRenderer.drawString(this.screenTitle,95,10,0x404040);
     }
 
@@ -102,10 +106,11 @@ public class GuiTaskRequest extends GuiContainer {
         if(tile.recipeContents[requestedSlotId] instanceof ArrayList) {
             if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
                 this.list.clear();
-                ArrayList<NBTTagCompound> tasks = (ArrayList<NBTTagCompound>) tile.recipeContents[requestedSlotId];
-                for(NBTTagCompound task : tasks){
+                ArrayList<CompoundTag> tasks = (ArrayList<CompoundTag>) tile.recipeContents[requestedSlotId];
+                for(CompoundTag task : tasks){
                     if(!task.getBoolean("isOutput")){
-                        ItemStack stack = new ItemStack(task.getCompoundTag("stack"));
+                        ItemStack stack = ItemStack.readItemStackFromNbt(task.getCompound("stack"));
+                        if(stack == null) continue;
                         list.add(stack);
                     }
                 }

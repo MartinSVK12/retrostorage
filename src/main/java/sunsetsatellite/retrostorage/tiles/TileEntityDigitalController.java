@@ -1,20 +1,19 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagDouble;
+
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.DoubleTag;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
-import sunsetsatellite.retrostorage.util.TickTimer;
+
+import sunsetsatellite.sunsetutils.util.TickTimer;
 
 public class TileEntityDigitalController extends TileEntityNetworkDevice
 {
 
     public TileEntityDigitalController() {
         network = new DigitalNetwork(this);
-        try {
-            networkReload = new TickTimer(network,network.getClass().getMethod("reload"), 60,true);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        networkReload = new TickTimer(network,"reload", 60,true);
     }
 
     @Override
@@ -65,15 +64,15 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
 
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
-        energy = nbttagcompound.getDouble("Energy");
+    public void readFromNBT(CompoundTag CompoundTag) {
+        super.readFromNBT(CompoundTag);
+        energy = CompoundTag.getDouble("Energy");
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
-        NBTTagDouble nbt = new NBTTagDouble(energy);
-        nbttagcompound.setTag("Energy", nbt);
+    public void writeToNBT(CompoundTag CompoundTag) {
+        super.writeToNBT(CompoundTag);
+        DoubleTag nbt = new DoubleTag(energy);
+        CompoundTag.put("Energy", nbt);
     }
 
     public double energy = 0;

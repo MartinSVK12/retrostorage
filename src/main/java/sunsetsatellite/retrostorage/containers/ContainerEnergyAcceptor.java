@@ -1,8 +1,11 @@
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Slot;
+
+
+
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.energyapi.template.containers.ContainerEnergy;
 import sunsetsatellite.energyapi.template.tiles.TileEntityBatteryBox;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
@@ -28,11 +31,6 @@ public class ContainerEnergyAcceptor extends ContainerEnergy {
         {
             addSlot(new Slot(iInventory, k, 8 + k * 18, 142));
         }
-    }
-
-    @Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
-
     }
 
     @Override

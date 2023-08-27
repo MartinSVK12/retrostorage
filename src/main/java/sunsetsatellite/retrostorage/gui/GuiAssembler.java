@@ -2,8 +2,10 @@
 
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
+
+
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerAssembler;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;

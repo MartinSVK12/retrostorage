@@ -1,23 +1,29 @@
 package sunsetsatellite.retrostorage.blocks;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.block.BlockTileEntityRotatable;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.block.material.Material;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.gui.GuiRequestTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
-public class BlockRequestTerminal extends BlockContainerRotatable {
-    public BlockRequestTerminal(int i, Material material) {
-        super(i, material);
+public class BlockRequestTerminal extends BlockTileEntityRotatable {
+
+    public BlockRequestTerminal(String key, int id, Material material) {
+        super(key, id, material);
     }
 
     @Override
-    protected TileEntity getBlockEntity() {
+    protected TileEntity getNewBlockEntity() {
         return new TileEntityRequestTerminal();
     }
 
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
-        if(world.isMultiplayerAndNotHost)
+        if(world.isClientSide)
         {
             return true;
         } else

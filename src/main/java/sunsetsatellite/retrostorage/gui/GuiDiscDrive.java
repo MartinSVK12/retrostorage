@@ -2,9 +2,12 @@
 
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
+
+
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
@@ -24,10 +27,10 @@ public class GuiDiscDrive extends GuiContainer
         fontRenderer.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
         if(tile.virtualDisc != null && tile.network != null){
             int color = 0xFFFFFF;
-            if(tile.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length >= tile.virtualDriveMaxStacks){
+            if(tile.virtualDisc.tag.getCompound("disc").getValues().toArray().length >= tile.virtualDriveMaxStacks){
                 color = 0xFF4040;
             }
-            fontRenderer.drawCenteredString(tile.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length +"/"+tile.virtualDriveMaxStacks, 88, 20, color);
+            fontRenderer.drawCenteredString(tile.virtualDisc.tag.getCompound("disc").getValues().toArray().length +"/"+tile.virtualDriveMaxStacks, 88, 20, color);
         }
     }
 
@@ -47,7 +50,7 @@ public class GuiDiscDrive extends GuiContainer
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
 
-    protected void actionPerformed(GuiButton guibutton) {
+    protected void buttonPressed(GuiButton guibutton) {
         if (!guibutton.enabled) {
             return;
         }

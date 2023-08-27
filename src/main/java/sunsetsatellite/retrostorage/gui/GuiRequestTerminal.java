@@ -1,6 +1,9 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.*;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.containers.ContainerRequestTerminal;
@@ -29,10 +32,10 @@ public class GuiRequestTerminal extends GuiContainer
         fontRenderer.drawString((new StringBuilder().append("Page: ").append(tile.page).append("/").append(tile.pages)).toString(), 65, 93, 0x404040);
         if(tile.network != null && tile.network.drive != null){
             int color = 0xFFFFFF;
-            if(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
+            if(tile.network.drive.virtualDisc.tag.getCompound("disc").getValues().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
                 color = 0xFF4040;
             }
-            fontRenderer.drawCenteredString(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 95, 112, color);
+            fontRenderer.drawCenteredString(tile.network.drive.virtualDisc.tag.getCompound("disc").getValues().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 95, 112, color);
         }
     }
 
@@ -55,7 +58,7 @@ public class GuiRequestTerminal extends GuiContainer
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
     
-    protected void actionPerformed(GuiButton guibutton)
+    protected void buttonPressed(GuiButton guibutton)
     {
         if(!guibutton.enabled)
         {

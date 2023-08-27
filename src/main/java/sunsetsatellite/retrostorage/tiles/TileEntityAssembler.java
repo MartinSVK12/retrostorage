@@ -1,10 +1,18 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.block.entity.TileEntityChest;
+import net.minecraft.core.crafting.recipe.IRecipe;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 import sunsetsatellite.retrostorage.util.Task;
-import sunsetsatellite.retrostorage.util.TickTimer;
+import sunsetsatellite.sunsetutils.util.TickTimer;
 
 import java.util.*;
 
@@ -13,11 +21,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 {
     public TileEntityAssembler() {
         contents = new ItemStack[9];
-        try {
-            this.workTimer = new TickTimer(this,this.getClass().getMethod("work"),10,true);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        this.workTimer = new TickTimer(this,"work",10,true);
     }
 
     public int getSizeInventory()
@@ -83,39 +87,39 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         return "Assembler";
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
-            if(j >= 0 && j < contents.length)
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = CompoundTag1.getByte("Slot") & 0xff;
+            if(j < contents.length)
             {
-                contents[j] = new ItemStack(nbttagcompound1);
+                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
 
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        super.writeToNBT(nbttagcompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
             if(contents[i] != null)
             {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                contents[i].writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                contents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
 
-        nbttagcompound.setTag("Items", nbttaglist);
+        CompoundTag.put("Items", listTag);
     }
 
     public int getInventoryStackLimit()
@@ -129,7 +133,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
 
     @Override
@@ -143,13 +147,13 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     public void work(){
         if(network != null){
             if(task == null){
-                if(stack == null || stack.size() == 0){
+                if(stack == null || stack.isEmpty()){
                     stack = network.requestQueue.clone();
                 }
-                if(network.requestQueue.size() > 0){
+                if(!network.requestQueue.isEmpty()){
                     boolean result = acceptNextTask();
                     if(result){
-                        RetroStorage.LOGGER.info(this+" Accepted task "+task+".");
+                        RetroStorage.LOGGER.debug(this+" Accepted task "+task+".");
                     }
                 }
             } else {
@@ -164,15 +168,16 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
             if (network.inventory.hasItems(inputs)) {
                 if (network.inventory.removeItems(inputs)) {
                     ItemStack result = task.recipe.getRecipeOutput().copy();
+                    result.tag.setName("Data");
                     if (result.stackSize == 0) {
                         result.stackSize = 1;
                     }
                     if (network.inventory.addItemStackToInventory(result)) {
-                        RetroStorage.LOGGER.info(this + " Task fulfilled.");
+                        RetroStorage.LOGGER.debug(this + " Task fulfilled.");
                         task.completed = true;
                         network.requestQueue.remove(task);
                         if (task.parent == null && task.requirementsMet()) {
-                            RetroStorage.LOGGER.info(this + " Request fulfilled.");
+                            RetroStorage.LOGGER.debug(this + " Request fulfilled.");
                         }
                         task = null;
                     } else {
@@ -194,7 +199,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
                     task = null;
                     return;
                 }
-                RetroStorage.LOGGER.info("Not enough resources for task "+task+", attempting to create subtasks..");
+                RetroStorage.LOGGER.debug("Not enough resources for task "+task+", attempting to create subtasks..");
                 ArrayList<Task> subtasks = network.getSubtask(task);
                 if(subtasks == null){
                     RetroStorage.LOGGER.error("No subtasks could be created for "+task+"!");
@@ -202,7 +207,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
                     task.processor = null;
                     task = null;
                 } else {
-                    if(subtasks.size() == 0){
+                    if(subtasks.isEmpty()){
                         task.attempts -= 1;
                     }
                     for (Task subtask : subtasks) {
@@ -231,17 +236,17 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         ArrayList<IRecipe> recipes = new ArrayList<>();
         for (ItemStack stack : contents) {
             if (stack != null && stack.getItem() == RetroStorage.recipeDisc) {
-                IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.tag.getCompoundTag("recipe"));
+                IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.tag.getCompound("recipe"));
                 if (recipe != null) {
                     recipes.add(recipe);
                 }
             }
         }
-        return recipes.size() > 0 ? recipes : null;
+        return !recipes.isEmpty() ? recipes : null;
     }
 
     public boolean acceptNextTask() {
-        if(stack.size() > 0){
+        if(!stack.isEmpty()){
             Task t = stack.pop();
             boolean success = false;
             if (t instanceof RecipeTask) {
@@ -286,5 +291,5 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     public RecipeTask task;
     public TickTimer workTimer;
     public ArrayDeque<Task> stack;
-    public HashMap<String,TileEntity> connectedTiles = new HashMap<>();
+    public HashMap<String, TileEntity> connectedTiles = new HashMap<>();
 }

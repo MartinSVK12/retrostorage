@@ -1,12 +1,18 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.ProcessTask;
 import sunsetsatellite.retrostorage.util.Task;
-import sunsetsatellite.retrostorage.util.TickTimer;
+import sunsetsatellite.sunsetutils.util.TickTimer;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -17,11 +23,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     public TileEntityAdvInterface() {
         contents = new ItemStack[10];
-        try {
-            this.workTimer = new TickTimer(this,this.getClass().getMethod("work"),10,true);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        this.workTimer = new TickTimer(this,"work",10,true);
     }
 
     public int getSizeInventory()
@@ -90,55 +92,55 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return "Adv. Item Interface";
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = CompoundTag1.getByte("Slot") & 0xff;
             if(j >= 0 && j < contents.length)
             {
-                contents[j] = new ItemStack(nbttagcompound1);
+                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
-        /*if(!Objects.equals(nbttagcompound.getCompoundTag("processing"), new NBTTagCompound())){
-            processing = new ItemStack(nbttagcompound.getCompoundTag("processing"));
-            NBTTagCompound tasks = nbttagcompound.getCompoundTag("tasks");
+        /*if(!Objects.equals(CompoundTag.getCompound("processing"), new CompoundTag())){
+            processing = new ItemStack(CompoundTag.getCompound("processing"));
+            CompoundTag tasks = CompoundTag.getCompound("tasks");
             tasks.func_28110_c().forEach((key)->{
-                processTasks.add(tasks.getCompoundTag((String) key));
+                processTasks.add(tasks.getCompound((String) key));
             });
         }*/
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        super.writeToNBT(nbttagcompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
             if(contents[i] != null)
             {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                contents[i].writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                contents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
         /*if(processing != null) {
-            NBTTagCompound compound = new NBTTagCompound();
-            NBTTagCompound tasks = new NBTTagCompound();
+            CompoundTag compound = new CompoundTag();
+            CompoundTag tasks = new CompoundTag();
             processing.writeToNBT(compound);
-            nbttagcompound.setCompoundTag("processing", compound);
+            CompoundTag.putCompound("processing", compound);
             processTasks.forEach((nbt)->{
-                tasks.setCompoundTag(nbt.getKey(),nbt);
+                tasks.putCompound(nbt.getKey(),nbt);
             });
-            nbttagcompound.setCompoundTag("tasks",tasks);
-            //nbttagcompound.setInteger("processingAmount", processingAmount);
+            CompoundTag.putCompound("tasks",tasks);
+            //CompoundTag.putInt("processingAmount", processingAmount);
         }*/
-        nbttagcompound.setTag("Items", nbttaglist);
+        CompoundTag.put("Items", listTag);
     }
 
     public int getInventoryStackLimit()
@@ -184,7 +186,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 if(network.requestQueue.size() > 0){
                     boolean result = acceptNextTask();
                     if(result){
-                        RetroStorage.LOGGER.info(this+" Accepted task "+ request +".");
+                        RetroStorage.LOGGER.debug(this+" Accepted task "+ request +".");
                     }
                 }
             } else {
@@ -195,7 +197,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     public void fulfillRequest(){
         if(request != null && request.tasks.size() > 0){
-            ArrayList<NBTTagCompound> tasks = request.tasks;
+            ArrayList<CompoundTag> tasks = request.tasks;
             int i = 0;
             while(tasks.get(i).getBoolean("isOutput")){
                 if(tasks.size()-1 == i){
@@ -206,7 +208,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
             runTask(tasks.get(i));
         }
         if(request != null && request.tasks.size() == 0){
-            RetroStorage.LOGGER.info(this+" Task fulfilled!");
+            RetroStorage.LOGGER.debug(this+" Task fulfilled!");
             this.request.completed = true;
             this.request.processor = null;
             network.requestQueue.remove(request);
@@ -214,11 +216,11 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         }
     }
 
-    public void runTask(NBTTagCompound task){
+    public void runTask(CompoundTag task){
         if(network != null){
             boolean isOutput = task.getBoolean("isOutput");
             int slot = task.getInteger("slot");
-            ItemStack stack = new ItemStack(task.getCompoundTag("stack"));
+            ItemStack stack = ItemStack.readItemStackFromNbt(task.getCompound("stack"));
             if(workingTile == null){
                 failTask(task,"Interface not attached",true);
                 return;
@@ -239,7 +241,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                                         slotStack.stackSize += stack.stackSize;
                                         finishTask(task);
                                     } else {
-                                        RetroStorage.LOGGER.info("Not enough resources for task "+request+", attempting to create subtasks..");
+                                        RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
                                         ArrayList<Task> subtasks = network.getSubtask(request);
                                         if(subtasks == null){
                                             failTask(task, "Not enough resources and no subtasks could be made", true);
@@ -263,7 +265,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
                                     }
                                 } else {
-                                    RetroStorage.LOGGER.info("Not enough resources for task "+request+", attempting to create subtasks..");
+                                    RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
                                     ArrayList<Task> subtasks = network.getSubtask(request);
                                     if(subtasks == null){
                                         failTask(task, "Not enough resources and no subtasks could be made", true);
@@ -301,7 +303,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                                 inv.setInventorySlotContents(slot, stack.copy());
                                 finishTask(task);
                             } else {
-                                RetroStorage.LOGGER.info("Not enough resources for task "+request+", attempting to create subtasks..");
+                                RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
                                 ArrayList<Task> subtasks = network.getSubtask(request);
                                 if(subtasks == null){
                                     failTask(task, "Not enough resources and no subtasks could be made", true);
@@ -324,7 +326,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                                 }
                             }
                         } else {
-                            RetroStorage.LOGGER.info("Not enough resources for task "+request+", attempting to create subtasks..");
+                            RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
                             ArrayList<Task> subtasks = network.getSubtask(request);
                             if(subtasks == null){
                                 failTask(task, "Not enough resources and no subtasks could be made", true);
@@ -370,21 +372,21 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
 
-    public void finishTask(NBTTagCompound task){
+    public void finishTask(CompoundTag task){
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Task "+task.getInteger("id")+" succeeded!");
-        RetroStorage.LOGGER.info(this+" "+"Step "+task.getInteger("id")+" succeeded!");
+        RetroStorage.LOGGER.debug(this+" "+"Step "+task.getInteger("id")+" succeeded!");
         request.tasks.remove(task);
     }
 
-    public void failTask(NBTTagCompound task, String reason, boolean fatal){
+    public void failTask(CompoundTag task, String reason, boolean fatal){
         //ModLoader.getMinecraftInstance().thePlayer.addChatMessage((fatal ? "FATAL! " : "")+"Task "+task.getInteger("id")+" failed: "+reason+"!");
-        RetroStorage.LOGGER.error(this+" "+(fatal ? "FATAL! " : "")+"Step "+task.getInteger("id")+" failed: "+reason+"!");
+        RetroStorage.LOGGER.debug(this+" "+(fatal ? "FATAL! " : "")+"Step "+task.getInteger("id")+" failed: "+reason+"!");
         if(fatal){
             //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing failed!");
             if(request.attempts > 0){
                 request.attempts--;
             } else {
-                RetroStorage.LOGGER.error("Too many failed attempts, cancelling task!");
+                RetroStorage.LOGGER.debug("Too many failed attempts, cancelling task!");
                 network.requestQueue.clone().forEach((V)->{
                     if(V.requires.contains(request) || V.parent == request){
                         network.requestQueue.remove(V);
@@ -407,25 +409,31 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     public boolean acceptNextTask() {
-        if(stack.size() > 0){
+        if(!stack.isEmpty()){
             Task t = stack.pop();
             if (t instanceof ProcessTask) {
                 if (t.processor == null) {
                     if (!t.completed) {
                         if (t.requirementsMet()) {
-                            this.request = (ProcessTask) t;
-                            t.processor = this;
-                            return true;
+                            ArrayList<ProcessTask> processTasks = new ArrayList<>();
+                            for (ArrayList<CompoundTag> process : getProcesses()) {
+                                processTasks.add(new ProcessTask(process,null,null));
+                            }
+                            boolean found = processTasks.stream().anyMatch((T)-> T.output.isItemEqual(((ProcessTask) t).output));
+                            if(found){
+                                this.request = (ProcessTask) t;
+                                t.processor = this;
+                                return true;
+                            } else {
+                                return false;
+                            }
                         } else {
-                            //RetroStorage.LOGGER.error(this+" Not all requirements met for tasks! "+t);
                             return false;
                         }
                     } else {
-                        //RetroStorage.LOGGER.error(this+ " Task is already completed! "+t);
                         return false;
                     }
                 } else {
-                    //RetroStorage.LOGGER.error(this + " Task is taken already! "+t);
                     return false;
                 }
             } else {
@@ -435,8 +443,8 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return false;
     }
 
-    public ArrayList<ArrayList<NBTTagCompound>> getProcesses(){
-        ArrayList<ArrayList<NBTTagCompound>> processes = new ArrayList<>();
+    public ArrayList<ArrayList<CompoundTag>> getProcesses(){
+        ArrayList<ArrayList<CompoundTag>> processes = new ArrayList<>();
         for (ItemStack stack : contents){
             if(stack != null && stack.getItem() instanceof ItemAdvRecipeDisc){
                 processes.add(DiscManipulator.getProcessesFromDisc(stack));
@@ -451,7 +459,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
 
     private ItemStack[] contents;

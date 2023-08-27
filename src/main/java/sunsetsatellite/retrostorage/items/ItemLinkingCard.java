@@ -1,6 +1,13 @@
 package sunsetsatellite.retrostorage.items;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.util.helper.Side;
+import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.tiles.TileEntityWirelessLink;
 
 public class ItemLinkingCard extends Item {
@@ -10,13 +17,10 @@ public class ItemLinkingCard extends Item {
 
     }
 
-    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer) {
-        return itemstack;
-    }
 
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int i, int j, int k, int l, double heightPlaced)
-    {
-        TileEntityWirelessLink link = (TileEntityWirelessLink) world.getBlockTileEntity(i, j, k);
+    @Override
+    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+        TileEntityWirelessLink link = (TileEntityWirelessLink) world.getBlockTileEntity(blockX, blockY, blockZ);
         if (link != null) {
             if(link.remoteLink != null){
                 link.remoteLink.remoteLink = null;
@@ -24,13 +28,13 @@ public class ItemLinkingCard extends Item {
                 entityplayer.addChatMessage("action.retrostorage.linkBroken");
                 return true;
             }
-            NBTTagCompound data = itemstack.tag.getCompoundTag("position");
-            if (!(data.hasKey("x") && data.hasKey("y") && data.hasKey("z"))){
-                NBTTagCompound positionNBT = (new NBTTagCompound());
-                positionNBT.setInteger("x",i);
-                positionNBT.setInteger("y",j);
-                positionNBT.setInteger("z",k);
-                itemstack.tag.setCompoundTag("position",positionNBT);
+            CompoundTag data = itemstack.tag.getCompound("position");
+            if (!(data.containsKey("x") && data.containsKey("y") && data.containsKey("z"))){
+                CompoundTag positionNBT = (new CompoundTag());
+                positionNBT.putInt("x",blockX);
+                positionNBT.putInt("y",blockY);
+                positionNBT.putInt("z",blockZ);
+                itemstack.tag.putCompound("position",positionNBT);
                 entityplayer.addChatMessage("action.retrostorage.cardBound");
             } else {
                 TileEntity tile = world.getBlockTileEntity(data.getInteger("x"),data.getInteger("y"),data.getInteger("z"));
@@ -45,11 +49,10 @@ public class ItemLinkingCard extends Item {
             }
         } else {
             if (entityplayer.isSneaking()) {
-                itemstack.tag.setCompoundTag("position",new NBTTagCompound());
+                itemstack.tag.putCompound("position",new CompoundTag());
                 entityplayer.addChatMessage("action.retrostorage.cardUnbound");
             }
         }
         return true;
     }
-
 }

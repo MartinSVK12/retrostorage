@@ -1,9 +1,15 @@
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.Container;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
+
+
+
+import net.minecraft.core.InventoryAction;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
+
+import java.util.List;
 
 public class ContainerTaskRequest extends Container
 {
@@ -15,8 +21,13 @@ public class ContainerTaskRequest extends Container
     }
 
     @Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
+    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
+    }
 
+    @Override
+    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)

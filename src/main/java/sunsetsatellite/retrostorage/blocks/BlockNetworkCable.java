@@ -1,11 +1,20 @@
 package sunsetsatellite.retrostorage.blocks;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.Material;
+
+import net.minecraft.core.block.Block;
+import net.minecraft.core.block.material.Material;
 
 public class BlockNetworkCable extends Block {
-    public BlockNetworkCable(int i) {
-        super(i, Material.cloth);
+
+    public BlockNetworkCable(String key, int id, Material material) {
+        super(key, id, material);
+    }
+
+    @Override
+    public void setBlockBoundsForItemRender() {
+        float width = 0.5f;
+        float halfWidth = (1.0F - width) / 2.0F;
+        setBlockBounds(halfWidth, halfWidth, halfWidth, halfWidth + width, halfWidth + width, halfWidth + width);
     }
 
     public boolean isOpaqueCube()
@@ -16,10 +25,5 @@ public class BlockNetworkCable extends Block {
     public boolean renderAsNormalBlock()
     {
         return false;
-    }
-
-    @Override
-    public int getRenderType() {
-        return 30;
     }
 }

@@ -1,7 +1,15 @@
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.InventoryAction;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.tiles.TileEntityAdvInterface;
+
+import java.util.List;
 
 public class ContainerAdvInterface extends Container
 {
@@ -37,10 +45,10 @@ public class ContainerAdvInterface extends Container
 
     }
 
-    @Override
+    /*@Override
     public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
         if(tile.network != null){
-            //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+            //RetroStorage.LOGGER.debug(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
             ItemStack item = this.getSlot(i).getStack().copy();
             ItemStack original = this.getSlot(i).getStack();
             if(i > 0 && i < 9){
@@ -55,6 +63,16 @@ public class ContainerAdvInterface extends Container
                 this.getSlot(i).onSlotChanged();
             }
         }
+    }*/
+
+    @Override
+    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)

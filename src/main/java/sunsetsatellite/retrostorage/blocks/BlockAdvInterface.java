@@ -1,6 +1,14 @@
 package sunsetsatellite.retrostorage.blocks;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.block.BlockTileEntity;
+import net.minecraft.core.block.BlockTileEntityRotatable;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.block.material.Material;
+import net.minecraft.core.entity.EntityItem;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiAdvInterface;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -8,19 +16,15 @@ import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.tiles.TileEntityAdvInterface;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 
-public class BlockAdvInterface extends BlockContainerRotatable {
-    public BlockAdvInterface(int i, Material material) {
-        super(i, material);
-    }
+public class BlockAdvInterface extends BlockTileEntity {
 
-    @Override
-    protected TileEntity getBlockEntity() {
-        return new TileEntityAdvInterface();
+    public BlockAdvInterface(String key, int id, Material material) {
+        super(key, id, material);
     }
 
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
-        if(world.isMultiplayerAndNotHost)
+        if(world.isClientSide)
         {
             return true;
         } else
@@ -28,7 +32,7 @@ public class BlockAdvInterface extends BlockContainerRotatable {
             TileEntityAdvInterface tile = (TileEntityAdvInterface) world.getBlockTileEntity(i, j, k);
             /*if(entityplayer.isSneaking()){
                 if(tile.getStackInSlot(0) != null && tile.getStackInSlot(0).getItem() instanceof ItemRecipeDisc){
-                    IRecipe recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).tag.getCompoundTag("recipe"));
+                    IRecipe recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).tag.getCompound("recipe"));
                     if(recipe != null){
                         tile.task = new RecipeTask(recipe,null,null);
                     }
@@ -70,12 +74,17 @@ public class BlockAdvInterface extends BlockContainerRotatable {
                 itemstack.stackSize -= i1;
                 EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.tag));
                 float f3 = 0.05F;
-                entityitem.motionX = (float)world.rand.nextGaussian() * f3;
-                entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
-                entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
+                entityitem.xd = (float)world.rand.nextGaussian() * f3;
+                entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;
+                entityitem.zd = (float)world.rand.nextGaussian() * f3;
                 world.entityJoinedWorld(entityitem);
             } while(true);
         }
         super.onBlockRemoval(world, i, j, k);
+    }
+
+    @Override
+    protected TileEntity getNewBlockEntity() {
+        return new TileEntityAdvInterface();
     }
 }

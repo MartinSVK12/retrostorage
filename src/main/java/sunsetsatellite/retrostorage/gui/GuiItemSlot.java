@@ -1,9 +1,11 @@
 package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.StringTranslate;
-import net.minecraft.src.Tessellator;
+
+
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.lang.I18n;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 import sunsetsatellite.retrostorage.util.Task;
@@ -43,7 +45,7 @@ public class GuiItemSlot extends GuiSlot {
     protected void drawSlot(int i, int j, int k, int l, Tessellator tessellator) {
         if(this.parent.list.get(i) instanceof ItemStack){
             ItemStack stack = (ItemStack) this.parent.list.get(i);
-            StringTranslate trans = StringTranslate.getInstance();
+            I18n trans = I18n.getInstance();
             String name = trans.translateKey(stack.getItemName() + ".name");
             this.parent.drawString(this.parent.fontRenderer, (stack.stackSize * parent.requestAmount)+"x "+name, j + 2, k + 2, 0xFFFFFF);
             int availableAmount = parent.tile.network.inventory.getItemCount(stack.itemID,stack.getMetadata());
@@ -65,7 +67,7 @@ public class GuiItemSlot extends GuiSlot {
             if(task.attempts == 0){
                 color = 0xFF0000;
             }
-            StringTranslate trans = StringTranslate.getInstance();
+            I18n trans = I18n.getInstance();
             String name = trans.translateKey(((RecipeTask)task).recipe.getRecipeOutput().getItemName() + ".name");
             this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((RecipeTask)task).recipe.getRecipeOutput().stackSize+"x "+name, j + 2, k + 1, color);
             if(task.attempts > 0) {

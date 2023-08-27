@@ -1,11 +1,11 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.TileEntity;
+
+
+import net.minecraft.core.block.entity.TileEntity;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.BlockInstance;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
-import sunsetsatellite.retrostorage.util.Vec3;
+import sunsetsatellite.sunsetutils.util.Vec3i;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +23,9 @@ public abstract class TileEntityNetworkDevice extends TileEntity {
         sides.put("Z+", null);
         sides.put("Z-", null);
 
-        for (Map.Entry<String, Vec3> entry : RetroStorage.directions.entrySet()) {
+        for (Map.Entry<String, Vec3i> entry : RetroStorage.directions.entrySet()) {
             String K = entry.getKey();
-            Vec3 V = entry.getValue();
+            Vec3i V = entry.getValue();
 
             TileEntity tile = worldObj.getBlockTileEntity(xCoord+V.x, yCoord+V.y, zCoord+V.z);
             if(tile != null){
@@ -41,9 +41,9 @@ public abstract class TileEntityNetworkDevice extends TileEntity {
     public TileEntity getConnectedTileEntity(Class<?> allowedTile){
         HashMap<String, TileEntity> sides = new HashMap<>();
 
-        for (Map.Entry<String, Vec3> entry : RetroStorage.directions.entrySet()) {
+        for (Map.Entry<String, Vec3i> entry : RetroStorage.directions.entrySet()) {
             String K = entry.getKey();
-            Vec3 V = entry.getValue();
+            Vec3i V = entry.getValue();
 
             TileEntity tile = worldObj.getBlockTileEntity(xCoord+V.x, yCoord+V.y, zCoord+V.z);
             if(tile != null){

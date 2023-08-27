@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.IRecipe;
+
+import net.minecraft.core.crafting.recipe.IRecipe;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class RecipeTask extends Task{
                 "attempts=" + attempts +
                 ", recipe=" + RetroStorage.recipeToString(recipe) +
                 ", parent=" + ((parent instanceof RecipeTask) ? RetroStorage.recipeToString(((RecipeTask) parent).recipe) : "null") +
-                ", requires=" + ((requires == null || requires.size() == 0) ? "no" : "yes") +
+                ", requires=" + ((requires == null || requires.isEmpty()) ? "no" : "yes") +
                 ", reqMet="+requirementsMet()+
                 ", completed=" + completed +
                 ", processor=" + processor +

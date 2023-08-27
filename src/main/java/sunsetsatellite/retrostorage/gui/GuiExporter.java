@@ -2,9 +2,12 @@
 
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
+
+
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerExporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
@@ -21,9 +24,9 @@ public class GuiExporter extends GuiContainer
     public void initGui()
     {
         super.initGui();
-        controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 60), 20, 20, "-"));
-        controlList.add(new GuiButton(2, Math.round(width / 2 + 50), Math.round(height / 2 - 30), 20, 20, tile.isWhitelist ? "W" : "B"));
-        controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 60), 20, 20, "+"));
+        controlList.add(new GuiButton(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 60), 20, 20, "-"));
+        controlList.add(new GuiButton(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isWhitelist ? "W" : "B"));
+        controlList.add(new GuiButton(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 60), 20, 20, "+"));
     }
 
     protected void drawGuiContainerForegroundLayer()
@@ -43,7 +46,9 @@ public class GuiExporter extends GuiContainer
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
 
-    protected void actionPerformed(GuiButton guibutton) {
+    @Override
+    protected void buttonPressed(GuiButton guibutton) {
+        super.buttonPressed(guibutton);
         if (!guibutton.enabled) {
             return;
         }

@@ -1,6 +1,10 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.*;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.render.FontRenderer;
+import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
@@ -23,7 +27,7 @@ public class GuiRequestQueue extends GuiScreen {
     }
 
     public void initGui() {
-        StringTranslate stringtranslate = StringTranslate.getInstance();
+        I18n stringtranslate = I18n.getInstance();
         this.screenTitle = "Request Queue";
         this.slotContainer = new GuiTaskSlot(this.mc, this.width, this.height, 72, this.height-64, 36, this);
 
@@ -32,10 +36,10 @@ public class GuiRequestQueue extends GuiScreen {
     }
 
     public void initButtons() {
-        StringTranslate stringtranslate = StringTranslate.getInstance();
+        I18n stringtranslate = I18n.getInstance();
     }
 
-    protected void actionPerformed(GuiButton guibutton) {
+    protected void buttonPressed(GuiButton guibutton) {
         if (guibutton.enabled) {
 
         }
@@ -56,7 +60,7 @@ public class GuiRequestQueue extends GuiScreen {
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-        this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
+        this.drawStringCentered(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(140,this.height-175,this.width*2, this.height+351); //TODO: fix this breaking at lower resolutions than 1080p
         this.list.clear();

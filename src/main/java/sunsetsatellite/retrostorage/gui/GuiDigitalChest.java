@@ -1,8 +1,11 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
+
+
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalChest;
@@ -26,7 +29,7 @@ public class GuiDigitalChest extends GuiContainer
         if(tile.page >= tile.pages){
             color = 0xFF4040;
         }
-        fontRenderer.drawCenteredString((new StringBuilder().append(tile.page).append("/").append(tile.pages)).toString(), 87, 93, color);
+        fontRenderer.drawCenteredString(tile.page + "/" + tile.pages, 87, 93, color);
     }
 
     public void initGui()
@@ -52,7 +55,7 @@ public class GuiDigitalChest extends GuiContainer
 
     }
 
-    protected void actionPerformed(GuiButton guibutton)
+    protected void buttonPressed(GuiButton guibutton)
     {
         if(!guibutton.enabled)
         {

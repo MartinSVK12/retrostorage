@@ -1,6 +1,13 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.lang.I18n;
+import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 
@@ -83,38 +90,38 @@ public class TileEntityRecipeEncoder extends TileEntity
         return 64;
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = CompoundTag1.getByte("Slot") & 0xff;
             if(j >= 0 && j < contents.length)
             {
-                contents[j] = new ItemStack(nbttagcompound1);
+                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        super.writeToNBT(nbttagcompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
             if(contents[i] != null)
             {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                contents[i].writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                contents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
 
-        nbttagcompound.setTag("Items", nbttaglist);
+        CompoundTag.put("Items", listTag);
     }
 
     public boolean canInteractWith(EntityPlayer entityplayer)
@@ -123,7 +130,7 @@ public class TileEntityRecipeEncoder extends TileEntity
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
 
     private ItemStack[] contents;
@@ -143,20 +150,20 @@ public class TileEntityRecipeEncoder extends TileEntity
                         itemList.add(i, null);
                     }
                 }
-                NBTTagCompound nbt = RetroStorage.itemsArrayToNBT(itemList);//DiscManipulator.convertRecipeToNBT(itemList);
+                CompoundTag nbt = RetroStorage.itemsArrayToNBT(itemList);//DiscManipulator.convertRecipeToNBT(itemList);
                 //RetroStorage.printCompound(nbt);
-                recipeDisc.tag.setCompoundTag("recipe",nbt);
+                recipeDisc.tag.putCompound("recipe",nbt);
                 ItemStack result = RetroStorage.findRecipeResultFromNBT(nbt);
-                //RetroStorage.LOGGER.info(String.valueOf(result));
+                //RetroStorage.LOGGER.debug(String.valueOf(result));
                 if(result != null && result.itemID != 0 && result.stackSize != 0){
-                    String itemName = StringTranslate.getInstance().translateKey(result.getItemName() + ".name");
-                    recipeDisc.tag.setString("name","Recipe Disc: "+result.stackSize+"x "+itemName);
-                    recipeDisc.tag.setBoolean("overrideName",true);
+                    String itemName = I18n.getInstance().translateKey(result.getItemName() + ".name");
+                    recipeDisc.tag.putString("name","Recipe Disc: "+result.stackSize+"x "+itemName);
+                    recipeDisc.tag.putBoolean("overrideName",true);
                 } else {
-                    recipeDisc.tag.setString("name","");
-                    recipeDisc.tag.setBoolean("overrideName",false);
+                    recipeDisc.tag.putString("name","");
+                    recipeDisc.tag.putBoolean("overrideName",false);
                 }
-                RetroStorage.LOGGER.info("Encoded!");
+                RetroStorage.LOGGER.debug("Encoded!");
             }
         }
     }

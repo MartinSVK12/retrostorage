@@ -1,11 +1,14 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTBase;
-import net.minecraft.src.NBTTagCompound;
+
+
+
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.Tag;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 
 import java.util.*;
@@ -22,24 +25,24 @@ public class DiscManipulator {
         if(disc == null || inv == null){
             return;
         }
-        NBTTagCompound discNBT = disc.tag.getCompoundTag("disc");
+        CompoundTag discNBT = disc.tag.getCompound("disc");
         for(int i = 1; i < inv.getSizeInventory();i++){
             ItemStack item = inv.getStackInSlot(i);
-            NBTTagCompound itemNBT = new NBTTagCompound();
+            CompoundTag itemNBT = new CompoundTag();
             if(item != null){
-                itemNBT.setByte("Count", (byte)item.stackSize);
-                itemNBT.setShort("id", (short)item.itemID);
-                itemNBT.setShort("Damage", (short)item.getMetadata());
-                itemNBT.setByte("Expanded", (byte)1);
-                itemNBT.setInteger("Version", 19133);
-                itemNBT.setCompoundTag("Data", item.tag);
-                discNBT.setCompoundTag(String.valueOf(i),itemNBT);
+                itemNBT.putByte("Count", (byte)item.stackSize);
+                itemNBT.putShort("id", (short)item.itemID);
+                itemNBT.putShort("Damage", (short)item.getMetadata());
+                itemNBT.putByte("Expanded", (byte)1);
+                itemNBT.putInt("Version", 19133);
+                itemNBT.putCompound("Data", item.tag);
+                discNBT.putCompound(String.valueOf(i),itemNBT);
             } else {
-                ((INBTCompound) discNBT).removeTag(String.valueOf(i));
+                discNBT.getValue().remove(String.valueOf(i));
             }
         }
         //System.out.printf("Data: %s%n",discNBT.toStringExtended());
-        disc.tag.setCompoundTag("disc",discNBT);
+        disc.tag.putCompound("disc",discNBT);
     }
 
     /*public static void saveDisc(TileEntityDigitalController controller){
@@ -48,16 +51,16 @@ public class DiscManipulator {
         if(disc == null || !controller.isActive() && !controller.clearing){
             return;
         }
-        NBTTagCompound discNBT = disc.tag;
+        CompoundTag discNBT = disc.tag;
         for(int i = 1; i < inv.getSizeInventory();i++){
             ItemStack item = inv.getStackInSlot(i);
-            NBTTagCompound itemNBT = new NBTTagCompound();
+            CompoundTag itemNBT = new CompoundTag();
             if(item != null){
-                itemNBT.setByte("Count", (byte)item.stackSize);
-                itemNBT.setShort("id", (short)item.itemID);
-                itemNBT.setShort("Damage", (short)item.getMetadata());
-                itemNBT.setCompoundTag("Data", item.tag);
-                discNBT.setCompoundTag(String.valueOf(i),itemNBT);
+                itemNBT.putByte("Count", (byte)item.stackSize);
+                itemNBT.putShort("id", (short)item.itemID);
+                itemNBT.putShort("Damage", (short)item.getMetadata());
+                itemNBT.putCompound("Data", item.tag);
+                discNBT.putCompound(String.valueOf(i),itemNBT);
             } else {
                 discNBT.removeTag(String.valueOf(i));
             }
@@ -69,12 +72,12 @@ public class DiscManipulator {
     public static void loadDisc(ItemStack disc, IInventory inv, int page){
         //System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
         AtomicInteger i = new AtomicInteger();
-        Collection<?> values = disc.tag.getCompoundTag("disc").func_28110_c();
+        Collection<?> values = disc.tag.getCompound("disc").getValues();
         values.forEach((V)->{
             if(i.get() < 37) {
-                if(V instanceof NBTTagCompound){
-                    String K = ((NBTBase) V).getKey();
-                    ItemStack itemStack = new ItemStack((NBTTagCompound) V);
+                if(V instanceof CompoundTag){
+                    String K = ((Tag<?>) V).getTagName();
+                    ItemStack itemStack = ItemStack.readItemStackFromNbt((CompoundTag) V);
                     if(itemStack.getItem() != null){
                         inv.setInventorySlotContents((Integer.parseInt(K) * page), itemStack);
                     }
@@ -86,11 +89,12 @@ public class DiscManipulator {
     }
 
     public static void loadDisc(ItemStack disc, IInventory inv){
-        Collection<?> values = disc.tag.getCompoundTag("disc").func_28110_c();
+        Collection<?> values = disc.tag.getCompound("disc").getValues();
         values.forEach((V)->{
-            if(V instanceof NBTTagCompound) {
-                String K = ((NBTBase) V).getKey();
-                ItemStack itemStack = new ItemStack((NBTTagCompound) V);
+            if(V instanceof CompoundTag) {
+                String K = ((Tag<?>) V).getTagName();
+                ItemStack itemStack = ItemStack.readItemStackFromNbt((CompoundTag) V);
+                if(itemStack == null) return;
                 if(itemStack.getItem() != null) {
                     if (inv instanceof TileEntityDigitalChest && Integer.parseInt(K) == 0) {
                         inv.setInventorySlotContents(Integer.parseInt(K) + 1, itemStack);
@@ -103,9 +107,9 @@ public class DiscManipulator {
         });
 		/*for(int i = 0; i <= discNBT.size();i++){
 			System.out.println(i);
-			if(discNBT.hasKey(String.valueOf(i))){
+			if(discNBT.containsKey(String.valueOf(i))){
 				System.out.println(i+"*");
-				ItemStack item = new ItemStack(discNBT.getCompoundTag(String.valueOf(i)));
+				ItemStack item = new ItemStack(discNBT.getCompound(String.valueOf(i)));
 				inv.setInventorySlotContents(i,item);
 			}
 		}*/
@@ -117,11 +121,13 @@ public class DiscManipulator {
         Arrays.fill(((InventoryDigital)inv).inventoryContents,null);
     }
 
-    public static ArrayList<NBTTagCompound> getProcessesFromDisc(ItemStack disc){
-        NBTTagCompound tasksNBT = disc.tag.getCompoundTag("disc").getCompoundTag("tasks");
-        ArrayList<NBTTagCompound> tasks = new ArrayList<>();
-        tasks.addAll(tasksNBT.func_28110_c());
-        return tasks;
+    public static ArrayList<CompoundTag> getProcessesFromDisc(ItemStack disc){
+        CompoundTag tasksNBT = disc.tag.getCompound("disc").getCompound("tasks");
+        ArrayList<CompoundTag> values = new ArrayList<>();
+        for (Tag<?> value : tasksNBT.getValues()) {
+            values.add((CompoundTag) value);
+        }
+        return new ArrayList<>(values);
     }
 
 }

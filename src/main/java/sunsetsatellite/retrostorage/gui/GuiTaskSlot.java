@@ -1,7 +1,9 @@
 package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.core.lang.I18n;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 import sunsetsatellite.retrostorage.util.ProcessTask;
 import sunsetsatellite.retrostorage.util.RecipeTask;
@@ -49,7 +51,7 @@ public class GuiTaskSlot extends GuiSlot {
             if(task.attempts == 0){
                 color = 0xFF0000;
             }
-            StringTranslate trans = StringTranslate.getInstance();
+            I18n trans = I18n.getInstance();
             String name = trans.translateKey(((RecipeTask)task).recipe.getRecipeOutput().getItemName() + ".name");
             this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((RecipeTask)task).recipe.getRecipeOutput().stackSize+"x "+name, j + 2, k + 1, color);
             if(task.attempts > 0) {
@@ -66,7 +68,7 @@ public class GuiTaskSlot extends GuiSlot {
             if(task.attempts == 0){
                 color = 0xFF0000;
             }
-            StringTranslate trans = StringTranslate.getInstance();
+            I18n trans = I18n.getInstance();
             String name = trans.translateKey(((ProcessTask) task).output.getItemName() + ".name");
             this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((ProcessTask) task).output.stackSize+"x "+name, j + 2, k + 1, color);
             if(task.attempts > 0) {

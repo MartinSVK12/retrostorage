@@ -1,6 +1,12 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.IntTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
@@ -63,12 +69,13 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
                         ItemStorageDisc item = (ItemStorageDisc) getStackInSlot(0).getItem();
                         virtualDriveMaxStacks += item.getMaxStackCapacity();
                         ItemStack stack = getStackInSlot(0);
-                        Object[] nbt = stack.tag.getCompoundTag("disc").func_28110_c().toArray();
+                        Object[] nbt = stack.tag.getCompound("disc").getValues().toArray();
                         for(Object tag : nbt){
-                            if(tag instanceof NBTTagCompound){
-                                //RetroStorage.printCompound((NBTTagCompound) tag);
-                                ItemStack digitizedItem = new ItemStack(((NBTTagCompound)tag));
-                                //RetroStorage.LOGGER.info(String.format("%d %d %d",digitizedItem.itemID,digitizedItem.stackSize,digitizedItem.getMetadata()));
+                            if(tag instanceof CompoundTag){
+                                //RetroStorage.printCompound((CompoundTag) tag);
+                                ItemStack digitizedItem = ItemStack.readItemStackFromNbt(((CompoundTag)tag));
+                                if(digitizedItem == null) continue;
+                                //RetroStorage.LOGGER.debug(String.format("%d %d %d",digitizedItem.itemID,digitizedItem.stackSize,digitizedItem.getMetadata()));
                                 network.inventory.addItemStackToInventory(digitizedItem);
                             }
                         }
@@ -86,16 +93,16 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
             ItemStack disc = discsUsed.get(0).copy();
             discsUsed.remove(0);
             virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
-            NBTTagCompound nbt = new NBTTagCompound();
-            Object[] V = virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray();
-            int stacksToRemove = Math.min(virtualDisc.tag.getCompoundTag("disc").func_28110_c().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            CompoundTag nbt = new CompoundTag();
+            Object[] V = virtualDisc.tag.getCompound("disc").getValues().toArray();
+            int stacksToRemove = Math.min(virtualDisc.tag.getCompound("disc").getValues().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
             for (int i = 0; i < stacksToRemove; i++) {
-                nbt.setCompoundTag(String.valueOf(i),(NBTTagCompound) V[i]);
+                nbt.putCompound(String.valueOf(i),(CompoundTag) V[i]);
                 if(network != null) {
                     network.inventory.inventoryContents[i] = null;
                 }
             }
-            disc.tag.setCompoundTag("disc",nbt);
+            disc.tag.putCompound("disc",nbt);
             disc.stackSize = 1;
             setInventorySlotContents(1,disc);
             if(virtualDriveMaxStacks == 0){
@@ -129,61 +136,61 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         return "Disc Drive";
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
-            if(j >= 0 && j < contents.length)
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = CompoundTag1.getByte("Slot") & 0xff;
+            if(j < contents.length)
             {
-                contents[j] = new ItemStack(nbttagcompound1);
+                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
-        nbttaglist = nbttagcompound.getTagList("DiscsUsed");
+        listTag = CompoundTag.getList("DiscsUsed");
         discsUsed = new ArrayList<>();
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            discsUsed.add(new ItemStack(nbttagcompound1));
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            discsUsed.add(ItemStack.readItemStackFromNbt(CompoundTag1));
         }
-        virtualDriveMaxStacks = nbttagcompound.getInteger("MaxStacks");
-        virtualDisc.tag.setCompoundTag("disc", nbttagcompound.getCompoundTag("VirtualDisc"));
+        virtualDriveMaxStacks = CompoundTag.getInteger("MaxStacks");
+        virtualDisc.tag.putCompound("disc", CompoundTag.getCompound("VirtualDisc"));
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        super.writeToNBT(nbttagcompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
             if(contents[i] != null)
             {
 
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                contents[i].writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                contents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
-        nbttagcompound.setTag("Items", nbttaglist);
-        nbttaglist = new NBTTagList();
+        CompoundTag.put("Items", listTag);
+        listTag = new ListTag();
         for(int i = 0; i < discsUsed.size(); i++)
         {
             if(discsUsed.get(i) != null)
             {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                discsUsed.get(i).writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                discsUsed.get(i).writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
-        nbttagcompound.setTag("DiscsUsed", nbttaglist);
-        nbttagcompound.setTag("MaxStacks",new NBTTagInt(virtualDriveMaxStacks));
-        nbttagcompound.setCompoundTag("VirtualDisc",virtualDisc.tag.getCompoundTag("disc"));
+        CompoundTag.put("DiscsUsed", listTag);
+        CompoundTag.put("MaxStacks",new IntTag(virtualDriveMaxStacks));
+        CompoundTag.putCompound("VirtualDisc",virtualDisc.tag.getCompound("disc"));
     }
 
     public int getInventoryStackLimit()
@@ -197,7 +204,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
 
     private ItemStack contents[];

@@ -1,9 +1,11 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
+
+
+
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class InventoryDigital implements IInventory {
 
 	public int getInventorySlotContainItem(int itemID, int itemDamage) {
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
-			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID && this.inventoryContents[i2].getMetadata() == itemDamage) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID && (this.inventoryContents[i2].getMetadata() == itemDamage || itemDamage == -1)) {
 				return i2;
 			}
 		}
@@ -55,7 +57,7 @@ public class InventoryDigital implements IInventory {
 	public int getItemCount(int itemID, int itemDamage){
 		int i = 0;
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
-			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID && this.inventoryContents[i2].getMetadata() == itemDamage) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == itemID && (this.inventoryContents[i2].getMetadata() == itemDamage || itemDamage == -1)) {
 				i += this.inventoryContents[i2].stackSize;
 			}
 		}
@@ -65,8 +67,20 @@ public class InventoryDigital implements IInventory {
 
 	public int storeItemStack(ItemStack stack) {
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
-			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && ((INBTCompound)this.inventoryContents[i2].tag).equals(stack.tag) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
-				return i2;
+			if(this.inventoryContents[i2] != null){
+				if(this.inventoryContents[i2].itemID == stack.itemID){
+					if((stack.tag == null && this.inventoryContents[i2].tag == null) || ((this.inventoryContents[i2].tag).equals(stack.tag))){
+						if(this.inventoryContents[i2].isStackable()){
+							if (this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize()){
+								if(this.inventoryContents[i2].stackSize < this.getInventoryStackLimit()){
+									if((!this.inventoryContents[i2].getHasSubtypes() || (this.inventoryContents[i2].getMetadata() == stack.getMetadata() || stack.getMetadata() == -1))){
+										return i2;
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -124,6 +138,9 @@ public class InventoryDigital implements IInventory {
 	public int storePartialItemStack(ItemStack stack) {
 		int id = stack.itemID;
 		int stackSize = stack.stackSize;
+		if(stack.tag != null){
+			stack.tag.setName("Data");
+		}
 		int i4 = this.storeItemStack(stack);
 		if(i4 < 0) {
 			i4 = this.getFirstEmptyStack();

@@ -1,13 +1,11 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 
 
@@ -25,13 +23,13 @@ public class GuiDigitalTerminal extends GuiContainer
     {
         fontRenderer.drawString("Digital Terminal", 50, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
-        fontRenderer.drawString((new StringBuilder().append("Page: ").append(tile.page).append("/").append(tile.pages)).toString(), 65, 93, 0x404040);
+        fontRenderer.drawString("Page: " + tile.page + "/" + tile.pages, 65, 93, 0x404040);
         if(tile.network != null && tile.network.drive != null){
             int color = 0xFFFFFF;
-            if(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
+            if(tile.network.drive.virtualDisc.tag.getCompound("disc").getValues().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
                 color = 0xFF4040;
             }
-            fontRenderer.drawCenteredString(tile.network.drive.virtualDisc.tag.getCompoundTag("disc").func_28110_c().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 100, 112, color);
+            fontRenderer.drawCenteredString(tile.network.drive.virtualDisc.tag.getCompound("disc").getValues().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 100, 112, color);
         }
     }
 
@@ -41,11 +39,11 @@ public class GuiDigitalTerminal extends GuiContainer
         for(Object slot : inventorySlots.inventorySlots){
             if(slot instanceof SlotDigital){
                 ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + (36*(tile.page-1));
-                //RetroStorage.LOGGER.info(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
+                //RetroStorage.LOGGER.debug(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
             }
         }
-    	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
-    	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
+    	controlList.add(new GuiButton(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
+    	controlList.add(new GuiButton(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
     }
     
     protected void drawGuiContainerBackgroundLayer(float f)
@@ -58,7 +56,7 @@ public class GuiDigitalTerminal extends GuiContainer
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
     
-    protected void actionPerformed(GuiButton guibutton)
+    protected void buttonPressed(GuiButton guibutton)
     {
         if(!guibutton.enabled)
         {
@@ -72,7 +70,7 @@ public class GuiDigitalTerminal extends GuiContainer
                     for(Object slot : inventorySlots.inventorySlots){
                         if(slot instanceof SlotDigital){
                             ((SlotDigital) slot).variableIndex += 36;
-                            //RetroStorage.LOGGER.info(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
+                            //RetroStorage.LOGGER.debug(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
                         }
                     }
                 }
@@ -86,7 +84,7 @@ public class GuiDigitalTerminal extends GuiContainer
                     for(Object slot : inventorySlots.inventorySlots){
                         if(slot instanceof SlotDigital){
                             ((SlotDigital) slot).variableIndex -= 36;
-                            //RetroStorage.LOGGER.info(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
+                            //RetroStorage.LOGGER.debug(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
                         }
                     }
                 }

@@ -1,10 +1,11 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import sunsetsatellite.retrostorage.interfaces.mixins.INBTCompound;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
+
+
+
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 
 import java.util.ArrayList;
 
@@ -65,7 +66,7 @@ public class InventoryPortable implements IInventory {
 
 	public int storeItemStack(ItemStack stack) {
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
-			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && ((INBTCompound)this.inventoryContents[i2].tag).equals(stack.tag) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && this.inventoryContents[i2].tag.equals(stack.tag) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
 				return i2;
 			}
 		}

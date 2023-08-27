@@ -2,12 +2,20 @@
 
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.InventoryAction;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
+
+import java.util.List;
 
 
 public class ContainerDigitalTerminal extends Container
@@ -39,19 +47,13 @@ public class ContainerDigitalTerminal extends Container
             {
         		addSlot(new SlotDigital(tileentitydigitalterminal,l + i * 9 + 1 , 8 + l * 18, 18 + i * 18));
             }
-
         }
-
-        
-
-        
-
     }
 
-    @Override
+    /*@Override
     public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
         if(tile.network != null){
-            //RetroStorage.LOGGER.info(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
+            //RetroStorage.LOGGER.debug(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
             ItemStack item = this.getSlot(i).getStack().copy();
             ItemStack original = this.getSlot(i).getStack();
             if(i > 0 && i < 37){
@@ -68,16 +70,17 @@ public class ContainerDigitalTerminal extends Container
                 this.getSlot(i).onSlotChanged();
             }
         }
+    }*/
+    @Override
+    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
 
     @Override
-    public ItemStack clickInventorySlot(int slotID, int button, boolean shift, boolean control, EntityPlayer player) {
-        Slot slot = this.getSlot(slotID);
-        if(slot instanceof SlotViewOnly){
-            return null;
-        }
-        return super.clickInventorySlot(slotID, button, shift, control, player);
+    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
+
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)
     {

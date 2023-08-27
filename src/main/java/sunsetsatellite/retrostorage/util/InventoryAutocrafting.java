@@ -5,7 +5,11 @@
 
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.player.inventory.InventoryCrafting;
 
 public class InventoryAutocrafting extends InventoryCrafting {
     private ItemStack[] stackList;

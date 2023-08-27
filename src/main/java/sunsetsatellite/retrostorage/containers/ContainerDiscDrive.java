@@ -2,9 +2,18 @@
 
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.InventoryAction;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
+
+import java.util.List;
 
 
 public class ContainerDiscDrive extends Container
@@ -35,15 +44,13 @@ public class ContainerDiscDrive extends Container
     }
 
     @Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {}
+    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
+    }
 
     @Override
-    public ItemStack clickInventorySlot(int slotID, int button, boolean shift, boolean control, EntityPlayer player) {
-        Slot slot = this.getSlot(slotID);
-        if(slot instanceof SlotViewOnly){
-            return null;
-        }
-        return super.clickInventorySlot(slotID, button, shift, control, player);
+    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)

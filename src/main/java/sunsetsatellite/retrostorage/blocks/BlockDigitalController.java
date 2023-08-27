@@ -1,25 +1,33 @@
 package sunsetsatellite.retrostorage.blocks;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.block.Block;
+import net.minecraft.core.block.BlockTileEntityRotatable;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.block.material.Material;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.containers.ContainerPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiDigitalController;
 import sunsetsatellite.retrostorage.gui.GuiPlayerExtra;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
-public class BlockDigitalController extends BlockContainerRotatable {
-    public BlockDigitalController(int i, Material material) {
-        super(i, material);
+public class BlockDigitalController extends BlockTileEntityRotatable {
+
+    public BlockDigitalController(String key, int id, Material material) {
+        super(key, id, material);
     }
 
     @Override
-    protected TileEntity getBlockEntity() {
+    protected TileEntity getNewBlockEntity() {
         return new TileEntityDigitalController();
     }
 
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
-        if(world.isMultiplayerAndNotHost)
+        if(world.isClientSide)
         {
             return true;
         } else
@@ -30,29 +38,29 @@ public class BlockDigitalController extends BlockContainerRotatable {
                     entityplayer.inventory.getCurrentItem().stackSize--;
                     tile.energy += 20*60;
                 }
-                if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.blockRedstone.blockID) {
+                if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.blockRedstone.id) {
                     entityplayer.inventory.getCurrentItem().stackSize--;
                     tile.energy += 20*60*9;
                 }
-                if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.bedrock.blockID) {
+                if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.bedrock.id) {
                     entityplayer.inventory.getCurrentItem().stackSize--;
                     tile.energy += 20*60*65535;
                 }
                 if(tile.network != null){
-                    /*RetroStorage.LOGGER.info(tile.active ? "Network online!" : "Network offline.");
-                    RetroStorage.LOGGER.info(String.format("Network energy: %d", Math.round(tile.energy)));
+                    /*RetroStorage.LOGGER.debug(tile.active ? "Network online!" : "Network offline.");
+                    RetroStorage.LOGGER.debug(String.format("Network energy: %d", Math.round(tile.energy)));
                     if(tile.active && tile.energy > 0){
-                        RetroStorage.LOGGER.info(String.format("Usage: %d (%ds left.)",tile.network.devicesSize()+1,Math.round(
+                        RetroStorage.LOGGER.debug(String.format("Usage: %d (%ds left.)",tile.network.devicesSize()+1,Math.round(
                                 (tile.energy/(tile.network.devicesSize()+1))/20
                         )));
                     }
-                    RetroStorage.LOGGER.info(
+                    RetroStorage.LOGGER.debug(
                             String.format("Network size/Devices: %d/%d", tile.network.size(), tile.network.devicesSize()
                             ));
                     if(tile.network.drive != null){
-                        RetroStorage.LOGGER.info(String.format("Drive detected: %s", tile.network.drive));
+                        RetroStorage.LOGGER.debug(String.format("Drive detected: %s", tile.network.drive));
                     }
-                    RetroStorage.LOGGER.info(tile.network.toString());*/
+                    RetroStorage.LOGGER.debug(tile.network.toString());*/
                     //((IOpenGUI)entityplayer).displayGUI(new GuiPlayerExtra(entityplayer,new ContainerPlayerExtra(entityplayer.inventory)));
                     ((IOpenGUI)entityplayer).displayGUI(new GuiDigitalController(tile));
                 }

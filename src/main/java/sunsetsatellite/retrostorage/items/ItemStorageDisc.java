@@ -1,11 +1,16 @@
 package sunsetsatellite.retrostorage.items;
 
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import sunsetsatellite.retrostorage.RetroStorage;
 
-public class ItemStorageDisc extends Item
+
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.net.command.TextFormatting;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.sunsetutils.util.ICustomDescription;
+
+public class ItemStorageDisc extends Item implements ICustomDescription
 {
 
     public ItemStorageDisc(int i, int j)
@@ -23,13 +28,13 @@ public class ItemStorageDisc extends Item
         return this;
     }
 
-    @Override
-    public NBTTagCompound getDefaultTag() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        //nbt.setCompoundTag("disc",new NBTTagCompound());
+    /*@Override
+    public CompoundTag getDefaultTag() {
+        CompoundTag nbt = new CompoundTag();
+        //nbt.putCompound("disc",new CompoundTag());
         if(itemID == RetroStorage.goldenDisc.itemID){
-            nbt.setBoolean("overrideColor",true);
-            nbt.setByte("color", (byte) 0x4);
+            nbt.putBoolean("overrideColor",true);
+            nbt.putByte("color", (byte) 0x4);
         }
         return nbt;
     }
@@ -37,9 +42,13 @@ public class ItemStorageDisc extends Item
     @Override
     public byte getItemNameColor(ItemStack itemstack) {
         return super.getItemNameColor(itemstack);
-    }
+    }*/
 
 
     public int maxStackCapacity;
 
+    @Override
+    public String getDescription(ItemStack itemStack) {
+        return TextFormatting.MAGENTA+""+itemStack.tag.getCompound("disc").getValues().size()+" entries out of "+maxStackCapacity;
+    }
 }

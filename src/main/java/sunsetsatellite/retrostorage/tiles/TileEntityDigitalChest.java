@@ -1,6 +1,13 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.retrostorage.RetroStorage;
 
 public class TileEntityDigitalChest extends TileEntity
     implements IInventory
@@ -51,13 +58,13 @@ public class TileEntityDigitalChest extends TileEntity
     {
         if(getStackInSlot(0) != null){
             this.pages = 36;
-            this.page = getStackInSlot(0).tag.getCompoundTag("disc").func_28110_c().size();
+            this.page = getStackInSlot(0).tag.getCompound("disc").getValues().size();
         } else {
             this.pages = 0;
             this.page = 0;
         }
         /*if(getStackInSlot(0) != null){
-            this.pages = ((int) Math.floor((double) getStackInSlot(0).tag.getCompoundTag("disc").func_28110_c().size()/(getSizeInventory()-1))) + 1;
+            this.pages = ((int) Math.floor((double) getStackInSlot(0).tag.getCompound("disc").func_28110_c().size()/(getSizeInventory()-1))) + 1;
         } else {
             this.page = 1;
             this.pages = 1;
@@ -83,39 +90,39 @@ public class TileEntityDigitalChest extends TileEntity
         return "Digital Chest";
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound)
+    public void readFromNBT(CompoundTag CompoundTag)
     {
-        super.readFromNBT(nbttagcompound);
-        NBTTagList nbttaglist = nbttagcompound.getTagList("Items");
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
+        for(int i = 0; i < listTag.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
+            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = CompoundTag1.getByte("Slot") & 0xff;
             if(j >= 0 && j < contents.length)
             {
-                contents[j] = new ItemStack(nbttagcompound1);
+                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
 
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public void writeToNBT(CompoundTag CompoundTag)
     {
-        super.writeToNBT(nbttagcompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
             if(contents[i] != null)
             {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                contents[i].writeToNBT(nbttagcompound1);
-                nbttaglist.setTag(nbttagcompound1);
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                contents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
             }
         }
 
-        nbttagcompound.setTag("Items", nbttaglist);
+        CompoundTag.put("Items", listTag);
     }
 
     public int getInventoryStackLimit()
@@ -139,7 +146,7 @@ public class TileEntityDigitalChest extends TileEntity
         {
             return false;
         }
-        return entityplayer.getDistanceSq((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
     }
 
     private ItemStack[] contents;

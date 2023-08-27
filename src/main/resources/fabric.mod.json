@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "retrostorage",
-  "version": "1.1.2",
+  "version": "1.2.0",
 
-  "name": "RetroStorage (BTA)",
+  "name": "RetroStorage",
   "description": "Digital storage mod for old versions of Minecraft, adapted to work with Better than Adventure.",
   "icon": "icon.png",
   "authors": [
@@ -28,8 +28,8 @@
 
   "depends": {
     "fabricloader": ">=0.13.3",
-    "halplibe": ">=1.1.4",
-    "energyapi": ">=1.1.1"
+    "halplibe": ">=2.1.6",
+    "energyapi": ">=1.1.4"
   },
   "suggests": {
   }

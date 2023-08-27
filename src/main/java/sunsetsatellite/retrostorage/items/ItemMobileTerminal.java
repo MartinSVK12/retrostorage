@@ -1,6 +1,14 @@
 package sunsetsatellite.retrostorage.items;
 
-import net.minecraft.src.*;
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.net.command.TextFormatting;
+import net.minecraft.core.util.helper.Side;
+import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
@@ -11,23 +19,29 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.InventoryPortable;
+import sunsetsatellite.sunsetutils.util.ICustomDescription;
 
-public class ItemMobileTerminal extends Item {
+public class ItemMobileTerminal extends Item implements ICustomDescription {
     public ItemMobileTerminal(int i) {
         super(i);
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int i, int j, int k, int l, double heightPlaced) {
-        TileEntity tile = world.getBlockTileEntity(i,j,k);
+    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+        TileEntity tile = world.getBlockTileEntity(blockX,blockY,blockZ);
         if(tile != null){
             if((tile.getClass() == TileEntityDigitalTerminal.class && this == RetroStorage.mobileTerminal) || (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal)){
-                NBTTagCompound positionNBT = (new NBTTagCompound());
-                positionNBT.setInteger("x",i);
-                positionNBT.setInteger("y",j);
-                positionNBT.setInteger("z",k);
-                itemstack.tag.setCompoundTag("position",positionNBT);
+                CompoundTag positionNBT = (new CompoundTag());
+                positionNBT.putInt("x",blockX);
+                positionNBT.putInt("y",blockY);
+                positionNBT.putInt("z",blockZ);
+                itemstack.tag.putCompound("position",positionNBT);
                 entityplayer.addChatMessage("action.retrostorage.terminalBound");
+            }
+        } else {
+            if(entityplayer.isSneaking()){
+                itemstack.tag.getValue().remove("position");
+                entityplayer.addChatMessage("action.retrostorage.terminalUnbound");
             }
         }
         return true;
@@ -36,7 +50,7 @@ public class ItemMobileTerminal extends Item {
 
     @Override
     public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer) {
-        NBTTagCompound positionNBT = itemstack.tag.getCompoundTag("position");
+        CompoundTag positionNBT = itemstack.tag.getCompound("position");
         TileEntity tile = world.getBlockTileEntity(positionNBT.getInteger("x"),positionNBT.getInteger("y"),positionNBT.getInteger("z"));
         if(itemstack.getItem() == RetroStorage.mobileTerminal){
             if(tile != null){
@@ -49,5 +63,14 @@ public class ItemMobileTerminal extends Item {
         }
 
         return super.onItemRightClick(itemstack, world, entityplayer);
+    }
+
+    @Override
+    public String getDescription(ItemStack itemStack) {
+        CompoundTag pos = itemStack.tag.getCompoundOrDefault("position",null);
+        if(pos != null){
+            return TextFormatting.MAGENTA+ "Bound to X: "+pos.getInteger("x")+" Y: "+pos.getInteger("y")+" Z: "+pos.getInteger("z")+"!";
+        }
+        return TextFormatting.GRAY+"Unbound.";
     }
 }

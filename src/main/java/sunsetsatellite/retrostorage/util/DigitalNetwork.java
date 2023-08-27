@@ -1,11 +1,16 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.IRecipe;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+
+
+
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.crafting.recipe.IRecipe;
+import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.*;
+import sunsetsatellite.sunsetutils.util.BlockInstance;
+import sunsetsatellite.sunsetutils.util.Vec3i;
 
 import java.util.*;
 
@@ -23,7 +28,7 @@ public class DigitalNetwork extends Network {
     public TileEntityDiscDrive drive;
 
     public DigitalNetwork(TileEntityDigitalController controller) {
-        super(controller, TileEntityNetworkDevice.class, new int[]{RetroStorage.networkCable.blockID});
+        super(controller, TileEntityNetworkDevice.class, new int[]{RetroStorage.networkCable.id});
         this.inventory = new InventoryDigital("Digital Network",controller);
     }
 
@@ -38,7 +43,7 @@ public class DigitalNetwork extends Network {
         }
         if(device.tile instanceof TileEntityWirelessLink){
             if(((TileEntityWirelessLink) device.tile).remoteLink != null){
-                HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3(((TileEntityWirelessLink) device.tile).remoteLink.xCoord,((TileEntityWirelessLink) device.tile).remoteLink.yCoord,((TileEntityWirelessLink) device.tile).remoteLink.zCoord));
+                HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3i(((TileEntityWirelessLink) device.tile).remoteLink.xCoord,((TileEntityWirelessLink) device.tile).remoteLink.yCoord,((TileEntityWirelessLink) device.tile).remoteLink.zCoord));
                 addRecursive(candidates);
             }
         }
@@ -63,8 +68,8 @@ public class DigitalNetwork extends Network {
         return searchAll(TileEntityAdvInterface.class);
     }
 
-    public HashMap<BlockInstance, ArrayList<ArrayList<NBTTagCompound>>> getAvailableProcessesWithSource(){
-        HashMap<BlockInstance, ArrayList<ArrayList<NBTTagCompound>>> processes = new HashMap<>();
+    public HashMap<BlockInstance, ArrayList<ArrayList<CompoundTag>>> getAvailableProcessesWithSource(){
+        HashMap<BlockInstance, ArrayList<ArrayList<CompoundTag>>> processes = new HashMap<>();
         ArrayList<BlockInstance> interfaces = getInterfaces();
         for(BlockInstance inf : interfaces){
             processes.put(inf,((TileEntityAdvInterface)inf.tile).getProcesses());
@@ -96,11 +101,11 @@ public class DigitalNetwork extends Network {
         return recipes;
     }
 
-    public ArrayList<ArrayList<NBTTagCompound>> getAvailableProcesses(){
-        ArrayList<ArrayList<NBTTagCompound>> processes = new ArrayList<>();
+    public ArrayList<ArrayList<CompoundTag>> getAvailableProcesses(){
+        ArrayList<ArrayList<CompoundTag>> processes = new ArrayList<>();
         ArrayList<BlockInstance> interfaces = getInterfaces();
         for(BlockInstance inf : interfaces){
-            ArrayList<ArrayList<NBTTagCompound>> interfaceProcesses = ((TileEntityAdvInterface)inf.tile).getProcesses();
+            ArrayList<ArrayList<CompoundTag>> interfaceProcesses = ((TileEntityAdvInterface)inf.tile).getProcesses();
             processes.addAll(interfaceProcesses);
         }
         return processes;
@@ -108,15 +113,15 @@ public class DigitalNetwork extends Network {
 
     public void requestCrafting(IRecipe recipe) {
         if(recipe != null) {
-            RetroStorage.LOGGER.info("Requesting: " + RetroStorage.recipeToString(recipe));
+            RetroStorage.LOGGER.debug("Requesting: " + RetroStorage.recipeToString(recipe));
             RecipeTask task = new RecipeTask(recipe, null, null);
             requestQueue.add(task);
         }
     }
 
-    public void requestProcessing(ArrayList<NBTTagCompound> tasks){
+    public void requestProcessing(ArrayList<CompoundTag> tasks){
         if(tasks != null){
-            RetroStorage.LOGGER.info("Requesting: " + RetroStorage.getMainOutputOfProcess(tasks));
+            RetroStorage.LOGGER.debug("Requesting: " + RetroStorage.getMainOutputOfProcess(tasks));
             ProcessTask task = new ProcessTask(tasks,null,null);
             //RecipeTask task = new RecipeTask(recipe, null, null);
             requestQueue.add(task);
@@ -125,91 +130,92 @@ public class DigitalNetwork extends Network {
 
 
     public ArrayList<Task> getSubtask(Task task){
-        RetroStorage.LOGGER.info("Getting subtasks for: "+task);
+        RetroStorage.LOGGER.debug("Getting subtasks for: "+task);
         if(task instanceof RecipeTask){
             IRecipe recipe = ((RecipeTask) task).recipe;
             ArrayList<Task> subtasks = new ArrayList<>();
             if(recipe != null) {
                 ArrayList<ItemStack> inputs = RetroStorage.condenseItemList(RetroStorage.getRecipeItems(recipe));
                 ArrayList<ItemStack> missing = inventory.hasItemsReturnMissing(inputs);
-                if(missing.size() == 0){
-                    RetroStorage.LOGGER.info("No subtasks needed, all items available.");
+                if(missing.isEmpty()){
+                    RetroStorage.LOGGER.debug("No subtasks needed, all items available.");
                     return null;
                 } else {
-                    RetroStorage.LOGGER.info(String.format("Missing %d different items (%s) for %s, creating subtasks..",missing.size(),missing,RetroStorage.recipeToString(recipe)));
+                    RetroStorage.LOGGER.debug(String.format("Missing %d different items (%s) for %s, creating subtasks..",missing.size(),missing,RetroStorage.recipeToString(recipe)));
                     for(ItemStack missingStack : missing) {
                         ArrayList<IRecipe> allRecipes = RetroStorage.findRecipesByOutput(missingStack);
-                        ArrayList<ArrayList<NBTTagCompound>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
-                        if (allRecipes.size() > 0) {
+                        ArrayList<ArrayList<CompoundTag>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
+                        if (!allRecipes.isEmpty()) {
                             ArrayList<IRecipe> knownRecipes = getAvailableRecipes();
                             allRecipes.retainAll(knownRecipes);
-                            if (allRecipes.size() > 0) {
+                            if (!allRecipes.isEmpty()) {
                                 IRecipe subtaskRecipe = allRecipes.get(0);
                                 RecipeTask subtask = new RecipeTask(subtaskRecipe,task,null);
                                 subtasks.add(subtask);
-                            } else if(allProcesses.size() > 0) {
-                                ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                            } else if(!allProcesses.isEmpty()) {
+                                ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
                                 ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
                                 subtasks.add(subtask);
                             } else {
                                 RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft or process %s!",missingStack));
                             }
-                        } else if(allProcesses.size() > 0) {
-                            ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                        } else if(!allProcesses.isEmpty()) {
+                            ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
                             ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
                             subtasks.add(subtask);
                         } else {
                             RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted nor processed.",missingStack));
                         }
                     }
-                    RetroStorage.LOGGER.info(String.format("Got %d subtasks.",subtasks.size()));
+                    RetroStorage.LOGGER.debug(String.format("Got %d subtasks.",subtasks.size()));
                     return subtasks;
                 }
             }
         } else if(task instanceof ProcessTask){
             ArrayList<Task> subtasks = new ArrayList<>();
-            ArrayList<NBTTagCompound> steps = ((ProcessTask) task).tasks;
+            ArrayList<CompoundTag> steps = ((ProcessTask) task).tasks;
             if(steps != null){
                 ArrayList<ItemStack> inputs = new ArrayList<>();
-                for(NBTTagCompound step : steps){
-                    ItemStack stack = new ItemStack(step.getCompoundTag("stack"));
+                for(CompoundTag step : steps){
+                    ItemStack stack = ItemStack.readItemStackFromNbt(step.getCompound("stack"));
+                    if(stack == null) continue;
                     if(!step.getBoolean("isOutput")){
                         inputs.add(stack);
                     }
                 }
                 inputs = RetroStorage.condenseItemList(inputs);
                 ArrayList<ItemStack> missing = inventory.hasItemsReturnMissing(inputs);
-                if(missing.size() == 0){
-                    RetroStorage.LOGGER.info("No subtasks needed, all items available.");
+                if(missing.isEmpty()){
+                    RetroStorage.LOGGER.debug("No subtasks needed, all items available.");
                     return null;
                 } else {
-                    RetroStorage.LOGGER.info(String.format("Missing %d different items (%s), creating subtasks..",missing.size(),missing));
+                    RetroStorage.LOGGER.debug(String.format("Missing %d different items (%s), creating subtasks..",missing.size(),missing));
                     for(ItemStack missingStack : missing) {
                         ArrayList<IRecipe> allRecipes = RetroStorage.findRecipesByOutput(missingStack);
-                        ArrayList<ArrayList<NBTTagCompound>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
-                        if (allRecipes.size() > 0) {
+                        ArrayList<ArrayList<CompoundTag>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
+                        if (!allRecipes.isEmpty()) {
                             ArrayList<IRecipe> knownRecipes = getAvailableRecipes();
                             allRecipes.retainAll(knownRecipes);
-                            if (allRecipes.size() > 0) {
+                            if (!allRecipes.isEmpty()) {
                                 IRecipe subtaskRecipe = allRecipes.get(0);
                                 RecipeTask subtask = new RecipeTask(subtaskRecipe,task,null);
                                 subtasks.add(subtask);
-                            } else if(allProcesses.size() > 0) {
-                                ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                            } else if(!allProcesses.isEmpty()) {
+                                ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
                                 ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
                                 subtasks.add(subtask);
                             } else {
                                 RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft or process %s!",missingStack));
                             }
-                        } else if(allProcesses.size() > 0) {
-                            ArrayList<NBTTagCompound> subtaskProcess = allProcesses.get(0);
+                        } else if(!allProcesses.isEmpty()) {
+                            ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
                             ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
                             subtasks.add(subtask);
                         } else {
                             RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted nor processed.",missingStack));
                         }
                     }
-                    RetroStorage.LOGGER.info(String.format("Got %d subtasks.",subtasks.size()));
+                    RetroStorage.LOGGER.debug(String.format("Got %d subtasks.",subtasks.size()));
                     return subtasks;
                 }
             }
@@ -221,7 +227,7 @@ public class DigitalNetwork extends Network {
         ArrayList<IRecipe> recipes = RetroStorage.findRecipesByOutputUsingList(item,getAvailableRecipes());
         //HashMap<Integer,ArrayList<ItemStack>> req = new HashMap<>();
         ArrayList<ItemStack> inputs = new ArrayList<>();
-        if(recipes.size() > 0){
+        if(!recipes.isEmpty()){
             inputs = RetroStorage.getRecipeItems(recipes.get(0));
             /*for(ItemStack input : (ArrayList<ItemStack>)inputs.clone()){
                 int availableAmount = inventory.getItemCount(input.itemID,input.getMetadata());
@@ -240,13 +246,19 @@ public class DigitalNetwork extends Network {
     }*/
 
     public void clearRequestQueue() {
-        RetroStorage.LOGGER.info("Clearing request queue!");
+        RetroStorage.LOGGER.debug("Clearing request queue!");
         requestQueue = new ArrayDeque<>();
         for(BlockInstance assembler : getAssemblers()){
             TileEntityAssembler tile = (TileEntityAssembler) assembler.tile;
             if(tile.task != null){
                 tile.task.processor = null;
                 tile.task = null;
+            }
+        }
+        for (BlockInstance anInterface : getInterfaces()) {
+            TileEntityAdvInterface tile = (TileEntityAdvInterface) anInterface.tile;
+            if(tile.request != null){
+                tile.cancelProcessing();
             }
         }
     }

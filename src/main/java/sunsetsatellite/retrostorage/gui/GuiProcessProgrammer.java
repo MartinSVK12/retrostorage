@@ -1,10 +1,16 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.*;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerProcessProgrammer;
 import sunsetsatellite.retrostorage.tiles.TileEntityProcessProgrammer;
+
+import java.util.Objects;
 
 public class GuiProcessProgrammer extends GuiContainer
 {
@@ -30,16 +36,16 @@ public class GuiProcessProgrammer extends GuiContainer
     public void initGui()
     {
         super.initGui();
-        processName = new GuiTextField(this, fontRenderer, Math.round(width / 2 - 31),Math.round(height/2 - 92),100,20,tile.currentProcessName == "" ? "New Process" : tile.currentProcessName);
-        controlList.add(new GuiButton(0, Math.round(width / 2 - 70), Math.round(height / 2 - 12), 40, 20, "Save"));
-        controlList.add(new GuiButton(1, Math.round(width / 2 + 30), Math.round(height / 2 - 12), 40, 20, "Clear"));
-        controlList.add(new GuiButton(6, Math.round(width / 2 + 30), Math.round(height / 2 - 40), 40, 20, (tile.isCurrentOutput ? "Output" : "Input")));
-        controlList.add(new GuiButton(7, Math.round(width / 2 + 30), Math.round(height / 2 - 65), 40, 20, "Set"));
+        processName = new GuiTextField(this, fontRenderer, Math.round((float) width / 2 - 31),Math.round((float) height/2 - 92),100,20, Objects.equals(tile.currentProcessName, "") ? "New Process" : tile.currentProcessName,"Process name..");
+        controlList.add(new GuiButton(0, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 12), 40, 20, "Save"));
+        controlList.add(new GuiButton(1, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 12), 40, 20, "Clear"));
+        controlList.add(new GuiButton(6, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 40), 40, 20, (tile.isCurrentOutput ? "Output" : "Input")));
+        controlList.add(new GuiButton(7, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 65), 40, 20, "Set"));
         //controlList.add();
-        controlList.add(new GuiButton(2, Math.round(width / 2 - 5), Math.round(height / 2 - 65), 20, 20, "+"));
-        controlList.add(new GuiButton(3, Math.round(width / 2 - 70), Math.round(height / 2 - 65), 20, 20, "-"));// /2 - 34, - 150*/
-        controlList.add(new GuiButton(4, Math.round(width / 2 - 5), Math.round(height / 2 - 40), 20, 20, "+"));
-        controlList.add(new GuiButton(5, Math.round(width / 2 - 70), Math.round(height / 2 - 40), 20, 20, "-"));// /2 - 34, - 150*/
+        controlList.add(new GuiButton(2, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 65), 20, 20, "+"));
+        controlList.add(new GuiButton(3, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 65), 20, 20, "-"));// /2 - 34, - 150*/
+        controlList.add(new GuiButton(4, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 40), 20, 20, "+"));
+        controlList.add(new GuiButton(5, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 40), 20, 20, "-"));// /2 - 34, - 150*/
     }
 
     protected void drawGuiContainerBackgroundLayer(float f)
@@ -53,7 +59,7 @@ public class GuiProcessProgrammer extends GuiContainer
         processName.drawTextBox();
     }
 
-    protected void actionPerformed(GuiButton guibutton)
+    protected void buttonPressed(GuiButton guibutton)
     {
         if(!guibutton.enabled)
         {
@@ -98,16 +104,16 @@ public class GuiProcessProgrammer extends GuiContainer
     }
 
     @Override
-    public void keyTyped(char c1, int i2) {
+    public void keyTyped(char c, int i, int mouseX, int mouseY) {
         if(processName.isFocused) {
             Keyboard.enableRepeatEvents(true);
-            if (c1 == Keyboard.KEY_ESCAPE) {
+            if (c == Keyboard.KEY_ESCAPE) {
                 Keyboard.enableRepeatEvents(false);
                 processName.setFocused(false);
-            } else processName.textboxKeyTyped(c1, i2);
+            } else processName.textboxKeyTyped(c, i);
             tile.currentProcessName = processName.getText();
         } else{
-            super.keyTyped(c1,i2);
+            super.keyTyped(c,i,mouseX,mouseY);
         }
     }
 

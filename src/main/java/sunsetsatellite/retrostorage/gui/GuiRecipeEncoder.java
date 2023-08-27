@@ -2,9 +2,13 @@
 
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.InventoryPlayer;
+
+
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerRecipeEncoder;
@@ -27,7 +31,7 @@ public class GuiRecipeEncoder extends GuiContainer
 	public void onGuiClosed()
     {
         super.onGuiClosed();
-        inventorySlots.onCraftGuiClosed(mc.thePlayer);
+        inventorySlots.onCraftGuiClosed(Minecraft.getMinecraft(Minecraft.class).thePlayer);
     }
 
     protected void drawGuiContainerForegroundLayer()
@@ -42,7 +46,7 @@ public class GuiRecipeEncoder extends GuiContainer
     	controlList.add(new GuiButton(0, Math.round(width / 2 + 15), Math.round(height / 2 - 25), 60, 20, "Encode"));
     }
     
-    protected void actionPerformed(GuiButton guibutton)
+    protected void buttonPressed(GuiButton guibutton)
     {
         if(!guibutton.enabled)
         {

@@ -1,10 +1,15 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+
+
+
+import net.minecraft.core.block.Block;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
+import sunsetsatellite.sunsetutils.util.BlockInstance;
+import sunsetsatellite.sunsetutils.util.Vec3i;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +53,7 @@ public class Network {
     public void reload(){
         removeAll();
         if(controller != null){
-            HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3(controller.xCoord,controller.yCoord,controller.zCoord));
+            HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3i(controller.xCoord,controller.yCoord,controller.zCoord));
             addRecursive(candidates);
         }
     }
@@ -72,7 +77,7 @@ public class Network {
      * @param pos Position to be searched for
      * @return <code>BlockInstance</code> of a valid device or <code>null</code> if no device can be found
      */
-    public BlockInstance search(Vec3 pos){
+    public BlockInstance search(Vec3i pos){
         for (BlockInstance V : data) {
             if(V.pos.equals(pos)){
                 return V;
@@ -116,10 +121,10 @@ public class Network {
     /**
      * Scans neighboring blocks around <i>pos</i> for valid network devices
      * @param world <code>World</code> provided by this network's <code>controller</code>
-     * @param pos <code>Vec3</code> position of block whose neighbors will be scanned
+     * @param pos <code>Vec3i</code> position of block whose neighbors will be scanned
      * @return Map of sides and corresponding valid network devices
      */
-    public HashMap<String, BlockInstance> scan(World world, Vec3 pos){
+    public HashMap<String, BlockInstance> scan(World world, Vec3i pos){
         HashMap<String,BlockInstance> sides = new HashMap<>();
         sides.put("X+", null);
         sides.put("X-", null);
@@ -128,16 +133,16 @@ public class Network {
         sides.put("Z+", null);
         sides.put("Z-", null);
 
-        for (Map.Entry<String, Vec3> entry : RetroStorage.directions.entrySet()) {
+        for (Map.Entry<String, Vec3i> entry : RetroStorage.directions.entrySet()) {
             String K = entry.getKey();
-            Vec3 V = entry.getValue();
+            Vec3i V = entry.getValue();
 
             TileEntity tile = world.getBlockTileEntity(pos.x+V.x, pos.y+V.y, pos.z+V.z);
             /*if(tile != null){
                 System.out.printf("%s %s %s %s\n",tile,tile.getClass().isAssignableFrom(classFilter),tile.getClass(),tile.getClass().getSuperclass());
             }*/
             if((tile != null && classFilter.isAssignableFrom(tile.getClass())) || idFilter.contains(world.getBlockId(pos.x+V.x,pos.y+V.y,pos.z+V.z))){
-                BlockInstance inst = new BlockInstance(Block.blocksList[world.getBlockId(pos.x+V.x,pos.y+V.y,pos.z+V.z)],new Vec3(pos.x+V.x,pos.y+V.y,pos.z+V.z),tile);
+                BlockInstance inst = new BlockInstance(Block.blocksList[world.getBlockId(pos.x+V.x,pos.y+V.y,pos.z+V.z)],new Vec3i(pos.x+V.x,pos.y+V.y,pos.z+V.z),tile);
                 sides.put(K,inst);
             }
         }
@@ -164,7 +169,7 @@ public class Network {
             String K = entry.getKey();
             BlockInstance V = entry.getValue();
             if(V != null){
-                if(!data.contains(V) && ((V.tile != null && classFilter.isAssignableFrom(V.tile.getClass())) || idFilter.contains(V.block.blockID))){
+                if(!data.contains(V) && ((V.tile != null && classFilter.isAssignableFrom(V.tile.getClass())) || idFilter.contains(V.block.id))){
                     add(V);
                     addRecursive(scan(controller.worldObj,V.pos));
                 }

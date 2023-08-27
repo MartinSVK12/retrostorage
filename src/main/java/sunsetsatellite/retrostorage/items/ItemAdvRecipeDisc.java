@@ -1,20 +1,51 @@
 package sunsetsatellite.retrostorage.items;
 
-import net.minecraft.src.Item;
-import net.minecraft.src.NBTTagCompound;
-import sunsetsatellite.retrostorage.RetroStorage;
 
-public class ItemAdvRecipeDisc extends Item {
+
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.Tag;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.lang.I18n;
+import net.minecraft.core.net.command.TextFormatting;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.sunsetutils.util.ICustomDescription;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
     public ItemAdvRecipeDisc(int i) {
         super(i);
     }
 
     @Override
-    public NBTTagCompound getDefaultTag() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setCompoundTag("disc",new NBTTagCompound());
-        nbt.setBoolean("overrideColor",true);
-        nbt.setByte("color", (byte) 0x2);
-        return nbt;
+    public String getDescription(ItemStack stack) {
+        StringBuilder text = new StringBuilder();
+        if(!stack.tag.getCompound("disc").getValues().isEmpty()){
+            text.append(TextFormatting.MAGENTA).append(stack.tag.getCompound("disc").getCompound("tasks").getValues().size()).append(" steps.").append("\n");
+        } else if(stack.tag.getCompound("disc").getValues().isEmpty()){
+            text.append(TextFormatting.MAGENTA).append("0 steps.");
+        }
+        CompoundTag tasksNBT = stack.tag.getCompound("disc").getCompound("tasks");
+        ArrayList<CompoundTag> tasks = new ArrayList<>();
+        for (Tag<?> value : tasksNBT.getValues()) {
+            tasks.add((CompoundTag) value);
+        }
+        ItemStack output = RetroStorage.getMainOutputOfProcess(tasks);
+        if(output != null){
+            String name = I18n.getInstance().translateKey(output.getItemName() + ".name");
+            text.append(TextFormatting.MAGENTA).append("Output: ").append(output.stackSize).append("x ").append(name);
+        }
+        return text.toString();
     }
+
+    /*@Override
+    public CompoundTag getDefaultTag() {
+        CompoundTag nbt = new CompoundTag();
+        nbt.putCompound("disc",new CompoundTag());
+        nbt.putBoolean("overrideColor",true);
+        nbt.putByte("color", (byte) 0x2);
+        return nbt;
+    }*/
 }

@@ -1,8 +1,10 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.src.*;
+
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.core.crafting.recipe.IRecipe;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.util.BlockInstance;
+import sunsetsatellite.sunsetutils.util.BlockInstance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ public class GuiDigitalController extends GuiScreen
             fontRenderer.drawString(String.format("Available processes: %d",tile.network.getAvailableProcesses().size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()),2,i+=10,0xFFFFFFFF);
             //fontRenderer.drawString(String.format("Request queue: %s", tile.network.requestQueue),2,i+=10,0xFFFFFFFF);
-            //RetroStorage.LOGGER.info(tile.network.toString());
+            //RetroStorage.LOGGER.debug(tile.network.toString());
         }
     }
 

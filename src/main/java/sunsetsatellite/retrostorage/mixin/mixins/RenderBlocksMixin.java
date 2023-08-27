@@ -1,8 +1,11 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.RenderBlocks;
+
+
+
+import net.minecraft.client.render.RenderBlocks;
+import net.minecraft.core.block.Block;
+import net.minecraft.core.world.WorldSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,16 +20,15 @@ import sunsetsatellite.retrostorage.util.RenderCableBlock;
 )
 
 public class RenderBlocksMixin {
-    @Shadow private IBlockAccess blockAccess;
+    @Shadow private WorldSource blockAccess;
 
     @Inject(
             method = "renderBlockByRenderType",
-            at = @At("TAIL"),
-            cancellable = true
-    )
-    void renderBlockByRenderType(Block block, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
-        if(block.blockID == RetroStorage.networkCable.blockID){
-            cir.setReturnValue(RenderCableBlock.render((RenderBlocks) ((Object)this),this.blockAccess,i,j,k,block,0));
+            at = @At("HEAD"),
+            cancellable = true)
+    void renderBlockByRenderType(Block block, int renderType, int x, int y, int z, CallbackInfoReturnable<Boolean> cir) {
+        if(block.id == RetroStorage.networkCable.id){
+            cir.setReturnValue(RenderCableBlock.render((RenderBlocks) ((Object)this),this.blockAccess,x,y,z,block,0));
         }
     }
 }

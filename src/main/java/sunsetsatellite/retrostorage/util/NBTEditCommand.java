@@ -1,7 +1,9 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.command.*;
+
+
+import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.net.command.*;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.Objects;
@@ -11,7 +13,7 @@ public class NBTEditCommand extends Command {
         super("nbtedit", "nbt");
     }
 
-    public static NBTTagCompound copy;
+    public static CompoundTag copy;
 
     @Override
     public boolean execute(CommandHandler commandHandler, CommandSender commandSender, String[] args) {
@@ -19,7 +21,7 @@ public class NBTEditCommand extends Command {
             if(Objects.equals(args[0], "hand")){
                 if(Objects.equals(args[1], "dump")){
                     if(commandSender.getPlayer().inventory.getCurrentItem() != null){
-                        RetroStorage.printCompound(commandSender.getPlayer().inventory.getCurrentItem().tag);
+                        //RetroStorage.printCompound(commandSender.getPlayer().inventory.getCurrentItem().tag);
                         commandSender.sendMessage(String.valueOf(commandSender.getPlayer().inventory.getCurrentItem().tag));
                         return true;
                     }

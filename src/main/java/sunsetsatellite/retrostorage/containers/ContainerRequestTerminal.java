@@ -2,13 +2,21 @@
 
 package sunsetsatellite.retrostorage.containers;
 
-import net.minecraft.src.*;
+
+import net.minecraft.core.InventoryAction;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
+
+import java.util.List;
 
 
 public class ContainerRequestTerminal extends Container
@@ -41,29 +49,31 @@ public class ContainerRequestTerminal extends Container
             }
 
         }
-
-        
-
-        
-
     }
 
     @Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
-
-    }
-
-    @Override
-    public ItemStack clickInventorySlot(int slotID, int button, boolean shift, boolean control, EntityPlayer player) {
-        Slot slot = this.getSlot(slotID);
-        if(slot instanceof SlotViewOnly){
-            if(tile.network != null){
-                RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile,slot.getStack(),((SlotViewOnly) slot).variableIndex));
-                //tile.network.requestCrafting(tile.recipeContents[((SlotViewOnly) slot).variableIndex]);
+    public ItemStack clickInventorySlot(InventoryAction action, int[] args, EntityPlayer player) {
+        if(args != null){
+            Slot slot = this.getSlot(args[0]);
+            if(slot instanceof SlotViewOnly){
+                if(tile.network != null){
+                    RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile,slot.getStack(),((SlotViewOnly) slot).variableIndex));
+                    //tile.network.requestCrafting(tile.recipeContents[((SlotViewOnly) slot).variableIndex]);
+                }
+                return null;
             }
-            return null;
         }
-        return super.clickInventorySlot(slotID, button, shift, control, player);
+        return super.clickInventorySlot(action,args,player);
+    }
+
+    @Override
+    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
 
     public boolean isUsableByPlayer(EntityPlayer entityplayer)

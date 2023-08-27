@@ -1,8 +1,10 @@
 package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.Tessellator;
+
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.render.Tessellator;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -103,7 +105,7 @@ public abstract class GuiSlot {
 
     }
 
-    public void actionPerformed(GuiButton guibutton) {
+    public void buttonPressed(GuiButton guibutton) {
         if (guibutton.enabled) {
             if (guibutton.id == this.scrollUpButtonID) {
                 this.amountScrolled -= (float)(this.posZ * 2 / 3);

@@ -1,8 +1,9 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Slot;
+
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
 
 public class SlotViewOnly extends Slot {
 
@@ -19,4 +20,14 @@ public class SlotViewOnly extends Slot {
 
     @Override
     public void onPickupFromSlot(ItemStack itemstack) {}
+
+    @Override
+    public boolean enableDragAndPickup() {
+        return false;
+    }
+
+    @Override
+    public boolean allowItemInteraction() {
+        return false;
+    }
 }
