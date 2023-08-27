@@ -1,5 +1,5 @@
 # RetroStorage
-Digital storage system mod for Minecraft b1.7.3. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
+Digital storage system mod for BTA 1.7.7.0_01. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
 # Maybe you're looking for the [b1.7.3 Modloader](https://github.com/MartinSVK12/retrostorage) version instead?
 
@@ -14,9 +14,8 @@ Requires Babric, designed for Better than Adventure.
 
 **WARNING!**
 Mod is in a potentially buggy **beta** state, there might be bugs even in the latest releases that haven't been found/fixed yet. Backup your worlds regularly!
-**This version might have bugs not present in the main branch or may lack latest features.**
 
-Please report bugs in Github Issues, and if you have any questions, I'm in the [Modification Station](https://discord.gg/8Qky5XY) discord server as MartinSVK12#0075.
+Please report bugs in Github Issues.
 
 _Have fun! :D_
 
@@ -24,7 +23,7 @@ _Have fun! :D_
 ## Installation
 [MultiMC](https://multimc.org/) or [PrismLauncher](https://prismlauncher.org/) recommended.
 
-Requires [BTA+Babric](https://drive.google.com/file/d/1d_VocjEW2ItjIzbUAsrX_pBThH_zkZAn/view).
+Requires BTA+Babric and few other dependencies which you can get [here](https://discord.gg/FTUNJhswBT).
 
 Add into "Loader Mods" and you're done!
 
