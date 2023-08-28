@@ -21,14 +21,14 @@ public class NBTEditCommand extends Command {
             if(Objects.equals(args[0], "hand")){
                 if(Objects.equals(args[1], "dump")){
                     if(commandSender.getPlayer().inventory.getCurrentItem() != null){
-                        //RetroStorage.printCompound(commandSender.getPlayer().inventory.getCurrentItem().tag);
-                        commandSender.sendMessage(String.valueOf(commandSender.getPlayer().inventory.getCurrentItem().tag));
+                        //RetroStorage.printCompound(commandSender.getPlayer().inventory.getCurrentItem().getData());
+                        commandSender.sendMessage(String.valueOf(commandSender.getPlayer().inventory.getCurrentItem().getData()));
                         return true;
                     }
                 }
                 if(Objects.equals(args[1],"copy")){
                     if(commandSender.getPlayer().inventory.getCurrentItem() != null){
-                        copy = commandSender.getPlayer().inventory.getCurrentItem().tag;
+                        copy = commandSender.getPlayer().inventory.getCurrentItem().getData();
                         commandSender.sendMessage("Copied!");
                         return true;
                     }
@@ -38,7 +38,7 @@ public class NBTEditCommand extends Command {
                         throw new CommandError("Copy some data first!");
                     }
                     if(commandSender.getPlayer().inventory.getCurrentItem() != null){
-                        commandSender.getPlayer().inventory.getCurrentItem().tag = copy;
+                        commandSender.getPlayer().inventory.getCurrentItem().setData(copy);
                         commandSender.sendMessage("Pasted!");
                         return true;
                     }

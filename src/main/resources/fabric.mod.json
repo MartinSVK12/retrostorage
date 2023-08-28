@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "retrostorage",
-  "version": "1.2.0",
+  "version": "1.2.1",
 
   "name": "RetroStorage",
   "description": "Digital storage mod for old versions of Minecraft, adapted to work with Better than Adventure.",

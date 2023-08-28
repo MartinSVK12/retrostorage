@@ -168,7 +168,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
             if (network.inventory.hasItems(inputs)) {
                 if (network.inventory.removeItems(inputs)) {
                     ItemStack result = task.recipe.getRecipeOutput().copy();
-                    result.tag.setName("Data");
+                    result.getData().setName("Data");
                     if (result.stackSize == 0) {
                         result.stackSize = 1;
                     }
@@ -236,7 +236,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         ArrayList<IRecipe> recipes = new ArrayList<>();
         for (ItemStack stack : contents) {
             if (stack != null && stack.getItem() == RetroStorage.recipeDisc) {
-                IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.tag.getCompound("recipe"));
+                IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                 if (recipe != null) {
                     recipes.add(recipe);
                 }

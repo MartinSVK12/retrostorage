@@ -152,16 +152,16 @@ public class TileEntityRecipeEncoder extends TileEntity
                 }
                 CompoundTag nbt = RetroStorage.itemsArrayToNBT(itemList);//DiscManipulator.convertRecipeToNBT(itemList);
                 //RetroStorage.printCompound(nbt);
-                recipeDisc.tag.putCompound("recipe",nbt);
+                recipeDisc.getData().putCompound("recipe",nbt);
                 ItemStack result = RetroStorage.findRecipeResultFromNBT(nbt);
                 //RetroStorage.LOGGER.debug(String.valueOf(result));
                 if(result != null && result.itemID != 0 && result.stackSize != 0){
                     String itemName = I18n.getInstance().translateKey(result.getItemName() + ".name");
-                    recipeDisc.tag.putString("name","Recipe Disc: "+result.stackSize+"x "+itemName);
-                    recipeDisc.tag.putBoolean("overrideName",true);
+                    recipeDisc.getData().putString("name","Recipe Disc: "+result.stackSize+"x "+itemName);
+                    recipeDisc.getData().putBoolean("overrideName",true);
                 } else {
-                    recipeDisc.tag.putString("name","");
-                    recipeDisc.tag.putBoolean("overrideName",false);
+                    recipeDisc.getData().putString("name","");
+                    recipeDisc.getData().putBoolean("overrideName",false);
                 }
                 RetroStorage.LOGGER.debug("Encoded!");
             }

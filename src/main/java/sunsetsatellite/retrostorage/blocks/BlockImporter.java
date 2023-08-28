@@ -69,7 +69,7 @@ public class BlockImporter extends BlockTileEntityRotatable {
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.tag));
+                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
                 float f3 = 0.05F;
                 entityitem.xd = (float)world.rand.nextGaussian() * f3;
                 entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;

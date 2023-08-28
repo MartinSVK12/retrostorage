@@ -22,12 +22,12 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
     @Override
     public String getDescription(ItemStack stack) {
         StringBuilder text = new StringBuilder();
-        if(!stack.tag.getCompound("disc").getValues().isEmpty()){
-            text.append(TextFormatting.MAGENTA).append(stack.tag.getCompound("disc").getCompound("tasks").getValues().size()).append(" steps.").append("\n");
-        } else if(stack.tag.getCompound("disc").getValues().isEmpty()){
+        if(!stack.getData().getCompound("disc").getValues().isEmpty()){
+            text.append(TextFormatting.MAGENTA).append(stack.getData().getCompound("disc").getCompound("tasks").getValues().size()).append(" steps.").append("\n");
+        } else if(stack.getData().getCompound("disc").getValues().isEmpty()){
             text.append(TextFormatting.MAGENTA).append("0 steps.");
         }
-        CompoundTag tasksNBT = stack.tag.getCompound("disc").getCompound("tasks");
+        CompoundTag tasksNBT = stack.getData().getCompound("disc").getCompound("tasks");
         ArrayList<CompoundTag> tasks = new ArrayList<>();
         for (Tag<?> value : tasksNBT.getValues()) {
             tasks.add((CompoundTag) value);

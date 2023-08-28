@@ -35,12 +35,12 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
                 positionNBT.putInt("x",blockX);
                 positionNBT.putInt("y",blockY);
                 positionNBT.putInt("z",blockZ);
-                itemstack.tag.putCompound("position",positionNBT);
+                itemstack.getData().putCompound("position",positionNBT);
                 entityplayer.addChatMessage("action.retrostorage.terminalBound");
             }
         } else {
             if(entityplayer.isSneaking()){
-                itemstack.tag.getValue().remove("position");
+                itemstack.getData().getValue().remove("position");
                 entityplayer.addChatMessage("action.retrostorage.terminalUnbound");
             }
         }
@@ -50,7 +50,7 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
 
     @Override
     public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer) {
-        CompoundTag positionNBT = itemstack.tag.getCompound("position");
+        CompoundTag positionNBT = itemstack.getData().getCompound("position");
         TileEntity tile = world.getBlockTileEntity(positionNBT.getInteger("x"),positionNBT.getInteger("y"),positionNBT.getInteger("z"));
         if(itemstack.getItem() == RetroStorage.mobileTerminal){
             if(tile != null){
@@ -67,7 +67,7 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
 
     @Override
     public String getDescription(ItemStack itemStack) {
-        CompoundTag pos = itemStack.tag.getCompoundOrDefault("position",null);
+        CompoundTag pos = itemStack.getData().getCompoundOrDefault("position",null);
         if(pos != null){
             return TextFormatting.MAGENTA+ "Bound to X: "+pos.getInteger("x")+" Y: "+pos.getInteger("y")+" Z: "+pos.getInteger("z")+"!";
         }

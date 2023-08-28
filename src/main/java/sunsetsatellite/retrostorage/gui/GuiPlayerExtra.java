@@ -154,7 +154,7 @@ public class GuiPlayerExtra extends GuiContainer implements GuiTextField.ITextCh
         float f5 = (float)(j + 51) - this.xSize_lo;
         float f6 = (float)(k + 75 - 50) - this.ySize_lo;
         GL11.glRotatef(135.0F, 0.0F, 1.0F, 0.0F);
-        Lighting.turnOff();
+        Lighting.disable();
         GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-((float)Math.atan(f6 / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
         this.mc.thePlayer.renderYawOffset = (float)Math.atan(f5 / 40.0F) * 20.0F;
@@ -169,7 +169,7 @@ public class GuiPlayerExtra extends GuiContainer implements GuiTextField.ITextCh
         this.mc.thePlayer.yRot = f3;
         this.mc.thePlayer.xRot = f4;
         GL11.glPopMatrix();
-        Lighting.turnOn();
+        Lighting.enableInventoryLight();
         GL11.glDisable(32826);
     }
 

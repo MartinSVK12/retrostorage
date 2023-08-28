@@ -69,7 +69,7 @@ public class InventoryDigital implements IInventory {
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
 			if(this.inventoryContents[i2] != null){
 				if(this.inventoryContents[i2].itemID == stack.itemID){
-					if((stack.tag == null && this.inventoryContents[i2].tag == null) || ((this.inventoryContents[i2].tag).equals(stack.tag))){
+					if((stack.getData() == null && this.inventoryContents[i2].getData() == null) || ((this.inventoryContents[i2].getData()).equals(stack.getData()))){
 						if(this.inventoryContents[i2].isStackable()){
 							if (this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize()){
 								if(this.inventoryContents[i2].stackSize < this.getInventoryStackLimit()){
@@ -138,8 +138,8 @@ public class InventoryDigital implements IInventory {
 	public int storePartialItemStack(ItemStack stack) {
 		int id = stack.itemID;
 		int stackSize = stack.stackSize;
-		if(stack.tag != null){
-			stack.tag.setName("Data");
+		if(stack.getData() != null){
+			stack.getData().setName("Data");
 		}
 		int i4 = this.storeItemStack(stack);
 		if(i4 < 0) {
@@ -150,7 +150,7 @@ public class InventoryDigital implements IInventory {
 			return stackSize;
 		} else {
 			if(this.inventoryContents[i4] == null) {
-				this.inventoryContents[i4] = new ItemStack(id, 0, stack.getMetadata(), stack.tag);
+				this.inventoryContents[i4] = new ItemStack(id, 0, stack.getMetadata(), stack.getData());
 			}
 
 			int i5 = stackSize;

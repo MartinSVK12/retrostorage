@@ -40,6 +40,6 @@ public class ItemPortableCell extends Item implements ICustomDescription {
 
     @Override
     public String getDescription(ItemStack itemStack) {
-        return TextFormatting.MAGENTA+""+itemStack.tag.getCompound("disc").getValues().size()+" entries out of 35";
+        return TextFormatting.MAGENTA+""+itemStack.getData().getCompound("disc").getValues().size()+" entries out of 35";
     }
 }

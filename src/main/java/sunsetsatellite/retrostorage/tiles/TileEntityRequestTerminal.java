@@ -189,7 +189,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
     public int getAmountOfUsedSlots(){
         int j = 0;
         if(network != null && network.drive != null){
-            j = network.drive.virtualDisc.tag.getCompound("disc").getValues().size();
+            j = network.drive.virtualDisc.getData().getCompound("disc").getValues().size();
 
         }
         return j;

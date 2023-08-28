@@ -66,7 +66,7 @@ public class InventoryPortable implements IInventory {
 
 	public int storeItemStack(ItemStack stack) {
 		for(int i2 = 0; i2 < this.inventoryContents.length; ++i2) {
-			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && this.inventoryContents[i2].tag.equals(stack.tag) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
+			if(this.inventoryContents[i2] != null && this.inventoryContents[i2].itemID == stack.itemID && this.inventoryContents[i2].getData().equals(stack.getData()) && this.inventoryContents[i2].isStackable() && this.inventoryContents[i2].stackSize < this.inventoryContents[i2].getMaxStackSize() && this.inventoryContents[i2].stackSize < this.getInventoryStackLimit() && (!this.inventoryContents[i2].getHasSubtypes() || this.inventoryContents[i2].getMetadata() == stack.getMetadata())) {
 				return i2;
 			}
 		}
@@ -129,7 +129,7 @@ public class InventoryPortable implements IInventory {
 			return stackSize;
 		} else {
 			if(this.inventoryContents[i4] == null) {
-				this.inventoryContents[i4] = new ItemStack(id, 0, stack.getMetadata(), stack.tag);
+				this.inventoryContents[i4] = new ItemStack(id, 0, stack.getMetadata(), stack.getData());
 			}
 
 			int i5 = stackSize;

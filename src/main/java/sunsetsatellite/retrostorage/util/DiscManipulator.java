@@ -25,7 +25,7 @@ public class DiscManipulator {
         if(disc == null || inv == null){
             return;
         }
-        CompoundTag discNBT = disc.tag.getCompound("disc");
+        CompoundTag discNBT = disc.getData().getCompound("disc");
         for(int i = 1; i < inv.getSizeInventory();i++){
             ItemStack item = inv.getStackInSlot(i);
             CompoundTag itemNBT = new CompoundTag();
@@ -35,14 +35,14 @@ public class DiscManipulator {
                 itemNBT.putShort("Damage", (short)item.getMetadata());
                 itemNBT.putByte("Expanded", (byte)1);
                 itemNBT.putInt("Version", 19133);
-                itemNBT.putCompound("Data", item.tag);
+                itemNBT.putCompound("Data", item.getData());
                 discNBT.putCompound(String.valueOf(i),itemNBT);
             } else {
                 discNBT.getValue().remove(String.valueOf(i));
             }
         }
         //System.out.printf("Data: %s%n",discNBT.toStringExtended());
-        disc.tag.putCompound("disc",discNBT);
+        disc.getData().putCompound("disc",discNBT);
     }
 
     /*public static void saveDisc(TileEntityDigitalController controller){
@@ -51,7 +51,7 @@ public class DiscManipulator {
         if(disc == null || !controller.isActive() && !controller.clearing){
             return;
         }
-        CompoundTag discNBT = disc.tag;
+        CompoundTag discNBT = disc.getData();
         for(int i = 1; i < inv.getSizeInventory();i++){
             ItemStack item = inv.getStackInSlot(i);
             CompoundTag itemNBT = new CompoundTag();
@@ -59,20 +59,20 @@ public class DiscManipulator {
                 itemNBT.putByte("Count", (byte)item.stackSize);
                 itemNBT.putShort("id", (short)item.itemID);
                 itemNBT.putShort("Damage", (short)item.getMetadata());
-                itemNBT.putCompound("Data", item.tag);
+                itemNBT.putCompound("Data", item.getData());
                 discNBT.putCompound(String.valueOf(i),itemNBT);
             } else {
                 discNBT.removeTag(String.valueOf(i));
             }
         }
         //System.out.printf("Data: %s%n",discNBT.toStringExtended());
-        disc.tag = discNBT;
+        disc.getData() = discNBT;
     }*/
 
     public static void loadDisc(ItemStack disc, IInventory inv, int page){
         //System.out.printf("Loading contents of page %d of disc %s to inventory %s%n",page,disc.toString(),inv.toString());
         AtomicInteger i = new AtomicInteger();
-        Collection<?> values = disc.tag.getCompound("disc").getValues();
+        Collection<?> values = disc.getData().getCompound("disc").getValues();
         values.forEach((V)->{
             if(i.get() < 37) {
                 if(V instanceof CompoundTag){
@@ -89,7 +89,7 @@ public class DiscManipulator {
     }
 
     public static void loadDisc(ItemStack disc, IInventory inv){
-        Collection<?> values = disc.tag.getCompound("disc").getValues();
+        Collection<?> values = disc.getData().getCompound("disc").getValues();
         values.forEach((V)->{
             if(V instanceof CompoundTag) {
                 String K = ((Tag<?>) V).getTagName();
@@ -122,7 +122,7 @@ public class DiscManipulator {
     }
 
     public static ArrayList<CompoundTag> getProcessesFromDisc(ItemStack disc){
-        CompoundTag tasksNBT = disc.tag.getCompound("disc").getCompound("tasks");
+        CompoundTag tasksNBT = disc.getData().getCompound("disc").getCompound("tasks");
         ArrayList<CompoundTag> values = new ArrayList<>();
         for (Tag<?> value : tasksNBT.getValues()) {
             values.add((CompoundTag) value);

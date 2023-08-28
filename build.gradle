@@ -101,10 +101,10 @@ dependencies {
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
 	modImplementation "ModMenu:ModMenu:2.0.0"
-	modImplementation "sunsetutils:sunsetutils:1.8.0"
+	modImplementation "sunsetutils:sunsetutils:1.8.2"
 	modImplementation "guidebookpp:guidebookpp:1.5.5"
 	modImplementation "BTWaila:btwaila:0.2.2"
-	modImplementation "energyapi:energyapi:1.1.4"
+	modImplementation "energyapi:energyapi:1.1.5"
 	modImplementation "nocrashes:nocrashes:1.0.4"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"

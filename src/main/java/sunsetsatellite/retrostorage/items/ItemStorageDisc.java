@@ -49,6 +49,6 @@ public class ItemStorageDisc extends Item implements ICustomDescription
 
     @Override
     public String getDescription(ItemStack itemStack) {
-        return TextFormatting.MAGENTA+""+itemStack.tag.getCompound("disc").getValues().size()+" entries out of "+maxStackCapacity;
+        return TextFormatting.MAGENTA+""+itemStack.getData().getCompound("disc").getValues().size()+" entries out of "+maxStackCapacity;
     }
 }

@@ -28,13 +28,13 @@ public class ItemLinkingCard extends Item {
                 entityplayer.addChatMessage("action.retrostorage.linkBroken");
                 return true;
             }
-            CompoundTag data = itemstack.tag.getCompound("position");
+            CompoundTag data = itemstack.getData().getCompound("position");
             if (!(data.containsKey("x") && data.containsKey("y") && data.containsKey("z"))){
                 CompoundTag positionNBT = (new CompoundTag());
                 positionNBT.putInt("x",blockX);
                 positionNBT.putInt("y",blockY);
                 positionNBT.putInt("z",blockZ);
-                itemstack.tag.putCompound("position",positionNBT);
+                itemstack.getData().putCompound("position",positionNBT);
                 entityplayer.addChatMessage("action.retrostorage.cardBound");
             } else {
                 TileEntity tile = world.getBlockTileEntity(data.getInteger("x"),data.getInteger("y"),data.getInteger("z"));
@@ -49,7 +49,7 @@ public class ItemLinkingCard extends Item {
             }
         } else {
             if (entityplayer.isSneaking()) {
-                itemstack.tag.putCompound("position",new CompoundTag());
+                itemstack.getData().putCompound("position",new CompoundTag());
                 entityplayer.addChatMessage("action.retrostorage.cardUnbound");
             }
         }

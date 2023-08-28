@@ -145,9 +145,9 @@ public class TileEntityProcessProgrammer extends TileEntity
     public void clearDisc() {
         if(getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc){
             ItemStack disc = getStackInSlot(1);
-            disc.tag.putCompound("disc",new CompoundTag());
-            disc.tag.putString("name","");
-            disc.tag.putBoolean("overrideName",false);
+            disc.getData().putCompound("disc",new CompoundTag());
+            disc.getData().putString("name","");
+            disc.getData().putBoolean("overrideName",false);
         }
         tasks.clear();
     }
@@ -166,11 +166,11 @@ public class TileEntityProcessProgrammer extends TileEntity
                 task.putCompound("stack",stack);
                 taskData.putCompound("task"+K,task);
             });
-            getStackInSlot(1).tag.putString("name","Adv. Recipe Disc: "+currentProcessName);
-            getStackInSlot(1).tag.putBoolean("overrideName",true);
+            getStackInSlot(1).getData().putString("name","Adv. Recipe Disc: "+currentProcessName);
+            getStackInSlot(1).getData().putBoolean("overrideName",true);
             data.putCompound("tasks",taskData);
             data.putString("processName",currentProcessName);
-            getStackInSlot(1).tag.putCompound("disc",data);
+            getStackInSlot(1).getData().putCompound("disc",data);
         }
     }
 

@@ -37,7 +37,7 @@ public class BlockAssembler extends BlockTileEntityRotatable {
             TileEntityAssembler tile = (TileEntityAssembler) world.getBlockTileEntity(i, j, k);
             if(entityplayer.isSneaking()){
                 if(tile.getStackInSlot(0) != null && tile.getStackInSlot(0).getItem() instanceof ItemRecipeDisc){
-                    IRecipe recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).tag.getCompound("recipe"));
+                    IRecipe recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).getData().getCompound("recipe"));
                     if(recipe != null){
                         tile.task = new RecipeTask(recipe,null,null);
                     }
@@ -77,7 +77,7 @@ public class BlockAssembler extends BlockTileEntityRotatable {
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.tag));
+                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
                 float f3 = 0.05F;
                 entityitem.xd = (float)world.rand.nextGaussian() * f3;
                 entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;

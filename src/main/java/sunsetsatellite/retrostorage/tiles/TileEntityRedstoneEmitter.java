@@ -74,7 +74,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                 ItemStack stack = ((TileEntityAssembler)connectedTile).getStackInSlot(asmSlot);
                 if(stack != null){
                     if(stack.getItem() == RetroStorage.recipeDisc){
-                        IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.tag.getCompound("recipe"));
+                        IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                         if(recipe != null){
                             network.requestCrafting(recipe);
                         }
