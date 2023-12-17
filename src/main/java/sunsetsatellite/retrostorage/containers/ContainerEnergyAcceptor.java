@@ -1,13 +1,10 @@
 package sunsetsatellite.retrostorage.containers;
 
 
-
-
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
-import sunsetsatellite.energyapi.template.containers.ContainerEnergy;
-import sunsetsatellite.energyapi.template.tiles.TileEntityBatteryBox;
+import sunsetsatellite.catalyst.energy.impl.ContainerEnergy;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
 
 public class ContainerEnergyAcceptor extends ContainerEnergy {

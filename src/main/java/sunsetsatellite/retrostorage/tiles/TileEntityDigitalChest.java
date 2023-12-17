@@ -7,7 +7,6 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.retrostorage.RetroStorage;
 
 public class TileEntityDigitalChest extends TileEntity
     implements IInventory
@@ -54,7 +53,7 @@ public class TileEntityDigitalChest extends TileEntity
         }
     }
 
-    public void updateEntity()
+    public void tick()
     {
         if(getStackInSlot(0) != null){
             this.pages = 36;
@@ -142,11 +141,16 @@ public class TileEntityDigitalChest extends TileEntity
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
+    }
+
+    @Override
+    public void sortInventory() {
+
     }
 
     private ItemStack[] contents;

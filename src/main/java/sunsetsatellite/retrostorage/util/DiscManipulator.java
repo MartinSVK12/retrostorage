@@ -1,17 +1,15 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
-
-
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DiscManipulator {

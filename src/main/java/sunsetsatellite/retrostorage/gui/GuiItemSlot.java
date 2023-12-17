@@ -1,14 +1,10 @@
 package sunsetsatellite.retrostorage.gui;
 
+
 import net.minecraft.client.Minecraft;
-
-
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
-import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
-import sunsetsatellite.retrostorage.util.RecipeTask;
-import sunsetsatellite.retrostorage.util.Task;
 
 public class GuiItemSlot extends GuiSlot {
     public GuiTaskRequest parent;

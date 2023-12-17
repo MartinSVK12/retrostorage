@@ -6,10 +6,8 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.world.World;
-import sunsetsatellite.retrostorage.gui.GuiDigitalChest;
 import sunsetsatellite.retrostorage.gui.GuiEnergyAcceptor;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
 
 public class BlockEnergyAcceptor extends BlockTileEntityRotatable {

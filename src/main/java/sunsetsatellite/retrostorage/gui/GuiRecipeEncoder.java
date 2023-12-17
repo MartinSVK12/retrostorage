@@ -3,14 +3,11 @@
 package sunsetsatellite.retrostorage.gui;
 
 
-
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerRecipeEncoder;
 import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
 
@@ -28,9 +25,10 @@ public class GuiRecipeEncoder extends GuiContainer
 		
 	}
 
-	public void onGuiClosed()
+    @Override
+	public void onClosed()
     {
-        super.onGuiClosed();
+        super.onClosed();
         inventorySlots.onCraftGuiClosed(Minecraft.getMinecraft(Minecraft.class).thePlayer);
     }
 
@@ -40,9 +38,9 @@ public class GuiRecipeEncoder extends GuiContainer
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
     
-    public void initGui()
+    public void init()
     {
-    	super.initGui();
+    	super.init();
     	controlList.add(new GuiButton(0, Math.round(width / 2 + 15), Math.round(height / 2 - 25), 60, 20, "Encode"));
     }
     

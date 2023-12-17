@@ -1,12 +1,10 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.DoubleTag;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
-
-import sunsetsatellite.sunsetutils.util.TickTimer;
 
 public class TileEntityDigitalController extends TileEntityNetworkDevice
 {
@@ -17,7 +15,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
     }
 
     @Override
-    public void updateEntity() {
+    public void tick() {
         networkReload.tick();
         externalEnergy = (TileEntityEnergyAcceptor) getConnectedTileEntity(TileEntityEnergyAcceptor.class);
         if(network != null){

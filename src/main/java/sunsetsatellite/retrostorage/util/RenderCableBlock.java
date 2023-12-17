@@ -1,8 +1,6 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
-
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.world.WorldSource;

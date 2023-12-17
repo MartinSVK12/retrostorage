@@ -26,7 +26,7 @@ public class GuiRequestQueue extends GuiScreen {
         this.network = network;
     }
 
-    public void initGui() {
+    public void init() {
         I18n stringtranslate = I18n.getInstance();
         this.screenTitle = "Request Queue";
         this.slotContainer = new GuiTaskSlot(this.mc, this.width, this.height, 72, this.height-64, 36, this);
@@ -46,7 +46,7 @@ public class GuiRequestQueue extends GuiScreen {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean pausesGame() {
         return false;
     }
 

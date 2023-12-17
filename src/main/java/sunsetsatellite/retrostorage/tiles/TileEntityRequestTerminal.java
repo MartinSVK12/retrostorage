@@ -5,15 +5,19 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.crafting.legacy.recipe.IRecipe;
+import net.minecraft.core.data.registry.recipe.RecipeEntryBase;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.sunsetutils.util.TickTimer;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TileEntityRequestTerminal extends TileEntityNetworkDevice
     implements IInventory
@@ -64,15 +68,15 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
         if(network != null){
             if(getStackAmount() == 0){
                 int i = 1;
-                ArrayList<IRecipe> recipes = network.getAvailableRecipes();
+                ArrayList<RecipeEntryCrafting<?,?>> recipes = network.getAvailableRecipes();
                 ArrayList<ArrayList<CompoundTag>> processes = network.getAvailableProcesses();
                 ArrayList<Object> allCraftables = new ArrayList<>();
                 allCraftables.addAll(recipes);
                 allCraftables.addAll(processes);
                 List<Object> pageCraftables = allCraftables.subList(((page-1)*36),Math.min(allCraftables.size(),page*36));
                 for (Object craftable : pageCraftables) {
-                    if(craftable instanceof IRecipe){
-                        setInventorySlotContents(i,((IRecipe)craftable).getRecipeOutput());
+                    if(craftable instanceof RecipeEntryCrafting<?,?>){
+                        setInventorySlotContents(i, (ItemStack) ((RecipeEntryCrafting<?,?>)craftable).getOutput());
                         recipeContents[i] = craftable;
                         i++;
                     } else if (craftable instanceof ArrayList) {
@@ -92,7 +96,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
         }
     }
 
-    public void updateEntity()
+    public void tick()
     {
         saveTimer.tick();
         if(network != null && network.drive != null){
@@ -197,11 +201,16 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 8000D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 8000D;
+    }
+
+    @Override
+    public void sortInventory() {
+
     }
 
     private ItemStack[] contents;

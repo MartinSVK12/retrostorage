@@ -2,6 +2,7 @@
 
 package sunsetsatellite.retrostorage.gui;
 
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
@@ -44,9 +45,9 @@ public class GuiRedstoneEmitter extends GuiContainer
         }
     }
 
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
         GuiButton guibutton = new GuiButton(0, Math.round(width / 2 - 10), Math.round(height / 2 - 50), 20, 20, "=");
         controlList.add(guibutton);
         controlList.add(new GuiButton(1, Math.round(width / 2 + 30) , Math.round(height / 2 - 65), 20, 20, "+"));

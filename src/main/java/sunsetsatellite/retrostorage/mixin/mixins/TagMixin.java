@@ -1,6 +1,6 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
-import com.mojang.nbt.CompoundTag;
+
 import com.mojang.nbt.Tag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.Shadow;
 )
 public abstract class TagMixin {
 
-    @Shadow public abstract byte getId();
+    @Shadow
+    public abstract byte getId();
 
     @Shadow public abstract String getTagName();
 

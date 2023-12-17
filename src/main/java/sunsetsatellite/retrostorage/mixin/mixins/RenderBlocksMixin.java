@@ -1,8 +1,6 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
 
-
-
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.world.WorldSource;
@@ -20,7 +18,8 @@ import sunsetsatellite.retrostorage.util.RenderCableBlock;
 )
 
 public class RenderBlocksMixin {
-    @Shadow private WorldSource blockAccess;
+    @Shadow
+    private WorldSource blockAccess;
 
     @Inject(
             method = "renderBlockByRenderType",

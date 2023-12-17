@@ -1,15 +1,12 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
-
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
-import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 
 public class SlotDigital extends Slot {

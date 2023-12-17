@@ -1,8 +1,6 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-
-
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
@@ -13,10 +11,11 @@ public class TileEntityWirelessLink extends TileEntityNetworkDevice {
     public TileEntityWirelessLink()
     {
     }
-
+    
+    
     @Override
-    public void updateEntity() {
-        super.updateEntity();
+    public void tick() {
+        super.tick();
         if(tempRemoteLinkNBT != null){
             initSavedLink(tempRemoteLinkNBT);
         }
@@ -43,9 +42,9 @@ public class TileEntityWirelessLink extends TileEntityNetworkDevice {
     {
         CompoundTag remoteLinkNBT = new CompoundTag();
         if(remoteLink != null){
-            remoteLinkNBT.putInt("x",remoteLink.xCoord);
-            remoteLinkNBT.putInt("y",remoteLink.yCoord);
-            remoteLinkNBT.putInt("z",remoteLink.zCoord);
+            remoteLinkNBT.putInt("x",remoteLink.x);
+            remoteLinkNBT.putInt("y",remoteLink.y);
+            remoteLinkNBT.putInt("z",remoteLink.z);
         }
         CompoundTag.putCompound("remoteLink",remoteLinkNBT);
         super.writeToNBT(CompoundTag);
@@ -54,11 +53,11 @@ public class TileEntityWirelessLink extends TileEntityNetworkDevice {
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
     }
 
     private CompoundTag tempRemoteLinkNBT = null;

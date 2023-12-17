@@ -1,7 +1,7 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
+
 import net.minecraft.client.Minecraft;
-import org.lwjgl.LWJGLException;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,8 +14,8 @@ import sunsetsatellite.retrostorage.RetroStorage;
         remap = false
 )
 public class MinecraftMixin {
-    @Shadow
-    private static Minecraft theMinecraft;
+
+    @Shadow private static Minecraft INSTANCE;
 
     @Inject(
             method = "startGame",
@@ -23,6 +23,6 @@ public class MinecraftMixin {
             at = @At("TAIL")
     )
     public void startGame(CallbackInfo ci) {
-        RetroStorage.mc = theMinecraft;
+        RetroStorage.mc = INSTANCE;
     }
 }

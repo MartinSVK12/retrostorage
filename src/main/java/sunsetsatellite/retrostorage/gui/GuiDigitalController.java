@@ -2,9 +2,10 @@ package sunsetsatellite.retrostorage.gui;
 
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
+import sunsetsatellite.catalyst.core.util.BlockInstance;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.sunsetutils.util.BlockInstance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,10 +57,10 @@ public class GuiDigitalController extends GuiScreen
             }
             fontRenderer.drawString(String.format("Assemblers: %d",tile.network.getAssemblers().size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Interfaces: %d",tile.network.getInterfaces().size()),2,i+=10,0xFFFFFFFF);
-            HashMap<BlockInstance, ArrayList<IRecipe>> recipes = tile.network.getAvailableRecipesWithSource();
+            HashMap<BlockInstance, ArrayList<RecipeEntryCrafting<?,?>>> recipes = tile.network.getAvailableRecipesWithSource();
             int recipeCount = 0;
-            for (Map.Entry<BlockInstance, ArrayList<IRecipe>> entry : recipes.entrySet()) {
-                ArrayList<IRecipe> V = entry.getValue();
+            for (Map.Entry<BlockInstance, ArrayList<RecipeEntryCrafting<?,?>>> entry : recipes.entrySet()) {
+                ArrayList<RecipeEntryCrafting<?,?>> V = entry.getValue();
                 recipeCount += V.size();
             }
             fontRenderer.drawString(String.format("Available recipes: %d",recipeCount),2,i+=10,0xFFFFFFFF);
@@ -71,7 +72,7 @@ public class GuiDigitalController extends GuiScreen
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean pausesGame() {
         return false;
     }
 

@@ -1,18 +1,16 @@
 package sunsetsatellite.retrostorage.items;
 
 
-
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.TextFormatting;
+import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.sunsetutils.util.ICustomDescription;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
     public ItemAdvRecipeDisc(int i) {

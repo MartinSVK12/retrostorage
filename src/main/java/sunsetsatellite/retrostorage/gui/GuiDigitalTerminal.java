@@ -1,5 +1,6 @@
 package sunsetsatellite.retrostorage.gui;
 
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
@@ -7,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
-
 
 public class GuiDigitalTerminal extends GuiContainer
 {
@@ -33,9 +33,9 @@ public class GuiDigitalTerminal extends GuiContainer
         }
     }
 
-    public void initGui()
+    public void init()
     {
-    	super.initGui();
+    	super.init();
         for(Object slot : inventorySlots.inventorySlots){
             if(slot instanceof SlotDigital){
                 ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + (36*(tile.page-1));
@@ -98,7 +98,7 @@ public class GuiDigitalTerminal extends GuiContainer
     	
     }
 
-    public void onGuiClosed(){
+    public void onClosed(){
     }
     
     private TileEntityDigitalTerminal tile;

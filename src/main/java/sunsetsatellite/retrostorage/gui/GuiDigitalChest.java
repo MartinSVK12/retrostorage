@@ -1,15 +1,13 @@
 package sunsetsatellite.retrostorage.gui;
 
 
-
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalChest;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
+import sunsetsatellite.retrostorage.util.DiscManipulator;
 
 public class GuiDigitalChest extends GuiContainer
 {
@@ -32,9 +30,9 @@ public class GuiDigitalChest extends GuiContainer
         fontRenderer.drawCenteredString(tile.page + "/" + tile.pages, 87, 93, color);
     }
 
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
 //    	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
 //    	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
     }
@@ -86,7 +84,7 @@ public class GuiDigitalChest extends GuiContainer
 
     }
 
-    public void onGuiClosed(){
+    public void onClosed(){
         if(tile.getStackInSlot(0) != null){
             DiscManipulator.saveDisc(tile.getStackInSlot(0), tile, tile.page);
         }

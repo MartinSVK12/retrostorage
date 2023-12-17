@@ -1,14 +1,11 @@
 package sunsetsatellite.retrostorage.containers;
 
 
-import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.player.inventory.ContainerPlayer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import net.minecraft.core.player.inventory.slot.Slot;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.InventoryDigital;
 import sunsetsatellite.retrostorage.util.InventoryPortable;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 

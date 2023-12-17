@@ -3,15 +3,11 @@
 package sunsetsatellite.retrostorage.gui;
 
 
-
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.containers.ContainerExporter;
 import sunsetsatellite.retrostorage.containers.ContainerImporter;
-import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
 
 public class GuiImporter extends GuiContainer
@@ -23,9 +19,9 @@ public class GuiImporter extends GuiContainer
         tile = tileEntityImporter;
     }
 
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
         controlList.add(new GuiButton(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 60), 20, 20, "-"));
         controlList.add(new GuiButton(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isWhitelist ? "W" : "B"));
         controlList.add(new GuiButton(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 60), 20, 20, "+"));

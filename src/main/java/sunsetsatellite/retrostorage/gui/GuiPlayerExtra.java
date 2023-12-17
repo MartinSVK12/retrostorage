@@ -34,8 +34,8 @@ public class GuiPlayerExtra extends GuiContainer implements GuiTextField.ITextCh
         this.armourButtonFloatX = 76;
     }
 
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
         this.controlList.add(this.lastPageButton = new GuiButton(500, 172, 140, 20, 20, "<"));
         this.controlList.add(this.nextPageButton = new GuiButton(501, 262, 140, 20, 20, ">"));
         //this.controlList.add(this.clearSearchButton = new GuiOptionsButton(502, 266, 10, 12, 12, "X"));
@@ -71,8 +71,8 @@ public class GuiPlayerExtra extends GuiContainer implements GuiTextField.ITextCh
         }
     }
 
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void onClosed() {
+        super.onClosed();
         Keyboard.enableRepeatEvents(false);
     }
 

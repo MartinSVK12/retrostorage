@@ -9,17 +9,13 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.containers.ContainerPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
-import sunsetsatellite.retrostorage.gui.GuiPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.InventoryPortable;
-import sunsetsatellite.sunsetutils.util.ICustomDescription;
 
 public class ItemMobileTerminal extends Item implements ICustomDescription {
     public ItemMobileTerminal(int i) {

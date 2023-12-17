@@ -100,12 +100,10 @@ dependencies {
 	// If you do not need Halplibe you can comment this line out or delete this line
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
-	modImplementation "ModMenu:ModMenu:2.0.0"
-	modImplementation "sunsetutils:sunsetutils:1.8.2"
-	modImplementation "guidebookpp:guidebookpp:1.5.5"
-	modImplementation "BTWaila:btwaila:0.2.2"
-	modImplementation "energyapi:energyapi:1.1.5"
-	modImplementation "nocrashes:nocrashes:1.0.4"
+	modImplementation "ModMenu:ModMenu:2.0.3"
+	modImplementation "catalyst:catalyst-core:1.0.0"
+	modImplementation "catalyst:catalyst-energy:1.0.1"
+	modImplementation "BTWaila:btwaila:0.3.3-7.1"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"
@@ -114,7 +112,7 @@ dependencies {
 	//include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0-beta.9")))
 
 	implementation 'com.google.guava:guava:30.0-jre'
-	implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
+	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 
 	var log4jVersion = "2.20.0"
 	implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")

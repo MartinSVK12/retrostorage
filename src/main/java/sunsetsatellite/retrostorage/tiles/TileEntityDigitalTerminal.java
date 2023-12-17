@@ -8,11 +8,8 @@ import com.mojang.nbt.ListTag;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.items.ItemStorageDisc;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.sunsetutils.util.TickTimer;
-
 
 public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     implements IInventory
@@ -68,7 +65,7 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
         }
     }
 
-    public void updateEntity()
+    public void tick()
     {
         saveTimer.tick();
         if(network != null && network.drive != null){
@@ -152,11 +149,16 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 8000D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 8000D;
+    }
+
+    @Override
+    public void sortInventory() {
+        
     }
 
     private ItemStack[] contents;

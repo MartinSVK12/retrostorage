@@ -1,8 +1,6 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
-
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
@@ -318,5 +316,10 @@ public class InventoryDigital implements IInventory {
 
 	public boolean canInteractWith(EntityPlayer entityPlayer1) {
 		return true;
+	}
+
+	@Override
+	public void sortInventory() {
+
 	}
 }

@@ -17,8 +17,8 @@ public class BlockNetworkCable extends Block {
         setBlockBounds(halfWidth, halfWidth, halfWidth, halfWidth + width, halfWidth + width, halfWidth + width);
     }
 
-    public boolean isOpaqueCube()
-    {
+    @Override
+    public boolean isSolidRender() {
         return false;
     }
 

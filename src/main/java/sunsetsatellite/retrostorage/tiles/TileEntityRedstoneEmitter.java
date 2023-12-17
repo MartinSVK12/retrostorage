@@ -1,19 +1,20 @@
 package sunsetsatellite.retrostorage.tiles;
 
+
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.sunsetutils.util.TickTimer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implements IInventory {
 
@@ -63,7 +64,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         ArrayList<Class<?>> list = new ArrayList<>();
         list.add(TileEntityAssembler.class);
         list.add(TileEntityAdvInterface.class);
-        HashMap<String,TileEntity> map = getConnectedTileEntity(list);
+        HashMap<String, TileEntity> map = getConnectedTileEntity(list);
         map.forEach((K,V)->{
             if(V != null){
                 connectedTile = V;
@@ -74,7 +75,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                 ItemStack stack = ((TileEntityAssembler)connectedTile).getStackInSlot(asmSlot);
                 if(stack != null){
                     if(stack.getItem() == RetroStorage.recipeDisc){
-                        IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
+                        RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                         if(recipe != null){
                             network.requestCrafting(recipe);
                         }
@@ -98,10 +99,10 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     }
 
     @Override
-    public void updateEntity() {
+    public void tick() {
         workTimer.tick();
-        worldObj.markBlocksDirty(xCoord,yCoord,zCoord,xCoord,yCoord,zCoord);
-        worldObj.notifyBlocksOfNeighborChange(xCoord,yCoord,zCoord,isActive ? 15 : 0);
+        worldObj.markBlocksDirty(x,y,z,x,y,z);
+        worldObj.notifyBlocksOfNeighborChange(x,y,z,isActive ? 15 : 0);
         if(network != null){
             if(getStackInSlot(0) != null){
                 int id = getStackInSlot(0).itemID;
@@ -138,7 +139,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         } else {
             isActive = false;
         }
-        super.updateEntity();
+        super.tick();
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack)
@@ -158,11 +159,16 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
 
     @Override
     public boolean canInteractWith(EntityPlayer entityPlayer) {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityPlayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityPlayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
+    }
+
+    @Override
+    public void sortInventory() {
+
     }
 
     public String getInvName()

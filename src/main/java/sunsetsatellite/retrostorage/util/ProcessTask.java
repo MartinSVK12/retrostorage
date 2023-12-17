@@ -1,11 +1,8 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
-
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.item.ItemStack;
-import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.ArrayList;
 

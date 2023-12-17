@@ -1,8 +1,8 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
+
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.InventoryPlayer;
@@ -23,7 +23,8 @@ import java.util.List;
 )
 public class ContainerMixin {
 
-    @Shadow public List<Slot> inventorySlots;
+    @Shadow
+    public List<Slot> inventorySlots;
 
     @Inject(
             method = "clickInventorySlot",

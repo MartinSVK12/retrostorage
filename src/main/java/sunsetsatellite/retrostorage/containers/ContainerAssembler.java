@@ -5,16 +5,12 @@ package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.SlotViewOnly;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
 
 import java.util.List;
-
 
 public class ContainerAssembler extends Container
 {

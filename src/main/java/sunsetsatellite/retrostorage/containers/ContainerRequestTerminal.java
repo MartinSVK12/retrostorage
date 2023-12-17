@@ -11,13 +11,10 @@ import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiTaskRequest;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
-import sunsetsatellite.retrostorage.util.SlotDigital;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.List;
-
 
 public class ContainerRequestTerminal extends Container
 {

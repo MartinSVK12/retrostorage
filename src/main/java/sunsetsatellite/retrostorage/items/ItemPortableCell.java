@@ -1,21 +1,18 @@
 package sunsetsatellite.retrostorage.items;
 
 
-
-
-
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.containers.ContainerPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiPlayerExtra;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.InventoryPortable;
-import sunsetsatellite.sunsetutils.util.ICustomDescription;
 
 public class ItemPortableCell extends Item implements ICustomDescription {
     public ItemPortableCell(int i) {

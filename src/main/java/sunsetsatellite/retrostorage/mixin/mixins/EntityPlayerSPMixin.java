@@ -1,13 +1,12 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
 
-
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
-import net.minecraft.client.Minecraft;
 
 @Mixin(
         value={EntityPlayerSP.class},

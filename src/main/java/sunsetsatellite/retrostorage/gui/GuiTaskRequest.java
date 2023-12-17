@@ -5,7 +5,8 @@ import com.mojang.nbt.CompoundTag;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.client.render.FontRenderer;
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
@@ -37,7 +38,7 @@ public class GuiTaskRequest extends GuiContainer {
         this.requestedSlotId = slotId;
     }
 
-    public void initGui() {
+    public void init() {
         I18n stringtranslate = I18n.getInstance();
         this.screenTitle = "Task Request";
         this.slotContainer = new GuiItemSlot(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
@@ -73,7 +74,7 @@ public class GuiTaskRequest extends GuiContainer {
                         }
                         tile.network.requestProcessing(processList);
                     } else {
-                        tile.network.requestCrafting((IRecipe) tile.recipeContents[requestedSlotId]);
+                        tile.network.requestCrafting((RecipeEntryCrafting<?,?>) tile.recipeContents[requestedSlotId]);
                     }
                 }
                 RetroStorage.mc.displayGuiScreen(null);

@@ -1,15 +1,13 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
-
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.core.util.BlockInstance;
+import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
-import sunsetsatellite.sunsetutils.util.BlockInstance;
-import sunsetsatellite.sunsetutils.util.Vec3i;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +51,7 @@ public class Network {
     public void reload(){
         removeAll();
         if(controller != null){
-            HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3i(controller.xCoord,controller.yCoord,controller.zCoord));
+            HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3i(controller.x,controller.y,controller.z));
             addRecursive(candidates);
         }
     }

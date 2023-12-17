@@ -5,16 +5,19 @@ import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.entity.TileEntityChest;
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 import sunsetsatellite.retrostorage.util.Task;
-import sunsetsatellite.sunsetutils.util.TickTimer;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TileEntityAssembler extends TileEntityNetworkDevice
     implements IInventory
@@ -129,15 +132,20 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
     }
 
     @Override
-    public void updateEntity() {
+    public void sortInventory() {
+
+    }
+
+    @Override
+    public void tick() {
         workTimer.tick();
         ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(TileEntityChest.class);
@@ -167,7 +175,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
             ArrayList<ItemStack> inputs = RetroStorage.condenseItemList(RetroStorage.getRecipeItems(task.recipe));
             if (network.inventory.hasItems(inputs)) {
                 if (network.inventory.removeItems(inputs)) {
-                    ItemStack result = task.recipe.getRecipeOutput().copy();
+                    ItemStack result = ((ItemStack)task.recipe.getOutput()).copy();
                     result.getData().setName("Data");
                     if (result.stackSize == 0) {
                         result.stackSize = 1;
@@ -232,11 +240,11 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         this.task = null;
     }
 
-    public ArrayList<IRecipe> getRecipes(){
-        ArrayList<IRecipe> recipes = new ArrayList<>();
+    public ArrayList<RecipeEntryCrafting<?,?>> getRecipes(){
+        ArrayList<RecipeEntryCrafting<?,?>> recipes = new ArrayList<>();
         for (ItemStack stack : contents) {
             if (stack != null && stack.getItem() == RetroStorage.recipeDisc) {
-                IRecipe recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
+                RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                 if (recipe != null) {
                     recipes.add(recipe);
                 }
@@ -253,7 +261,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
                 if (t.processor == null) {
                     if (!t.completed) {
                         if (t.requirementsMet()) {
-                            for (IRecipe aRecipe : network.getAvailableRecipes()) {
+                            for (RecipeEntryCrafting<?,?> aRecipe : network.getAvailableRecipes()) {
                                 if (aRecipe.equals(((RecipeTask) t).recipe)) {
                                     success = true;
                                     break;

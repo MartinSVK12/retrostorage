@@ -3,8 +3,6 @@
 package sunsetsatellite.retrostorage.gui;
 
 
-
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
@@ -34,9 +32,9 @@ public class GuiDiscDrive extends GuiContainer
         }
     }
 
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
         controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 50), 20, 20, "-"));
     }
 

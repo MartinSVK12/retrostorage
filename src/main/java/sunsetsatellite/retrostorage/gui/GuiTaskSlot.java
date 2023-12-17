@@ -1,8 +1,9 @@
 package sunsetsatellite.retrostorage.gui;
 
-import net.minecraft.client.Minecraft;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 import sunsetsatellite.retrostorage.util.ProcessTask;
@@ -52,8 +53,8 @@ public class GuiTaskSlot extends GuiSlot {
                 color = 0xFF0000;
             }
             I18n trans = I18n.getInstance();
-            String name = trans.translateKey(((RecipeTask)task).recipe.getRecipeOutput().getItemName() + ".name");
-            this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((RecipeTask)task).recipe.getRecipeOutput().stackSize+"x "+name, j + 2, k + 1, color);
+            String name = trans.translateKey(((ItemStack)((RecipeTask)task).recipe.getOutput()).getItemName() + ".name");
+            this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((ItemStack)((RecipeTask)task).recipe.getOutput()).stackSize+"x "+name, j + 2, k + 1, color);
             if(task.attempts > 0) {
                 this.parent.drawString(this.parent.fontRenderer, "Attempts left: " + task.attempts, j + 2, k + 12, 0x808080);
             } else {

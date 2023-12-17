@@ -33,9 +33,9 @@ public class GuiProcessProgrammer extends GuiContainer
 
     }
 
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
         processName = new GuiTextField(this, fontRenderer, Math.round((float) width / 2 - 31),Math.round((float) height/2 - 92),100,20, Objects.equals(tile.currentProcessName, "") ? "New Process" : tile.currentProcessName,"Process name..");
         controlList.add(new GuiButton(0, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 12), 40, 20, "Save"));
         controlList.add(new GuiButton(1, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 12), 40, 20, "Clear"));
@@ -121,7 +121,7 @@ public class GuiProcessProgrammer extends GuiContainer
     {
     }
 
-    public void onGuiClosed(){
+    public void onClosed(){
     }
 
     public GuiTextField processName;

@@ -9,8 +9,8 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.gui.GuiDiscDrive;
-import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 
 import java.util.ArrayList;
 
@@ -41,8 +41,8 @@ public class BlockDiscDrive extends BlockTileEntityRotatable {
     }
 
     @Override
-    public void onBlockRemoval(World world, int i, int j, int k) {
-        TileEntityDiscDrive tile = (TileEntityDiscDrive) world.getBlockTileEntity(i, j, k);
+    public void onBlockRemoved(World world, int x, int y, int z, int data) {
+        TileEntityDiscDrive tile = (TileEntityDiscDrive) world.getBlockTileEntity(x, y, z);
         if(tile.network != null){
             if(tile.network.drive == tile){
                 tile.network.drive = null;
@@ -56,13 +56,13 @@ public class BlockDiscDrive extends BlockTileEntityRotatable {
             float f = world.rand.nextFloat() * 0.8F + 0.1F;
             float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
             float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
-            EntityItem entityitem = new EntityItem(world, (float) i + f, (float) j + f1, (float) k + f2, itemstack);
+            EntityItem entityitem = new EntityItem(world, (float) x + f, (float) y + f1, (float) z + f2, itemstack);
             float f3 = 0.05F;
             entityitem.xd = (float) world.rand.nextGaussian() * f3;
             entityitem.yd = (float) world.rand.nextGaussian() * f3 + 0.2F;
             entityitem.zd = (float) world.rand.nextGaussian() * f3;
             world.entityJoinedWorld(entityitem);
         }
-        super.onBlockRemoval(world, i, j, k);
+        super.onBlockRemoved(world, x, y, z, data);
     }
 }

@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
+
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Inject;
 
 import java.util.Map;
 

@@ -1,8 +1,6 @@
 package sunsetsatellite.retrostorage.mixin.mixins;
 
 
-
-
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.generate.feature.WorldFeatureLabyrinth;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +22,7 @@ public class WorldGenLabyrinthMixin {
             cancellable = true
     )
     public void pickCheckLootItem(Random random, CallbackInfoReturnable<ItemStack> cir){
-        if(RetroStorage.config.getFromConfig("enableGoldenDiscLoot",0) == 1){
+        if(RetroStorage.config.getBoolean("Other.goldenDiscLoot")){
             int i = random.nextInt(200);
             if(i == 0){
                 cir.setReturnValue(new ItemStack(RetroStorage.goldenDisc,1));

@@ -8,11 +8,9 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.world.World;
-import sunsetsatellite.retrostorage.containers.ContainerPlayerExtra;
 import sunsetsatellite.retrostorage.gui.GuiDigitalController;
-import sunsetsatellite.retrostorage.gui.GuiPlayerExtra;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 
 public class BlockDigitalController extends BlockTileEntityRotatable {
 
@@ -47,21 +45,6 @@ public class BlockDigitalController extends BlockTileEntityRotatable {
                     tile.energy += 20*60*65535;
                 }
                 if(tile.network != null){
-                    /*RetroStorage.LOGGER.debug(tile.active ? "Network online!" : "Network offline.");
-                    RetroStorage.LOGGER.debug(String.format("Network energy: %d", Math.round(tile.energy)));
-                    if(tile.active && tile.energy > 0){
-                        RetroStorage.LOGGER.debug(String.format("Usage: %d (%ds left.)",tile.network.devicesSize()+1,Math.round(
-                                (tile.energy/(tile.network.devicesSize()+1))/20
-                        )));
-                    }
-                    RetroStorage.LOGGER.debug(
-                            String.format("Network size/Devices: %d/%d", tile.network.size(), tile.network.devicesSize()
-                            ));
-                    if(tile.network.drive != null){
-                        RetroStorage.LOGGER.debug(String.format("Drive detected: %s", tile.network.drive));
-                    }
-                    RetroStorage.LOGGER.debug(tile.network.toString());*/
-                    //((IOpenGUI)entityplayer).displayGUI(new GuiPlayerExtra(entityplayer,new ContainerPlayerExtra(entityplayer.inventory)));
                     ((IOpenGUI)entityplayer).displayGUI(new GuiDigitalController(tile));
                 }
             }
@@ -70,9 +53,10 @@ public class BlockDigitalController extends BlockTileEntityRotatable {
     }
 
     @Override
-    public void onBlockRemoval(World world, int i, int j, int k) {
-        TileEntityDigitalController tile = (TileEntityDigitalController) world.getBlockTileEntity(i, j, k);
+    public void onBlockRemoved(World world, int x, int y, int z, int data) {
+        TileEntityDigitalController tile = (TileEntityDigitalController) world.getBlockTileEntity(x, y, z);
         tile.network.removeAll();
-        super.onBlockRemoval(world, i, j, k);
+        super.onBlockRemoved(world, x, y, z, data);
     }
+
 }

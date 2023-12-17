@@ -1,7 +1,6 @@
 package sunsetsatellite.retrostorage.util;
 
 
-
 import net.minecraft.core.block.entity.TileEntity;
 
 import java.util.ArrayList;

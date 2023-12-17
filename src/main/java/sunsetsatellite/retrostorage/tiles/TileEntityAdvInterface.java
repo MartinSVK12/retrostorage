@@ -7,12 +7,12 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.ProcessTask;
 import sunsetsatellite.retrostorage.util.Task;
-import sunsetsatellite.sunsetutils.util.TickTimer;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -159,7 +159,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public void updateEntity() {
+    public void tick() {
         workTimer.tick();
         ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(IInventory.class);
@@ -455,11 +455,16 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
+    }
+
+    @Override
+    public void sortInventory() {
+
     }
 
     private ItemStack[] contents;

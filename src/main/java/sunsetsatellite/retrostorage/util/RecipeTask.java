@@ -1,15 +1,16 @@
 package sunsetsatellite.retrostorage.util;
 
 
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.ArrayList;
 
 public class RecipeTask extends Task{
-    public IRecipe recipe;
+    public RecipeEntryCrafting<?,?> recipe;
 
-    public RecipeTask(IRecipe recipe, Task parent, ArrayList<Task> requires) {
+    public RecipeTask(RecipeEntryCrafting<?,?> recipe, Task parent, ArrayList<Task> requires) {
         this.recipe = recipe;
         this.parent = parent;
         this.requires = requires != null ? requires : new ArrayList<>();

@@ -8,11 +8,8 @@ import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
-import sunsetsatellite.retrostorage.gui.GuiDigitalChest;
 import sunsetsatellite.retrostorage.gui.GuiImporter;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalChest;
-import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
 
 public class BlockImporter extends BlockTileEntityRotatable {
@@ -43,9 +40,9 @@ public class BlockImporter extends BlockTileEntityRotatable {
         }
     }
 
-    public void onBlockRemoval(World world, int i, int j, int k)
+     public void onBlockRemoved(World world, int x, int y, int z, int data)
     {
-        TileEntityImporter tileEntityImporter = (TileEntityImporter)world.getBlockTileEntity(i, j, k);
+        TileEntityImporter tileEntityImporter = (TileEntityImporter)world.getBlockTileEntity(x, y, z);
         label0:
         for(int l = 0; l < tileEntityImporter.getSizeInventory(); l++)
         {
@@ -69,7 +66,7 @@ public class BlockImporter extends BlockTileEntityRotatable {
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
+                EntityItem entityitem = new EntityItem(world, (float)x + f, (float)y + f1, (float)z + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
                 float f3 = 0.05F;
                 entityitem.xd = (float)world.rand.nextGaussian() * f3;
                 entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;
@@ -77,6 +74,6 @@ public class BlockImporter extends BlockTileEntityRotatable {
                 world.entityJoinedWorld(entityitem);
             } while(true);
         }
-        super.onBlockRemoval(world, i, j, k);
+        super.onBlockRemoved(world,x,y,z,data);
     }
 }

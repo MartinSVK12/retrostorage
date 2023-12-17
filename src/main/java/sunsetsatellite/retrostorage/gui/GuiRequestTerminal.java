@@ -5,14 +5,9 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.containers.ContainerRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.SlotDigital;
-
 
 public class GuiRequestTerminal extends GuiContainer
 {
@@ -39,9 +34,9 @@ public class GuiRequestTerminal extends GuiContainer
         }
     }
 
-    public void initGui()
+    public void init()
     {
-    	super.initGui();
+    	super.init();
     	controlList.add(new GuiButton(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
     	controlList.add(new GuiButton(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
         controlList.add(new GuiButton(2, Math.round(width / 2 - 50), Math.round(height / 2 - 5), 20, 20, "Q"));
@@ -97,7 +92,7 @@ public class GuiRequestTerminal extends GuiContainer
     	
     }
 
-    public void onGuiClosed(){
+    public void onClosed(){
         /*if(tile.getStackInSlot(0) != null){
             DiscManipulator.saveDisc(tile.getStackInSlot(0), tile, tile.page);
         }*/

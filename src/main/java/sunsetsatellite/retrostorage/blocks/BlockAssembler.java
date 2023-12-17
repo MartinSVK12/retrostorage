@@ -4,16 +4,17 @@ package sunsetsatellite.retrostorage.blocks;
 import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
-import net.minecraft.core.crafting.recipe.IRecipe;
+
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiAssembler;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.util.RecipeTask;
 
 public class BlockAssembler extends BlockTileEntityRotatable {
@@ -37,7 +38,7 @@ public class BlockAssembler extends BlockTileEntityRotatable {
             TileEntityAssembler tile = (TileEntityAssembler) world.getBlockTileEntity(i, j, k);
             if(entityplayer.isSneaking()){
                 if(tile.getStackInSlot(0) != null && tile.getStackInSlot(0).getItem() instanceof ItemRecipeDisc){
-                    IRecipe recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).getData().getCompound("recipe"));
+                    RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).getData().getCompound("recipe"));
                     if(recipe != null){
                         tile.task = new RecipeTask(recipe,null,null);
                     }
@@ -51,9 +52,9 @@ public class BlockAssembler extends BlockTileEntityRotatable {
         }
     }
 
-    public void onBlockRemoval(World world, int i, int j, int k)
+     public void onBlockRemoved(World world, int x, int y, int z, int data)
     {
-        TileEntityAssembler TileEntityAssembler = (TileEntityAssembler)world.getBlockTileEntity(i, j, k);
+        TileEntityAssembler TileEntityAssembler = (TileEntityAssembler)world.getBlockTileEntity(x, y, z);
         label0:
         for(int l = 0; l < TileEntityAssembler.getSizeInventory(); l++)
         {
@@ -77,7 +78,7 @@ public class BlockAssembler extends BlockTileEntityRotatable {
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
+                EntityItem entityitem = new EntityItem(world, (float)x + f, (float)y + f1, (float)z + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
                 float f3 = 0.05F;
                 entityitem.xd = (float)world.rand.nextGaussian() * f3;
                 entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;
@@ -85,6 +86,6 @@ public class BlockAssembler extends BlockTileEntityRotatable {
                 world.entityJoinedWorld(entityitem);
             } while(true);
         }
-        super.onBlockRemoval(world, i, j, k);
+        super.onBlockRemoved(world,x,y,z,data);
     }
 }

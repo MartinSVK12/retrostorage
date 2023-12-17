@@ -1,5 +1,5 @@
 # RetroStorage
-Digital storage system mod for BTA 1.7.7.0_01. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
+Digital storage system mod for BTA 7.1. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
 # Maybe you're looking for the [b1.7.3 Modloader](https://github.com/MartinSVK12/retrostorage) version instead?
 
@@ -31,7 +31,6 @@ Add into "Loader Mods" and you're done!
 ## Special Thanks
 - [@rythin-sr](https://github.com/rythin-sr) - based bug finder
 - [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE) - helped with a couple things
-- [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
 - [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
 - [Better than Adventure](https://discord.com/invite/kGvmzZuG2p) - what would happen if b1.8 never happened?
 

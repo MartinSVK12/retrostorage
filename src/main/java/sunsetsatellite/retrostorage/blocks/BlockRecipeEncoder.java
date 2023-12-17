@@ -9,9 +9,8 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.gui.GuiRecipeEncoder;
-import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
-import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
 
 public class BlockRecipeEncoder extends BlockTileEntityRotatable {
 
@@ -39,9 +38,9 @@ public class BlockRecipeEncoder extends BlockTileEntityRotatable {
         }
     }
 
-    public void onBlockRemoval(World world, int i, int j, int k)
+     public void onBlockRemoved(World world, int x, int y, int z, int data)
     {
-        TileEntityRecipeEncoder tileEntityRecipeEncoder = (TileEntityRecipeEncoder)world.getBlockTileEntity(i, j, k);
+        TileEntityRecipeEncoder tileEntityRecipeEncoder = (TileEntityRecipeEncoder)world.getBlockTileEntity(x, y, z);
         label0:
         for(int l = 0; l < tileEntityRecipeEncoder.getSizeInventory(); l++)
         {
@@ -65,7 +64,7 @@ public class BlockRecipeEncoder extends BlockTileEntityRotatable {
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
+                EntityItem entityitem = new EntityItem(world, (float)x + f, (float)y + f1, (float)z + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
                 float f3 = 0.05F;
                 entityitem.xd = (float)world.rand.nextGaussian() * f3;
                 entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;
@@ -73,6 +72,6 @@ public class BlockRecipeEncoder extends BlockTileEntityRotatable {
                 world.entityJoinedWorld(entityitem);
             } while(true);
         }
-        super.onBlockRemoval(world, i, j, k);
+        super.onBlockRemoved(world,x,y,z,data);
     }
 }

@@ -1,10 +1,17 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import sunsetsatellite.energyapi.template.tiles.TileEntityBatteryBox;
-import sunsetsatellite.sunsetutils.util.Connection;
-import sunsetsatellite.sunsetutils.util.Direction;
 
-public class TileEntityEnergyAcceptor extends TileEntityBatteryBox {
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
+import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Connection;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.energy.impl.TileEntityEnergyConductor;
+import sunsetsatellite.catalyst.energy.impl.TileEntityEnergyContainer;
+
+public class TileEntityEnergyAcceptor extends TileEntityEnergyContainer {
 
     public TileEntityEnergyAcceptor(){
         setCapacity(10000);
@@ -14,10 +21,5 @@ public class TileEntityEnergyAcceptor extends TileEntityBatteryBox {
         for (Direction dir : Direction.values()) {
             setConnection(dir, Connection.INPUT);
         }
-    }
-
-    @Override
-    public String getInvName() {
-        return "Energy Acceptor";
     }
 }

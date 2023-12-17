@@ -56,7 +56,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         }
     }
     
-    public void updateEntity()
+    public void tick()
     {
         setInventorySlotContents(2,virtualDisc);
         if(network != null){
@@ -89,7 +89,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     }
 
     public void removeLastDisc() {
-        if(discsUsed.size() > 0){
+        if(!discsUsed.isEmpty()){
             ItemStack disc = discsUsed.get(0).copy();
             discsUsed.remove(0);
             virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
@@ -200,11 +200,16 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
 
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        if(worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
         {
             return false;
         }
-        return entityplayer.distanceToSqr((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
+    }
+
+    @Override
+    public void sortInventory() {
+        
     }
 
     private ItemStack contents[];

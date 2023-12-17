@@ -1,9 +1,6 @@
 package sunsetsatellite.retrostorage.containers;
 
 
-
-
-
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.player.inventory.Container;

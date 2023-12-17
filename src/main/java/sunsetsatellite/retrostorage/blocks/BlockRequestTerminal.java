@@ -7,8 +7,8 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.gui.GuiRequestTerminal;
-import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 
 public class BlockRequestTerminal extends BlockTileEntityRotatable {
 

@@ -1,14 +1,10 @@
 package sunsetsatellite.retrostorage.items;
 
 
-
-
-import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.sunsetutils.util.ICustomDescription;
+import sunsetsatellite.catalyst.core.util.ICustomDescription;
 
 public class ItemStorageDisc extends Item implements ICustomDescription
 {
