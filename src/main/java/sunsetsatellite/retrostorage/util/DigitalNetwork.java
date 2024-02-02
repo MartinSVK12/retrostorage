@@ -12,6 +12,7 @@ import sunsetsatellite.retrostorage.tiles.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class for a digital storage network.
@@ -110,6 +111,12 @@ public class DigitalNetwork extends Network {
         return processes;
     }
 
+    public boolean canMake(ItemStack stack){
+        ArrayList<RecipeEntryCrafting<?, ?>> recipes = RetroStorage.findRecipesByOutput(stack, this);
+        ArrayList<ArrayList<CompoundTag>> processes = RetroStorage.findProcessesByOutput(stack, this);
+        return !recipes.isEmpty() || !processes.isEmpty();
+    }
+
     public void requestCrafting(RecipeEntryCrafting<?,?> recipe) {
         if(recipe != null) {
             RetroStorage.LOGGER.debug("Requesting: " + RetroStorage.recipeToString(recipe));
@@ -130,119 +137,14 @@ public class DigitalNetwork extends Network {
 
     public ArrayList<Task> getSubtask(Task task){
         RetroStorage.LOGGER.debug("Getting subtasks for: "+task);
-        if(task instanceof RecipeTask){
-            RecipeEntryCrafting<?,?> recipe = ((RecipeTask) task).recipe;
-            ArrayList<Task> subtasks = new ArrayList<>();
-            if(recipe != null) {
-                ArrayList<ItemStack> inputs = RetroStorage.condenseItemList(RetroStorage.getRecipeItems(recipe));
-                ArrayList<ItemStack> missing = inventory.hasItemsReturnMissing(inputs);
-                if(missing.isEmpty()){
-                    RetroStorage.LOGGER.debug("No subtasks needed, all items available.");
-                    return null;
-                } else {
-                    RetroStorage.LOGGER.debug(String.format("Missing %d different items (%s) for %s, creating subtasks..",missing.size(),missing,RetroStorage.recipeToString(recipe)));
-                    for(ItemStack missingStack : missing) {
-                        ArrayList<RecipeEntryCrafting<?,?>> allRecipes = RetroStorage.findRecipesByOutput(missingStack);
-                        ArrayList<ArrayList<CompoundTag>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
-                        if (!allRecipes.isEmpty()) {
-                            ArrayList<RecipeEntryCrafting<?,?>> knownRecipes = getAvailableRecipes();
-                            allRecipes.retainAll(knownRecipes);
-                            if (!allRecipes.isEmpty()) {
-                                RecipeEntryCrafting<?,?> subtaskRecipe = allRecipes.get(0);
-                                RecipeTask subtask = new RecipeTask(subtaskRecipe,task,null);
-                                subtasks.add(subtask);
-                            } else if(!allProcesses.isEmpty()) {
-                                ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
-                                ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
-                                subtasks.add(subtask);
-                            } else {
-                                RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft or process %s!",missingStack));
-                            }
-                        } else if(!allProcesses.isEmpty()) {
-                            ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
-                            ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
-                            subtasks.add(subtask);
-                        } else {
-                            RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted nor processed.",missingStack));
-                        }
-                    }
-                    RetroStorage.LOGGER.debug(String.format("Got %d subtasks.",subtasks.size()));
-                    return subtasks;
-                }
-            }
-        } else if(task instanceof ProcessTask){
-            ArrayList<Task> subtasks = new ArrayList<>();
-            ArrayList<CompoundTag> steps = ((ProcessTask) task).tasks;
-            if(steps != null){
-                ArrayList<ItemStack> inputs = new ArrayList<>();
-                for(CompoundTag step : steps){
-                    ItemStack stack = ItemStack.readItemStackFromNbt(step.getCompound("stack"));
-                    if(stack == null) continue;
-                    if(!step.getBoolean("isOutput")){
-                        inputs.add(stack);
-                    }
-                }
-                inputs = RetroStorage.condenseItemList(inputs);
-                ArrayList<ItemStack> missing = inventory.hasItemsReturnMissing(inputs);
-                if(missing.isEmpty()){
-                    RetroStorage.LOGGER.debug("No subtasks needed, all items available.");
-                    return null;
-                } else {
-                    RetroStorage.LOGGER.debug(String.format("Missing %d different items (%s), creating subtasks..",missing.size(),missing));
-                    for(ItemStack missingStack : missing) {
-                        ArrayList<RecipeEntryCrafting<?,?>> allRecipes = RetroStorage.findRecipesByOutput(missingStack);
-                        ArrayList<ArrayList<CompoundTag>> allProcesses = RetroStorage.findProcessesByOutput(missingStack,this);
-                        if (!allRecipes.isEmpty()) {
-                            ArrayList<RecipeEntryCrafting<?,?>> knownRecipes = getAvailableRecipes();
-                            allRecipes.retainAll(knownRecipes);
-                            if (!allRecipes.isEmpty()) {
-                                RecipeEntryCrafting<?,?> subtaskRecipe = allRecipes.get(0);
-                                RecipeTask subtask = new RecipeTask(subtaskRecipe,task,null);
-                                subtasks.add(subtask);
-                            } else if(!allProcesses.isEmpty()) {
-                                ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
-                                ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
-                                subtasks.add(subtask);
-                            } else {
-                                RetroStorage.LOGGER.error(String.format("Failed to create subtask: Network doesn't know how to craft or process %s!",missingStack));
-                            }
-                        } else if(!allProcesses.isEmpty()) {
-                            ArrayList<CompoundTag> subtaskProcess = allProcesses.get(0);
-                            ProcessTask subtask = new ProcessTask(subtaskProcess,task,null);
-                            subtasks.add(subtask);
-                        } else {
-                            RetroStorage.LOGGER.error(String.format("Failed to create subtask: %s can't be crafted nor processed.",missingStack));
-                        }
-                    }
-                    RetroStorage.LOGGER.debug(String.format("Got %d subtasks.",subtasks.size()));
-                    return subtasks;
-                }
-            }
-        }
-        return null;
+        return task.getSubtasks(this);
     }
 
-    public ArrayList<ItemStack> getRequirements(ItemStack item){
-        ArrayList<RecipeEntryCrafting<?,?>> recipes = RetroStorage.findRecipesByOutputUsingList(item,getAvailableRecipes());
-        //HashMap<Integer,ArrayList<ItemStack>> req = new HashMap<>();
-        ArrayList<ItemStack> inputs = new ArrayList<>();
-        if(!recipes.isEmpty()){
-            inputs = RetroStorage.getRecipeItems(recipes.get(0));
-            /*for(ItemStack input : (ArrayList<ItemStack>)inputs.clone()){
-                int availableAmount = inventory.getItemCount(input.itemID,input.getMetadata());
-                if(availableAmount < input.stackSize){
-                    ArrayList<ItemStack> subInputs = getRequirements(input,depth++);
-                    inputs.addAll(subInputs);
-                }
-            }*/
-        }
-        inputs = RetroStorage.condenseItemList(inputs);
-        return inputs;
+    public List<ItemStack> getRequirements(RecipeEntryCrafting<?,?> recipe){
+        RecipeTask task = new RecipeTask(recipe, null, null);
+        //RecipeSimulator simulator = new RecipeSimulator(task,this);
+        return RetroStorage.condenseItemList(RetroStorage.getRecipeItems(recipe));
     }
-
-    /*public ArrayList<ItemStack> getRequirements(ItemStack item){
-        return RetroStorage.condenseItemList(RetroStorage.getRecipeItems(RetroStorage.findRecipesByOutputUsingList(item,getAvailableRecipes()).get(0)));
-    }*/
 
     public void clearRequestQueue() {
         RetroStorage.LOGGER.debug("Clearing request queue!");

@@ -15,11 +15,13 @@
   },
 
   "license": "MIT",
-
   "environment": "*",
   "entrypoints": {
     "main": [
-        "sunsetsatellite.retrostorage.RetroStorage"
+      "sunsetsatellite.retrostorage.RetroStorage"
+    ],
+    "recipesReady": [
+      "sunsetsatellite.retrostorage.RetroStorage"
     ]
   },
   "mixins": [
@@ -28,10 +30,9 @@
 
   "depends": {
     "fabricloader": ">=0.13.3",
-    "halplibe": ">=3.0.1",
-    "catalyst-core": ">=1.0.0",
-    "catalyst-energy": ">=1.0.1",
-    "minecraft": ">=7.1-beta.1"
+    "halplibe": ">=3.3.6",
+    "catalyst-core": ">=1.1.2",
+    "catalyst-energy": ">=1.0.2"
   },
   "suggests": {
   }

@@ -18,8 +18,9 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 
 public class ItemMobileTerminal extends Item implements ICustomDescription {
-    public ItemMobileTerminal(int i) {
-        super(i);
+
+    public ItemMobileTerminal(String name, int id) {
+        super(name, id);
     }
 
     @Override

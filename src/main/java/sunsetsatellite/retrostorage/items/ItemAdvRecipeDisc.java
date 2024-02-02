@@ -13,8 +13,9 @@ import sunsetsatellite.retrostorage.RetroStorage;
 import java.util.ArrayList;
 
 public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
-    public ItemAdvRecipeDisc(int i) {
-        super(i);
+
+    public ItemAdvRecipeDisc(String name, int id) {
+        super(name, id);
     }
 
     @Override

@@ -9,10 +9,9 @@ import sunsetsatellite.catalyst.core.util.ICustomDescription;
 public class ItemStorageDisc extends Item implements ICustomDescription
 {
 
-    public ItemStorageDisc(int i, int j)
-    {
-        super(i);
-        maxStackCapacity = j;
+    public ItemStorageDisc(String name, int id, int maxStackCapacity) {
+        super(name, id);
+        this.maxStackCapacity = maxStackCapacity;
     }
 
     public int getMaxStackCapacity() {
@@ -23,22 +22,6 @@ public class ItemStorageDisc extends Item implements ICustomDescription
         maxStackCapacity = i;
         return this;
     }
-
-    /*@Override
-    public CompoundTag getDefaultTag() {
-        CompoundTag nbt = new CompoundTag();
-        //nbt.putCompound("disc",new CompoundTag());
-        if(itemID == RetroStorage.goldenDisc.itemID){
-            nbt.putBoolean("overrideColor",true);
-            nbt.putByte("color", (byte) 0x4);
-        }
-        return nbt;
-    }
-
-    @Override
-    public byte getItemNameColor(ItemStack itemstack) {
-        return super.getItemNameColor(itemstack);
-    }*/
 
 
     public int maxStackCapacity;

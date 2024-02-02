@@ -14,6 +14,7 @@ import sunsetsatellite.retrostorage.gui.GuiTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContainerRequestTerminal extends Container
@@ -53,7 +54,7 @@ public class ContainerRequestTerminal extends Container
         if(args != null){
             Slot slot = this.getSlot(args[0]);
             if(slot instanceof SlotViewOnly){
-                if(tile.network != null){
+                if(tile.network != null && slot.getStack() != null){
                     RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile,slot.getStack(),((SlotViewOnly) slot).variableIndex));
                     //tile.network.requestCrafting(tile.recipeContents[((SlotViewOnly) slot).variableIndex]);
                 }

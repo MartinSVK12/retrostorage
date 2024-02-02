@@ -10,7 +10,9 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.crafting.legacy.CraftingManager;
 import net.minecraft.core.crafting.legacy.type.RecipeShaped;
 import net.minecraft.core.crafting.legacy.type.RecipeShapeless;
+import net.minecraft.core.data.DataLoader;
 import net.minecraft.core.data.registry.Registries;
+import net.minecraft.core.data.registry.recipe.RecipeGroup;
 import net.minecraft.core.data.registry.recipe.RecipeNamespace;
 import net.minecraft.core.data.registry.recipe.RecipeRegistry;
 import net.minecraft.core.data.registry.recipe.RecipeSymbol;
@@ -30,6 +32,8 @@ import sunsetsatellite.retrostorage.util.DigitalNetwork;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
 import sunsetsatellite.retrostorage.util.Task;
 import turniplabs.halplibe.helper.*;
+import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderShaped;
+import turniplabs.halplibe.util.RecipeEntrypoint;
 import turniplabs.halplibe.util.TomlConfigHandler;
 import turniplabs.halplibe.util.toml.Toml;
 
@@ -37,7 +41,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RetroStorage implements ModInitializer {
+public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public static final String MOD_ID = "retrostorage";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final TomlConfigHandler config;
@@ -54,11 +58,11 @@ public class RetroStorage implements ModInitializer {
         configToml.addCategory("Other");
         configToml.addEntry("Other.goldenDiscLoot",false);
 
-        List<Field> blockFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Block.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
+        List<Field> blockFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Block.class.isAssignableFrom(F.getType())).toList();
         for (Field blockField : blockFields) {
             configToml.addEntry("BlockIDs."+blockField.getName(),nextBlockId++);
         }
-        List<Field> itemFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Item.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
+        List<Field> itemFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Item.class.isAssignableFrom(F.getType())).toList();
         for (Field itemField : itemFields) {
             configToml.addEntry("ItemIDs."+itemField.getName(),nextItemId++);
         }
@@ -73,48 +77,48 @@ public class RetroStorage implements ModInitializer {
         }
     }
 
-    public static final Item blankDisc = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.blankDisc")), "blankDisc", "blankdisc.png");
-    public static final Item storageDisc1 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.storageDisc1"), 64), "storageDisc1", "disc1.png").setMaxStackSize(1);
-    public static final Item storageDisc2 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.storageDisc2"), 128), "storageDisc2", "disc2.png").setMaxStackSize(1);
-    public static final Item storageDisc3 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.storageDisc3"), 196), "storageDisc3", "disc3.png").setMaxStackSize(1);
-    public static final Item storageDisc4 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.storageDisc4"), 256), "storageDisc4", "disc4.png").setMaxStackSize(1);
-    public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.storageDisc5"), 320), "storageDisc5", "disc5.png").setMaxStackSize(1);
-    public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.storageDisc6"), 384), "storageDisc6", "disc6.png").setMaxStackSize(1);
-    public static final Item virtualDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2), "virtualDisc", "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
-    public static final Item recipeDisc = ItemHelper.createItem(MOD_ID, new ItemRecipeDisc(config.getInt("ItemIDs.recipeDisc")), "recipeDisc", "recipedisc.png").setMaxStackSize(1);
-    public static final Item goldenDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc(config.getInt("ItemIDs.goldenDisc"), 1024), "goldenDisc", "goldendisc.png").setMaxStackSize(1);
-    public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID, new ItemAdvRecipeDisc(config.getInt("ItemIDs.advRecipeDisc")), "advRecipeDisc", "advrecipedisc.png").setMaxStackSize(1);
+    public static final Item blankDisc = ItemHelper.createItem(MOD_ID, new Item("blankDisc",config.getInt("ItemIDs.blankDisc")),  "blankdisc.png");
+    public static final Item storageDisc1 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc1", config.getInt("ItemIDs.storageDisc1"), 64), "disc1.png").setMaxStackSize(1);
+    public static final Item storageDisc2 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc2",config.getInt("ItemIDs.storageDisc2"), 128),  "disc2.png").setMaxStackSize(1);
+    public static final Item storageDisc3 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc3",config.getInt("ItemIDs.storageDisc3"), 196),  "disc3.png").setMaxStackSize(1);
+    public static final Item storageDisc4 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc4",config.getInt("ItemIDs.storageDisc4"), 256),  "disc4.png").setMaxStackSize(1);
+    public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320), "disc5.png").setMaxStackSize(1);
+    public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384), "disc6.png").setMaxStackSize(1);
+    public static final Item virtualDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
+    public static final Item recipeDisc = ItemHelper.createItem(MOD_ID, new ItemRecipeDisc("recipeDisc", config.getInt("ItemIDs.recipeDisc")), "recipedisc.png").setMaxStackSize(1);
+    public static final Item goldenDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024), "goldendisc.png").setMaxStackSize(1);
+    public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID, new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc")), "advrecipedisc.png").setMaxStackSize(1);
 
-    public static Item machineCasing = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.machineCasing")), "machineCasing", "machinecasing.png");
-    public static Item advMachineCasing = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.advMachineCasing")), "advMachineCasing", "advmachinecasing.png");
-    public static Item energyCore = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.energyCore")), "energyCore", "energycore.png");
-    public static Item chipShell = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipShell")), "chipShell", "chipshell.png");
-    public static Item chipShellFilled = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipShellFilled")), "chipShellFilled", "filledchipshell.png");
-    public static Item chipDigitizer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDigitizer")), "chipDigitizer", "digitizerchip.png");
-    public static Item chipCrafting = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipCrafting")), "chipCrafting", "craftingprocessor.png");
-    public static Item chipDematerializer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDematerializer")), "chipDematerializer", "dematerializerchip.png");
-    public static Item chipRematerializer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipRematerializer")), "chipRematerializer", "rematerializerchip.png");
-    public static Item chipDieDigitizer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDieDigitizer")), "chipDieDigitizer", "digitizerdie.png");
-    public static Item chipDieCrafting = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDieCrafting")), "chipDieCrafting", "craftingdie.png");
-    public static Item chipDieRematerializer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDieRematerializer")), "chipDieRematerializer", "rematerializerdie.png");
-    public static Item chipDieDematerializer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDieDematerializer")), "chipDieDematerializer", "dematerializerdie.png");
-    public static Item silicon = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.silicon")), "silicon", "silicon.png");
-    public static Item siliconWafer = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.siliconWafer")), "siliconWafer", "siliconwafer.png");
-    public static Item ceramicPlate = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.ceramicPlate")), "ceramicPlate", "ceramicplate.png");
-    public static Item ceramicPlateUnfired = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.ceramicPlateUnfired")), "ceramicPlateUnfired", "ceramicplateunfired.png");
-    public static Item chipDieWireless = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipDieWireless")), "chipDieWireless", "wirelessnetworkingdie.png");
-    public static Item chipWireless = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.chipWireless")), "chipWireless", "wirelessnetworkingchip.png");
-    public static Item wirelessAntenna = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.wirelessAntenna")), "wirelessAntenna", "wirelessantenna.png");
-    public static Item redstoneCore = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.redstoneCore")), "redstoneCore", "redstonecore.png");
+    public static Item machineCasing = ItemHelper.createItem(MOD_ID, new Item("machineCasing", config.getInt("ItemIDs.machineCasing")), "machinecasing.png");
+    public static Item advMachineCasing = ItemHelper.createItem(MOD_ID, new Item("advMachineCasing",config.getInt("ItemIDs.advMachineCasing")),  "advmachinecasing.png");
+    public static Item energyCore = ItemHelper.createItem(MOD_ID, new Item("energyCore", config.getInt("ItemIDs.energyCore")), "energycore.png");
+    public static Item chipShell = ItemHelper.createItem(MOD_ID, new Item("chipShell", config.getInt("ItemIDs.chipShell")), "chipshell.png");
+    public static Item chipShellFilled = ItemHelper.createItem(MOD_ID, new Item("chipShellFilled", config.getInt("ItemIDs.chipShellFilled")), "filledchipshell.png");
+    public static Item chipDigitizer = ItemHelper.createItem(MOD_ID, new Item("chipDigitizer",config.getInt("ItemIDs.chipDigitizer")),  "digitizerchip.png");
+    public static Item chipCrafting = ItemHelper.createItem(MOD_ID, new Item("chipCrafting", config.getInt("ItemIDs.chipCrafting")), "craftingprocessor.png");
+    public static Item chipDematerializer = ItemHelper.createItem(MOD_ID, new Item("chipDematerializer", config.getInt("ItemIDs.chipDematerializer")), "dematerializerchip.png");
+    public static Item chipRematerializer = ItemHelper.createItem(MOD_ID, new Item("chipRematerializer", config.getInt("ItemIDs.chipRematerializer")), "rematerializerchip.png");
+    public static Item chipDieDigitizer = ItemHelper.createItem(MOD_ID, new Item("chipDieDigitizer", config.getInt("ItemIDs.chipDieDigitizer")), "digitizerdie.png");
+    public static Item chipDieCrafting = ItemHelper.createItem(MOD_ID, new Item("chipDieCrafting",config.getInt("ItemIDs.chipDieCrafting")),  "craftingdie.png");
+    public static Item chipDieRematerializer = ItemHelper.createItem(MOD_ID, new Item("chipDieRematerializer",config.getInt("ItemIDs.chipDieRematerializer")),  "rematerializerdie.png");
+    public static Item chipDieDematerializer = ItemHelper.createItem(MOD_ID, new Item("chipDieDematerializer", config.getInt("ItemIDs.chipDieDematerializer")), "dematerializerdie.png");
+    public static Item silicon = ItemHelper.createItem(MOD_ID, new Item("silicon", config.getInt("ItemIDs.silicon")), "silicon.png");
+    public static Item siliconWafer = ItemHelper.createItem(MOD_ID, new Item("siliconWafer", config.getInt("ItemIDs.siliconWafer")), "siliconwafer.png");
+    public static Item ceramicPlate = ItemHelper.createItem(MOD_ID, new Item("ceramicPlate", config.getInt("ItemIDs.ceramicPlate")), "ceramicplate.png");
+    public static Item ceramicPlateUnfired = ItemHelper.createItem(MOD_ID, new Item("ceramicPlateUnfired",config.getInt("ItemIDs.ceramicPlateUnfired")),  "ceramicplateunfired.png");
+    public static Item chipDieWireless = ItemHelper.createItem(MOD_ID, new Item("chipDieWireless", config.getInt("ItemIDs.chipDieWireless")), "wirelessnetworkingdie.png");
+    public static Item chipWireless = ItemHelper.createItem(MOD_ID, new Item("chipWireless", config.getInt("ItemIDs.chipWireless")), "wirelessnetworkingchip.png");
+    public static Item wirelessAntenna = ItemHelper.createItem(MOD_ID, new Item("wirelessAntenna", config.getInt("ItemIDs.wirelessAntenna")), "wirelessantenna.png");
+    public static Item redstoneCore = ItemHelper.createItem(MOD_ID, new Item("redstoneCore", config.getInt("ItemIDs.redstoneCore")), "redstonecore.png");
 
-    public static Item slotIdFinder = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.slotIdFinder")), "slotIdFinder", "idfinder.png").setMaxStackSize(1);
-    public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell(config.getInt("ItemIDs.portableCell")), "portableCell", "portablecell.png").setMaxStackSize(1);
-    public static Item mobileTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal(config.getInt("ItemIDs.mobileTerminal")), "mobileTerminal", "mobileterminal.png").setMaxStackSize(1);
-    public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal(config.getInt("ItemIDs.mobileRequestTerminal")), "mobileRequestTerminal", "mobilerequestterminal.png").setMaxStackSize(1);
+    public static Item slotIdFinder = ItemHelper.createItem(MOD_ID, new Item("slotIdFinder", config.getInt("ItemIDs.slotIdFinder")), "idfinder.png").setMaxStackSize(1);
+    public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell("portableCell", config.getInt("ItemIDs.portableCell")), "portablecell.png").setMaxStackSize(1);
+    public static Item mobileTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileTerminal", config.getInt("ItemIDs.mobileTerminal")), "mobileterminal.png").setMaxStackSize(1);
+    public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileRequestTerminal",config.getInt("ItemIDs.mobileRequestTerminal")),  "mobilerequestterminal.png").setMaxStackSize(1);
 
 
-    public static final Item linkingCard = ItemHelper.createItem(MOD_ID, new ItemLinkingCard(config.getInt("ItemIDs.linkingCard")), "linkingCard", "linkingcard.png").setMaxStackSize(1);
-    public static final Item blankCard = ItemHelper.createItem(MOD_ID, new Item(config.getInt("ItemIDs.blankCard")), "blankCard", "blankcard.png");
+    public static final Item linkingCard = ItemHelper.createItem(MOD_ID, new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard")), "linkingcard.png").setMaxStackSize(1);
+    public static final Item blankCard = ItemHelper.createItem(MOD_ID, new Item("blankCard", config.getInt("ItemIDs.blankCard")), "blankcard.png");
 
     public static final Block digitalChest = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
@@ -239,23 +243,6 @@ public class RetroStorage implements ModInitializer {
 
     public static final int[] emitterOnTex = TextureHelper.getOrCreateBlockTexture(RetroStorage.MOD_ID, "redstoneemitteron.png");
 
-
-    /*public static Block createBlockWithItem(String modId, Block block, ItemBlock itemblock, String translationKey, String texture, StepSound stepSound, float hardness, float resistance, float lightValue) {
-        int[] one = TextureHelper.registerBlockTexture(modId, texture);
-        return createBlockWithItem(modId, block, itemblock, translationKey, one[0], one[1], one[0], one[1], one[0], one[1], one[0], one[1], one[0], one[1], one[0], one[1], stepSound, hardness, resistance, lightValue);
-    }
-
-    public static Block createBlockWithItem(String modId, Block block, ItemBlock itemblock, String translationKey, int topX, int topY, int bottomX, int bottomY, int northX, int northY, int southX, int southY, int eastX, int eastY, int westX, int westY, StepSound stepSound, float hardness, float resistance, float lightValue) {
-        block.setTexs(topX, topY, bottomX, bottomY, northX, northY, eastX, eastY, southX, southY, westX, westY);
-        block.setBlockName(HalpLibe.addModId(modId, translationKey));
-        ((BlockAccessor)block).callSetStepSound(stepSound);
-        ((BlockAccessor)block).callSetHardness(hardness);
-        ((BlockAccessor)block).callSetResistance(resistance);
-        ((BlockAccessor)block).callSetLightValue(lightValue);
-        Item.itemsList[block.id] = itemblock;
-        return block;
-    }*/
-
     public RetroStorage() {
         directions.put("X+", new Vec3i(1, 0, 0));
         directions.put("X-", new Vec3i(-1, 0, 0));
@@ -267,80 +254,411 @@ public class RetroStorage implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        /*RecipeHelper.Crafting.createRecipe(blankDisc, 1, new Object[]{"GGG", "GRG", "GGG", 'G', Block.glass, 'R', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(recipeDisc, 1, new Object[]{"GPG", "PRP", "GPG", 'G', Block.glass, 'R', Item.dustRedstone, 'P', new ItemStack(Item.dye, 1, 5)});
-        RecipeHelper.Crafting.createRecipe(storageDisc1, 1, new Object[]{"RRR", "RDR", "RRR", 'D', blankDisc, 'R', Item.dustRedstone});
+        EntityHelper.Core.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");
+        EntityHelper.Core.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
+        EntityHelper.Core.createTileEntity(TileEntityDigitalController.class, "Digital COntroller");
+        EntityHelper.Core.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
+        EntityHelper.Core.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
+        EntityHelper.Core.createTileEntity(TileEntityAssembler.class, "Assembler");
+        EntityHelper.Core.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
+        EntityHelper.Core.createTileEntity(TileEntityImporter.class, "Item Importer");
+        EntityHelper.Core.createTileEntity(TileEntityExporter.class, "Item Exporter");
+        EntityHelper.Core.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
+        EntityHelper.Core.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
+        EntityHelper.Core.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
+        EntityHelper.Core.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
+        EntityHelper.Core.createTileEntity(TileEntityRedstoneEmitter.class, "Energy Acceptor");
+        LOGGER.info("RetroStorage initialized.");
+    }
 
-        RecipeHelper.Crafting.createRecipe(storageDisc2, 1, new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc1, '#', new ItemStack(Item.dye, 1, 14), 'R', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(storageDisc3, 1, new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc2, '#', new ItemStack(Item.dye, 1, 11), 'R', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(storageDisc4, 1, new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc3, '#', new ItemStack(Item.dye, 1, 10), 'R', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(storageDisc5, 1, new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc4, '#', new ItemStack(Item.dye, 1, 4), 'R', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(storageDisc6, 1, new Object[]{"RgG", "X#X", "GgR", 'G', Block.glass, 'g', Item.ingotGold, 'X', storageDisc5, '#', new ItemStack(Item.dye, 1, 5), 'R', Item.dustRedstone});
+    @Override
+    public void onRecipesReady() {
+        /*RecipeNamespace namespace = new RecipeNamespace();
+        RecipeGroup<RecipeEntryCrafting<?,?>> workbench = new RecipeGroup<>(new RecipeSymbol(Block.workbench.getDefaultStack()));
+        RecipeGroup<RecipeEntryCrafting<?,?>> furnace = new RecipeGroup<>(new RecipeSymbol(Block.furnaceStoneIdle.getDefaultStack()));
+        namespace.register("workbench",workbench);
+        namespace.register("furnace",furnace);
+        Registries.RECIPES.register("retrostorage",namespace);
+        DataLoader.loadRecipes("/assets/retrostorage/recipe/workbench.json");
+        DataLoader.loadRecipes("/assets/retrostorage/recipe/furnace.json");*/
+        RecipeBuilder.Shaped(MOD_ID,"GGG", "GRG", "GGG")
+                .addInput('G',Block.glass)
+                .addInput('R',Item.dustRedstone)
+                .create("blank_disc",new ItemStack(blankDisc,1));
+        RecipeBuilder.Shaped(MOD_ID,"GPG", "PRP", "GPG")
+                .addInput('G',Block.glass)
+                .addInput('R',Item.dustRedstone)
+                .addInput('P', new ItemStack(Item.dye, 1, 5))
+                .create("recipe_disc",new ItemStack(recipeDisc,1));
+        RecipeBuilder.Shaped(MOD_ID,"RRR", "RDR", "RRR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('D',blankDisc)
+                .create("storage_disc_1",new ItemStack(storageDisc1,1));
+        RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('g',Item.ingotGold)
+                .addInput('G',Block.glass)
+                .addInput('X',storageDisc1)
+                .addInput('#',new ItemStack(Item.dye, 1, 14))
+                .create("storage_disc_2",new ItemStack(storageDisc2,1));
+        RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('g',Item.ingotGold)
+                .addInput('G',Block.glass)
+                .addInput('X',storageDisc2)
+                .addInput('#',new ItemStack(Item.dye, 1, 11))
+                .create("storage_disc_3",new ItemStack(storageDisc2,1));
+        RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('g',Item.ingotGold)
+                .addInput('G',Block.glass)
+                .addInput('X',storageDisc3)
+                .addInput('#',new ItemStack(Item.dye, 1, 10))
+                .create("storage_disc_4",new ItemStack(storageDisc2,1));
+        RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('g',Item.ingotGold)
+                .addInput('G',Block.glass)
+                .addInput('X',storageDisc4)
+                .addInput('#',new ItemStack(Item.dye, 1, 4))
+                .create("storage_disc_5",new ItemStack(storageDisc2,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('g',Item.ingotGold)
+                .addInput('G',Block.glass)
+                .addInput('X',storageDisc5)
+                .addInput('#',new ItemStack(Item.dye, 1, 5))
+                .create("storage_disc_6",new ItemStack(storageDisc2,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "SS", "SS")
+                .addInput('S', silicon)
+                .create("silicon_wafer", new ItemStack(siliconWafer, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "   ", "456", "789")
+                .addInput('4', Item.clay)
+                .addInput('5', Item.clay)
+                .addInput('6', Item.clay)
+                .addInput('7', Item.clay)
+                .addInput('8', Item.clay)
+                .addInput('9', Item.clay)
+                .create("ceramic_plate_unfired", new ItemStack(RetroStorage.ceramicPlateUnfired, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('1', Block.glass)
+                .addInput('2', Block.glowstone)
+                .addInput('3', Block.glass)
+                .addInput('4', Block.glowstone)
+                .addInput('5', Block.blockDiamond)
+                .addInput('6', Block.glowstone)
+                .addInput('7', Block.glass)
+                .addInput('8', Block.glowstone)
+                .addInput('9', Block.glass)
+                .create("energy_core", new ItemStack(RetroStorage.energyCore, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('1', Block.stone)
+                .addInput('2', Item.ingotIron)
+                .addInput('3', Block.stone)
+                .addInput('4', Item.ingotIron)
+                .addInput('6', Item.ingotIron)
+                .addInput('7', Block.stone)
+                .addInput('8', Item.ingotIron)
+                .addInput('9', Block.stone)
+                .create("machine_casing", new ItemStack(RetroStorage.machineCasing, 1));
+
+        RecipeBuilder.Shaped(MOD_ID,"123", "456", "789")
+                .addInput('1', Block.obsidian)
+                .addInput('2', Item.diamond)
+                .addInput('3', Block.obsidian)
+                .addInput('4', Item.diamond)
+                .addInput('5', RetroStorage.machineCasing)
+                .addInput('6', Item.diamond)
+                .addInput('7', Block.obsidian)
+                .addInput('8', Item.diamond)
+                .addInput('9', Block.obsidian)
+                .create("adv_machine_casing", new ItemStack(RetroStorage.advMachineCasing, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "1 3", " 5 ", "7 8")
+                .addInput('1', Item.ingotGold)
+                .addInput('3', Item.ingotGold)
+                .addInput('5', RetroStorage.ceramicPlate)
+                .addInput('7', Item.ingotGold)
+                .addInput('8', Item.ingotGold)
+                .create("chip_shell", new ItemStack(RetroStorage.chipShell, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "1", "5", "8")
+                .addInput('1', Item.dustRedstone)
+                .addInput('5', RetroStorage.chipShell)
+                .addInput('8', Item.dustRedstone)
+                .create("chip_shell_filled", new ItemStack(RetroStorage.chipShellFilled, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', Block.obsidian)
+                .addInput('5', RetroStorage.siliconWafer)
+                .addInput('8', new ItemStack(Item.dye, 1, 10))
+                .create("chip_die_rematerlializer", new ItemStack(RetroStorage.chipDieRematerializer, 1));
+
+        RecipeBuilder.Shaped(MOD_ID,"2", "5", "8")
+                .addInput('2',Item.bucketLava)
+                .addInput('5',RetroStorage.siliconWafer)
+                .addInput('8',Item.dustRedstone)
+                .create("chip_die_dematerializer",new ItemStack(RetroStorage.chipDieDematerializer,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', RetroStorage.recipeDisc)
+                .addInput('5', RetroStorage.siliconWafer)
+                .addInput('8', new ItemStack(Item.dye, 1, 5))
+                .create("chip_die_crafting", new ItemStack(RetroStorage.chipDieCrafting,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', Item.diamond)
+                .addInput('5', RetroStorage.siliconWafer)
+                .addInput('8', new ItemStack(Item.dye, 1, 4))
+                .create("chip_die_digitizer", new ItemStack(RetroStorage.chipDieDigitizer,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', RetroStorage.ceramicPlate)
+                .addInput('5', RetroStorage.chipDieDematerializer)
+                .addInput('8', RetroStorage.chipShellFilled)
+                .create("chip_dematerializer", new ItemStack(RetroStorage.chipDematerializer, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', RetroStorage.ceramicPlate)
+                .addInput('5', RetroStorage.chipDieDematerializer)
+                .addInput('8', RetroStorage.chipShellFilled)
+                .create("chip_rematerializer", new ItemStack(RetroStorage.chipRematerializer, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', RetroStorage.ceramicPlate)
+                .addInput('5', RetroStorage.chipDieCrafting)
+                .addInput('8', RetroStorage.chipShellFilled)
+                .create("chip_crafting", new ItemStack(RetroStorage.chipCrafting,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', RetroStorage.ceramicPlate)
+                .addInput('5', RetroStorage.chipDieDigitizer)
+                .addInput('8', RetroStorage.chipShellFilled)
+                .create("chip_digitizer", new ItemStack(RetroStorage.chipDigitizer,1));
+
+        RecipeBuilder.Shaped(MOD_ID, " 2 ", "456", " 8 ")
+                .addInput('2', Item.diamond)
+                .addInput('4', Block.blockLapis)
+                .addInput('5', RetroStorage.siliconWafer)
+                .addInput('6', Block.blockLapis)
+                .addInput('8', Item.diamond)
+                .create("chip_die_wireless", new ItemStack(RetroStorage.chipDieWireless, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
+                .addInput('2', RetroStorage.ceramicPlate)
+                .addInput('5', RetroStorage.chipDieWireless)
+                .addInput('8', RetroStorage.chipShellFilled)
+                .create("chip_wireless", new ItemStack(RetroStorage.chipWireless, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('1',Item.ingotIron)
+                .addInput('2',Block.blockLapis)
+                .addInput('3',Item.ingotIron)
+                .addInput('4',Block.blockLapis)
+                .addInput('5',Item.diamond)
+                .addInput('6',Block.blockLapis)
+                .addInput('7',Item.ingotIron)
+                .addInput('8',Item.stick)
+                .addInput('9',Item.ingotIron)
+                .create("wireless_antenna", new ItemStack(RetroStorage.wirelessAntenna, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "RRR", "RBR", "RRR")
+                .addInput('R',Item.dustRedstone)
+                .addInput('B',Block.blockRedstone)
+                .create("redstone_core", new ItemStack(RetroStorage.redstoneCore, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('1', new ItemStack(Item.dye, 1, 12))
+                .addInput('2', new ItemStack(Item.dye, 1, 4))
+                .addInput('3', new ItemStack(Item.dye, 1, 12))
+                .addInput('4', new ItemStack(Item.dye, 1, 4))
+                .addInput('5', blankCard)
+                .addInput('6', new ItemStack(Item.dye, 1, 4))
+                .addInput('7', new ItemStack(Item.dye, 1, 12))
+                .addInput('8', chipWireless)
+                .addInput('9', new ItemStack(Item.dye, 1, 12))
+                .create("linking_card", new ItemStack(linkingCard,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "A", "T", "W")
+                .addInput('A', wirelessAntenna)
+                .addInput('T', digitalTerminal)
+                .addInput('W', chipWireless)
+                .create("mobile_terminal", new ItemStack(mobileTerminal,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "A", "T", "W")
+                .addInput('A', wirelessAntenna)
+                .addInput('T', requestTerminal)
+                .addInput('W', chipWireless)
+                .create("mobile_request_terminal", new ItemStack(mobileRequestTerminal,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "D", "C", "I")
+                .addInput('I', chipDigitizer)
+                .addInput('C', digitalChest)
+                .addInput('D', storageDisc1)
+                .create("portable_cell", new ItemStack(portableCell,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"ISI", "SPS", "ISI")
+                .addInput('I', Item.ingotIron)
+                .addInput('S', Block.stone)
+                .addInput('P', Block.pressureplateStone)
+                .create("blank_card", new ItemStack(blankCard,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "C", "S")
+                .addInput('C', chipCrafting)
+                .addInput('S', Item.stick)
+                .create("slot_id_finder", new ItemStack(slotIdFinder,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"WLW", "GGG", "WLW")
+                .addInput('W', Block.wool)
+                .addInput('G', Block.glass)
+                .addInput('L', new ItemStack(Item.dye, 1, 4))
+                .create("network_cable", new ItemStack(networkCable, 8));
+
+        RecipeBuilder.Shaped(MOD_ID,"123", "456", "789")
+                .addInput('1', RetroStorage.machineCasing)
+                .addInput('2', RetroStorage.networkCable)
+                .addInput('3', Block.blockLapis)
+                .addInput('4', RetroStorage.networkCable)
+                .addInput('5', RetroStorage.energyCore)
+                .addInput('6', RetroStorage.networkCable)
+                .addInput('7', Block.blockLapis)
+                .addInput('8', RetroStorage.networkCable)
+                .addInput('9', RetroStorage.machineCasing)
+                .create("digital_controller", new ItemStack(digitalController, 1));
+
+        RecipeBuilder.Shaped(MOD_ID," 2 ", "456", "789")
+                .addInput('2', chipDigitizer)
+                .addInput('4', chipRematerializer)
+                .addInput('5', machineCasing)
+                .addInput('6', chipDematerializer)
+                .addInput('7', networkCable)
+                .addInput('8', Block.chestPlanksOak)
+                .addInput('9', networkCable)
+                .create("digital_terminal", new ItemStack(digitalTerminal, 1));
+
+        RecipeBuilder.Shaped(MOD_ID," 2 ", "456", " 8 ")
+                .addInput('2', chipDigitizer)
+                .addInput('4', blankDisc)
+                .addInput('5', machineCasing)
+                .addInput('6', blankDisc)
+                .addInput('8', networkCable)
+                .create("disc_drive", new ItemStack(discDrive, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, " 1 ", "234", " 5 ")
+                .addInput('1', blankDisc)
+                .addInput('2', chipRematerializer)
+                .addInput('3', machineCasing)
+                .addInput('4', chipDematerializer)
+                .addInput('5', Block.chestPlanksOak)
+                .create("digital_chest", new ItemStack(digitalChest,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('1', machineCasing)
+                .addInput('2', chipCrafting)
+                .addInput('3', machineCasing)
+                .addInput('4', chipCrafting)
+                .addInput('5', recipeDisc)
+                .addInput('6', chipCrafting)
+                .addInput('7', machineCasing)
+                .addInput('8', chipCrafting)
+                .addInput('9', machineCasing)
+                .create("assembler", new ItemStack(assembler,1));
+
+        RecipeBuilder.Shaped(MOD_ID, " 1 ", "234", " 5 ")
+                .addInput('1', chipRematerializer)
+                .addInput('2', networkCable)
+                .addInput('3', machineCasing)
+                .addInput('4', networkCable)
+                .addInput('5', chipDigitizer)
+                .create("importer", new ItemStack(importer,1));
+
+        RecipeBuilder.Shaped(MOD_ID, " 1 ", "234", " 5 ")
+                .addInput('1', chipDematerializer)
+                .addInput('2', networkCable)
+                .addInput('3', machineCasing)
+                .addInput('4', networkCable)
+                .addInput('5', chipDigitizer)
+                .create("exporter", new ItemStack(exporter,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"123", "456", "789")
+                .addInput('2',machineCasing)
+                .addInput('4',chipCrafting)
+                .addInput('5',digitalTerminal)
+                .addInput('6',chipCrafting)
+                .addInput('8',networkCable)
+                .create("request_terminal", new ItemStack(requestTerminal,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"123", "456", "789")
+                .addInput('2',machineCasing)
+                .addInput('4',recipeDisc)
+                .addInput('5',Block.workbench)
+                .addInput('6',recipeDisc)
+                .addInput('8',chipCrafting)
+                .create("recipe_encoder", new ItemStack(recipeEncoder,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"123", "456", "789")
+                .addInput('1',Block.workbench)
+                .addInput('2',advRecipeDisc)
+                .addInput('3',Block.workbench)
+                .addInput('4',chipCrafting)
+                .addInput('5',recipeEncoder)
+                .addInput('6',chipCrafting)
+                .addInput('7',Block.workbench)
+                .addInput('8',advMachineCasing)
+                .addInput('9',Block.workbench)
+                .create("process_programmer", new ItemStack(processProgrammer,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"123", "456", "789")
+                .addInput('1',Block.obsidian)
+                .addInput('2',advRecipeDisc)
+                .addInput('3',Block.obsidian)
+                .addInput('4',chipCrafting)
+                .addInput('5',assembler)
+                .addInput('6',chipDigitizer)
+                .addInput('7',Block.obsidian)
+                .addInput('8',advMachineCasing)
+                .addInput('9',Block.obsidian)
+                .create("adv_interface", new ItemStack(advInterface,1));
+
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('2', chipWireless)
+                .addInput('4', networkCable)
+                .addInput('5', machineCasing)
+                .addInput('6', wirelessAntenna)
+                .addInput('8', chipWireless)
+                .create("wireless_link", new ItemStack(wirelessLink, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "SRS", "RER", "SRS")
+                .addInput('S', machineCasing)
+                .addInput('R', redstoneCore)
+                .addInput('E', energyCore)
+                .create("energy_acceptor", new ItemStack(energyAcceptor, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "MTM", "CRD", "MEM")
+                .addInput('M', machineCasing)
+                .addInput('T', Block.torchRedstoneActive)
+                .addInput('C', networkCable)
+                .addInput('R', redstoneCore)
+                .addInput('D', chipDigitizer)
+                .addInput('E', Item.repeater)
+                .create("redstone_emitter", new ItemStack(redstoneEmitter, 1));
+
         if (config.getBoolean("Other.goldenDiscLoot")) {
-            RecipeHelper.Crafting.createRecipe(goldenDisc, 1, new Object[]{"GgG", "6R6", "GgG", 'G', Block.blockGold, 'g', Block.glass, 'R', Block.blockRedstone, '6', storageDisc6});
+            RecipeBuilder.Shaped(MOD_ID, "GgG", "6R6", "GgG")
+                    .addInput('G', Block.blockGold)
+                    .addInput('g', Block.glass)
+                    .addInput('R', Block.blockRedstone)
+                    .addInput('6', storageDisc6)
+                    .create("golden_disc", new ItemStack(goldenDisc, 1));
         }
 
-        RecipeHelper.Crafting.createRecipe(siliconWafer, 1, new Object[]{"SS", "SS", 'S', silicon});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.ceramicPlateUnfired, 1, new Object[]{"123", "456", "789", '4', Item.clay, '5', Item.clay, '6', Item.clay, '7', Item.clay, '8', Item.clay, '9', Item.clay});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.energyCore, 1, new Object[]{"123", "456", "789", '1', Block.glass, '2', Block.glowstone, '3', Block.glass, '4', Block.glowstone, '5', Block.blockDiamond, '6', Block.glowstone, '7', Block.glass, '8', Block.glowstone, '9', Block.glass});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.machineCasing, 1, new Object[]{"123", "456", "789", '1', Block.stone, '2', Item.ingotIron, '3', Block.stone, '4', Item.ingotIron, '6', Item.ingotIron, '7', Block.stone, '8', Item.ingotIron, '9', Block.stone});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.advMachineCasing, 1, new Object[]{"123", "456", "789", '1', Block.obsidian, '2', Item.diamond, '3', Block.obsidian, '4', Item.diamond, '5', RetroStorage.machineCasing, '6', Item.diamond, '7', Block.obsidian, '8', Item.diamond, '9', Block.obsidian});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipShell, 1, new Object[]{"123", "456", "789", '1', Item.ingotGold, '3', Item.ingotGold, '5', RetroStorage.ceramicPlate, '7', Item.ingotGold, '9', Item.ingotGold});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipShellFilled, 1, new Object[]{"123", "456", "789", '1', Item.dustRedstone, '2', Item.dustRedstone, '3', Item.dustRedstone, '4', Item.dustRedstone, '5', RetroStorage.chipShell, '6', Item.dustRedstone, '7', Item.dustRedstone, '8', Item.dustRedstone, '9', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieRematerializer, 1, new Object[]{"2", "5", "8", '2', Block.obsidian, '5', RetroStorage.siliconWafer, '8', new ItemStack(Item.dye, 1, 10)});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieDematerializer, 1, new Object[]{"2", "5", "8", '2', Item.bucketLava, '5', RetroStorage.siliconWafer, '8', Item.dustRedstone});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieCrafting, 1, new Object[]{"2", "5", "8", '2', RetroStorage.recipeDisc, '5', RetroStorage.siliconWafer, '8', new ItemStack(Item.dye, 1, 5)});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieDigitizer, 1, new Object[]{"2", "5", "8", '2', Item.diamond, '5', RetroStorage.siliconWafer, '8', new ItemStack(Item.dye, 1, 4)});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDematerializer, 1, new Object[]{"2", "5", "8", '2', RetroStorage.ceramicPlate, '5', RetroStorage.chipDieDematerializer, '8', RetroStorage.chipShellFilled});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipRematerializer, 1, new Object[]{"2", "5", "8", '2', RetroStorage.ceramicPlate, '5', RetroStorage.chipDieRematerializer, '8', RetroStorage.chipShellFilled});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipCrafting, 1, new Object[]{"2", "5", "8", '2', RetroStorage.ceramicPlate, '5', RetroStorage.chipDieCrafting, '8', RetroStorage.chipShellFilled});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDigitizer, 1, new Object[]{"2", "5", "8", '2', RetroStorage.ceramicPlate, '5', RetroStorage.chipDieDigitizer, '8', RetroStorage.chipShellFilled});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipDieWireless, 1, new Object[]{"123", "456", "789", '2', Item.diamond, '4', Block.blockLapis, '5', RetroStorage.siliconWafer, '6', Block.blockLapis, '8', Item.diamond});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.chipWireless, 1, new Object[]{"123", "456", "789", '2', RetroStorage.ceramicPlate, '5', RetroStorage.chipDieWireless, '8', RetroStorage.chipShellFilled});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.wirelessAntenna, 1, new Object[]{"123", "456", "789", '2', Block.blockLapis, '4', Block.blockLapis, '5', Item.diamond, '6', Block.blockLapis, '7', Item.ingotIron, '8', Item.stick, '9', Item.ingotIron});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.redstoneCore, 1, new Object[]{"RRR", "RBR", "RRR", 'R', Item.dustRedstone, 'B', Block.blockRedstone});
-
-        RecipeHelper.Smelting.createRecipe(silicon, Block.glass);
-        RecipeHelper.Smelting.createRecipe(ceramicPlate, ceramicPlateUnfired);
-
-        RecipeHelper.Crafting.createRecipe(networkCable, 8, new Object[]{"WLW", "GGG", "WLW", 'W', Block.wool, 'G', Block.glass, 'L', new ItemStack(Item.dye, 1, 4)});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.digitalController, 1, new Object[]{"123", "456", "789", '1', RetroStorage.machineCasing, '2', RetroStorage.networkCable, '3', Block.blockLapis, '4', RetroStorage.networkCable, '5', RetroStorage.energyCore, '6', RetroStorage.networkCable, '7', Block.blockLapis, '8', RetroStorage.networkCable, '9', RetroStorage.machineCasing});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.digitalTerminal, 1, new Object[]{"123", "456", "789", '2', RetroStorage.chipDigitizer, '4', RetroStorage.chipRematerializer, '5', RetroStorage.machineCasing, '6', RetroStorage.chipDematerializer, '7', RetroStorage.networkCable, '8', Block.chestPlanksOak, '9', RetroStorage.networkCable});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.discDrive, 1, new Object[]{"123", "456", "789", '2', RetroStorage.chipDigitizer, '4', RetroStorage.blankDisc, '5', RetroStorage.machineCasing, '6', RetroStorage.blankDisc, '8', RetroStorage.networkCable});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.digitalChest, 1, new Object[]{"123", "456", "789", '2', RetroStorage.blankDisc, '4', RetroStorage.chipRematerializer, '5', RetroStorage.machineCasing, '6', RetroStorage.chipDematerializer, '8', Block.chestPlanksOak});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.assembler, 1, new Object[]{"123", "456", "789", '1', RetroStorage.machineCasing, '2', RetroStorage.chipCrafting, '3', RetroStorage.machineCasing, '4', RetroStorage.chipCrafting, '5', recipeDisc, '6', RetroStorage.chipCrafting, '7', RetroStorage.machineCasing, '8', RetroStorage.chipCrafting, '9', RetroStorage.machineCasing});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.importer, 1, new Object[]{"123", "456", "789", '2', RetroStorage.chipRematerializer, '4', RetroStorage.networkCable, '5', RetroStorage.machineCasing, '6', RetroStorage.networkCable, '8', RetroStorage.chipDigitizer});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.exporter, 1, new Object[]{"123", "456", "789", '2', RetroStorage.chipDematerializer, '4', RetroStorage.networkCable, '5', RetroStorage.machineCasing, '6', RetroStorage.networkCable, '8', RetroStorage.chipDigitizer});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.requestTerminal, 1, new Object[]{"123", "456", "789", '2', RetroStorage.machineCasing, '4', RetroStorage.chipCrafting, '5', RetroStorage.digitalTerminal, '6', RetroStorage.chipCrafting, '8', RetroStorage.networkCable});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.recipeEncoder, 1, new Object[]{"123", "456", "789", '2', RetroStorage.machineCasing, '4', recipeDisc, '5', Block.workbench, '6', recipeDisc, '8', RetroStorage.chipCrafting});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.processProgrammer, 1, new Object[]{"123", "456", "789", '1', Block.workbench, '2', advRecipeDisc, '3', Block.workbench, '4', RetroStorage.chipCrafting, '5', recipeEncoder, '6', RetroStorage.chipCrafting, '7', Block.workbench, '8', RetroStorage.advMachineCasing, '9', Block.workbench});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.advInterface, 1, new Object[]{"123", "456", "789", '1', Block.obsidian, '2', advRecipeDisc, '3', Block.obsidian, '4', RetroStorage.chipCrafting, '5', assembler, '6', RetroStorage.chipDigitizer, '7', Block.obsidian, '8', RetroStorage.advMachineCasing, '9', Block.obsidian});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.wirelessLink, 1, new Object[]{"123", "456", "789", '2', RetroStorage.chipWireless, '4', RetroStorage.networkCable, '5', RetroStorage.machineCasing, '6', RetroStorage.wirelessAntenna, '8', RetroStorage.chipWireless});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.energyAcceptor, 1, new Object[]{"SRS", "RER", "SRS", 'S', machineCasing, 'R', redstoneCore, 'E', energyCore});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.redstoneEmitter, 1, new Object[]{"MTM", "CRD", "MEM", 'M', machineCasing, 'T', Block.torchRedstoneActive, 'C', networkCable, 'R', redstoneCore, 'D', chipDigitizer, 'E', Item.repeater});
-
-        RecipeHelper.Crafting.createRecipe(linkingCard, 1, new Object[]{"123", "456", "789", '1', new ItemStack(Item.dye, 1, 12), '2', new ItemStack(Item.dye, 1, 4), '3', new ItemStack(Item.dye, 1, 12), '4', new ItemStack(Item.dye, 1, 4), '5', blankCard, '6', new ItemStack(Item.dye, 1, 4), '7', new ItemStack(Item.dye, 1, 12), '8', chipWireless, '9', new ItemStack(Item.dye, 1, 12)});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.mobileTerminal, 1, new Object[]{"A", "T", "W", 'A', wirelessAntenna, 'T', digitalTerminal, 'W', chipWireless});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.mobileRequestTerminal, 1, new Object[]{"A", "T", "W", 'A', wirelessAntenna, 'T', requestTerminal, 'W', chipWireless});
-        RecipeHelper.Crafting.createRecipe(RetroStorage.portableCell, 1, new Object[]{"D", "C", "I", 'I', chipDigitizer, 'C', digitalChest, 'D', storageDisc1});
-        RecipeHelper.Crafting.createRecipe(blankCard, 4, new Object[]{"ISI", "SPS", "ISI", 'I', Item.ingotIron, 'S', Block.stone, 'P', Block.pressureplateStone});
-        RecipeHelper.Crafting.createRecipe(slotIdFinder, 1, new Object[]{"C", "S", 'C', chipCrafting, 'S', Item.stick});*/
-
-        EntityHelper.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");
-        EntityHelper.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
-        EntityHelper.createTileEntity(TileEntityDigitalController.class, "Digital COntroller");
-        EntityHelper.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
-        EntityHelper.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
-        EntityHelper.createTileEntity(TileEntityAssembler.class, "Assembler");
-        EntityHelper.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
-        EntityHelper.createTileEntity(TileEntityImporter.class, "Item Importer");
-        EntityHelper.createTileEntity(TileEntityExporter.class, "Item Exporter");
-        EntityHelper.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
-        EntityHelper.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
-        EntityHelper.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
-        EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
-        EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Energy Acceptor");
-        LOGGER.info("RetroStorage initialized.");
+        RecipeBuilder.Furnace(MOD_ID).setInput(Block.glass).create("silicon",new ItemStack(silicon,1));
+        RecipeBuilder.Furnace(MOD_ID).setInput(ceramicPlateUnfired).create("ceramic_plate",new ItemStack(ceramicPlate,1));
     }
 
     public static void printTaskTree(Task rootTask) {
@@ -371,32 +689,6 @@ public class RetroStorage implements ModInitializer {
             RetroStorage.LOGGER.debug(space + "  Nothing");
         }
         RetroStorage.LOGGER.debug(space + "-E-");
-    }
-
-    public static Object getPrivateValue(Class instanceclass, Object instance, int fieldindex) throws IllegalArgumentException, SecurityException, NoSuchFieldException {
-        try {
-            Field e = instanceclass.getDeclaredFields()[fieldindex];
-            e.setAccessible(true);
-            return e.get(instance);
-        } catch (IllegalAccessException illegalAccessException4) {
-            illegalAccessException4.printStackTrace();
-            /*logger.throwing("ModLoader", "getPrivateValue", illegalAccessException4);
-            ThrowException("An impossible error has occured!", illegalAccessException4);*/
-            return null;
-        }
-    }
-
-    public static Object getPrivateValue(Class instanceclass, Object instance, String field) throws IllegalArgumentException, SecurityException, NoSuchFieldException {
-        try {
-            Field e = instanceclass.getDeclaredField(field);
-            e.setAccessible(true);
-            return e.get(instance);
-        } catch (IllegalAccessException illegalAccessException4) {
-            illegalAccessException4.printStackTrace();
-            /*logger.throwing("ModLoader", "getPrivateValue", illegalAccessException4);
-            ThrowException("An impossible error has occured!", illegalAccessException4);*/
-            return null;
-        }
     }
 
     public static ItemStack findRecipeResultFromNBT(CompoundTag nbt) {
@@ -451,6 +743,24 @@ public class RetroStorage implements ModInitializer {
         return foundRecipes;
     }
 
+    public static ArrayList<RecipeEntryCrafting<?,?>> findRecipesByOutput(ItemStack output, DigitalNetwork network) {
+        ArrayList<RecipeEntryCrafting<?,?>> foundRecipes = new ArrayList<>();
+        for (RecipeEntryCrafting<?, ?> recipe : network.getAvailableRecipes()) {
+            if(recipe instanceof RecipeEntryCraftingShaped){
+                RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
+                if(r.getOutput().isItemEqual(output)){
+                    foundRecipes.add(recipe);
+                }
+            } else if (recipe instanceof RecipeEntryCraftingShapeless) {
+                RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
+                if(r.getOutput().isItemEqual(output)){
+                    foundRecipes.add(recipe);
+                }
+            }
+        }
+        return foundRecipes;
+    }
+
     public static ArrayList<ArrayList<CompoundTag>> findProcessesByOutput(ItemStack output, DigitalNetwork network) {
         ArrayList<ArrayList<CompoundTag>> foundProcesses = new ArrayList<>();
         if (network != null) {
@@ -480,23 +790,6 @@ public class RetroStorage implements ModInitializer {
         return foundRecipes;
     }
 
-
-    /*public static ArrayList<IRecipe> findRecipesByInput(ItemStack input) {
-        CraftingManager craftingManager = CraftingManager.getInstance();
-        ArrayList<IRecipe> foundRecipes = new ArrayList<>();
-        List<IRecipe> recipes = craftingManager.getRecipeList();
-        for (IRecipe recipe : recipes) {
-            ArrayList<ItemStack> inputs = getRecipeItems(recipe);
-            for (ItemStack recipeInput : inputs) {
-                if (recipeInput.isItemEqual(input)) {
-                    foundRecipes.add(recipe);
-                    break;
-                }
-            }
-        }
-        return foundRecipes;
-    }*/
-
     public static RecipeEntryCrafting<?,?> findMatchingRecipe(InventoryCrafting inventorycrafting) {
         for (RecipeEntryCrafting<?, ?> recipe : Registries.RECIPES.getAllCraftingRecipes()) {
             if(recipe.matches(inventorycrafting)){
@@ -512,12 +805,10 @@ public class RetroStorage implements ModInitializer {
 
     public static ArrayList<ItemStack> getRecipeItems(RecipeEntryCrafting<?,?> recipe) {
         ArrayList<ItemStack> inputs = new ArrayList<>();
-        if (recipe instanceof RecipeEntryCraftingShapeless) {
-            RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
+        if (recipe instanceof RecipeEntryCraftingShapeless r) {
             inputs = r.getInput().stream().map((S) -> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
         }
-        if (recipe instanceof RecipeEntryCraftingShaped) {
-            RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
+        if (recipe instanceof RecipeEntryCraftingShaped r) {
             inputs = new ArrayList<>();
             inputs = Arrays.stream(r.getInput()).map((S)-> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
         }
@@ -589,5 +880,4 @@ public class RetroStorage implements ModInitializer {
         }
         return null;
     }
-
 }

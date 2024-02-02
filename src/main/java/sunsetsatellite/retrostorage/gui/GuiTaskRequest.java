@@ -28,6 +28,7 @@ public class GuiTaskRequest extends GuiContainer {
     public int requestAmount = 1;
     public TileEntityRequestTerminal tile;
     public int requestedSlotId;
+    public boolean canCraft = true;
 
     public GuiTaskRequest(TileEntityRequestTerminal tile, ItemStack request, int slotId) {
         super(new ContainerTaskRequest(tile));
@@ -101,6 +102,7 @@ public class GuiTaskRequest extends GuiContainer {
     }
 
     public void drawScreen(int x, int y, float renderPartialTicks) {
+        controlList.get(2).enabled = canCraft;
         super.drawScreen(x, y, renderPartialTicks);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(140,this.height-175,this.width*2, this.height+100); //TODO: fix this breaking at lower resolutions than 1080p
@@ -120,19 +122,10 @@ public class GuiTaskRequest extends GuiContainer {
         } else {
             if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
                 this.list.clear();
-                list.addAll(tile.network.getRequirements(requestedItem));
+                list.addAll(tile.network.getRequirements((RecipeEntryCrafting<?, ?>) tile.recipeContents[requestedSlotId]));
                 lastRequestedItem = requestedItem;
             }
         }
-
-
-        /*list.addAll(RetroStorage.condenseItemList(RetroStorage.getRecipeItems(RetroStorage.findRecipesByOutputUsingList(requestedItem,tile.network.getAvailableRecipes()).get(0))));
-        if(list.size() == 0){
-            list.add("noRecipesError");
-        }*/
-        /*if(network != null){
-            list.addAll(network.requestQueue);
-        }*/
         this.slotContainer.drawScreen(x, y, renderPartialTicks);
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }

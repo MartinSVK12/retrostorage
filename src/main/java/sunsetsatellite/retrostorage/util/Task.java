@@ -15,4 +15,6 @@ public abstract class Task {
     public boolean requirementsMet(){
         return requires.stream().allMatch((R)->R.completed);
     }
+
+    public abstract ArrayList<Task> getSubtasks(DigitalNetwork network);
 }

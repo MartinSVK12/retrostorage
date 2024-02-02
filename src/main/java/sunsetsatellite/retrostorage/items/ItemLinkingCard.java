@@ -12,11 +12,10 @@ import sunsetsatellite.retrostorage.tiles.TileEntityWirelessLink;
 
 public class ItemLinkingCard extends Item {
 
-    public ItemLinkingCard(int i) {
-        super(i);
 
+    public ItemLinkingCard(String name, int id) {
+        super(name, id);
     }
-
 
     @Override
     public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {

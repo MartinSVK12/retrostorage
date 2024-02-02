@@ -15,8 +15,10 @@ import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.InventoryPortable;
 
 public class ItemPortableCell extends Item implements ICustomDescription {
-    public ItemPortableCell(int i) {
-        super(i);
+
+
+    public ItemPortableCell(String name, int id) {
+        super(name, id);
     }
 
     @Override
