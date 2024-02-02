@@ -1,0 +1,16 @@
+[
+  {
+    "modid" : "mod_RetroStorage",
+    "name" : "RetroStorage",
+    "version" : "b1.0-1.2.5",
+    "url" : "http://github.com/MartinSVK12/retrostorage",
+    "authors": [
+      "sunsetsatellite (MartinSVK12)"
+    ],
+    "description": "A digital storage system mod.",
+    "logoFile" : "/assets/retrostorage/icon.png",
+    "parent" : "",
+    "screenshots": [
+    ]
+  }
+]
