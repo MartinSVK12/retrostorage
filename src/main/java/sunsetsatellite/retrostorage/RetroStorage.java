@@ -307,21 +307,21 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('G',Block.glass)
                 .addInput('X',storageDisc2)
                 .addInput('#',new ItemStack(Item.dye, 1, 11))
-                .create("storage_disc_3",new ItemStack(storageDisc2,1));
+                .create("storage_disc_3",new ItemStack(storageDisc3,1));
         RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
                 .addInput('R',Item.dustRedstone)
                 .addInput('g',Item.ingotGold)
                 .addInput('G',Block.glass)
                 .addInput('X',storageDisc3)
                 .addInput('#',new ItemStack(Item.dye, 1, 10))
-                .create("storage_disc_4",new ItemStack(storageDisc2,1));
+                .create("storage_disc_4",new ItemStack(storageDisc4,1));
         RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
                 .addInput('R',Item.dustRedstone)
                 .addInput('g',Item.ingotGold)
                 .addInput('G',Block.glass)
                 .addInput('X',storageDisc4)
                 .addInput('#',new ItemStack(Item.dye, 1, 4))
-                .create("storage_disc_5",new ItemStack(storageDisc2,1));
+                .create("storage_disc_5",new ItemStack(storageDisc5,1));
 
         RecipeBuilder.Shaped(MOD_ID, "RgG", "X#X", "GgR")
                 .addInput('R',Item.dustRedstone)
@@ -329,7 +329,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('G',Block.glass)
                 .addInput('X',storageDisc5)
                 .addInput('#',new ItemStack(Item.dye, 1, 5))
-                .create("storage_disc_6",new ItemStack(storageDisc2,1));
+                .create("storage_disc_6",new ItemStack(storageDisc6,1));
 
         RecipeBuilder.Shaped(MOD_ID, "SS", "SS")
                 .addInput('S', silicon)
