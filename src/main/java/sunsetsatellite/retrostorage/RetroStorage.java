@@ -52,7 +52,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public static int nextBlockId = 1400;
 
     static {
-        Toml configToml = new Toml("Signal Industries configuration file.");
+        Toml configToml = new Toml("RetroStorage configuration file.");
         configToml.addCategory("BlockIDs");
         configToml.addCategory("ItemIDs");
         configToml.addCategory("Other");
