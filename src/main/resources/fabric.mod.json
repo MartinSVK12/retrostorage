@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "retrostorage",
+  "version": "${version}",
+
+  "name": "RetroStorage",
+  "description": "Digital storage system mod for Minecraft b1.7.3 using StAPI.",
+  "authors": [
+    "sunsetsatellite"
+  ],
+  "contact": {
+    "sources": "https://github.com/MartinSVK12/retrostorage/tree/StAPI"
+  },
+
+  "license": "MIT",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "stationapi:event_bus": [
+      "sunsetsatellite.retrostorage.RetroStorage",
+      "sunsetsatellite.retrostorage.event.ModBlocks",
+      "sunsetsatellite.retrostorage.event.ModItems",
+      "sunsetsatellite.retrostorage.event.ModRecipes",
+      "sunsetsatellite.retrostorage.event.ModTextures",
+      "sunsetsatellite.retrostorage.event.ModBlockEntities",
+      "sunsetsatellite.retrostorage.event.ModGuis"
+    ],
+    "stationapi:event_bus_client": [
+
+    ],
+    "stationapi:event_bus_server": [
+
+    ]
+  },
+  "mixins": [
+    "retrostorage.mixins.json"
+  ],
+
+  "depends": {
+    "minecraft": "1.0.0-beta.7.3"
+  }
+}
