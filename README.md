@@ -51,7 +51,6 @@ Step 4: Profit!
 ## Special Thanks
 - [@rythin-sr](https://github.com/rythin-sr) - based bug finder
 - [@MrMasrozYTLIVE](https://github.com/MrMasrozYTLIVE) - helped with a couple things
-- [Mango Pack](https://discord.gg/FaPeNqkbJw) - community for probably the most polished b1.7.3 pack.
 - [Modification Station](https://discord.gg/8Qky5XY) - discord server dedicated to modding old versions of minecraft.
 
  
