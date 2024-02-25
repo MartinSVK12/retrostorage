@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 )
 public class ItemMixin {
 
-    @Inject(
+    /*@Inject(
             method = "getDefaultTag",
             at = @At("HEAD"),
             cancellable = true
@@ -26,5 +26,5 @@ public class ItemMixin {
         tag.putByte("color", (byte) TextFormatting.WHITE.id);
         tag.putString("name", "");
         cir.setReturnValue(tag);
-    }
+    }*/
 }
