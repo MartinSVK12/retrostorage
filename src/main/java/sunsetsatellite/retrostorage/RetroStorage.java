@@ -425,7 +425,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
 
         RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
                 .addInput('2', RetroStorage.ceramicPlate)
-                .addInput('5', RetroStorage.chipDieDematerializer)
+                .addInput('5', RetroStorage.chipDieRematerializer)
                 .addInput('8', RetroStorage.chipShellFilled)
                 .create("chip_rematerializer", new ItemStack(RetroStorage.chipRematerializer, 1));
 
