@@ -21,6 +21,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.player.inventory.InventoryCrafting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,6 +251,18 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         directions.put("Y-", new Vec3i(0, -1, 0));
         directions.put("Z+", new Vec3i(0, 0, 1));
         directions.put("Z-", new Vec3i(0, 0, -1));
+
+        List<Field> fields = new ArrayList<>(Arrays.asList(RetroStorage.class.getDeclaredFields()));
+        fields.removeIf((F)->F.getType() != Block.class);
+
+        for (Field field : fields) {
+            try {
+                Block block = (Block) field.get(null);
+                ItemToolPickaxe.miningLevels.put(block,2);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
