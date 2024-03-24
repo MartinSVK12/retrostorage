@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.block.BlockSounds;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.material.Material;
+import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
@@ -130,12 +131,12 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setTextures("digitalcontroller.png")
             .build(new BlockDigitalController("digitalController", config.getInt("BlockIDs.digitalController"), Material.stone));
     public static final Block networkCable = new BlockBuilder(MOD_ID)
-            .setBlockSound(BlockSounds.STONE)
-            .setHardness(1)
+            .setBlockSound(BlockSounds.CLOTH)
+            .setHardness(0.2f)
             .setResistance(5)
             .setLuminance(1)
             .setTextures("blockcable.png")
-            .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.stone));
+            .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.cloth));
     public static final Block discDrive = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -255,6 +256,8 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 throw new RuntimeException(e);
             }
         }
+
+        ItemToolPickaxe.miningLevels.remove(networkCable);
     }
 
     @Override

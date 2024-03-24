@@ -11,11 +11,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
 
     public TileEntityDigitalController() {
         network = new DigitalNetwork(this);
-        networkReload = new TickTimer(network,this::reload, 60,true);
-    }
-
-    public void reload(){
-
+        networkReload = new TickTimer(network,network::reload, 60,true);
     }
 
     @Override

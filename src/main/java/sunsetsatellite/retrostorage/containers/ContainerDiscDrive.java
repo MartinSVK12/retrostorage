@@ -21,7 +21,7 @@ public class ContainerDiscDrive extends Container
     	tile = tileEntitydiscdrive;
     	
     	addSlot(new SlotViewOnly(tileEntitydiscdrive, 2, 80, 35));
-        addSlot(new Slot(tileEntitydiscdrive, 0, 46, 35));
+        addSlot(new Slot(tileEntitydiscdrive, 0, 45, 35));
         addSlot(new Slot(tileEntitydiscdrive, 1, 115, 35));
 
         for(int j = 0; j < 3; j++)
