@@ -7,15 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.block.BlockSounds;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.material.Material;
-import net.minecraft.core.crafting.legacy.CraftingManager;
-import net.minecraft.core.crafting.legacy.type.RecipeShaped;
-import net.minecraft.core.crafting.legacy.type.RecipeShapeless;
-import net.minecraft.core.data.DataLoader;
 import net.minecraft.core.data.registry.Registries;
-import net.minecraft.core.data.registry.recipe.RecipeGroup;
-import net.minecraft.core.data.registry.recipe.RecipeNamespace;
-import net.minecraft.core.data.registry.recipe.RecipeRegistry;
-import net.minecraft.core.data.registry.recipe.RecipeSymbol;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
@@ -835,7 +827,6 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
 
     public static CompoundTag itemsArrayToNBT(ArrayList<ItemStack> list) {
         CompoundTag recipeNBT = (new CompoundTag());
-        //System.out.println(recipe.size());
         for (int i = 0; i < list.size(); i++) {
             CompoundTag itemNBT = (new CompoundTag());
             ItemStack item = list.get(i);

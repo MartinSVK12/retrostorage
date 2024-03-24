@@ -18,7 +18,7 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice
     public TileEntityDigitalTerminal()
     {
         contents = new ItemStack[37];
-        saveTimer = new TickTimer(this,"save",40,true);
+        saveTimer = new TickTimer(this,this::save,40,true);
 
     }
 

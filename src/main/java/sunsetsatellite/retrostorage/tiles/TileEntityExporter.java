@@ -19,7 +19,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
 
     public TileEntityExporter() {
         contents = new ItemStack[9];
-        this.workTimer = new TickTimer(this,"work",10,true);
+        this.workTimer = new TickTimer(this,this::work,10,true);
     }
 
     public int getSizeInventory()

@@ -27,7 +27,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice
     {
         contents = new ItemStack[37];
         recipeContents = new Object[37];
-        saveTimer = new TickTimer(this,"save",40,true);
+        saveTimer = new TickTimer(this,this::save,40,true);
     }
 
     public int getSizeInventory()

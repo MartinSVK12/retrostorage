@@ -24,7 +24,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     public int amount = 0;
     public boolean useMeta = true;
     public boolean useData = false;
-    public TickTimer workTimer = new TickTimer(this,"work",100, true);
+    public TickTimer workTimer = new TickTimer(this,this::work,100, true);
 
     public TileEntityRedstoneEmitter()
     {

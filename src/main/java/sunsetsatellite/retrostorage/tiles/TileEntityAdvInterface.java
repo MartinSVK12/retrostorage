@@ -23,7 +23,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     public TileEntityAdvInterface() {
         contents = new ItemStack[10];
-        this.workTimer = new TickTimer(this,"work",10,true);
+        this.workTimer = new TickTimer(this,this::work,10,true);
     }
 
     public int getSizeInventory()

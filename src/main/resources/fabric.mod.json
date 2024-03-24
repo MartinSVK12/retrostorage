@@ -29,10 +29,10 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.13.3",
-    "halplibe": ">=3.3.6",
-    "catalyst-core": ">=1.1.2",
-    "catalyst-energy": ">=1.0.2"
+    "fabricloader": ">=0.15.5",
+    "halplibe": ">=3.4.14",
+    "catalyst-core": ">=1.1.5",
+    "catalyst-energy": ">=1.0.5"
   },
   "suggests": {
   }
