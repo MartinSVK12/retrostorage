@@ -4,18 +4,22 @@ package sunsetsatellite.retrostorage;
 import com.mojang.nbt.CompoundTag;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.sound.block.BlockSounds;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.data.registry.Registries;
+import net.minecraft.core.data.registry.recipe.RecipeGroup;
+import net.minecraft.core.data.registry.recipe.RecipeNamespace;
+import net.minecraft.core.data.registry.recipe.RecipeSymbol;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryFurnace;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.player.inventory.InventoryCrafting;
+import net.minecraft.core.sound.BlockSounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sunsetsatellite.catalyst.core.util.Vec3i;
@@ -667,6 +671,16 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
 
         RecipeBuilder.Furnace(MOD_ID).setInput(Block.glass).create("silicon",new ItemStack(silicon,1));
         RecipeBuilder.Furnace(MOD_ID).setInput(ceramicPlateUnfired).create("ceramic_plate",new ItemStack(ceramicPlate,1));
+    }
+
+    @Override
+    public void initNamespaces() {
+        RecipeNamespace namespace = new RecipeNamespace();
+        final RecipeGroup<RecipeEntryCrafting<?, ?>> WORKBENCH = new RecipeGroup<>(new RecipeSymbol(new ItemStack(Block.workbench)));
+        final RecipeGroup<RecipeEntryFurnace> FURNACE = new RecipeGroup<>(new RecipeSymbol(new ItemStack(Block.furnaceStoneActive)));
+        namespace.register("workbench",WORKBENCH);
+        namespace.register("furnace",FURNACE);
+        Registries.RECIPES.register("retrostorage",namespace);
     }
 
     public static void printTaskTree(Task rootTask) {
