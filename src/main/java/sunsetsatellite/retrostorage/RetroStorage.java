@@ -279,20 +279,12 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         EntityHelper.Core.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
         EntityHelper.Core.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
         EntityHelper.Core.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
-        EntityHelper.Core.createTileEntity(TileEntityRedstoneEmitter.class, "Energy Acceptor");
+        EntityHelper.Core.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
         LOGGER.info("RetroStorage initialized.");
     }
 
     @Override
     public void onRecipesReady() {
-        /*RecipeNamespace namespace = new RecipeNamespace();
-        RecipeGroup<RecipeEntryCrafting<?,?>> workbench = new RecipeGroup<>(new RecipeSymbol(Block.workbench.getDefaultStack()));
-        RecipeGroup<RecipeEntryCrafting<?,?>> furnace = new RecipeGroup<>(new RecipeSymbol(Block.furnaceStoneIdle.getDefaultStack()));
-        namespace.register("workbench",workbench);
-        namespace.register("furnace",furnace);
-        Registries.RECIPES.register("retrostorage",namespace);
-        DataLoader.loadRecipes("/assets/retrostorage/recipe/workbench.json");
-        DataLoader.loadRecipes("/assets/retrostorage/recipe/furnace.json");*/
         RecipeBuilder.Shaped(MOD_ID,"GGG", "GRG", "GGG")
                 .addInput('G',Block.glass)
                 .addInput('R',Item.dustRedstone)
