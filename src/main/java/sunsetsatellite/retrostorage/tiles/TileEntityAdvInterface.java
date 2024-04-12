@@ -160,25 +160,28 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
-        workTimer.tick();
-        ArrayList<Class<?>> tiles = new ArrayList<>();
-        tiles.add(IInventory.class);
-        connectedTiles = getConnectedTileEntity(tiles);
-        int i = 0;
-        for (TileEntity tile : connectedTiles.values()) {
-            if(tile != null){
-                workingTile = tile;
-                break;
+        if(network != null && network.drive != null){
+            workTimer.tick();
+            ArrayList<Class<?>> tiles = new ArrayList<>();
+            tiles.add(IInventory.class);
+            connectedTiles = getConnectedTileEntity(tiles);
+            int i = 0;
+            for (TileEntity tile : connectedTiles.values()) {
+                if(tile != null){
+                    workingTile = tile;
+                    break;
+                }
+                i++;
             }
-            i++;
+            if(i >= 6){
+                workingTile = null;
+            }
         }
-        if(i >= 6){
-            workingTile = null;
-        }
+
     }
 
     public void work(){
-        if(network != null){
+        if(network != null && network.drive != null){
             if(request == null){
                 if(stack == null || stack.size() == 0){
                     stack = network.requestQueue.clone();
@@ -217,7 +220,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     public void runTask(CompoundTag task){
-        if(network != null){
+        if(network != null && network.drive != null){
             boolean isOutput = task.getBoolean("isOutput");
             int slot = task.getInteger("slot");
             ItemStack stack = ItemStack.readItemStackFromNbt(task.getCompound("stack"));
@@ -409,7 +412,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     public boolean acceptNextTask() {
-        if(!stack.isEmpty()){
+        if(!stack.isEmpty() && network != null && network.drive != null){
             Task t = stack.pop();
             if (t instanceof ProcessTask) {
                 if (t.processor == null) {
