@@ -1,17 +1,16 @@
-package sunsetsatellite.retrostorage.gui;
+package sunsetsatellite.retrostorage.screen;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.container.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.screen.ScreenHandler;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.container.DigitalChestContainer;
+import sunsetsatellite.retrostorage.screen.handler.DigitalChestScreenHandler;
 
-public class DigitalChestGui extends ContainerScreen {
+public class DigitalChestScreen extends HandledScreen {
 
-    public DigitalChestGui(PlayerEntity playerEntity, Inventory inventory) {
-        super(new DigitalChestContainer(playerEntity.inventory, inventory));
+    public DigitalChestScreen(PlayerEntity playerEntity, Inventory inventory) {
+        super(new DigitalChestScreenHandler(playerEntity.inventory, inventory));
         backgroundHeight = 220;
     }
 

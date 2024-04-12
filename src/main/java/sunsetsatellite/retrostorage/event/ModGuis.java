@@ -12,7 +12,7 @@ import net.modificationstation.stationapi.api.registry.GuiHandlerRegistry;
 import net.modificationstation.stationapi.api.util.Namespace;
 import net.modificationstation.stationapi.api.util.Null;
 import sunsetsatellite.retrostorage.block.entity.DigitalChestBlockEntity;
-import sunsetsatellite.retrostorage.gui.DigitalChestGui;
+import sunsetsatellite.retrostorage.screen.DigitalChestScreen;
 import uk.co.benjiweber.expressions.tuple.BiTuple;
 
 public class ModGuis {
@@ -27,6 +27,6 @@ public class ModGuis {
     }
 
     private Screen openDigitalChest(PlayerEntity playerEntity, Inventory inventory) {
-        return new DigitalChestGui(playerEntity, inventory);
+        return new DigitalChestScreen(playerEntity, inventory);
     }
 }
