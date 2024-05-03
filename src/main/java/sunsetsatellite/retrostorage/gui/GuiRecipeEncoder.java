@@ -8,12 +8,15 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerRecipeEncoder;
 import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
+import sunsetsatellite.retrostorage.util.GuiRenderDigitalItem;
 
 public class GuiRecipeEncoder extends GuiContainer
 {
 
+    public GuiRenderDigitalItem guiRenderItem = new GuiRenderDigitalItem(RetroStorage.mc);
     /*public GuiRecipeEncoder(InventoryPlayer inventoryplayer, World world, int i, int j, int k)
     {
         super(new ContainerWorkbench(inventoryplayer, world, i, j, k));

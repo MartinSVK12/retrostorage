@@ -1,18 +1,15 @@
 package sunsetsatellite.retrostorage.util;
 
 
-import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.BlockInstance;
-import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.*;
+import sunsetsatellite.retrostorage.util.crafting.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Class for a digital storage network.
@@ -24,12 +21,13 @@ public class DigitalNetwork extends Network {
      * @param controller  Controller of the network
      */
     public InventoryDigital inventory;
-    public ArrayDeque<Task> requestQueue = new ArrayDeque<>();
+    public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
+    public ArrayList<NetworkCraftable> knownCraftables = new ArrayList<>();
     public TileEntityDiscDrive drive;
 
     public DigitalNetwork(TileEntityDigitalController controller) {
         super(controller, TileEntityNetworkDevice.class, new int[]{RetroStorage.networkCable.id});
-        this.inventory = new InventoryDigital("Digital Network",controller);
+        this.inventory = new InventoryDigital(this);
     }
 
     @Override
@@ -39,12 +37,13 @@ public class DigitalNetwork extends Network {
             ((TileEntityNetworkDevice)device.tile).network = this;
         }
         if(device.tile instanceof TileEntityDiscDrive){
+            inventory.clear();
+            inventory.updateSizes((TileEntityDiscDrive) device.tile);
             DiscManipulator.loadDisc(((TileEntityDiscDrive) device.tile).virtualDisc,inventory);
         }
-        if(device.tile instanceof TileEntityWirelessLink){
-            if(((TileEntityWirelessLink) device.tile).remoteLink != null){
-                HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3i(((TileEntityWirelessLink) device.tile).remoteLink.x,((TileEntityWirelessLink) device.tile).remoteLink.y,((TileEntityWirelessLink) device.tile).remoteLink.z));
-                addRecursive(candidates);
+        if(device.tile instanceof TileEntityAssembler){
+            for (RecipeEntryCrafting<?, ItemStack> recipe : ((TileEntityAssembler) device.tile).getRecipes()) {
+                knownCraftables.add(new NetworkCraftable(recipe));
             }
         }
     }
@@ -55,8 +54,17 @@ public class DigitalNetwork extends Network {
         if(device.tile == drive){
             drive = null;
         }
+        if(device.tile instanceof TileEntityDiscDrive) {
+            inventory.clear();
+            inventory.resetSizes();
+        }
         if(device.tile instanceof TileEntityNetworkDevice){
             ((TileEntityNetworkDevice)device.tile).network = null;
+        }
+        if(device.tile instanceof TileEntityAssembler){
+            for (RecipeEntryCrafting<?, ItemStack> recipe : ((TileEntityAssembler) device.tile).getRecipes()) {
+                knownCraftables.remove(new NetworkCraftable(recipe));
+            }
         }
     }
 
@@ -64,9 +72,14 @@ public class DigitalNetwork extends Network {
         return searchAll(TileEntityAssembler.class);
     }
 
-    public ArrayList<BlockInstance> getInterfaces(){
-        return searchAll(TileEntityAdvInterface.class);
+    public int getMaxCraftables(){
+        return getAssemblers().size()*9;
     }
+    /*public ArrayList<BlockInstance> getInterfaces(){
+        return searchAll(TileEntityAdvInterface.class);
+    }*/
+
+    /*
 
     public HashMap<BlockInstance, ArrayList<ArrayList<CompoundTag>>> getAvailableProcessesWithSource(){
         HashMap<BlockInstance, ArrayList<ArrayList<CompoundTag>>> processes = new HashMap<>();
@@ -87,13 +100,13 @@ public class DigitalNetwork extends Network {
             }
         }
         return recipes;
-    }
+    }*/
 
-    public ArrayList<RecipeEntryCrafting<?,?>> getAvailableRecipes(){
-        ArrayList<RecipeEntryCrafting<?,?>> recipes = new ArrayList<>();
+    public ArrayList<RecipeEntryCrafting<?,ItemStack>> getAvailableRecipes(){
+        ArrayList<RecipeEntryCrafting<?,ItemStack>> recipes = new ArrayList<>();
         ArrayList<BlockInstance> assemblers = getAssemblers();
         for(BlockInstance assembler : assemblers){
-            ArrayList<RecipeEntryCrafting<?,?>> assemblerRecipes = ((TileEntityAssembler)assembler.tile).getRecipes();
+            ArrayList<RecipeEntryCrafting<?,ItemStack>> assemblerRecipes = ((TileEntityAssembler)assembler.tile).getRecipes();
             if(assemblerRecipes != null){
                 recipes.addAll(assemblerRecipes);
             }
@@ -101,7 +114,9 @@ public class DigitalNetwork extends Network {
         return recipes;
     }
 
-    public ArrayList<ArrayList<CompoundTag>> getAvailableProcesses(){
+
+
+    /*public ArrayList<ArrayList<CompoundTag>> getAvailableProcesses(){
         ArrayList<ArrayList<CompoundTag>> processes = new ArrayList<>();
         ArrayList<BlockInstance> interfaces = getInterfaces();
         for(BlockInstance inf : interfaces){
@@ -115,17 +130,16 @@ public class DigitalNetwork extends Network {
         ArrayList<RecipeEntryCrafting<?, ?>> recipes = RetroStorage.findRecipesByOutput(stack, this);
         ArrayList<ArrayList<CompoundTag>> processes = RetroStorage.findProcessesByOutput(stack, this);
         return !recipes.isEmpty() || !processes.isEmpty();
-    }
+    }*/
 
-    public void requestCrafting(RecipeEntryCrafting<?,?> recipe) {
-        if(recipe != null) {
-            RetroStorage.LOGGER.debug("Requesting: " + RetroStorage.recipeToString(recipe));
-            RecipeTask task = new RecipeTask(recipe, null, null);
+    public void requestCrafting(CraftingTask task) {
+        if(task != null) {
+            RetroStorage.LOGGER.debug("Requesting: " + task.getCraftable().getOutput());
             requestQueue.add(task);
         }
     }
 
-    public void requestProcessing(ArrayList<CompoundTag> tasks){
+    /*public void requestProcessing(ArrayList<CompoundTag> tasks){
         if(tasks != null){
             RetroStorage.LOGGER.debug("Requesting: " + RetroStorage.getMainOutputOfProcess(tasks));
             ProcessTask task = new ProcessTask(tasks,null,null);
@@ -133,34 +147,18 @@ public class DigitalNetwork extends Network {
             requestQueue.add(task);
         }
     }
-
-
-    public ArrayList<Task> getSubtask(Task task){
-        RetroStorage.LOGGER.debug("Getting subtasks for: "+task);
-        return task.getSubtasks(this);
-    }
-
-    public List<ItemStack> getRequirements(RecipeEntryCrafting<?,?> recipe){
+*/
+    /*public List<ItemStack> getRequirements(RecipeEntryCrafting<?,?> recipe){
         RecipeTask task = new RecipeTask(recipe, null, null);
         //RecipeSimulator simulator = new RecipeSimulator(task,this);
         return RetroStorage.condenseItemList(RetroStorage.getRecipeItems(recipe));
-    }
+    }*/
 
     public void clearRequestQueue() {
         RetroStorage.LOGGER.debug("Clearing request queue!");
         requestQueue = new ArrayDeque<>();
-        for(BlockInstance assembler : getAssemblers()){
-            TileEntityAssembler tile = (TileEntityAssembler) assembler.tile;
-            if(tile.task != null){
-                tile.task.processor = null;
-                tile.task = null;
-            }
-        }
-        for (BlockInstance anInterface : getInterfaces()) {
-            TileEntityAdvInterface tile = (TileEntityAdvInterface) anInterface.tile;
-            if(tile.request != null){
-                tile.cancelProcessing();
-            }
+        for (BlockInstance assembler : getAssemblers()) {
+            ((TileEntityAssembler) assembler.tile).cancelTask();
         }
     }
 }

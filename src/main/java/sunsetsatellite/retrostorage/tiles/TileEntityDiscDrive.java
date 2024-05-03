@@ -62,26 +62,25 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         if(network != null){
             if(network.drive == null){
                 network.drive = this;
-            }
-            else{
+            } else {
                 if(getStackInSlot(0) != null){
                     if(getStackInSlot(0).getItem() instanceof ItemStorageDisc){
                         ItemStorageDisc item = (ItemStorageDisc) getStackInSlot(0).getItem();
-                        virtualDriveMaxStacks += item.getMaxStackCapacity();
+                        maxStacks += item.getMaxStackCapacity();
+                        maxItems += item.getMaxItemCapacity();
+                        network.inventory.updateSizes(this);
                         ItemStack stack = getStackInSlot(0);
-                        Object[] nbt = stack.getData().getCompound("disc").getValues().toArray();
+                        Object[] nbt = stack.getData().getCompound("Disc").getValues().toArray();
                         for(Object tag : nbt){
                             if(tag instanceof CompoundTag){
-                                //RetroStorage.printCompound((CompoundTag) tag);
-                                ItemStack digitizedItem = ItemStack.readItemStackFromNbt(((CompoundTag)tag));
+                                ItemStack digitizedItem = DiscManipulator.readUnlimitedStackFromNbt(((CompoundTag)tag));
                                 if(digitizedItem == null) continue;
-                                //RetroStorage.LOGGER.debug(String.format("%d %d %d",digitizedItem.itemID,digitizedItem.stackSize,digitizedItem.getMetadata()));
-                                network.inventory.addItemStackToInventory(digitizedItem);
+                                network.inventory.add(digitizedItem);
                             }
                         }
                         discsUsed.add(stack.copy());
                         setInventorySlotContents(0,null);
-                        DiscManipulator.saveDisc(virtualDisc, network.inventory);
+                        network.inventory.inventoryChanged();
                     }
                 }
             }
@@ -92,26 +91,29 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         if(!discsUsed.isEmpty()){
             ItemStack disc = discsUsed.get(0).copy();
             discsUsed.remove(0);
-            virtualDriveMaxStacks -= Math.min(virtualDriveMaxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            maxStacks -= Math.min(maxStacks,((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            maxItems -= Math.min(maxItems,((ItemStorageDisc) disc.getItem()).getMaxItemCapacity());
             CompoundTag nbt = new CompoundTag();
-            Object[] V = virtualDisc.getData().getCompound("disc").getValues().toArray();
-            int stacksToRemove = Math.min(virtualDisc.getData().getCompound("disc").getValues().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
+            Object[] V = virtualDisc.getData().getCompound("Disc").getValues().toArray();
+            int stacksToRemove = Math.min(virtualDisc.getData().getCompound("Disc").getValues().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
             for (int i = 0; i < stacksToRemove; i++) {
                 nbt.putCompound(String.valueOf(i),(CompoundTag) V[i]);
                 if(network != null) {
-                    network.inventory.inventoryContents[i] = null;
+                    network.inventory.remove(i,Integer.MAX_VALUE,false,true);
                 }
             }
-            disc.getData().putCompound("disc",nbt);
+            disc.getData().putCompound("Disc",nbt);
             disc.stackSize = 1;
             setInventorySlotContents(1,disc);
-            if(virtualDriveMaxStacks == 0){
+            if(maxStacks == 0){
                 if(network != null) {
-                    DiscManipulator.clearDigitalInv(network.inventory);
+                    network.inventory.clear();
+                    network.inventory.resetSizes();
                 }
+                virtualDisc.getData().putCompound("Disc",new CompoundTag());
             }
             if(network != null) {
-                DiscManipulator.saveDisc(virtualDisc, network.inventory);
+                network.inventory.inventoryChanged();
             }
         }
     }
@@ -136,34 +138,35 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         return "Disc Drive";
     }
 
-    public void readFromNBT(CompoundTag CompoundTag)
+    public void readFromNBT(CompoundTag compoundTag)
     {
-        super.readFromNBT(CompoundTag);
-        ListTag listTag = CompoundTag.getList("Items");
+        super.readFromNBT(compoundTag);
+        ListTag listTag = compoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
         for(int i = 0; i < listTag.tagCount(); i++)
         {
-            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
-            int j = CompoundTag1.getByte("Slot") & 0xff;
+            CompoundTag compoundTag1 = (CompoundTag)listTag.tagAt(i);
+            int j = compoundTag1.getByte("Slot") & 0xff;
             if(j < contents.length)
             {
-                contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
+                contents[j] = ItemStack.readItemStackFromNbt(compoundTag1);
             }
         }
-        listTag = CompoundTag.getList("DiscsUsed");
+        listTag = compoundTag.getList("DiscsUsed");
         discsUsed = new ArrayList<>();
         for(int i = 0; i < listTag.tagCount(); i++)
         {
             CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
             discsUsed.add(ItemStack.readItemStackFromNbt(CompoundTag1));
         }
-        virtualDriveMaxStacks = CompoundTag.getInteger("MaxStacks");
-        virtualDisc.getData().putCompound("disc", CompoundTag.getCompound("VirtualDisc"));
+        maxStacks = compoundTag.getInteger("MaxStacks");
+        maxItems = compoundTag.getInteger("MaxItems");
+        virtualDisc.getData().putCompound("Disc", compoundTag.getCompound("Disc"));
     }
 
-    public void writeToNBT(CompoundTag CompoundTag)
+    public void writeToNBT(CompoundTag compoundTag)
     {
-        super.writeToNBT(CompoundTag);
+        super.writeToNBT(compoundTag);
         ListTag listTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
@@ -176,7 +179,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
                 listTag.addTag(CompoundTag1);
             }
         }
-        CompoundTag.put("Items", listTag);
+        compoundTag.put("Items", listTag);
         listTag = new ListTag();
         for(int i = 0; i < discsUsed.size(); i++)
         {
@@ -188,9 +191,10 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
                 listTag.addTag(CompoundTag1);
             }
         }
-        CompoundTag.put("DiscsUsed", listTag);
-        CompoundTag.put("MaxStacks",new IntTag(virtualDriveMaxStacks));
-        CompoundTag.putCompound("VirtualDisc",virtualDisc.getData().getCompound("disc"));
+        compoundTag.put("DiscsUsed", listTag);
+        compoundTag.put("MaxStacks",new IntTag(maxStacks));
+        compoundTag.put("MaxItems",new IntTag(maxItems));
+        compoundTag.putCompound("Disc",virtualDisc.getData().getCompound("Disc"));
     }
 
     public int getInventoryStackLimit()
@@ -212,8 +216,18 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         
     }
 
-    private ItemStack contents[];
+    private ItemStack[] contents;
     public ArrayList<ItemStack> discsUsed = new ArrayList<>();
     public ItemStack virtualDisc = (new ItemStack(RetroStorage.virtualDisc,1));
-    public int virtualDriveMaxStacks = 0;
+    private int maxStacks = 0;
+    private int maxItems = 0;
+
+
+    public int getMaxStacks() {
+        return maxStacks;
+    }
+
+    public int getMaxItems() {
+        return maxItems;
+    }
 }

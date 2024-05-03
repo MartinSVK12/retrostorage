@@ -12,15 +12,16 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.RecipeTask;
-import sunsetsatellite.retrostorage.util.Task;
+import sunsetsatellite.retrostorage.util.IProcessor;
+import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TileEntityAssembler extends TileEntityNetworkDevice
-    implements IInventory
+    implements IInventory, IProcessor
 {
     public TileEntityAssembler() {
         contents = new ItemStack[9];
@@ -50,6 +51,12 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     {
         if(contents[i] != null)
         {
+            if(network != null) {
+                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getStackInSlot(i).getData().getCompound("recipe"));
+                if(recipe != null) {
+                    network.knownCraftables.remove(new NetworkCraftable(recipe));
+                }
+            }
             if(contents[i].stackSize <= j)
             {
                 ItemStack itemstack = contents[i];
@@ -72,6 +79,19 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
+        if(network != null) {
+            if (itemstack == null) {
+                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getStackInSlot(i).getData().getCompound("recipe"));
+                if(recipe != null) {
+                    network.knownCraftables.remove(new NetworkCraftable(recipe));
+                }
+            } else {
+                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(itemstack.getData().getCompound("recipe"));
+                if(recipe != null){
+                    network.knownCraftables.add(new NetworkCraftable(recipe));
+                }
+            }
+        }
         contents[i] = itemstack;
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
@@ -159,10 +179,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
                     stack = network.requestQueue.clone();
                 }
                 if(!network.requestQueue.isEmpty()){
-                    boolean result = acceptNextTask();
-                    if(result){
-                        RetroStorage.LOGGER.debug(this+" Accepted task "+task+".");
-                    }
+                    acceptNextTask();
                 }
             } else {
                 fulfillRequest();
@@ -170,125 +187,36 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         }
     }
 
+
     public void fulfillRequest(){
         if(task != null){
-            ArrayList<ItemStack> inputs = RetroStorage.condenseItemList(RetroStorage.getRecipeItems(task.recipe));
-            if (network.inventory.hasItems(inputs)) {
-                if (network.inventory.removeItems(inputs)) {
-                    ItemStack result = ((ItemStack)task.recipe.getOutput()).copy();
-                    result.getData().setName("Data");
-                    if (result.stackSize == 0) {
-                        result.stackSize = 1;
-                    }
-                    if (network.inventory.addItemStackToInventory(result)) {
-                        RetroStorage.LOGGER.debug(this + " Task fulfilled.");
-                        task.completed = true;
-                        network.requestQueue.remove(task);
-                        if (task.parent == null && task.requirementsMet()) {
-                            RetroStorage.LOGGER.debug(this + " Request fulfilled.");
-                        }
-                        task = null;
-                    } else {
-                        failTask(task,"Failed to add items to the network.");
-                    }
-                } else {
-                    failTask(task,"Failed to remove items from the network.");
-                }
-            } else {
-                if(task.attempts <= 0){
-                    RetroStorage.LOGGER.error("Too many failed attempts, cancelling task!");
-                    network.requestQueue.clone().forEach((V)->{
-                        if(V.requires.contains(task) || V.parent == task){
-                            network.requestQueue.remove(V);
-                        }
-                    });
-                    network.requestQueue.remove(task);
-                    task.processor = null;
-                    task = null;
-                    return;
-                }
-                RetroStorage.LOGGER.debug("Not enough resources for task "+task+", attempting to create subtasks..");
-                ArrayList<Task> subtasks = network.getSubtask(task);
-                if(subtasks == null){
-                    RetroStorage.LOGGER.error("No subtasks could be created for "+task+"!");
-                    network.requestQueue.remove(task);
-                    task.processor = null;
-                    task = null;
-                } else {
-                    if(subtasks.isEmpty()){
-                        task.attempts -= 1;
-                    }
-                    for (Task subtask : subtasks) {
-                        if(task != null){
-                            task.requires.add(subtask);
-                        }
-                        network.requestQueue.addFirst(subtask);
-                        if(task != null){
-                            task.processor = null;
-                            task = null;
-                        }
-                    }
-                }
+            if(task.update()){
+                network.requestQueue.remove(task);
+                task = null;
             }
         }
     }
 
-    public void failTask(Task task, String message){
-        RetroStorage.LOGGER.error(this + " Failed to fulfill task " + task + ": "+message);
-        network.requestQueue.remove(task);
-        this.task.processor = null;
-        this.task = null;
-    }
-
-    public ArrayList<RecipeEntryCrafting<?,?>> getRecipes(){
-        ArrayList<RecipeEntryCrafting<?,?>> recipes = new ArrayList<>();
+    public ArrayList<RecipeEntryCrafting<?,ItemStack>> getRecipes(){
+        ArrayList<RecipeEntryCrafting<?,ItemStack>> recipes = new ArrayList<>();
         for (ItemStack stack : contents) {
             if (stack != null && stack.getItem() == RetroStorage.recipeDisc) {
-                RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
+                RecipeEntryCrafting<?,ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                 if (recipe != null) {
                     recipes.add(recipe);
                 }
             }
         }
-        return !recipes.isEmpty() ? recipes : null;
+        return recipes;
     }
 
     public boolean acceptNextTask() {
         if(!stack.isEmpty()){
-            Task t = stack.pop();
-            boolean success = false;
-            if (t instanceof RecipeTask) {
-                if (t.processor == null) {
-                    if (!t.completed) {
-                        if (t.requirementsMet()) {
-                            for (RecipeEntryCrafting<?,?> aRecipe : network.getAvailableRecipes()) {
-                                if (aRecipe.equals(((RecipeTask) t).recipe)) {
-                                    success = true;
-                                    break;
-                                }
-                            }
-                            if (success) {
-                                this.task = (RecipeTask) t;
-                                t.processor = this;
-                                return true;
-                            } else {
-                                //RetroStorage.LOGGER.error(this+" Network doesn't know how to handle task! "+t);
-                                return false;
-                            }
-                        } else {
-                            //RetroStorage.LOGGER.error(this+" Not all requirements met for tasks! "+t);
-                            return false;
-                        }
-                    } else {
-                        //RetroStorage.LOGGER.error(this+ " Task is already completed! "+t);
-                        return false;
-                    }
-                } else {
-                    //RetroStorage.LOGGER.error(this + " Task is taken already! "+t);
-                    return false;
-                }
-            } else {
-                acceptNextTask();
+            CraftingTask t = stack.pop();
+            if(t.processor == null){
+                t.start(this);
+                task = t;
+                return true;
             }
         }
         return false;
@@ -296,8 +224,20 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
 
     private ItemStack[] contents;
-    public RecipeTask task;
+    public CraftingTask task;
     public TickTimer workTimer;
-    public ArrayDeque<Task> stack;
+    public ArrayDeque<CraftingTask> stack;
     public HashMap<String, TileEntity> connectedTiles = new HashMap<>();
+
+    @Override
+    public CraftingTask getCurrentTask() {
+        return task;
+    }
+
+    public void cancelTask() {
+        if(task != null){
+            task.onCancelled();
+            task = null;
+        }
+    }
 }

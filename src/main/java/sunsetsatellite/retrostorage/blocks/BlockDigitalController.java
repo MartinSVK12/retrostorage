@@ -5,14 +5,25 @@ import net.minecraft.core.block.Block;
 import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
+import net.minecraft.core.data.registry.Registries;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
+import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiDigitalController;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
+import sunsetsatellite.retrostorage.util.crafting.CalculationResult;
+import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;
+import sunsetsatellite.retrostorage.util.crafting.CraftingCalculator;
 
-public class BlockDigitalController extends BlockTileEntityRotatable {
+import java.util.ArrayList;
+
+public class BlockDigitalController extends BlockNetworkDevice {
 
     public BlockDigitalController(String key, int id, Material material) {
         super(key, id, material);
@@ -23,6 +34,8 @@ public class BlockDigitalController extends BlockTileEntityRotatable {
         return new TileEntityDigitalController();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
     public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
     {
         if(world.isClientSide)
@@ -46,6 +59,7 @@ public class BlockDigitalController extends BlockTileEntityRotatable {
                 }
                 if(tile.network != null){
                     ((IOpenGUI)entityplayer).displayGUI(new GuiDigitalController(tile));
+                    tile.network.reload();
                 }
             }
             return true;

@@ -4,15 +4,15 @@
   "package": "sunsetsatellite.retrostorage.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "mixins.CompoundTagMixin",
-    "mixins.ContainerMixin",
-    "mixins.EntityPlayerSPMixin",
-    "mixins.GuiTooltipMixin",
-    "mixins.ItemMixin",
-    "mixins.MinecraftMixin",
-    "mixins.RenderBlocksMixin",
-    "mixins.TagMixin",
-    "mixins.WorldGenLabyrinthMixin"
+    "CompoundTagMixin",
+    "ContainerMixin",
+    "EntityPlayerSPMixin",
+    "GuiTooltipMixin",
+    "ItemStackMixin",
+    "MinecraftMixin",
+    "RenderBlocksMixin",
+    "TagMixin",
+    "WorldGenLabyrinthMixin"
   ],
   "client": [
   ],

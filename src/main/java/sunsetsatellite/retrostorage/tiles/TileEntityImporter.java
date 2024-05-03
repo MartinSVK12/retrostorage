@@ -173,7 +173,7 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                         for (int i = 0; i < inv.getSizeInventory(); i++) {
                             ItemStack stack = inv.getStackInSlot(i);
                             if(stack != null && ((getInventorySlotContainItem(stack.itemID,stack.getMetadata()) != -1 && isWhitelist) || (getInventorySlotContainItem(stack.itemID,stack.getMetadata()) == -1 && !isWhitelist))){
-                                if(network.inventory.addItemStackToInventory(stack)){
+                                if(network.inventory.add(stack)){
                                     inv.setInventorySlotContents(i,null);
                                     DiscManipulator.saveDisc(network.drive.virtualDisc,network.inventory);
                                 }
@@ -185,7 +185,7 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                         }
                         ItemStack stack = inv.getStackInSlot(slot);
                         if(stack != null && ((getInventorySlotContainItem(stack.itemID,stack.getMetadata()) != -1 && isWhitelist) || (getInventorySlotContainItem(stack.itemID,stack.getMetadata()) == -1 && !isWhitelist))){
-                            if(network.inventory.addItemStackToInventory(stack)){
+                            if(network.inventory.add(stack)){
                                 inv.setInventorySlotContents(slot,null);
                                 DiscManipulator.saveDisc(network.drive.virtualDisc,network.inventory);
                             }

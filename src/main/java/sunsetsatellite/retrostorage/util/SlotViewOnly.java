@@ -22,6 +22,23 @@ public class SlotViewOnly extends Slot {
     public void onPickupFromSlot(ItemStack itemstack) {}
 
     @Override
+    public void putStack(ItemStack itemstack) {
+
+    }
+
+    @Override
+    public ItemStack decrStackSize(int i) {
+        return null;
+    }
+
+    @Override
+    public void sortSlotInventory() {
+
+    }
+
+
+
+    @Override
     public boolean enableDragAndPickup() {
         return false;
     }

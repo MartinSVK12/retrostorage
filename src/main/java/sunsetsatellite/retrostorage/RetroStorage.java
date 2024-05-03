@@ -6,7 +6,6 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.material.Material;
-import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeGroup;
 import net.minecraft.core.data.registry.recipe.RecipeNamespace;
@@ -26,17 +25,17 @@ import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.blocks.*;
 import sunsetsatellite.retrostorage.items.*;
 import sunsetsatellite.retrostorage.tiles.*;
-import sunsetsatellite.retrostorage.util.DigitalNetwork;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
-import sunsetsatellite.retrostorage.util.Task;
+import sunsetsatellite.retrostorage.util.crafting.CraftableType;
+import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.*;
-import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderShaped;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 import turniplabs.halplibe.util.TomlConfigHandler;
 import turniplabs.halplibe.util.toml.Toml;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class RetroStorage implements ModInitializer, RecipeEntrypoint {
@@ -56,11 +55,11 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         configToml.addCategory("Other");
         configToml.addEntry("Other.goldenDiscLoot",false);
 
-        List<Field> blockFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Block.class.isAssignableFrom(F.getType())).toList();
+        List<Field> blockFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Block.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
         for (Field blockField : blockFields) {
             configToml.addEntry("BlockIDs."+blockField.getName(),nextBlockId++);
         }
-        List<Field> itemFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Item.class.isAssignableFrom(F.getType())).toList();
+        List<Field> itemFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Item.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
         for (Field itemField : itemFields) {
             configToml.addEntry("ItemIDs."+itemField.getName(),nextItemId++);
         }
@@ -76,16 +75,16 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     }
 
     public static final Item blankDisc = ItemHelper.createItem(MOD_ID, new Item("blankDisc",config.getInt("ItemIDs.blankDisc")),  "blankdisc.png");
-    public static final Item storageDisc1 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc1", config.getInt("ItemIDs.storageDisc1"), 64), "disc1.png").setMaxStackSize(1);
-    public static final Item storageDisc2 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc2",config.getInt("ItemIDs.storageDisc2"), 128),  "disc2.png").setMaxStackSize(1);
-    public static final Item storageDisc3 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc3",config.getInt("ItemIDs.storageDisc3"), 196),  "disc3.png").setMaxStackSize(1);
-    public static final Item storageDisc4 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc4",config.getInt("ItemIDs.storageDisc4"), 256),  "disc4.png").setMaxStackSize(1);
-    public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320), "disc5.png").setMaxStackSize(1);
-    public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384), "disc6.png").setMaxStackSize(1);
-    public static final Item virtualDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
+    public static final Item storageDisc1 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc1", config.getInt("ItemIDs.storageDisc1"), 64,64*64), "disc1.png").setMaxStackSize(1);
+    public static final Item storageDisc2 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc2",config.getInt("ItemIDs.storageDisc2"), 128,128*64),  "disc2.png").setMaxStackSize(1);
+    public static final Item storageDisc3 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc3",config.getInt("ItemIDs.storageDisc3"), 196,196*64),  "disc3.png").setMaxStackSize(1);
+    public static final Item storageDisc4 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc4",config.getInt("ItemIDs.storageDisc4"), 256,256*64),  "disc4.png").setMaxStackSize(1);
+    public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320,320*64), "disc5.png").setMaxStackSize(1);
+    public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384,384*64), "disc6.png").setMaxStackSize(1);
+    public static final Item virtualDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2,(Short.MAX_VALUE * 2) * 64), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
     public static final Item recipeDisc = ItemHelper.createItem(MOD_ID, new ItemRecipeDisc("recipeDisc", config.getInt("ItemIDs.recipeDisc")), "recipedisc.png").setMaxStackSize(1);
-    public static final Item goldenDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024), "goldendisc.png").setMaxStackSize(1);
-    public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID, new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc")), "advrecipedisc.png").setMaxStackSize(1);
+    public static final Item goldenDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024, 1024 * 64), "goldendisc.png").setMaxStackSize(1);
+    //public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID, new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc")), "advrecipedisc.png").setMaxStackSize(1);
 
     public static Item machineCasing = ItemHelper.createItem(MOD_ID, new Item("machineCasing", config.getInt("ItemIDs.machineCasing")), "machinecasing.png");
     public static Item advMachineCasing = ItemHelper.createItem(MOD_ID, new Item("advMachineCasing",config.getInt("ItemIDs.advMachineCasing")),  "advmachinecasing.png");
@@ -110,23 +109,14 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public static Item redstoneCore = ItemHelper.createItem(MOD_ID, new Item("redstoneCore", config.getInt("ItemIDs.redstoneCore")), "redstonecore.png");
 
     public static Item slotIdFinder = ItemHelper.createItem(MOD_ID, new Item("slotIdFinder", config.getInt("ItemIDs.slotIdFinder")), "idfinder.png").setMaxStackSize(1);
-    public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell("portableCell", config.getInt("ItemIDs.portableCell")), "portablecell.png").setMaxStackSize(1);
+    /*public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell("portableCell", config.getInt("ItemIDs.portableCell")), "portablecell.png").setMaxStackSize(1);
     public static Item mobileTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileTerminal", config.getInt("ItemIDs.mobileTerminal")), "mobileterminal.png").setMaxStackSize(1);
     public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileRequestTerminal",config.getInt("ItemIDs.mobileRequestTerminal")),  "mobilerequestterminal.png").setMaxStackSize(1);
 
 
-    public static final Item linkingCard = ItemHelper.createItem(MOD_ID, new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard")), "linkingcard.png").setMaxStackSize(1);
+    public static final Item linkingCard = ItemHelper.createItem(MOD_ID, new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard")), "linkingcard.png").setMaxStackSize(1);*/
     public static final Item blankCard = ItemHelper.createItem(MOD_ID, new Item("blankCard", config.getInt("ItemIDs.blankCard")), "blankcard.png");
 
-    public static final Block digitalChest = new BlockBuilder(MOD_ID)
-            .setBlockSound(BlockSounds.STONE)
-            .setHardness(1)
-            .setResistance(5)
-            .setLuminance(1)
-            .setTextures("machineside.png")
-            .setNorthTexture("digitalchestfront.png")
-            .setTopTexture("digitalchesttopfilled.png")
-            .build(new BlockDigitalChest("digitalChest", config.getInt("BlockIDs.digitalChest"), Material.stone));
     public static final Block digitalController = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -134,6 +124,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("digitalcontroller.png")
             .build(new BlockDigitalController("digitalController", config.getInt("BlockIDs.digitalController"), Material.stone));
+
     public static final Block networkCable = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.CLOTH)
             .setHardness(0.2f)
@@ -141,6 +132,18 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("blockcable.png")
             .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.cloth));
+
+    /*public static final Block digitalChest = new BlockBuilder(MOD_ID)
+            .setBlockSound(BlockSounds.STONE)
+            .setHardness(1)
+            .setResistance(5)
+            .setLuminance(1)
+            .setTextures("machineside.png")
+            .setNorthTexture("digitalchestfront.png")
+            .setTopTexture("digitalchesttopfilled.png")
+            .build(new BlockDigitalChest("digitalChest", config.getInt("BlockIDs.digitalChest"), Material.stone));*/
+
+
     public static final Block discDrive = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -190,7 +193,6 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("importer.png")
             .build(new BlockImporter("importer", config.getInt("BlockIDs.importer"), Material.stone));
-    ;
     public static final Block exporter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -198,7 +200,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("exporter.png")
             .build(new BlockExporter("exporter", config.getInt("BlockIDs.exporter"), Material.stone));
-    public static final Block processProgrammer = new BlockBuilder(MOD_ID)
+    /*public static final Block processProgrammer = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
@@ -221,7 +223,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setResistance(5)
             .setLuminance(1)
             .setTextures("wirelesslink.png")
-            .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));
+            .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));*/
     public static final Block energyAcceptor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -229,13 +231,13 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("energyacceptor.png")
             .build(new BlockEnergyAcceptor("energyAcceptor", config.getInt("BlockIDs.energyAcceptor"), Material.stone));
-    public static final Block redstoneEmitter = new BlockBuilder(MOD_ID)
+    /*public static final Block redstoneEmitter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
             .setTextures("redstoneemitteroff.png")
-            .build(new BlockRedstoneEmitter("redstoneEmitter", config.getInt("BlockIDs.redstoneEmitter"), Material.stone));
+            .build(new BlockRedstoneEmitter("redstoneEmitter", config.getInt("BlockIDs.redstoneEmitter"), Material.stone));*/
 
     public static HashMap<String, Vec3i> directions = new HashMap<>();
 
@@ -261,25 +263,26 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             }
         }
 
-        ItemToolPickaxe.miningLevels.remove(networkCable);
+        //ItemToolPickaxe.miningLevels.remove(networkCable);
     }
 
     @Override
     public void onInitialize() {
-        EntityHelper.Core.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");
+        //EntityHelper.Core.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");
         EntityHelper.Core.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
-        EntityHelper.Core.createTileEntity(TileEntityDigitalController.class, "Digital COntroller");
+        EntityHelper.Core.createTileEntity(TileEntityDigitalController.class, "Digital Controller");
         EntityHelper.Core.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
+        EntityHelper.Core.createTileEntity(TileEntityNetworkCable.class, "Network Cable");
         EntityHelper.Core.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
         EntityHelper.Core.createTileEntity(TileEntityAssembler.class, "Assembler");
         EntityHelper.Core.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
         EntityHelper.Core.createTileEntity(TileEntityImporter.class, "Item Importer");
         EntityHelper.Core.createTileEntity(TileEntityExporter.class, "Item Exporter");
-        EntityHelper.Core.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
+        /*EntityHelper.Core.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
         EntityHelper.Core.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
-        EntityHelper.Core.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
+        EntityHelper.Core.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");*/
         EntityHelper.Core.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
-        EntityHelper.Core.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
+        /*EntityHelper.Core.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");*/
         LOGGER.info("RetroStorage initialized.");
     }
 
@@ -335,7 +338,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('#',new ItemStack(Item.dye, 1, 5))
                 .create("storage_disc_6",new ItemStack(storageDisc6,1));
 
-        RecipeBuilder.Shaped(MOD_ID, "SS", "SS")
+        /*RecipeBuilder.Shaped(MOD_ID, "SS", "SS")
                 .addInput('S', silicon)
                 .create("silicon_wafer", new ItemStack(siliconWafer, 1));
 
@@ -662,7 +665,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         }
 
         RecipeBuilder.Furnace(MOD_ID).setInput(Block.glass).create("silicon",new ItemStack(silicon,1));
-        RecipeBuilder.Furnace(MOD_ID).setInput(ceramicPlateUnfired).create("ceramic_plate",new ItemStack(ceramicPlate,1));
+        RecipeBuilder.Furnace(MOD_ID).setInput(ceramicPlateUnfired).create("ceramic_plate",new ItemStack(ceramicPlate,1));*/
     }
 
     @Override
@@ -675,36 +678,6 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         Registries.RECIPES.register("retrostorage",namespace);
     }
 
-    public static void printTaskTree(Task rootTask) {
-        if (rootTask.parent == null) {
-            RetroStorage.LOGGER.debug("-B-");
-            RetroStorage.LOGGER.debug("ROOT: " + rootTask);
-            RetroStorage.LOGGER.debug("Requires: ");
-            ArrayList<Task> already = new ArrayList<>();
-            already.add(rootTask);
-            int index = 0;
-            for (Task requires : rootTask.requires) {
-                printTaskTreeRecursive(requires, 0, index++);
-            }
-            RetroStorage.LOGGER.debug("-E-");
-        }
-    }
-
-    public static void printTaskTreeRecursive(Task task, int depth, int index) {
-        String space = String.join("", Collections.nCopies(depth + 2, " "));
-        RetroStorage.LOGGER.debug(space + "-B-");
-        RetroStorage.LOGGER.debug(space + "TASK " + index + " DEPTH " + depth + ": " + task.toString());
-        RetroStorage.LOGGER.debug(space + "Requires: ");
-        if (!task.requires.isEmpty()) {
-            for (Task requires : task.requires) {
-                printTaskTreeRecursive(requires, depth + 1, index);
-            }
-        } else {
-            RetroStorage.LOGGER.debug(space + "  Nothing");
-        }
-        RetroStorage.LOGGER.debug(space + "-E-");
-    }
-
     public static ItemStack findRecipeResultFromNBT(CompoundTag nbt) {
         RecipeEntryCrafting<?,?> recipe = findRecipeFromNBT(nbt);
         if(recipe != null){
@@ -713,7 +686,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         return null;
     }
 
-    public static RecipeEntryCrafting<?,?> findRecipeFromNBT(CompoundTag nbt) {
+    public static RecipeEntryCrafting<?,ItemStack> findRecipeFromNBT(CompoundTag nbt) {
         InventoryAutocrafting crafting = new InventoryAutocrafting(3, 3);
         for (Object tag : nbt.getValues()) {
             if (tag instanceof CompoundTag) {
@@ -757,57 +730,45 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         return foundRecipes;
     }
 
-    public static ArrayList<RecipeEntryCrafting<?,?>> findRecipesByOutput(ItemStack output, DigitalNetwork network) {
-        ArrayList<RecipeEntryCrafting<?,?>> foundRecipes = new ArrayList<>();
-        for (RecipeEntryCrafting<?, ?> recipe : network.getAvailableRecipes()) {
-            if(recipe instanceof RecipeEntryCraftingShaped){
-                RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
-                if(r.getOutput().isItemEqual(output)){
-                    foundRecipes.add(recipe);
-                }
-            } else if (recipe instanceof RecipeEntryCraftingShapeless) {
-                RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
-                if(r.getOutput().isItemEqual(output)){
-                    foundRecipes.add(recipe);
-                }
+    public static <T> boolean listContains(List<T> list, T o, BiFunction<T,T,Boolean> equals){
+        for (T obj : list) {
+            if(equals.apply(o,obj)){
+                return true;
             }
         }
-        return foundRecipes;
+        return false;
     }
 
-    public static ArrayList<ArrayList<CompoundTag>> findProcessesByOutput(ItemStack output, DigitalNetwork network) {
-        ArrayList<ArrayList<CompoundTag>> foundProcesses = new ArrayList<>();
-        if (network != null) {
-            ArrayList<ArrayList<CompoundTag>> availableProcesses = network.getAvailableProcesses();
-            if (output != null) {
-                for (ArrayList<CompoundTag> process : availableProcesses) {
-                    ItemStack processOutput = getMainOutputOfProcess(process);
-                    if (processOutput != null) {
-                        if (processOutput.isItemEqual(output)) {
-                            foundProcesses.add(process);
-                        }
-                    }
-                }
-            }
-        }
-        return foundProcesses;
-    }
-
-    public static ArrayList<RecipeEntryCrafting<?,?>> findRecipesByOutputUsingList(ItemStack output, ArrayList<RecipeEntryCrafting<?,?>> list) {
-        ArrayList<RecipeEntryCrafting<?,?>> foundRecipes = new ArrayList<>();
+    public static ArrayList<RecipeEntryCrafting<?,ItemStack>> findRecipesByOutputUsingList(ItemStack output, ArrayList<RecipeEntryCrafting<?,ItemStack>> list) {
+        ArrayList<RecipeEntryCrafting<?,ItemStack>> foundRecipes = new ArrayList<>();
         ;
-        for (RecipeEntryCrafting<?,?> recipe : list) {
-            if (((ItemStack)recipe.getOutput()).isItemEqual(output)) {
+        for (RecipeEntryCrafting<?,ItemStack> recipe : list) {
+            if (recipe.getOutput().isItemEqual(output)) {
                 foundRecipes.add(recipe);
             }
         }
         return foundRecipes;
     }
 
-    public static RecipeEntryCrafting<?,?> findMatchingRecipe(InventoryCrafting inventorycrafting) {
+    public static NetworkCraftable findRecipeByOutputUsingList(ItemStack output, ArrayList<NetworkCraftable> list) {
+        ArrayList<NetworkCraftable> foundRecipes = new ArrayList<>();
+        ;
+        for (NetworkCraftable craftable : list) {
+            if (craftable.getOutput().isItemEqual(output)) {
+                foundRecipes.add(craftable);
+            }
+        }
+        if(foundRecipes.isEmpty()){
+            return null;
+        }
+        return foundRecipes.get(0);
+    }
+
+    public static RecipeEntryCrafting<?,ItemStack> findMatchingRecipe(InventoryCrafting inventorycrafting) {
         for (RecipeEntryCrafting<?, ?> recipe : Registries.RECIPES.getAllCraftingRecipes()) {
+            RecipeEntryCrafting<?,ItemStack> r = (RecipeEntryCrafting<?,ItemStack>) recipe;
             if(recipe.matches(inventorycrafting)){
-                return recipe;
+                return r;
             }
         }
         return null;
@@ -817,21 +778,28 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         return null;
     }
 
-    public static ArrayList<ItemStack> getRecipeItems(RecipeEntryCrafting<?,?> recipe) {
-        ArrayList<ItemStack> inputs = new ArrayList<>();
-        if (recipe instanceof RecipeEntryCraftingShapeless r) {
-            inputs = r.getInput().stream().map((S) -> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
+    public static ArrayList<ItemStack> getRecipeItems(NetworkCraftable craftable) {
+        if(craftable.getType() == CraftableType.RECIPE){
+            RecipeEntryCrafting<?, ItemStack> recipe = craftable.getRecipe();
+            ArrayList<ItemStack> inputs = new ArrayList<>();
+            if (recipe instanceof RecipeEntryCraftingShapeless) {
+                RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
+                inputs = r.getInput().stream().map((S) -> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
+            }
+            if (recipe instanceof RecipeEntryCraftingShaped) {
+                RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
+                inputs = new ArrayList<>();
+                inputs = Arrays.stream(r.getInput()).map((S)-> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
+            }
+            inputs.removeIf(Objects::isNull);
+            for (ItemStack input : inputs) {
+                input.stackSize = 1;
+            }
+            return inputs;
+        } else if (craftable.getType() == CraftableType.PROCESS) {
+            return new ArrayList<>();
         }
-        if (recipe instanceof RecipeEntryCraftingShaped r) {
-            inputs = new ArrayList<>();
-            inputs = Arrays.stream(r.getInput()).map((S)-> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
-        }
-        inputs.removeIf(Objects::isNull);
-        for (ItemStack input : inputs) {
-            input.stackSize = 1;
-        }
-
-        return inputs;
+        return new ArrayList<>();
     }
 
     public static CompoundTag itemsArrayToNBT(ArrayList<ItemStack> list) {
@@ -849,39 +817,19 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         return recipeNBT;
     }
 
-    public static String recipeToString(RecipeEntryCrafting<?,?> recipe) {
-        String string = "";
-        if (recipe instanceof RecipeEntryCraftingShaped) {
-            string = "RecipeShaped{";
-            string += condenseItemList(getRecipeItems(recipe)) + " -> " + recipe.getOutput() + "}";
-        } else if (recipe instanceof RecipeEntryCraftingShapeless) {
-            string = "RecipeShapeless{";
-            string += condenseItemList(getRecipeItems(recipe)) + " -> " + recipe.getOutput() + "}";
-        }
-        return string;
-    }
-
-    public static ArrayList<ItemStack> condenseItemList(ArrayList<ItemStack> list) {
-        ArrayList<ItemStack> condensed = new ArrayList<>();
-        list = (ArrayList<ItemStack>) list.clone();
+    public static ArrayList<ItemStack> condenseItemList(List<ItemStack> list){
+        ArrayList<ItemStack> stacks = new ArrayList<>();
         for (ItemStack stack : list) {
-            stack = stack.copy();
-            boolean already = false;
-            for (ItemStack condensedStack : condensed) {
-                if (condensedStack != null) {
-                    if (condensedStack.isItemEqual(stack)) {
-                        condensedStack.stackSize += stack.stackSize;
-                        already = true;
-                        break;
-                    }
+            if(stack != null){
+                Optional<ItemStack> existing = stacks.stream().filter((S) -> S.itemID == stack.itemID).findAny();
+                if (existing.isPresent()) {
+                    existing.get().stackSize += stack.stackSize;
+                } else {
+                    stacks.add(stack.copy());
                 }
             }
-            if (already) {
-                continue;
-            }
-            condensed.add(stack);
         }
-        return condensed;
+        return stacks;
     }
 
     public static ItemStack getMainOutputOfProcess(ArrayList<CompoundTag> tasks) {

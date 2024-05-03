@@ -109,11 +109,11 @@ dependencies {
 	// If you do not need Halplibe you can comment this line out or delete this line
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
-	modImplementation "ModMenu:ModMenu:2.0.4"
+	modImplementation "ModMenu:ModMenu:2.0.5"
 	//implementation project(path: ":catalyst",configuration: "namedElements")
 	//implementation project(path: ":catalyst:energy",configuration: "namedElements")
-	modImplementation "catalyst:catalyst-core:1.1.6"
-	modImplementation "catalyst:catalyst-energy:1.0.6"
+	modImplementation "catalyst:catalyst-core:1.1.9"
+	modImplementation "catalyst:catalyst-energy:1.0.9"
 	modImplementation "BTWaila:btwaila:1.0.9-7.1"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"

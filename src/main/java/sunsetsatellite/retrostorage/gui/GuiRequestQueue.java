@@ -8,7 +8,7 @@ import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
-import sunsetsatellite.retrostorage.util.Task;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ public class GuiRequestQueue extends GuiScreen {
     public FontRenderer fontRenderer = RetroStorage.mc.fontRenderer;
     protected String screenTitle = "Scroll Container";
     private GuiTaskSlot slotContainer;
-    public ArrayList<Task> list = new ArrayList<>();
+    public ArrayList<CraftingTask> list = new ArrayList<>();
     public DigitalNetwork network;
     public GuiRequestTerminal parent;
 

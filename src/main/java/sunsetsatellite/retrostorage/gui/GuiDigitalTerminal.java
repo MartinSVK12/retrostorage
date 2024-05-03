@@ -9,14 +9,14 @@ import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 
-public class GuiDigitalTerminal extends GuiContainer
+public class GuiDigitalTerminal extends GuiDigital
 {
 
-    public GuiDigitalTerminal(InventoryPlayer inventoryplayer, TileEntityDigitalTerminal tileentitydigitalterminal)
+    public GuiDigitalTerminal(InventoryPlayer inventoryplayer, TileEntityDigitalTerminal tile)
     {
-        super(new ContainerDigitalTerminal(inventoryplayer, tileentitydigitalterminal));
+        super(new ContainerDigitalTerminal(inventoryplayer, tile));
         ySize = 220;
-        tile = tileentitydigitalterminal;
+        this.tile = tile;
     }
 
 	protected void drawGuiContainerForegroundLayer()
@@ -26,10 +26,10 @@ public class GuiDigitalTerminal extends GuiContainer
         fontRenderer.drawString("Page: " + tile.page + "/" + tile.pages, 65, 93, 0x404040);
         if(tile.network != null && tile.network.drive != null){
             int color = 0xFFFFFF;
-            if(tile.network.drive.virtualDisc.getData().getCompound("disc").getValues().toArray().length >= tile.network.drive.virtualDriveMaxStacks){
+            if(tile.network.drive.virtualDisc.getData().getCompound("Disc").getValues().toArray().length >= tile.network.drive.getMaxStacks()){
                 color = 0xFF4040;
             }
-            fontRenderer.drawCenteredString(tile.network.drive.virtualDisc.getData().getCompound("disc").getValues().toArray().length +"/"+tile.network.drive.virtualDriveMaxStacks, 100, 112, color);
+            fontRenderer.drawCenteredString(tile.network.inventory.sizeStacks() +"/"+tile.network.inventory.getMaxStackSize(), 90, 112, color);
         }
     }
 
@@ -38,12 +38,13 @@ public class GuiDigitalTerminal extends GuiContainer
     	super.init();
         for(Object slot : inventorySlots.inventorySlots){
             if(slot instanceof SlotDigital){
-                ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).slotIndex + (36*(tile.page-1));
-                //RetroStorage.LOGGER.debug(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
+                ((SlotDigital) slot).variableIndex = ((SlotDigital) slot).getSlotIndex() + (36*(tile.page-1));
             }
         }
     	controlList.add(new GuiButton(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
     	controlList.add(new GuiButton(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
+        controlList.add(new GuiButton(2, Math.round((float) width / 2 - 40), Math.round((float) height / 2 - 5), 20, 20, "A:"));
+        controlList.get(2).enabled = false;
     }
     
     protected void drawGuiContainerBackgroundLayer(float f)
@@ -70,7 +71,6 @@ public class GuiDigitalTerminal extends GuiContainer
                     for(Object slot : inventorySlots.inventorySlots){
                         if(slot instanceof SlotDigital){
                             ((SlotDigital) slot).variableIndex += 36;
-                            //RetroStorage.LOGGER.debug(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
                         }
                     }
                 }
@@ -84,7 +84,6 @@ public class GuiDigitalTerminal extends GuiContainer
                     for(Object slot : inventorySlots.inventorySlots){
                         if(slot instanceof SlotDigital){
                             ((SlotDigital) slot).variableIndex -= 36;
-                            //RetroStorage.LOGGER.debug(String.format("V: %d R: %d",((SlotDigital) slot).variableIndex,((SlotDigital) slot).slotIndex));
                         }
                     }
                 }
@@ -92,10 +91,10 @@ public class GuiDigitalTerminal extends GuiContainer
         }
         //System.out.println(tile.page);
     }
-    
-    public void updateScreen()
-    {
-    	
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTick) {
+        super.drawScreen(mouseX, mouseY, partialTick);
     }
 
     public void onClosed(){

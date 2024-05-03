@@ -2,6 +2,7 @@ package sunsetsatellite.retrostorage.tiles;
 
 
 import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.entity.player.EntityPlayer;
 import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
@@ -69,5 +70,13 @@ public abstract class TileEntityNetworkDevice extends TileEntity {
                 "X=" + x +
                 ",Y=" + y +
                 ",Z=" + z;
+    }
+
+    public boolean canInteractWith(EntityPlayer entityplayer) {
+        if(worldObj.getBlockTileEntity(x, y, z) != this)
+        {
+            return false;
+        }
+        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 }

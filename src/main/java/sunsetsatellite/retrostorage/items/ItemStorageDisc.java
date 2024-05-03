@@ -9,9 +9,10 @@ import sunsetsatellite.catalyst.core.util.ICustomDescription;
 public class ItemStorageDisc extends Item implements ICustomDescription
 {
 
-    public ItemStorageDisc(String name, int id, int maxStackCapacity) {
+    public ItemStorageDisc(String name, int id, int maxStackCapacity, int maxItemCapacity) {
         super(name, id);
         this.maxStackCapacity = maxStackCapacity;
+        this.maxItemCapacity = maxItemCapacity;
     }
 
     public int getMaxStackCapacity() {
@@ -23,11 +24,21 @@ public class ItemStorageDisc extends Item implements ICustomDescription
         return this;
     }
 
+    public int getMaxItemCapacity() {
+        return maxItemCapacity;
+    }
 
-    public int maxStackCapacity;
+    public void setMaxItemCapacity(int maxItemCapacity) {
+        this.maxItemCapacity = maxItemCapacity;
+    }
+
+    private int maxStackCapacity;
+    private int maxItemCapacity;
 
     @Override
     public String getDescription(ItemStack itemStack) {
-        return TextFormatting.MAGENTA+""+itemStack.getData().getCompound("disc").getValues().size()+" entries out of "+maxStackCapacity;
+        return TextFormatting.MAGENTA+""+itemStack.getData().getCompound("Disc").getValues().size()+" entries out of "+maxStackCapacity;
     }
+
+
 }
