@@ -69,7 +69,9 @@ public class BlockDigitalController extends BlockNetworkDevice {
     @Override
     public void onBlockRemoved(World world, int x, int y, int z, int data) {
         TileEntityDigitalController tile = (TileEntityDigitalController) world.getBlockTileEntity(x, y, z);
-        tile.network.removeAll();
+        if(tile.network != null){
+            tile.network.removeAll();
+        }
         super.onBlockRemoved(world, x, y, z, data);
     }
 

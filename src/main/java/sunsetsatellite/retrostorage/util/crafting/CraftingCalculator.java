@@ -57,7 +57,11 @@ public class CraftingCalculator {
         if(requested != null){
             ItemStack stack = requested.copy();
             stack.stackSize = qty * qtyPerCraft;
-            craftingPreviewInfo.getToCraft().add(stack);
+            if(recipe.getType() == CraftableType.PROCESS){
+                craftingPreviewInfo.getToProcess().add(stack);
+            } else {
+                craftingPreviewInfo.getToCraft().add(stack);
+            }
         }
 
         if(craftingPreviewInfo.hasMissing()) {
@@ -153,7 +157,11 @@ public class CraftingCalculator {
 
                         fromNetwork = source.get(input.itemID, input.getMetadata());
 
-                        craftingPreviewInfo.getToCraft().add(fromSelf.copy());
+                        if(subRecipe.getType() == CraftableType.PROCESS){
+                            craftingPreviewInfo.getToProcess().add(fromSelf.copy());
+                        } else {
+                            craftingPreviewInfo.getToCraft().add(fromSelf.copy());
+                        }
                     } else {
                         ItemStack copy = input.copy();
                         copy.stackSize = remaining;

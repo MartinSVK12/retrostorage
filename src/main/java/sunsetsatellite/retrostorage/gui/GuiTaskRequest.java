@@ -10,6 +10,7 @@ import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerTaskRequest;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
 import sunsetsatellite.retrostorage.util.GuiRenderDigitalItem;
@@ -70,16 +71,10 @@ public class GuiTaskRequest extends GuiContainer {
             }
             if(guibutton.id == 2){
                 if(requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
-                NetworkCraftable craftable = network.knownCraftables.get(requestedSlotId);
-                switch (craftable.getType()){
-                    case RECIPE:
-                        network.requestCrafting(calculationResult.getTask());
-                        break;
-                    case PROCESS:
-                        //TODO: processing
-                        break;
+                if(calculationResult.getType() == CalculationResultType.OK){
+                    network.requestCrafting(calculationResult.getTask());
+                    ((IOpenGUI)mc.thePlayer).displayGUI(new GuiRequestQueue(tile.network, null));
                 }
-                RetroStorage.mc.displayGuiScreen(null);
             }
         }
     }
@@ -87,15 +82,9 @@ public class GuiTaskRequest extends GuiContainer {
     private void recalculate(){
         if(requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
         NetworkCraftable craftable = network.knownCraftables.get(requestedSlotId);
-        switch (craftable.getType()){
-            case RECIPE:
-                CraftingCalculator calc = new CraftingCalculator(network,requestAmount,requestedItem,craftable,network.knownCraftables);
-                calculationResult = calc.calculate();
-                lastRequestedItem = requestedItem;
-                break;
-            case PROCESS:
-                break;
-        }
+        CraftingCalculator calc = new CraftingCalculator(network,requestAmount,requestedItem,craftable,network.knownCraftables);
+        calculationResult = calc.calculate();
+        lastRequestedItem = requestedItem;
     }
 
     @Override

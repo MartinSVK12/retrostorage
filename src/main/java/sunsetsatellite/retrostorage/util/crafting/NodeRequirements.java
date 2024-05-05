@@ -37,7 +37,7 @@ public class NodeRequirements {
 
     public List<ItemStack> getSingleItemRequirements(boolean simulate) {
         List<ItemStack> cached = cachedSimulatedItemRequirementSet;
-        if (simulate && cached != null) {
+        if (simulate && cached != null && !(cached.isEmpty())) {
             return cached;
         }
 

@@ -10,22 +10,23 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.IProcessor;
+import sunsetsatellite.retrostorage.util.ItemStackList;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
+import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TileEntityAssembler extends TileEntityNetworkDevice
     implements IInventory, IProcessor
 {
     public TileEntityAssembler() {
         contents = new ItemStack[9];
-        this.workTimer = new TickTimer(this,this::work,10,true);
     }
 
     public int getSizeInventory()
@@ -166,35 +167,9 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
-        workTimer.tick();
         ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(TileEntityChest.class);
         connectedTiles = getConnectedTileEntity(tiles);
-    }
-
-    public void work(){
-        if(network != null){
-            if(task == null){
-                if(stack == null || stack.isEmpty()){
-                    stack = network.requestQueue.clone();
-                }
-                if(!network.requestQueue.isEmpty()){
-                    acceptNextTask();
-                }
-            } else {
-                fulfillRequest();
-            }
-        }
-    }
-
-
-    public void fulfillRequest(){
-        if(task != null){
-            if(task.update()){
-                network.requestQueue.remove(task);
-                task = null;
-            }
-        }
     }
 
     public ArrayList<RecipeEntryCrafting<?,ItemStack>> getRecipes(){
@@ -210,34 +185,47 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         return recipes;
     }
 
-    public boolean acceptNextTask() {
-        if(!stack.isEmpty()){
-            CraftingTask t = stack.pop();
-            if(t.processor == null){
-                t.start(this);
-                task = t;
-                return true;
-            }
-        }
+    @Override
+    public List<NetworkCraftable> getCraftables() {
+        return getRecipes().stream().map(NetworkCraftable::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isInUse() {
         return false;
     }
 
+    @Override
+    public void setFocus(ProcessNode node, CraftingTask task) {
 
-    private ItemStack[] contents;
-    public CraftingTask task;
-    public TickTimer workTimer;
-    public ArrayDeque<CraftingTask> stack;
-    public HashMap<String, TileEntity> connectedTiles = new HashMap<>();
+    }
 
     @Override
-    public CraftingTask getCurrentTask() {
-        return task;
+    public IInventory getConnectedTile() {
+        return null;
     }
 
-    public void cancelTask() {
-        if(task != null){
-            task.onCancelled();
-            task = null;
-        }
+    @Override
+    public ProcessNode getWorkingNode() {
+        return null;
     }
+
+    @Override
+    public CraftingTask getWorkingTask() {
+        return null;
+    }
+
+    @Override
+    public boolean insertItems(ItemStackList items) {
+        return false;
+    }
+
+    @Override
+    public boolean canInsertItems(ItemStackList items) {
+        return false;
+    }
+
+    private ItemStack[] contents;
+    public HashMap<String, TileEntity> connectedTiles = new HashMap<>();
+
 }

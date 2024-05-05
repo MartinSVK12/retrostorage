@@ -22,11 +22,16 @@ public class ItemStackList implements IDigitalInventory, Iterable<ItemStack> {
         contents = new ArrayList<>();
     }
 
+    public ItemStackList(List<ItemStack> contents) {
+        this.contents = new ArrayList<>(contents);
+    }
+
     @Override
     public boolean add(ItemStack stack){
         if(stack == null){
             return false;
         }
+        stack = stack.copy();
         int index = find(stack.itemID, stack.getMetadata());
         if(index != -1){
             ItemStack invStack = contents.get(index);
@@ -236,6 +241,24 @@ public class ItemStackList implements IDigitalInventory, Iterable<ItemStack> {
     }
 
     @Override
+    public boolean move(List<ItemStack> what, ItemStackList where, boolean strict){
+        boolean allSuccessful = true;
+        for (ItemStack stack : what) {
+            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, strict, true);
+            if(removed == null){
+                allSuccessful = false;
+                continue;
+            }
+            boolean success = where.add(removed);
+            if(!success){
+                allSuccessful = false;
+            }
+        }
+        return allSuccessful;
+    }
+
+
+    @Override
     public ItemStack remove(int id, int meta, int amount, boolean strict, boolean unlimited){
         int index = find(id,meta);
         if(index != -1){
@@ -253,6 +276,18 @@ public class ItemStackList implements IDigitalInventory, Iterable<ItemStack> {
             }
         }
         return true;
+    }
+
+    @Override
+    public List<ItemStack> moveAll(List<ItemStack> stacks, boolean strict, boolean unlimited){
+        ArrayList<ItemStack> list = new ArrayList<>();
+        for (ItemStack stack : stacks) {
+            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, strict, unlimited);
+            if(removed != null){
+                list.add(removed);
+            }
+        }
+        return list;
     }
 
     @Override
@@ -359,6 +394,16 @@ public class ItemStackList implements IDigitalInventory, Iterable<ItemStack> {
     public int count(int id, int meta){
         return contents.stream().mapToInt((S)->{
             if(S.itemID == id && S.getMetadata() == meta) {
+                return S.stackSize;
+            }
+            return 0;
+        }).sum();
+    }
+
+    @Override
+    public int count(int id){
+        return contents.stream().mapToInt((S)->{
+            if(S.itemID == id) {
                 return S.stackSize;
             }
             return 0;

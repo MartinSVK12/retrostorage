@@ -28,6 +28,8 @@ public class CraftingNode extends Node {
                 return;
             }
 
+            craftingTask.processor = network.findProcessor(getPattern());
+
             internalStorage.removeAll(actualRequirements,false,true);
 
             ItemStack output = this.getPattern().getOutput();

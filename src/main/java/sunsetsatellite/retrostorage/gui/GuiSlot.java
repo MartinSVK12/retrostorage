@@ -17,7 +17,7 @@ public abstract class GuiSlot {
     protected final int bottom;
     private final int right;
     private final int left = 0;
-    protected final int posZ;
+    protected int posZ;
     private int scrollUpButtonID;
     private int scrollDownButtonID;
     private float initialClickY = -2.0F;
@@ -121,14 +121,14 @@ public abstract class GuiSlot {
 
     public void drawScreen(int i, int j, float f) {
         this.drawBackground();
-        int k = this.getSize();
+        int amountSlots = this.getSize();
         int l = this.width / 2 + 124;
         int i1 = l + 6;
         int l1;
         int i2;
-        int l2;
-        int l3;
-        int i3;
+        int slotId;
+        int yEnd;
+        int yBegin;
         if (!Mouse.isButtonDown(0) && (this.mc.controllerInput == null || !this.mc.controllerInput.buttonA.isPressed())) {
             this.initialClickY = -1.0F;
         } else if (this.initialClickY == -1.0F) {
@@ -137,11 +137,11 @@ public abstract class GuiSlot {
                 int j1 = this.width / 2 - 110;
                 l1 = this.width / 2 + 110;
                 i2 = j - this.top - this.field_27261_r + (int)this.amountScrolled - 4;
-                l2 = i2 / this.posZ;
-                if (i >= j1 && i <= l1 && l2 >= 0 && i2 >= 0 && l2 < k) {
-                    boolean flag1 = l2 == this.selectedElement && System.currentTimeMillis() - this.lastClicked < 250L;
-                    this.elementClicked(l2, flag1);
-                    this.selectedElement = l2;
+                slotId = i2 / this.posZ;
+                if (i >= j1 && i <= l1 && slotId >= 0 && i2 >= 0 && slotId < amountSlots) {
+                    boolean flag1 = slotId == this.selectedElement && System.currentTimeMillis() - this.lastClicked < 250L;
+                    this.elementClicked(slotId, flag1);
+                    this.selectedElement = slotId;
                     this.lastClicked = System.currentTimeMillis();
                 } else if (i >= j1 && i <= l1 && i2 < 0) {
                     this.func_27255_a(i - j1, j - this.top + (int)this.amountScrolled - 4);
@@ -150,21 +150,21 @@ public abstract class GuiSlot {
 
                 if (i >= l && i <= i1) {
                     this.scrollMultiplier = -1.0F;
-                    i3 = this.getContentHeight() - (this.bottom - this.top - 4);
-                    if (i3 < 1) {
-                        i3 = 1;
+                    yBegin = this.getContentHeight() - (this.bottom - this.top - 4);
+                    if (yBegin < 1) {
+                        yBegin = 1;
                     }
 
-                    l3 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getContentHeight());
-                    if (l3 < 32) {
-                        l3 = 32;
+                    yEnd = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getContentHeight());
+                    if (yEnd < 32) {
+                        yEnd = 32;
                     }
 
-                    if (l3 > this.bottom - this.top - 8) {
-                        l3 = this.bottom - this.top - 8;
+                    if (yEnd > this.bottom - this.top - 8) {
+                        yEnd = this.bottom - this.top - 8;
                     }
 
-                    this.scrollMultiplier /= (float)(this.bottom - this.top - l3) / (float)i3;
+                    this.scrollMultiplier /= (float)(this.bottom - this.top - yEnd) / (float)yBegin;
                 } else {
                     this.scrollMultiplier = 1.0F;
                 }
@@ -194,27 +194,27 @@ public abstract class GuiSlot {
             this.func_27260_a(l1, i2, tessellator);
         }
 
-        int l4;
-        for(l2 = 0; l2 < k; ++l2) {
-            i3 = i2 + l2 * this.posZ + this.field_27261_r;
-            l3 = this.posZ - 4;
+        int xBegin;
+        for(slotId = 0; slotId < amountSlots; ++slotId) {
+            yBegin = i2 + slotId * this.posZ + this.field_27261_r;
+            yEnd = this.posZ - 4;
             if (this.field_25123_p) {
-                l4 = this.width / 2 - 110;
-                int i5 = this.width / 2 + 110;
+                xBegin = this.width / 2 - 110;
+                int xEnd = this.width / 2 + 110;
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.3F);
                 GL11.glDisable(3553);
                 //slot background
                 tessellator.startDrawingQuads();
                 tessellator.setColorOpaque_I(0);
-                tessellator.addVertexWithUV(l4 + 1, i3 + l3 + 1, 0.0, 0.0, 1.0);
-                tessellator.addVertexWithUV(i5 - 1, i3 + l3 + 1, 0.0, 1.0, 1.0);
-                tessellator.addVertexWithUV(i5 - 1, i3 - 1, 0.0, 1.0, 0.0);
-                tessellator.addVertexWithUV(l4 + 1, i3 - 1, 0.0, 0.0, 0.0);
+                tessellator.addVertexWithUV(xBegin + 1, yBegin + yEnd + 1, 0.0, 0.0, 1.0);
+                tessellator.addVertexWithUV(xEnd - 1, yBegin + yEnd + 1, 0.0, 1.0, 1.0);
+                tessellator.addVertexWithUV(xEnd - 1, yBegin - 1, 0.0, 1.0, 0.0);
+                tessellator.addVertexWithUV(xBegin + 1, yBegin - 1, 0.0, 0.0, 0.0);
                 tessellator.draw();
                 GL11.glEnable(3553);
             }
 
-            this.drawSlot(l2, l1, i3, l3, tessellator);
+            this.drawSlot(slotId, l1, yBegin, yEnd, tessellator);
         }
 
         GL11.glDisable(2929);
@@ -223,20 +223,20 @@ public abstract class GuiSlot {
         GL11.glDisable(3008);
         GL11.glShadeModel(7425);
         GL11.glDisable(3553);
-        i3 = this.getContentHeight() - (this.bottom - this.top - 4);
-        if (i3 > 0) {
-            l3 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
-            if (l3 < 32) {
-                l3 = 32;
+        yBegin = this.getContentHeight() - (this.bottom - this.top - 4);
+        if (yBegin > 0) {
+            yEnd = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
+            if (yEnd < 32) {
+                yEnd = 32;
             }
 
-            if (l3 > this.bottom - this.top - 8) {
-                l3 = this.bottom - this.top - 8;
+            if (yEnd > this.bottom - this.top - 8) {
+                yEnd = this.bottom - this.top - 8;
             }
 
-            l4 = (int)this.amountScrolled * (this.bottom - this.top - l3) / i3 + this.top;
-            if (l4 < this.top) {
-                l4 = this.top;
+            xBegin = (int)this.amountScrolled * (this.bottom - this.top - yEnd) / yBegin + this.top;
+            if (xBegin < this.top) {
+                xBegin = this.top;
             }
 
             //scrollbar
@@ -249,17 +249,17 @@ public abstract class GuiSlot {
             tessellator.draw();
             tessellator.startDrawingQuads();
             tessellator.setColorRGBA_I(8421504, 255);
-            tessellator.addVertexWithUV(l, l4 + l3, 0.0, 0.0, 1.0);
-            tessellator.addVertexWithUV(i1, l4 + l3, 0.0, 1.0, 1.0);
-            tessellator.addVertexWithUV(i1, l4, 0.0, 1.0, 0.0);
-            tessellator.addVertexWithUV(l, l4, 0.0, 0.0, 0.0);
+            tessellator.addVertexWithUV(l, xBegin + yEnd, 0.0, 0.0, 1.0);
+            tessellator.addVertexWithUV(i1, xBegin + yEnd, 0.0, 1.0, 1.0);
+            tessellator.addVertexWithUV(i1, xBegin, 0.0, 1.0, 0.0);
+            tessellator.addVertexWithUV(l, xBegin, 0.0, 0.0, 0.0);
             tessellator.draw();
             tessellator.startDrawingQuads();
             tessellator.setColorRGBA_I(12632256, 255);
-            tessellator.addVertexWithUV(l, l4 + l3 - 1, 0.0, 0.0, 1.0);
-            tessellator.addVertexWithUV(i1 - 1, l4 + l3 - 1, 0.0, 1.0, 1.0);
-            tessellator.addVertexWithUV(i1 - 1, l4, 0.0, 1.0, 0.0);
-            tessellator.addVertexWithUV(l, l4, 0.0, 0.0, 0.0);
+            tessellator.addVertexWithUV(l, xBegin + yEnd - 1, 0.0, 0.0, 1.0);
+            tessellator.addVertexWithUV(i1 - 1, xBegin + yEnd - 1, 0.0, 1.0, 1.0);
+            tessellator.addVertexWithUV(i1 - 1, xBegin, 0.0, 1.0, 0.0);
+            tessellator.addVertexWithUV(l, xBegin, 0.0, 0.0, 0.0);
             tessellator.draw();
         }
 

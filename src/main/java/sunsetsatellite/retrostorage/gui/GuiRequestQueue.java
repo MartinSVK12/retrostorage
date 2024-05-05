@@ -66,6 +66,9 @@ public class GuiRequestQueue extends GuiScreen {
         this.list.clear();
         if(network != null){
             list.addAll(network.requestQueue);
+            for (CraftingTask task : network.requestQueue) {
+                slotContainer.posZ = (36 * (task.nodes.all().size()+2));
+            }
         }
         this.slotContainer.drawScreen(x, y, renderPartialTicks);
 

@@ -4,12 +4,15 @@ package sunsetsatellite.retrostorage.util;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.BlockInstance;
+import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.crafting.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class for a digital storage network.
@@ -23,6 +26,7 @@ public class DigitalNetwork extends Network {
     public InventoryDigital inventory;
     public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
     public ArrayList<NetworkCraftable> knownCraftables = new ArrayList<>();
+    public ArrayList<CraftingTask> currentTasks = new ArrayList<>();
     public TileEntityDiscDrive drive;
 
     public DigitalNetwork(TileEntityDigitalController controller) {
@@ -46,6 +50,17 @@ public class DigitalNetwork extends Network {
                 knownCraftables.add(new NetworkCraftable(recipe));
             }
         }
+        if(device.tile instanceof TileEntityAdvInterface){
+            for (CraftingProcess process : ((TileEntityAdvInterface) device.tile).getProcesses()) {
+                knownCraftables.add(new NetworkCraftable(process));
+            }
+        }
+        if(device.tile instanceof TileEntityWirelessLink){
+            if(((TileEntityWirelessLink) device.tile).remoteLink != null){
+                HashMap<String, BlockInstance> candidates = scan(controller.worldObj, new Vec3i(((TileEntityWirelessLink) device.tile).remoteLink.x,((TileEntityWirelessLink) device.tile).remoteLink.y,((TileEntityWirelessLink) device.tile).remoteLink.z));
+                addRecursive(candidates);
+            }
+        }
     }
 
     @Override
@@ -66,41 +81,28 @@ public class DigitalNetwork extends Network {
                 knownCraftables.remove(new NetworkCraftable(recipe));
             }
         }
+        if(device.tile instanceof TileEntityAdvInterface){
+            for (CraftingProcess process : ((TileEntityAdvInterface) device.tile).getProcesses()) {
+                knownCraftables.remove(new NetworkCraftable(process));
+            }
+        }
     }
 
     public ArrayList<BlockInstance> getAssemblers(){
         return searchAll(TileEntityAssembler.class);
     }
 
-    public int getMaxCraftables(){
-        return getAssemblers().size()*9;
-    }
-    /*public ArrayList<BlockInstance> getInterfaces(){
+    public ArrayList<BlockInstance> getAdvInterfaces(){
         return searchAll(TileEntityAdvInterface.class);
-    }*/
-
-    /*
-
-    public HashMap<BlockInstance, ArrayList<ArrayList<CompoundTag>>> getAvailableProcessesWithSource(){
-        HashMap<BlockInstance, ArrayList<ArrayList<CompoundTag>>> processes = new HashMap<>();
-        ArrayList<BlockInstance> interfaces = getInterfaces();
-        for(BlockInstance inf : interfaces){
-            processes.put(inf,((TileEntityAdvInterface)inf.tile).getProcesses());
-        }
-        return processes;
     }
 
-    public HashMap<BlockInstance, ArrayList<RecipeEntryCrafting<?,?>>> getAvailableRecipesWithSource(){
-        HashMap<BlockInstance, ArrayList<RecipeEntryCrafting<?,?>>> recipes = new HashMap<>();
-        ArrayList<BlockInstance> assemblers = getAssemblers();
-        for(BlockInstance assembler : assemblers){
-            ArrayList<RecipeEntryCrafting<?,?>> assemblerRecipes = ((TileEntityAssembler)assembler.tile).getRecipes();
-            if(assemblerRecipes != null){
-                recipes.put(assembler,assemblerRecipes);
-            }
-        }
-        return recipes;
-    }*/
+    public ArrayList<BlockInstance> getCoprocessors(){
+        return searchAll(TileEntityCoprocessor.class);
+    }
+
+    public int getMaxCraftables(){
+        return (getAssemblers().size()*9) + (getAdvInterfaces().size()*9);
+    }
 
     public ArrayList<RecipeEntryCrafting<?,ItemStack>> getAvailableRecipes(){
         ArrayList<RecipeEntryCrafting<?,ItemStack>> recipes = new ArrayList<>();
@@ -114,23 +116,39 @@ public class DigitalNetwork extends Network {
         return recipes;
     }
 
-
-
-    /*public ArrayList<ArrayList<CompoundTag>> getAvailableProcesses(){
-        ArrayList<ArrayList<CompoundTag>> processes = new ArrayList<>();
-        ArrayList<BlockInstance> interfaces = getInterfaces();
-        for(BlockInstance inf : interfaces){
-            ArrayList<ArrayList<CompoundTag>> interfaceProcesses = ((TileEntityAdvInterface)inf.tile).getProcesses();
-            processes.addAll(interfaceProcesses);
+    public ArrayList<CraftingProcess> getAvailableProcesses(){
+        ArrayList<CraftingProcess> processes = new ArrayList<>();
+        ArrayList<BlockInstance> interfaces = getAdvInterfaces();
+        for(BlockInstance intf : interfaces){
+            ArrayList<CraftingProcess> interfaceProcesses = ((TileEntityAdvInterface)intf.tile).getProcesses();
+            if(interfaceProcesses != null){
+                processes.addAll(interfaceProcesses);
+            }
         }
         return processes;
     }
 
-    public boolean canMake(ItemStack stack){
-        ArrayList<RecipeEntryCrafting<?, ?>> recipes = RetroStorage.findRecipesByOutput(stack, this);
-        ArrayList<ArrayList<CompoundTag>> processes = RetroStorage.findProcessesByOutput(stack, this);
-        return !recipes.isEmpty() || !processes.isEmpty();
-    }*/
+    public IProcessor findProcessor(NetworkCraftable craftable){
+        ArrayList<BlockInstance> instances = new ArrayList<>();
+        instances.addAll(getAssemblers());
+        instances.addAll(getAdvInterfaces());
+        for (BlockInstance instance : instances) {
+            IProcessor processor = (IProcessor) instance.tile;
+            if(processor.getCraftables().contains(craftable)){
+                return processor;
+            }
+        }
+        return null;
+    }
+
+    public IProcessor findProcessorWithNode(ProcessNode node){
+        for (BlockInstance advInterface : getAdvInterfaces()) {
+            if(((TileEntityAdvInterface) advInterface.tile).workingNode == node){
+                return (IProcessor) advInterface.tile;
+            }
+        }
+        return null;
+    }
 
     public void requestCrafting(CraftingTask task) {
         if(task != null) {
@@ -139,26 +157,41 @@ public class DigitalNetwork extends Network {
         }
     }
 
-    /*public void requestProcessing(ArrayList<CompoundTag> tasks){
-        if(tasks != null){
-            RetroStorage.LOGGER.debug("Requesting: " + RetroStorage.getMainOutputOfProcess(tasks));
-            ProcessTask task = new ProcessTask(tasks,null,null);
-            //RecipeTask task = new RecipeTask(recipe, null, null);
-            requestQueue.add(task);
-        }
-    }
-*/
-    /*public List<ItemStack> getRequirements(RecipeEntryCrafting<?,?> recipe){
-        RecipeTask task = new RecipeTask(recipe, null, null);
-        //RecipeSimulator simulator = new RecipeSimulator(task,this);
-        return RetroStorage.condenseItemList(RetroStorage.getRecipeItems(recipe));
-    }*/
-
     public void clearRequestQueue() {
         RetroStorage.LOGGER.debug("Clearing request queue!");
+        for (CraftingTask task : requestQueue) {
+            task.onCancelled();
+        }
+        for (BlockInstance advInterface : getAdvInterfaces()) {
+            ((TileEntityAdvInterface) advInterface.tile).setFocus(null,null);
+        }
         requestQueue = new ArrayDeque<>();
-        for (BlockInstance assembler : getAssemblers()) {
-            ((TileEntityAssembler) assembler.tile).cancelTask();
+        currentTasks.clear();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if(currentTasks.size() < getCoprocessors().size()+1) {
+            for (CraftingTask task : requestQueue) {
+                if(!task.isStarted()){
+                    currentTasks.add(task);
+                    task.start();
+                    break;
+                }
+            }
+        }
+        if(!currentTasks.isEmpty()){
+            ArrayList<CraftingTask> removing = new ArrayList<>();
+            for (CraftingTask task : currentTasks) {
+                if(task.update()){
+                    requestQueue.remove(task);
+                    removing.add(task);
+                }
+            }
+            for (CraftingTask task : removing) {
+                currentTasks.remove(task);
+            }
         }
     }
 }

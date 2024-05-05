@@ -4,22 +4,19 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.lang.I18n;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
-import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
+import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class TileEntityRecipeEncoder extends TileEntity
+public class TileEntityProcessProgrammer extends TileEntity
     implements IInventory
 {
-    public TileEntityRecipeEncoder() {
-        contents = new ItemStack[10];
+
+    public TileEntityProcessProgrammer() {
+        contents = new ItemStack[2];
     }
 
     public int getSizeInventory()
@@ -84,12 +81,7 @@ public class TileEntityRecipeEncoder extends TileEntity
 
     public String getInvName()
     {
-        return "Recipe Encoder";
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
+        return "Process Programmer";
     }
 
     public void readFromNBT(CompoundTag CompoundTag)
@@ -126,6 +118,61 @@ public class TileEntityRecipeEncoder extends TileEntity
         CompoundTag.put("Items", listTag);
     }
 
+    public int getInventoryStackLimit()
+    {
+        return 64;
+    }
+
+    public void tick()
+    {
+        return;
+    }
+
+    public void setTask() {
+        if(getStackInSlot(0) != null){
+            HashMap<String,Object> task = new HashMap<>();
+            task.put("slot",currentSlot);
+            task.put("stack",getStackInSlot(0).copy());
+            task.put("isOutput",isCurrentOutput);
+            tasks.put(currentTask,task);
+        } else {
+            tasks.remove(currentTask);
+        }
+        //System.out.println(tasks);
+    }
+
+    public void clearDisc() {
+        if(getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc){
+            ItemStack disc = getStackInSlot(1);
+            disc.getData().putCompound("disc",new CompoundTag());
+            disc.getData().putString("name","");
+            disc.getData().putBoolean("overrideName",false);
+        }
+        tasks.clear();
+    }
+
+    public void saveProcess() {
+        if(getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc){
+            CompoundTag data = new CompoundTag();
+            CompoundTag taskData = new CompoundTag();
+            tasks.forEach((K,V) -> {
+                CompoundTag task = new CompoundTag();
+                task.putInt("id",K);
+                task.putInt("slot", (Integer) V.get("slot"));
+                task.putBoolean("isOutput", (Boolean) V.get("isOutput"));
+                CompoundTag stack = new CompoundTag();
+                ((ItemStack)V.get("stack")).writeToNBT(stack);
+                task.putCompound("stack",stack);
+                taskData.putCompound("task"+K,task);
+            });
+            getStackInSlot(1).getData().putString("name","Adv. Recipe Disc: "+currentProcessName);
+            getStackInSlot(1).getData().putBoolean("overrideName",true);
+            data.putCompound("tasks",taskData);
+            data.putString("processName",currentProcessName);
+            getStackInSlot(1).getData().putCompound("disc",data);
+        }
+    }
+
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
         if(worldObj.getBlockTileEntity(x, y, z) != this)
@@ -140,36 +187,12 @@ public class TileEntityRecipeEncoder extends TileEntity
 
     }
 
+    public int currentTask = 0;
+    public int currentSlot = 0;
+    public boolean isCurrentOutput = false;
+    public String currentProcessName = "";
+    public HashMap<Integer, HashMap<String, Object>> tasks = new HashMap<Integer, HashMap<String, Object>>();
     private ItemStack[] contents;
 
-    public void encodeDisc() {
-        ItemStack recipeDisc = getStackInSlot(9);
-        if (recipeDisc != null) {
-            if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
-                ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
-                for(int i = 0;i<9;i++) {
-                    ItemStack item = getStackInSlot(i);
-                    if(item != null) {
-                        item = item.copy();
-                        item.stackSize = 1;
-                        itemList.add(i, item);
-                    } else {
-                        itemList.add(i, null);
-                    }
-                }
-                CompoundTag nbt = RetroStorage.itemsArrayToNBT(itemList);
-                recipeDisc.getData().putCompound("recipe",nbt);
-            }
-        }
-    }
-
-    public void encodeDisc(RecipeEntryCrafting<?,ItemStack> recipe){
-        ItemStack recipeDisc = getStackInSlot(9);
-        if (recipeDisc != null) {
-            if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
-                CompoundTag nbt = RetroStorage.itemsArrayToNBT(RetroStorage.getRecipeItems(new NetworkCraftable(recipe)));
-                recipeDisc.getData().putCompound("recipe", nbt);
-            }
-        }
-    }
 }
+

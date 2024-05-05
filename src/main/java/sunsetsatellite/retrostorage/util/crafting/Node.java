@@ -31,6 +31,10 @@ public abstract class Node {
         return quantity;
     }
 
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
     public void onCalculationFinished() {
         totalQuantity = quantity;
     }

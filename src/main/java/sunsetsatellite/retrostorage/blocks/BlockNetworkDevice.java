@@ -52,8 +52,8 @@ public abstract class BlockNetworkDevice extends BlockTileEntityRotatable {
         if(tile != null && tile.network != null && !(tile instanceof TileEntityDigitalController)) {
             DigitalNetwork network = tile.network;
             network.remove(new BlockInstance(this,new Vec3i(x,y,z),data,tile));
-            super.onBlockRemoved(world, x, y, z, data);
-            network.reload();
+            //network.reload();
         }
+        super.onBlockRemoved(world, x, y, z, data);
     }
 }

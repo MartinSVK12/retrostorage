@@ -35,11 +35,15 @@ public interface IDigitalInventory {
 
     ItemStack remove(int slot, boolean strict, boolean unlimited);
 
+    boolean move(List<ItemStack> what, ItemStackList where, boolean strict);
+
     ItemStack remove(int id, int meta, int amount, boolean strict, boolean unlimited);
 
     boolean removeAll(List<ItemStack> stacks, boolean strict, boolean unlimited);
 
     boolean move(ItemStackList what, ItemStackList where, boolean strict);
+
+    List<ItemStack> moveAll(List<ItemStack> stacks, boolean strict, boolean unlimited);
 
     boolean eject(World world, int x, int y, int z, int slot, int amount, boolean strict);
 
@@ -58,6 +62,8 @@ public interface IDigitalInventory {
     ArrayList<ItemStack> returnMissing(ArrayList<ItemStack> stacks);
 
     int count(int id, int meta);
+
+    int count(int id);
 
     int find(int id, int meta);
 

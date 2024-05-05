@@ -110,6 +110,7 @@ public class InventoryDigital implements IDigitalInventory, IInventory {
 		boolean allSuccessful = true;
 		ArrayList<ItemStack> toRemove = new ArrayList<>();
 		for (ItemStack stack : stacks) {
+			stack = stack.copy();
 			boolean success = add(stack);
 			if (!success) {
 				allSuccessful = false;
@@ -118,7 +119,7 @@ public class InventoryDigital implements IDigitalInventory, IInventory {
 			toRemove.add(stack);
 		}
 		for (ItemStack stack : toRemove) {
-			ItemStack removed = stacks.remove(stack.itemID, stack.getMetadata(), false, true);
+			ItemStack removed = stacks.remove(stack.itemID, stack.getMetadata(), stack.stackSize, false, true);
 			if(removed == null){
 				allSuccessful = false;
 			}
@@ -131,6 +132,7 @@ public class InventoryDigital implements IDigitalInventory, IInventory {
 		boolean allSuccessful = true;
 		ArrayList<ItemStack> toRemove = new ArrayList<>();
 		for (ItemStack stack : stacks) {
+			stack = stack.copy();
 			boolean success = add(stack);
 			if (!success) {
 				allSuccessful = false;
@@ -271,6 +273,35 @@ public class InventoryDigital implements IDigitalInventory, IInventory {
 	}
 
 	@Override
+	public boolean move(List<ItemStack> what, ItemStackList where, boolean strict){
+		boolean allSuccessful = true;
+		for (ItemStack stack : what) {
+			ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, strict, true);
+			if(removed == null){
+				allSuccessful = false;
+				continue;
+			}
+			boolean success = where.add(removed);
+			if(!success){
+				allSuccessful = false;
+			}
+		}
+		return allSuccessful;
+	}
+
+	@Override
+	public List<ItemStack> moveAll(List<ItemStack> stacks, boolean strict, boolean unlimited) {
+		ArrayList<ItemStack> list = new ArrayList<>();
+		for (ItemStack stack : stacks) {
+			ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, strict, unlimited);
+			if(removed != null){
+				list.add(removed);
+			}
+		}
+		return list;
+	}
+
+	@Override
 	public boolean eject(World world, int x, int y, int z, int slot, int amount, boolean strict) {
 		ItemStack content = remove(slot,amount,strict,false);
 		if(content != null){
@@ -374,6 +405,16 @@ public class InventoryDigital implements IDigitalInventory, IInventory {
 	public int count(int id, int meta){
 		return contents.stream().mapToInt((S)->{
 			if(S.itemID == id && S.getMetadata() == meta) {
+				return S.stackSize;
+			}
+			return 0;
+		}).sum();
+	}
+
+	@Override
+	public int count(int id){
+		return contents.stream().mapToInt((S)->{
+			if(S.itemID == id) {
 				return S.stackSize;
 			}
 			return 0;

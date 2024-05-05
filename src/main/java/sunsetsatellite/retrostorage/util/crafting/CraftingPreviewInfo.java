@@ -15,6 +15,7 @@ public class CraftingPreviewInfo {
     private final ItemStackList toTake = new ItemStackList();
 
     private final List<ItemStack> toCraft = new ArrayList<>();
+    private final List<ItemStack> toProcess = new ArrayList<>();
 
     public ItemStackList getMissing() {
         return missing;
@@ -32,10 +33,14 @@ public class CraftingPreviewInfo {
         return toCraft;
     }
 
+    public List<ItemStack> getToProcess() {
+        return toProcess;
+    }
+
     private List<Pair<ItemStack,String>> listCache = new ArrayList<>();
 
     public int size(){
-        return missing.sizeStacks()+ toTake.sizeStacks()+ toCraft.size();
+        return missing.sizeStacks()+ toTake.sizeStacks()+ toCraft.size() + toProcess.size();
     }
 
     public List<Pair<ItemStack,String>> toList(){
@@ -49,15 +54,19 @@ public class CraftingPreviewInfo {
         for (ItemStack stack : toCraft) {
             list.add(Pair.of(stack, "toCraft"));
         }
+        for (ItemStack stack : toProcess) {
+            list.add(Pair.of(stack, "toProcess"));
+        }
         for (int i = 0; i < toTake.sizeStacks(); i++) {
             list.add(Pair.of(toTake.get(i),"toTake"));
         }
+
         listCache = list;
         return list;
     }
 
     @Override
     public String toString() {
-        return String.format("{Missing: %s, To Craft: %s, To Take: %s}",missing,toCraft,toTake);
+        return String.format("{Missing: %s, To Craft: %s | To Process: %s, To Take: %s}",missing,toCraft,toProcess,toTake);
     }
 }

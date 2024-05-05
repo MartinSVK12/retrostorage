@@ -24,7 +24,9 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
             }
             if(externalEnergy == null){
                 if(energy > 0){
-                    energy -= network.devicesSize()+1;
+                    int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
+                    energy -= (network.devicesSize()-cableSize)+1;
+                    network.tick();
                 }
                 if(energy <= 0){
                     if(energy < 0){
@@ -40,7 +42,9 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
                 }
             } else {
                 if(externalEnergy.energy > 0){
-                    externalEnergy.modifyEnergy((int) (-(network.devicesSize()+1)));
+                    int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
+                    externalEnergy.modifyEnergy((int) (-((network.devicesSize()-cableSize)+1)));
+                    network.tick();
                 }
                 if(externalEnergy.energy <= 0){
                     network.removeAll();
