@@ -35,6 +35,9 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
                     if(network.inventory.sizeStacks() != 0){
                         network.inventory.clear();
                     }
+                    if(network.fluidInventory.sizeStacks() != 0){
+                        network.fluidInventory.clear();
+                    }
                     network.removeAll();
                     active = false;
                 } else {
@@ -51,6 +54,9 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
                     active = false;
                     if(network.inventory.sizeStacks() != 0){
                         network.inventory.clear();
+                    }
+                    if(network.fluidInventory.sizeStacks() != 0){
+                        network.fluidInventory.clear();
                     }
                 } else {
                     active = true;

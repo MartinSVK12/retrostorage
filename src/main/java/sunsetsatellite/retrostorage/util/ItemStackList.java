@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@SuppressWarnings({"UnreachableCode", "RedundantSuppression"})
 public class ItemStackList implements IDigitalInventory, Iterable<ItemStack> {
     protected final ArrayList<ItemStack> contents;
     @SuppressWarnings("FieldCanBeLocal")

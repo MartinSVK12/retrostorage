@@ -52,6 +52,10 @@ public class GuiDigitalController extends GuiScreen
             if(tile.network.drive != null){
                 fontRenderer.drawString(String.format("Drive detected: %s", tile.network.drive.toStringFormatted()),2,i,0xFFFFFFFF);
             }
+            i+=10;
+            if(tile.network.fluidDrive != null){
+                fontRenderer.drawString(String.format("Fluid drive detected: %s", tile.network.fluidDrive.toStringFormatted()),2,i,0xFFFFFFFF);
+            }
             fontRenderer.drawString(String.format("Assemblers: %d",tile.network.getAssemblers().size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Interfaces: %d",tile.network.getAdvInterfaces().size()),2,i+=10,0xFFFFFFFF);
             fontRenderer.drawString(String.format("Coprocessors: %d",tile.network.getCoprocessors().size()),2,i+=10,0xFFFFFFFF);

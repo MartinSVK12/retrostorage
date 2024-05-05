@@ -24,14 +24,17 @@ public class DigitalNetwork extends Network {
      * @param controller  Controller of the network
      */
     public InventoryDigital inventory;
+    public InventoryFluidDigital fluidInventory;
     public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
     public ArrayList<NetworkCraftable> knownCraftables = new ArrayList<>();
     public ArrayList<CraftingTask> currentTasks = new ArrayList<>();
     public TileEntityDiscDrive drive;
+    public TileEntityFluidDiscDrive fluidDrive;
 
     public DigitalNetwork(TileEntityDigitalController controller) {
         super(controller, TileEntityNetworkDevice.class, new int[]{RetroStorage.networkCable.id});
         this.inventory = new InventoryDigital(this);
+        this.fluidInventory = new InventoryFluidDigital(this);
     }
 
     @Override
@@ -44,6 +47,11 @@ public class DigitalNetwork extends Network {
             inventory.clear();
             inventory.updateSizes((TileEntityDiscDrive) device.tile);
             DiscManipulator.loadDisc(((TileEntityDiscDrive) device.tile).virtualDisc,inventory);
+        }
+        if(device.tile instanceof TileEntityFluidDiscDrive){
+            fluidInventory.clear();
+            fluidInventory.updateSizes((TileEntityFluidDiscDrive) device.tile);
+            DiscManipulator.loadDisc(((TileEntityFluidDiscDrive) device.tile).virtualDisc,fluidInventory);
         }
         if(device.tile instanceof TileEntityAssembler){
             for (RecipeEntryCrafting<?, ItemStack> recipe : ((TileEntityAssembler) device.tile).getRecipes()) {
@@ -69,9 +77,16 @@ public class DigitalNetwork extends Network {
         if(device.tile == drive){
             drive = null;
         }
+        if(device.tile == fluidDrive){
+            fluidDrive = null;
+        }
         if(device.tile instanceof TileEntityDiscDrive) {
             inventory.clear();
             inventory.resetSizes();
+        }
+        if(device.tile instanceof TileEntityFluidDiscDrive) {
+            fluidInventory.clear();
+            fluidInventory.resetSizes();
         }
         if(device.tile instanceof TileEntityNetworkDevice){
             ((TileEntityNetworkDevice)device.tile).network = null;

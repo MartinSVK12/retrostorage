@@ -3,18 +3,14 @@ package sunsetsatellite.retrostorage.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.core.Global;
-import net.minecraft.core.WeightedRandomBag;
-import net.minecraft.core.WeightedRandomLootObject;
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryTrommel;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.entity.ItemEntityRenderer;
 import net.minecraft.core.player.inventory.slot.Slot;
 import net.minecraft.client.render.TextureFX;
-import net.minecraft.core.player.inventory.slot.SlotGuidebook;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import sunsetsatellite.catalyst.core.util.NumberUtil;
 
 public class GuiRenderDigitalItem extends Gui
 {

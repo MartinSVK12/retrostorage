@@ -5,6 +5,7 @@ import com.mojang.nbt.CompoundTag;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.block.Block;
+import net.minecraft.core.block.BlockFluid;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeGroup;
@@ -49,6 +50,8 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public static int nextItemId = 18000;
     public static int nextBlockId = 1400;
 
+    public static final Set<BlockFluid> DISALLOWED_FLUIDS = new HashSet<>();
+
     static {
         Toml configToml = new Toml("RetroStorage configuration file.");
         configToml.addCategory("BlockIDs");
@@ -82,7 +85,16 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public static final Item storageDisc4 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc4",config.getInt("ItemIDs.storageDisc4"), 256,256*64),  "disc4.png").setMaxStackSize(1);
     public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320,320*64), "disc5.png").setMaxStackSize(1);
     public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384,384*64), "disc6.png").setMaxStackSize(1);
+
+    public static final Item fluidStorageDisc1 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc1", config.getInt("ItemIDs.fluidStorageDisc1"), 2,2000), "fluid_disc_1.png").setMaxStackSize(1);
+    public static final Item fluidStorageDisc2 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc2",config.getInt("ItemIDs.fluidStorageDisc2"), 4,4000),  "fluid_disc_2.png").setMaxStackSize(1);
+    public static final Item fluidStorageDisc3 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc3",config.getInt("ItemIDs.fluidStorageDisc3"), 6,8000),  "fluid_disc_3.png").setMaxStackSize(1);
+    public static final Item fluidStorageDisc4 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc4",config.getInt("ItemIDs.fluidStorageDisc4"), 8,16000),  "fluid_disc_4.png").setMaxStackSize(1);
+    public static final Item fluidStorageDisc5 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc5", config.getInt("ItemIDs.fluidStorageDisc5"), 10,32000), "fluid_disc_5.png").setMaxStackSize(1);
+    public static final Item fluidStorageDisc6 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc6", config.getInt("ItemIDs.fluidStorageDisc6"), 12,64000), "fluid_disc_6.png").setMaxStackSize(1);
+
     public static final Item virtualDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2,(Short.MAX_VALUE * 2) * 64), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
+    public static final Item virtualFluidDisc = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("virtualFluidDisc", config.getInt("ItemIDs.virtualFluidDisc"), Short.MAX_VALUE * 2,Integer.MAX_VALUE), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
     public static final Item recipeDisc = ItemHelper.createItem(MOD_ID, new ItemRecipeDisc("recipeDisc", config.getInt("ItemIDs.recipeDisc")), "recipedisc.png").setMaxStackSize(1);
     public static final Item goldenDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024, 1024 * 64), "goldendisc.png").setMaxStackSize(1);
     public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID, new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc")), "advrecipedisc.png").setMaxStackSize(1);
@@ -122,7 +134,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("digitalcontroller.png")
+            .setTextures("digital_controller.png")
             .build(new BlockDigitalController("digitalController", config.getInt("BlockIDs.digitalController"), Material.stone));
 
     public static final Block networkCable = new BlockBuilder(MOD_ID)
@@ -130,7 +142,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(0.2f)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("blockcable.png")
+            .setTextures("block_cable.png")
             .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.cloth));
 
     /*public static final Block digitalChest = new BlockBuilder(MOD_ID)
@@ -138,9 +150,9 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machineside.png")
-            .setNorthTexture("digitalchestfront.png")
-            .setTopTexture("digitalchesttopfilled.png")
+            .setTextures("machine_side.png")
+            .setNorthTexture("terminal_front.png")
+            .setTopTexture("digital_chest_top_filled.png")
             .build(new BlockDigitalChest("digitalChest", config.getInt("BlockIDs.digitalChest"), Material.stone));*/
 
 
@@ -149,42 +161,64 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machineside.png")
-            .setNorthTexture("discdrive.png")
+            .setTextures("machine_side.png")
+            .setNorthTexture("disc_drive.png")
             .build(new BlockDiscDrive("discDrive", config.getInt("BlockIDs.discDrive"), Material.stone));
+
+    public static final Block fluidDiscDrive = new BlockBuilder(MOD_ID)
+            .setBlockSound(BlockSounds.STONE)
+            .setHardness(1)
+            .setResistance(5)
+            .setLuminance(1)
+            .setSideTextures("fluid_machine_side.png")
+            .setTopBottomTexture("machine_side.png")
+            .setNorthTexture("fluid_disc_drive.png")
+            .build(new BlockFluidDiscDrive("fluidDiscDrive", config.getInt("BlockIDs.fluidDiscDrive"), Material.stone));
+
     public static final Block digitalTerminal = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machineside.png")
-            .setNorthTexture("digitalchestfront.png")
+            .setTextures("machine_side.png")
+            .setNorthTexture("terminal_front.png")
             .build(new BlockDigitalTerminal("digitalTerminal", config.getInt("BlockIDs.digitalTerminal"), Material.stone));
+
+    public static final Block digitalFluidTerminal = new BlockBuilder(MOD_ID)
+            .setBlockSound(BlockSounds.STONE)
+            .setHardness(1)
+            .setResistance(5)
+            .setLuminance(1)
+            .setTopBottomTexture("machine_side.png")
+            .setSideTextures("fluid_machine_side.png")
+            .setNorthTexture("fluid_terminal_front.png")
+            .build(new BlockDigitalFluidTerminal("digitalFluidTerminal", config.getInt("BlockIDs.digitalFluidTerminal"), Material.stone));
+
     public static final Block recipeEncoder = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machineside.png")
-            .setTopTexture("recipeencodertopfilled.png")
-            .setNorthTexture("recipeencoderfront.png")
+            .setTextures("machine_side.png")
+            .setTopTexture("recipe_encoder_top_filled.png")
+            .setNorthTexture("recipe_encoder_front.png")
             .build(new BlockRecipeEncoder("recipeEncoder", config.getInt("BlockIDs.recipeEncoder"), Material.stone));
     public static final Block assembler = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machineside.png")
-            .setTopTexture("recipeencodertopfilled.png")
-            .setSideTextures("assemblerside.png")
+            .setTextures("machine_side.png")
+            .setTopTexture("recipe_encoder_top_filled.png")
+            .setSideTextures("assembler_side.png")
             .build(new BlockAssembler("assembler", config.getInt("BlockIDs.assembler"), Material.stone));
     public static final Block requestTerminal = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machineside.png")
-            .setNorthTexture("requestterminalfront.png")
+            .setTextures("machine_side.png")
+            .setNorthTexture("request_terminal_front.png")
             .build(new BlockRequestTerminal("requestTerminal", config.getInt("BlockIDs.requestTerminal"), Material.stone));
     public static final Block importer = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
@@ -205,37 +239,37 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("advmachineside.png")
-            .setTopTexture("processprogrammertopfilled.png")
-            .setNorthTexture("processprogrammerfront.png")
+            .setTextures("adv_machine_side.png")
+            .setTopTexture("process_programmer_top_filled.png")
+            .setNorthTexture("process_programmer_front.png")
             .build(new BlockProcessProgrammer("processProgrammer", config.getInt("BlockIDs.processProgrammer"), Material.stone));
     public static final Block advInterface = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("advinterfaceside.png")
+            .setTextures("adv_interface_side.png")
             .build(new BlockAdvInterface("advInterface", config.getInt("BlockIDs.advInterface"), Material.stone));
     public static final Block wirelessLink = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("wirelesslink.png")
+            .setTextures("wireless_link.png")
             .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));
     public static final Block energyAcceptor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("energyacceptor.png")
+            .setTextures("energy_acceptor.png")
             .build(new BlockEnergyAcceptor("energyAcceptor", config.getInt("BlockIDs.energyAcceptor"), Material.stone));
     public static final Block redstoneEmitter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("redstoneemitteroff.png")
+            .setTextures("redstone_emitter_off.png")
             .build(new BlockRedstoneEmitter("redstoneEmitter", config.getInt("BlockIDs.redstoneEmitter"), Material.stone));
     public static final Block craftingCoprocessor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
@@ -247,7 +281,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
 
     public static HashMap<String, Vec3i> directions = new HashMap<>();
 
-    public static final int[] emitterOnTex = TextureHelper.getOrCreateBlockTexture(RetroStorage.MOD_ID, "redstoneemitteron.png");
+    public static final int[] emitterOnTex = TextureHelper.getOrCreateBlockTexture(RetroStorage.MOD_ID, "redstone_emitter_on.png");
 
     public RetroStorage() {
         directions.put("X+", new Vec3i(1, 0, 0));
@@ -277,8 +311,10 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public void onInitialize() {
         //EntityHelper.Core.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");
         EntityHelper.Core.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
+        EntityHelper.Core.createTileEntity(TileEntityDigitalFluidTerminal.class, "Digital Fluid Terminal");
         EntityHelper.Core.createTileEntity(TileEntityDigitalController.class, "Digital Controller");
         EntityHelper.Core.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
+        EntityHelper.Core.createTileEntity(TileEntityFluidDiscDrive.class, "Fluid Disc Drive");
         EntityHelper.Core.createTileEntity(TileEntityNetworkCable.class, "Network Cable");
         EntityHelper.Core.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
         EntityHelper.Core.createTileEntity(TileEntityAssembler.class, "Assembler");
