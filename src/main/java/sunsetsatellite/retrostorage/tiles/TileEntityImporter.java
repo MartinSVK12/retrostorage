@@ -176,6 +176,7 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                                 if(network.inventory.add(stack)){
                                     inv.setInventorySlotContents(i,null);
                                     DiscManipulator.saveDisc(network.drive.virtualDisc,network.inventory);
+                                    break;
                                 }
                             }
                         }

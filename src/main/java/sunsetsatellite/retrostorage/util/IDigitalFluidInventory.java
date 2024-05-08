@@ -1,11 +1,12 @@
 package sunsetsatellite.retrostorage.util;
 
+import net.minecraft.core.block.BlockFluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public interface IDigitalFluidInventory {
     FluidStack addAndReturnOverflow(FluidStack stack);
@@ -52,6 +53,8 @@ public interface IDigitalFluidInventory {
     boolean containsAtLeast(FluidStackList stacks);
 
     ArrayList<FluidStack> returnMissing(ArrayList<FluidStack> stacks);
+
+    Set<BlockFluid> getDisallowedFluids();
 
     int count(int id);
 

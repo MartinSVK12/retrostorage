@@ -12,6 +12,7 @@ import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class InventoryFluidDigital implements IDigitalFluidInventory, IFluidInventory, Iterable<FluidStack> {
     protected final ArrayList<FluidStack> contents;
@@ -132,12 +133,15 @@ public class InventoryFluidDigital implements IDigitalFluidInventory, IFluidInve
 
     @Override
     public boolean canAdd(FluidStack stack){
-        int index = find(stack.liquid.id);
-        if (index != -1) {
-            return sizeItems() + stack.amount <= getMaxFluidAmount();
-        } else {
-            return sizeItems() + stack.amount <= getMaxFluidAmount() && sizeStacks() + 1 <= getMaxFluidStackSize();
+        if(getAllowedFluidsForSlot(0).contains(stack.liquid)){
+            int index = find(stack.liquid.id);
+            if (index != -1) {
+                return sizeItems() + stack.amount <= getMaxFluidAmount();
+            } else {
+                return sizeItems() + stack.amount <= getMaxFluidAmount() && sizeStacks() + 1 <= getMaxFluidStackSize();
+            }
         }
+        return false;
     }
 
     @Override
@@ -308,6 +312,11 @@ public class InventoryFluidDigital implements IDigitalFluidInventory, IFluidInve
             }
         }
         return missing;
+    }
+
+    @Override
+    public Set<BlockFluid> getDisallowedFluids() {
+        return RetroStorage.DISALLOWED_FLUIDS;
     }
 
     @Override

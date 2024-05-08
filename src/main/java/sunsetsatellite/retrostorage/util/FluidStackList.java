@@ -1,13 +1,11 @@
 package sunsetsatellite.retrostorage.util;
 
+import net.minecraft.core.block.BlockFluid;
 import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidStack> {
     protected final ArrayList<FluidStack> contents;
@@ -296,6 +294,11 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
             }
         }
         return missing;
+    }
+
+    @Override
+    public Set<BlockFluid> getDisallowedFluids() {
+        return new HashSet<>();
     }
 
     @Override

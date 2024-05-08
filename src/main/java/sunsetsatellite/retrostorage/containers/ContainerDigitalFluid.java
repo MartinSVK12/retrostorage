@@ -25,7 +25,7 @@ public class ContainerDigitalFluid extends ContainerFluid {
         this.inv = fluidInv;
     }
 
-    //prevent super tile field from being accessible
+    //prevent super tile field from being accessible from this class
     public Void tile = null;
     public InventoryFluidDigital inv;
 
@@ -144,7 +144,8 @@ public class ContainerDigitalFluid extends ContainerFluid {
             }
             slot.onSlotChanged();
             updateInventory();
+            return fluidSlots.get(slotID).getFluidStack();
         }
-        return fluidSlots.get(slotID).getFluidStack();
+        return null;
     }
 }

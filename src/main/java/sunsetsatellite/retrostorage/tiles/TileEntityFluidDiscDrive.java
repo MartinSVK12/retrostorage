@@ -92,6 +92,9 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
             discsUsed.remove(0);
             maxStacks -= Math.min(maxStacks,((ItemFluidStorageDisc) disc.getItem()).getMaxStackCapacity());
             maxFluidAmount -= Math.min(maxFluidAmount,((ItemFluidStorageDisc) disc.getItem()).getMaxItemCapacity());
+            if(network != null){
+                network.fluidInventory.updateSizes(this);
+            }
             CompoundTag nbt = new CompoundTag();
             Object[] V = virtualDisc.getData().getCompound("Disc").getValues().toArray();
             int stacksToRemove = Math.min(virtualDisc.getData().getCompound("Disc").getValues().size(), ((ItemFluidStorageDisc) disc.getItem()).getMaxStackCapacity());

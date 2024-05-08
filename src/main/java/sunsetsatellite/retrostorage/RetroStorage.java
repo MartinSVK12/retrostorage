@@ -145,17 +145,6 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setTextures("block_cable.png")
             .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.cloth));
 
-    /*public static final Block digitalChest = new BlockBuilder(MOD_ID)
-            .setBlockSound(BlockSounds.STONE)
-            .setHardness(1)
-            .setResistance(5)
-            .setLuminance(1)
-            .setTextures("machine_side.png")
-            .setNorthTexture("terminal_front.png")
-            .setTopTexture("digital_chest_top_filled.png")
-            .build(new BlockDigitalChest("digitalChest", config.getInt("BlockIDs.digitalChest"), Material.stone));*/
-
-
     public static final Block discDrive = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -227,6 +216,13 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("importer.png")
             .build(new BlockImporter("importer", config.getInt("BlockIDs.importer"), Material.stone));
+    public static final Block fluidImporter = new BlockBuilder(MOD_ID)
+            .setBlockSound(BlockSounds.STONE)
+            .setHardness(1)
+            .setResistance(5)
+            .setLuminance(1)
+            .setTextures("fluid_importer.png")
+            .build(new BlockFluidImporter("fluidImporter", config.getInt("BlockIDs.fluidImporter"), Material.stone));
     public static final Block exporter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -302,14 +298,11 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 throw new RuntimeException(e);
             }
         }
-
-        //ItemToolPickaxe.miningLevels.remove(networkCable);
     }
 
     @SuppressWarnings("UnreachableCode")
     @Override
     public void onInitialize() {
-        //EntityHelper.Core.createTileEntity(TileEntityDigitalChest.class, "Digital Chest");
         EntityHelper.Core.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
         EntityHelper.Core.createTileEntity(TileEntityDigitalFluidTerminal.class, "Digital Fluid Terminal");
         EntityHelper.Core.createTileEntity(TileEntityDigitalController.class, "Digital Controller");
@@ -320,6 +313,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         EntityHelper.Core.createTileEntity(TileEntityAssembler.class, "Assembler");
         EntityHelper.Core.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
         EntityHelper.Core.createTileEntity(TileEntityImporter.class, "Item Importer");
+        EntityHelper.Core.createTileEntity(TileEntityFluidImporter.class, "Fluid Importer");
         EntityHelper.Core.createTileEntity(TileEntityExporter.class, "Item Exporter");
         EntityHelper.Core.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
         EntityHelper.Core.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
@@ -599,14 +593,6 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('6', blankDisc)
                 .addInput('8', networkCable)
                 .create("disc_drive", new ItemStack(discDrive, 1));
-
-        /*RecipeBuilder.Shaped(MOD_ID, " 1 ", "234", " 5 ")
-                .addInput('1', blankDisc)
-                .addInput('2', chipRematerializer)
-                .addInput('3', machineCasing)
-                .addInput('4', chipDematerializer)
-                .addInput('5', Block.chestPlanksOak)
-                .create("digital_chest", new ItemStack(digitalChest,1));*/
 
         RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
                 .addInput('1', machineCasing)
