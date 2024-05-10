@@ -8,6 +8,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 import sunsetsatellite.retrostorage.util.IProcessor;
@@ -24,7 +25,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     implements IInventory, IProcessor {
 
     private ItemStack[] contents;
-    public HashMap<String,TileEntity> connectedTiles = new HashMap<>();
+    public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
     public IInventory workingTile;
     public ProcessNode workingNode;
     public CraftingTask workingTask;

@@ -230,6 +230,13 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setLuminance(1)
             .setTextures("exporter.png")
             .build(new BlockExporter("exporter", config.getInt("BlockIDs.exporter"), Material.stone));
+    public static final Block fluidExporter = new BlockBuilder(MOD_ID)
+            .setBlockSound(BlockSounds.STONE)
+            .setHardness(1)
+            .setResistance(5)
+            .setLuminance(1)
+            .setTextures("fluid_exporter.png")
+            .build(new BlockFluidExporter("fluidExporter", config.getInt("BlockIDs.fluidExporter"), Material.stone));
     public static final Block processProgrammer = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -315,6 +322,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         EntityHelper.Core.createTileEntity(TileEntityImporter.class, "Item Importer");
         EntityHelper.Core.createTileEntity(TileEntityFluidImporter.class, "Fluid Importer");
         EntityHelper.Core.createTileEntity(TileEntityExporter.class, "Item Exporter");
+        EntityHelper.Core.createTileEntity(TileEntityFluidExporter.class, "Fluid Exporter");
         EntityHelper.Core.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
         EntityHelper.Core.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
         EntityHelper.Core.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");

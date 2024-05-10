@@ -7,6 +7,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 
@@ -202,5 +203,5 @@ public class TileEntityImporter extends TileEntityNetworkDevice
     public int slot = -1;
     public boolean isWhitelist = true;
     public boolean enabled = true;
-    public HashMap<String,TileEntity> connectedTiles = new HashMap<>();
+    public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 }

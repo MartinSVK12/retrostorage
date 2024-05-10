@@ -9,6 +9,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
@@ -65,7 +66,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         ArrayList<Class<?>> list = new ArrayList<>();
         list.add(TileEntityAssembler.class);
         list.add(TileEntityAdvInterface.class);
-        HashMap<String, TileEntity> map = getConnectedTileEntity(list);
+        HashMap<Direction, TileEntity> map = getConnectedTileEntity(list);
         map.forEach((K,V)->{
             if(V != null){
                 connectedTile = V;

@@ -10,6 +10,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.IProcessor;
 import sunsetsatellite.retrostorage.util.ItemStackList;
@@ -226,6 +227,6 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     private ItemStack[] contents;
-    public HashMap<String, TileEntity> connectedTiles = new HashMap<>();
+    public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 
 }

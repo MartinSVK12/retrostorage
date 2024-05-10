@@ -2,27 +2,25 @@ package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
-import sunsetsatellite.retrostorage.tiles.TileEntityFluidImporter;
-import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
+import sunsetsatellite.retrostorage.tiles.TileEntityFluidExporter;
 
 import java.util.List;
 
-public class ContainerFluidImporter extends ContainerFluidFake {
+public class ContainerFluidExporter extends ContainerFluidFake {
 
-    public ContainerFluidImporter(IInventory iinventory, TileEntityFluidImporter tileEntityImporter) {
+    public ContainerFluidExporter(IInventory iinventory, TileEntityFluidExporter tileEntityExporter) {
 
-        super(iinventory, tileEntityImporter.filter);
-        tile = tileEntityImporter;
+        super(iinventory, tileEntityExporter.filter);
+        tile = tileEntityExporter;
 
         for(int i = 0; i < 3; i++)
         {
             for(int l = 0; l < 3; l++)
             {
-                addFluidSlot(new SlotFluid(tileEntityImporter.filter, l + i * 3, 62 + l * 18, 17 + i * 18));
+                addFluidSlot(new SlotFluid(tileEntityExporter.filter, l + i * 3, 62 + l * 18, 17 + i * 18));
             }
 
         }
@@ -54,5 +52,5 @@ public class ContainerFluidImporter extends ContainerFluidFake {
         return tile.canInteractWith(entityplayer);
     }
 
-    private final TileEntityFluidImporter tile;
+    private final TileEntityFluidExporter tile;
 }

@@ -2,12 +2,10 @@ package sunsetsatellite.retrostorage.tiles;
 
 import net.minecraft.core.block.BlockFluid;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.CatalystFluids;
 import sunsetsatellite.catalyst.core.util.Connection;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.IFluidIO;
-import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.api.IFluidTransfer;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
@@ -16,14 +14,16 @@ import sunsetsatellite.retrostorage.RetroStorage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
-public class TileEntityFluidImporter extends TileEntityNetworkDevice implements IFluidIO, IFluidInventory {
+public class TileEntityFluidExporter extends TileEntityNetworkDevice implements IFluidIO, IFluidInventory {
 
     public final Filter filter = new Filter();
-    public static int transferSpeed = 20;
+    public static int transferSpeed = 1000;
 
     public static class Filter implements IFluidInventory {
         public FluidStack[] fluidContents = new FluidStack[9];
+
 
         @Override
         public FluidStack insertFluid(int slot, FluidStack fluidStack) {
@@ -118,35 +118,43 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
         connectedTiles = getConnectedTileEntity(tiles);
 
         if (network != null && network.fluidDrive != null && enabled) {
-            for (TileEntity tile : connectedTiles.values()) {
+            for (Map.Entry<Direction, TileEntity> entry : connectedTiles.entrySet()) {
+                TileEntity tile = entry.getValue();
                 if (!(tile instanceof TileEntityFluidImporter || tile instanceof TileEntityFluidExporter)) {
-                    IFluidInventory inv = (IFluidInventory) tile;
-                    if(slot == -1){
-                        for (int i = 0; i < inv.getFluidInventorySize(); i++) {
-                            FluidStack fluid = inv.getFluidInSlot(i);
-                            if(fluid != null && ((isWhitelist && filter.hasFluid(fluid)) || (!isWhitelist && !filter.hasFluid(fluid)))){
-                                int transferPortion = Math.min(fluid.amount,inv.getTransferSpeed());
-                                FluidStack testStack = new FluidStack(fluid.liquid,transferPortion);
-                                if(network.fluidInventory.canAdd(testStack)){
-                                    FluidStack transferStack = fluid.splitStack(transferPortion);
-                                    network.fluidInventory.add(transferStack);
-                                    if(transferStack.amount <= 0){
-                                        inv.setFluidInSlot(slot,null);
+                    if (tile instanceof IFluidInventory) {
+                        IFluidInventory inv = (IFluidInventory) tile;
+                        if (slot == -1) {
+                            label:
+                            for (int i = 0; i < inv.getFluidInventorySize(); i++) {
+                                FluidStack fluid = inv.getFluidInSlot(i);
+                                for (FluidStack networkFluid : network.fluidInventory) {
+                                    if (networkFluid != null && ((isWhitelist && filter.hasFluid(networkFluid)) || (!isWhitelist && !filter.hasFluid(networkFluid)))) {
+                                        int transferPortion = Math.min(Math.min(networkFluid.amount, inv.getTransferSpeed()), inv.getRemainingCapacity(i));
+                                        if (fluid == null || (fluid.isFluidEqual(networkFluid))) {
+                                            if(transferPortion > 0){
+                                                FluidStack fluidStack = networkFluid.splitStack(transferPortion);
+                                                inv.insertFluid(i, fluidStack);
+                                                break label;
+                                            }
+                                        }
                                     }
                                 }
-                                break;
                             }
-                        }
-                    } else {
-                        FluidStack fluid = inv.getFluidInSlot(slot);
-                        if(fluid != null && ((isWhitelist && filter.hasFluid(fluid)) || (!isWhitelist && !filter.hasFluid(fluid)))){
-                            int transferPortion = Math.min(fluid.amount,inv.getTransferSpeed());
-                            FluidStack testStack = new FluidStack(fluid.liquid,transferPortion);
-                            if(network.fluidInventory.canAdd(testStack)){
-                                FluidStack transferStack = fluid.splitStack(transferPortion);
-                                network.fluidInventory.add(transferStack);
-                                if(transferStack.amount <= 0){
-                                    inv.setFluidInSlot(slot,null);
+                        } else {
+                            FluidStack fluid = inv.getFluidInSlot(slot);
+                            label:
+                            for (int i = 0; i < inv.getFluidInventorySize(); i++) {
+                                for (FluidStack networkFluid : network.fluidInventory) {
+                                    if (networkFluid != null && ((isWhitelist && filter.hasFluid(networkFluid)) || (!isWhitelist && !filter.hasFluid(networkFluid)))) {
+                                        int transferPortion = Math.min(Math.min(networkFluid.amount, inv.getTransferSpeed()), inv.getRemainingCapacity(slot));
+                                        if (fluid == null || (fluid.isFluidEqual(networkFluid))) {
+                                            if(transferPortion > 0){
+                                                FluidStack fluidStack = networkFluid.splitStack(transferPortion);
+                                                inv.insertFluid(i, fluidStack);
+                                                break label;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -218,7 +226,7 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
 
     @Override
     public int getTransferSpeed() {
-        return 0;
+        return transferSpeed;
     }
 
     @Override
