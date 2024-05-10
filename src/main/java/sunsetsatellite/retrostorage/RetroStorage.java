@@ -20,6 +20,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.player.inventory.InventoryCrafting;
 import net.minecraft.core.sound.BlockSounds;
+import net.minecraft.core.util.helper.DyeColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sunsetsatellite.catalyst.core.util.Vec3i;
@@ -122,9 +123,10 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     public static Item redstoneCore = ItemHelper.createItem(MOD_ID, new Item("redstoneCore", config.getInt("ItemIDs.redstoneCore")), "redstonecore.png");
 
     public static Item slotIdFinder = ItemHelper.createItem(MOD_ID, new Item("slotIdFinder", config.getInt("ItemIDs.slotIdFinder")), "idfinder.png").setMaxStackSize(1);
-    /*public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell("portableCell", config.getInt("ItemIDs.portableCell")), "portablecell.png").setMaxStackSize(1);
+    /*public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell("portableCell", config.getInt("ItemIDs.portableCell")), "portablecell.png").setMaxStackSize(1);*/
     public static Item mobileTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileTerminal", config.getInt("ItemIDs.mobileTerminal")), "mobileterminal.png").setMaxStackSize(1);
-    public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileRequestTerminal",config.getInt("ItemIDs.mobileRequestTerminal")),  "mobilerequestterminal.png").setMaxStackSize(1);*/
+    public static Item mobileFluidTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileFluidTerminal", config.getInt("ItemIDs.mobileFluidTerminal")), "mobilefluidterminal.png").setMaxStackSize(1);
+    public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileRequestTerminal",config.getInt("ItemIDs.mobileRequestTerminal")),  "mobilerequestterminal.png").setMaxStackSize(1);
 
     public static final Item linkingCard = ItemHelper.createItem(MOD_ID, new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard")), "linkingcard.png").setMaxStackSize(1);
     public static final Item blankCard = ItemHelper.createItem(MOD_ID, new Item("blankCard", config.getInt("ItemIDs.blankCard")), "blankcard.png");
@@ -537,7 +539,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('9', new ItemStack(Item.dye, 1, 12))
                 .create("linking_card", new ItemStack(linkingCard,1));
 
-        /*RecipeBuilder.Shaped(MOD_ID, "A", "T", "W")
+        RecipeBuilder.Shaped(MOD_ID, "A", "T", "W")
                 .addInput('A', wirelessAntenna)
                 .addInput('T', digitalTerminal)
                 .addInput('W', chipWireless)
@@ -549,7 +551,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('W', chipWireless)
                 .create("mobile_request_terminal", new ItemStack(mobileRequestTerminal,1));
 
-        RecipeBuilder.Shaped(MOD_ID, "D", "C", "I")
+        /*RecipeBuilder.Shaped(MOD_ID, "D", "C", "I")
                 .addInput('I', chipDigitizer)
                 .addInput('C', digitalChest)
                 .addInput('D', storageDisc1)
@@ -698,6 +700,72 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('C', energyCore)
                 .addInput('R', chipCrafting)
                 .create("crafting_coprocessor", new ItemStack(craftingCoprocessor, 1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',storageDisc1)
+                .create("fluid_storage_disc_1",new ItemStack(fluidStorageDisc1,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',storageDisc2)
+                .create("fluid_storage_disc_2",new ItemStack(fluidStorageDisc2,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',storageDisc3)
+                .create("fluid_storage_disc_3",new ItemStack(fluidStorageDisc3,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',storageDisc4)
+                .create("fluid_storage_disc_4",new ItemStack(fluidStorageDisc4,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',storageDisc5)
+                .create("fluid_storage_disc_5",new ItemStack(fluidStorageDisc5,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',storageDisc6)
+                .create("fluid_storage_disc_6",new ItemStack(fluidStorageDisc6,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',discDrive)
+                .create("fluid_disc_drive",new ItemStack(fluidDiscDrive,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',digitalTerminal)
+                .create("fluid_terminal",new ItemStack(digitalFluidTerminal,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',importer)
+                .create("fluid_importer",new ItemStack(fluidImporter,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',exporter)
+                .create("fluid_importer",new ItemStack(fluidExporter,1));
+
+        RecipeBuilder.Shaped(MOD_ID,"LBL", "BDB", "LBL")
+                .addInput('B',new ItemStack(Item.dye, 1, DyeColor.DYE_LIGHT_BLUE.dyeMeta))
+                .addInput('L',new ItemStack(Item.dye, 1, DyeColor.DYE_BLUE.dyeMeta))
+                .addInput('D',mobileTerminal)
+                .create("mobile_fluid_terminal",new ItemStack(mobileFluidTerminal,1));
 
         if (config.getBoolean("Other.goldenDiscLoot")) {
             RecipeBuilder.Shaped(MOD_ID, "GgG", "6R6", "GgG")
