@@ -30,9 +30,10 @@
 
   "depends": {
     "fabricloader": ">=0.15.5",
-    "halplibe": ">=3.5.1",
-    "catalyst-core": ">=1.1.6",
-    "catalyst-energy": ">=1.0.6"
+    "halplibe": ">=3.5.4",
+    "catalyst-core": ">=1.2.0",
+    "catalyst-energy": ">=1.0.9",
+    "catalyst-fluids": ">=1.1.0"
   },
   "suggests": {
   }
