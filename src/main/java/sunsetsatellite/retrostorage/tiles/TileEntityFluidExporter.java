@@ -1,5 +1,7 @@
 package sunsetsatellite.retrostorage.tiles;
 
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.BlockFluid;
 import net.minecraft.core.block.entity.TileEntity;
 import sunsetsatellite.catalyst.CatalystFluids;
@@ -168,6 +170,49 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     public boolean isWhitelist = true;
     public boolean enabled = true;
     public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
+
+    @Override
+    public void readFromNBT(CompoundTag CompoundTag)
+    {
+        super.readFromNBT(CompoundTag);
+        ListTag listTag = CompoundTag.getList("Fluids");
+        isWhitelist = CompoundTag.getBoolean("isWhitelist");
+        enabled = CompoundTag.getBoolean("enabled");
+        slot = CompoundTag.getInteger("workSlot");
+        filter.fluidContents = new FluidStack[filter.getFluidInventorySize()];
+        for(int i = 0; i < listTag.tagCount(); i++)
+        {
+            CompoundTag tag = (CompoundTag)listTag.tagAt(i);
+            int j = tag.getByte("Slot") & 0xff;
+            if(j < filter.fluidContents.length)
+            {
+                filter.fluidContents[j] = new FluidStack(tag);
+            }
+        }
+
+    }
+
+    @Override
+    public void writeToNBT(CompoundTag CompoundTag)
+    {
+        super.writeToNBT(CompoundTag);
+        ListTag listTag = new ListTag();
+        for(int i = 0; i <  filter.fluidContents.length; i++)
+        {
+            if( filter.fluidContents[i] != null)
+            {
+                CompoundTag CompoundTag1 = new CompoundTag();
+                CompoundTag1.putByte("Slot", (byte)i);
+                filter.fluidContents[i].writeToNBT(CompoundTag1);
+                listTag.addTag(CompoundTag1);
+            }
+        }
+
+        CompoundTag.putInt("workSlot",slot);
+        CompoundTag.putBoolean("isWhitelist",isWhitelist);
+        CompoundTag.putBoolean("enabled",enabled);
+        CompoundTag.put("Fluids", listTag);
+    }
 
     @Override
     public int getActiveFluidSlotForSide(Direction dir) {
