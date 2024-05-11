@@ -11,47 +11,54 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
 
     public TileEntityDigitalController() {
         network = new DigitalNetwork(this);
-        networkReload = new TickTimer(network,network::reload, 60,true);
     }
 
     @Override
     public void tick() {
-        networkReload.tick();
+
         externalEnergy = (TileEntityEnergyAcceptor) getConnectedTileEntity(TileEntityEnergyAcceptor.class);
         if(network != null){
+            if(!init){
+                network.reload();
+                init = true;
+            }
             if(externalEnergy == null){
                 if(energy > 0){
-                    energy -= network.devicesSize()+1;
+                    int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
+                    energy -= (network.devicesSize()-cableSize)+1;
+                    network.tick();
                 }
                 if(energy <= 0){
                     if(energy < 0){
                         energy = 0;
                     }
-                    if(!networkReload.isPaused()){
-                        network.removeAll();
-                        networkReload.pause();
+                    if(network.inventory.sizeStacks() != 0){
+                        network.inventory.clear();
                     }
+                    if(network.fluidInventory.sizeStacks() != 0){
+                        network.fluidInventory.clear();
+                    }
+                    network.removeAll();
                     active = false;
                 } else {
-                    if(networkReload.isPaused()){
-                        networkReload.unpause();
-                    }
                     active = true;
                 }
             } else {
                 if(externalEnergy.energy > 0){
-                    externalEnergy.modifyEnergy((int) (-(network.devicesSize()+1)));
+                    int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
+                    externalEnergy.modifyEnergy((int) (-((network.devicesSize()-cableSize)+1)));
+                    network.tick();
                 }
                 if(externalEnergy.energy <= 0){
-                    if(!networkReload.isPaused()){
-                        network.removeAll();
-                        networkReload.pause();
-                    }
+                    network.removeAll();
                     active = false;
-                } else {
-                    if(networkReload.isPaused()){
-                        networkReload.unpause();
+                    if(network.inventory.sizeStacks() != 0){
+                        network.inventory.clear();
                     }
+                    if(network.fluidInventory.sizeStacks() != 0){
+                        network.fluidInventory.clear();
+                    }
+                } else {
                     active = true;
                 }
             }
@@ -75,8 +82,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
 
     public double energy = 0;
     public boolean active = false;
+    public boolean init = false;
 
-
-    public TickTimer networkReload;
     public TileEntityEnergyAcceptor externalEnergy;
 }

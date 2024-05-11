@@ -9,9 +9,11 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
+import sunsetsatellite.retrostorage.util.crafting.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         ArrayList<Class<?>> list = new ArrayList<>();
         list.add(TileEntityAssembler.class);
         list.add(TileEntityAdvInterface.class);
-        HashMap<String, TileEntity> map = getConnectedTileEntity(list);
+        HashMap<Direction, TileEntity> map = getConnectedTileEntity(list);
         map.forEach((K,V)->{
             if(V != null){
                 connectedTile = V;
@@ -75,20 +77,29 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                 ItemStack stack = ((TileEntityAssembler)connectedTile).getStackInSlot(asmSlot);
                 if(stack != null){
                     if(stack.getItem() == RetroStorage.recipeDisc){
-                        RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
+                        RecipeEntryCrafting<?,ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                         if(recipe != null){
-                            network.requestCrafting(recipe);
+                            CraftingCalculator calc = new CraftingCalculator(network,1,recipe.getOutput(),new NetworkCraftable(recipe),network.knownCraftables);
+                            CalculationResult result = calc.calculate();
+                            if(result.getType() == CalculationResultType.OK){
+                                network.requestCrafting(result.getTask());
+                            }
                         }
                     }
                 }
             } else if (connectedTile instanceof TileEntityAdvInterface) {
-                if(((TileEntityAdvInterface) connectedTile).request == null) {
+                if(!((TileEntityAdvInterface) connectedTile).isInUse()) {
                     ItemStack stack = ((TileEntityAdvInterface) connectedTile).getStackInSlot(asmSlot);
                     if (stack != null) {
                         if (stack.getItem() == RetroStorage.advRecipeDisc) {
-                            ArrayList<CompoundTag> tasks = DiscManipulator.getProcessesFromDisc(stack);
-                            if (!tasks.isEmpty()) {
-                                network.requestProcessing(tasks);
+                            if(stack.getData().containsKey("disc") && stack.getData().getCompound("disc").containsKey("processName")){
+                                CraftingProcess process = new CraftingProcess(stack.getData().getCompound("disc"));
+                                NetworkCraftable craftable = new NetworkCraftable(process);
+                                CraftingCalculator calc = new CraftingCalculator(network,1,craftable.getOutput(),craftable,network.knownCraftables);
+                                CalculationResult result = calc.calculate();
+                                if(result.getType() == CalculationResultType.OK){
+                                    network.requestCrafting(result.getTask());
+                                }
                             }
                         }
                     }
@@ -109,9 +120,9 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                 int dmg = getStackInSlot(0).getMaxDamage();
                 int count = 0;
                 if(useMeta){
-                    count = network.inventory.getItemCount(id,dmg);
+                    count = network.inventory.count(id,dmg);
                 } else {
-                    count = network.inventory.getItemCount(id);
+                    count = network.inventory.count(id);
                 }
                 switch (mode){
                     case 0:

@@ -57,6 +57,13 @@ public class Network {
     }
 
     /**
+     * Ticks the network.
+     */
+    public void tick(){
+
+    }
+
+    /**
      * Searches the network for <i>block</i>
      * @param block Block to be searched for
      * @return <code>BlockInstance</code> of a valid device or <code>null</code> if no device can be found

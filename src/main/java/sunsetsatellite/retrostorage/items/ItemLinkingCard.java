@@ -8,7 +8,13 @@ import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.core.util.BlockInstance;
+import sunsetsatellite.catalyst.core.util.Vec3i;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.blocks.BlockWirelessLink;
 import sunsetsatellite.retrostorage.tiles.TileEntityWirelessLink;
+
+import java.util.HashMap;
 
 public class ItemLinkingCard extends Item {
 
@@ -24,6 +30,9 @@ public class ItemLinkingCard extends Item {
             if(link.remoteLink != null){
                 link.remoteLink.remoteLink = null;
                 link.remoteLink = null;
+                if(link.network != null){
+                    link.network.reload();
+                }
                 entityplayer.addChatMessage("action.retrostorage.linkBroken");
                 return true;
             }
@@ -37,8 +46,18 @@ public class ItemLinkingCard extends Item {
                 entityplayer.addChatMessage("action.retrostorage.cardBound");
             } else {
                 TileEntity tile = world.getBlockTileEntity(data.getInteger("x"),data.getInteger("y"),data.getInteger("z"));
-                if(tile instanceof TileEntityWirelessLink){
+                TileEntity self = world.getBlockTileEntity(blockX, blockY, blockZ);
+                if(tile == self){
+                    entityplayer.addChatMessage("action.retrostorage.linkSelfError");
+                } else if(tile instanceof TileEntityWirelessLink){
                     link.remoteLink = (TileEntityWirelessLink) tile;
+                    if(link.network != null){
+                        HashMap<String, BlockInstance> scan = link.network.scan(world, new Vec3i(tile.x, tile.y, tile.z));
+                        link.network.addRecursive(scan);
+                    } else if (((TileEntityWirelessLink) tile).network != null) {
+                        HashMap<String, BlockInstance> scan = ((TileEntityWirelessLink) tile).network.scan(world, new Vec3i(self.x, self.y, self.z));
+                        ((TileEntityWirelessLink) tile).network.addRecursive(scan);
+                    }
                     link.remoteLink.remoteLink = link;
                     entityplayer.addChatMessage("action.retrostorage.linkEstablished");
                 } else {

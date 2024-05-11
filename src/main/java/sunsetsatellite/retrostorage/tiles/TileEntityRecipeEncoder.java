@@ -4,12 +4,14 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
+import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 
 import java.util.ArrayList;
 
@@ -155,20 +157,18 @@ public class TileEntityRecipeEncoder extends TileEntity
                         itemList.add(i, null);
                     }
                 }
-                CompoundTag nbt = RetroStorage.itemsArrayToNBT(itemList);//DiscManipulator.convertRecipeToNBT(itemList);
-                //RetroStorage.printCompound(nbt);
+                CompoundTag nbt = RetroStorage.itemsArrayToNBT(itemList);
                 recipeDisc.getData().putCompound("recipe",nbt);
-                ItemStack result = RetroStorage.findRecipeResultFromNBT(nbt);
-                //RetroStorage.LOGGER.debug(String.valueOf(result));
-                if(result != null && result.itemID != 0 && result.stackSize != 0){
-                    String itemName = I18n.getInstance().translateKey(result.getItemName() + ".name");
-                    recipeDisc.getData().putString("name","Recipe Disc: "+result.stackSize+"x "+itemName);
-                    recipeDisc.getData().putBoolean("overrideName",true);
-                } else {
-                    recipeDisc.getData().putString("name","");
-                    recipeDisc.getData().putBoolean("overrideName",false);
-                }
-                RetroStorage.LOGGER.debug("Encoded!");
+            }
+        }
+    }
+
+    public void encodeDisc(RecipeEntryCrafting<?,ItemStack> recipe){
+        ItemStack recipeDisc = getStackInSlot(9);
+        if (recipeDisc != null) {
+            if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
+                CompoundTag nbt = RetroStorage.itemsArrayToNBT(RetroStorage.getRecipeItems(new NetworkCraftable(recipe)));
+                recipeDisc.getData().putCompound("recipe", nbt);
             }
         }
     }

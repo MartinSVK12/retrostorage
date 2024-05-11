@@ -12,7 +12,7 @@ import sunsetsatellite.retrostorage.gui.GuiImporter;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
 
-public class BlockImporter extends BlockTileEntityRotatable {
+public class BlockImporter extends BlockNetworkDevice {
 
 
     public BlockImporter(String key, int id, Material material) {

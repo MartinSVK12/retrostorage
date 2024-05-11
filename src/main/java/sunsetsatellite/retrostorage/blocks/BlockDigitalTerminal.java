@@ -10,7 +10,7 @@ import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 
-public class BlockDigitalTerminal extends BlockTileEntityRotatable {
+public class BlockDigitalTerminal extends BlockNetworkDevice {
 
     public BlockDigitalTerminal(String key, int id, Material material) {
         super(key, id, material);

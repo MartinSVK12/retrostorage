@@ -12,6 +12,7 @@ import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
+import sunsetsatellite.retrostorage.util.SlotRequest;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class ContainerRequestTerminal extends Container
 
     public ContainerRequestTerminal(IInventory iinventory, TileEntityRequestTerminal tile)
     {
-    	addSlot(new SlotViewOnly(tile, 0, 60, 108));
+    	//addSlot(new SlotViewOnly(tile, 0, 60, 108));
     	
     	for(int k = 0; k < 9; k++)
         {
@@ -39,13 +40,15 @@ public class ContainerRequestTerminal extends Container
         }
     	
         this.tile = tile;
-        for(int i = 0; i < 4; i++)
-        {
-            for(int l = 0; l < 9; l++)
+        if(tile != null && tile.network != null){
+            for(int i = 0; i < 4; i++)
             {
-        		addSlot(new SlotViewOnly(tile,l + i * 9 + 1 , 8 + l * 18, 18 + i * 18));
-            }
+                for(int l = 0; l < 9; l++)
+                {
+                    addSlot(new SlotRequest(tile.network,l + i * 9, 8 + l * 18, 18 + i * 18));
+                }
 
+            }
         }
     }
 
@@ -56,7 +59,6 @@ public class ContainerRequestTerminal extends Container
             if(slot instanceof SlotViewOnly){
                 if(tile.network != null && slot.getStack() != null){
                     RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile,slot.getStack(),((SlotViewOnly) slot).variableIndex));
-                    //tile.network.requestCrafting(tile.recipeContents[((SlotViewOnly) slot).variableIndex]);
                 }
                 return null;
             }

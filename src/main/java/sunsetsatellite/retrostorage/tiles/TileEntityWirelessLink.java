@@ -4,20 +4,27 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
+import sunsetsatellite.catalyst.core.util.BlockInstance;
+import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.RetroStorage;
+
+import java.util.HashMap;
 
 public class TileEntityWirelessLink extends TileEntityNetworkDevice {
 
     public TileEntityWirelessLink()
     {
     }
-    
-    
+
     @Override
     public void tick() {
         super.tick();
         if(tempRemoteLinkNBT != null){
             initSavedLink(tempRemoteLinkNBT);
+        }
+        if(remoteLink != null && network == null && remoteLink.network != null){
+            HashMap<String, BlockInstance> scan = remoteLink.network.scan(worldObj, new Vec3i(x, y, z));
+            remoteLink.network.addRecursive(scan);
         }
     }
 

@@ -9,7 +9,7 @@ import net.minecraft.core.world.World;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityWirelessLink;
 
-public class BlockWirelessLink extends BlockTileEntityRotatable {
+public class BlockWirelessLink extends BlockNetworkDevice {
 
     public BlockWirelessLink(String key, int id, Material material) {
         super(key, id, material);
@@ -28,8 +28,8 @@ public class BlockWirelessLink extends BlockTileEntityRotatable {
         } else
         {
             TileEntityWirelessLink tile = (TileEntityWirelessLink) world.getBlockTileEntity(i, j, k);
-            //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
+                entityplayer.addChatMessage("Online: "+(tile.network != null));
                 if(tile.remoteLink == null){
                     entityplayer.addChatMessage("action.retrostorage.linkUnlinked");
                 } else {

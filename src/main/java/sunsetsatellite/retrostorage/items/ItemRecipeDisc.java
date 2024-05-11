@@ -2,10 +2,23 @@ package sunsetsatellite.retrostorage.items;
 
 
 import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.net.command.TextFormatting;
+import sunsetsatellite.catalyst.core.util.ICustomDescription;
+import sunsetsatellite.retrostorage.RetroStorage;
 
-public class ItemRecipeDisc extends Item {
+public class ItemRecipeDisc extends Item implements ICustomDescription {
 
     public ItemRecipeDisc(String name, int id) {
         super(name, id);
+    }
+
+    @Override
+    public String getDescription(ItemStack itemStack) {
+        ItemStack result = RetroStorage.findRecipeResultFromNBT(itemStack.getData().getCompound("recipe"));
+        if(result != null) {
+            return TextFormatting.MAGENTA+"Output: "+String.valueOf(result.stackSize)+"x "+result.getDisplayName()+TextFormatting.WHITE;
+        }
+        return TextFormatting.GRAY+"Empty"+TextFormatting.WHITE;
     }
 }

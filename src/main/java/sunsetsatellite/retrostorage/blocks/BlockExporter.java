@@ -12,7 +12,7 @@ import sunsetsatellite.retrostorage.gui.GuiExporter;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
 
-public class BlockExporter extends BlockTileEntityRotatable {
+public class BlockExporter extends BlockNetworkDevice {
 
     public BlockExporter(String key, int id, Material material) {
         super(key, id, material);

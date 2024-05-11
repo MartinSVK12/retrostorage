@@ -12,15 +12,15 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.SlotDigital;
 import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ContainerDigitalTerminal extends Container
 {
 
-    public ContainerDigitalTerminal(IInventory iinventory, TileEntityDigitalTerminal tileentitydigitalterminal)
+    public ContainerDigitalTerminal(IInventory iinventory, TileEntityDigitalTerminal tile)
     {
-
-    	addSlot(new SlotViewOnly(tileentitydigitalterminal, 0, 60, 108));
+        this.tile = tile;
     	
     	for(int k = 0; k < 9; k++)
         {
@@ -35,38 +35,20 @@ public class ContainerDigitalTerminal extends Container
             }
 
         }
-    	
-        tile = tileentitydigitalterminal;
-        for(int i = 0; i < 4; i++)
-        {
-            for(int l = 0; l < 9; l++)
+
+        if(tile.network != null && tile.network.drive != null){
+            //addSlot(new SlotViewOnly(tile.network.drive, 0, 60, 108));
+
+            for(int i = 0; i < 4; i++)
             {
-        		addSlot(new SlotDigital(tileentitydigitalterminal,l + i * 9 + 1 , 8 + l * 18, 18 + i * 18));
+                for(int l = 0; l < 9; l++)
+                {
+                    addSlot(new SlotDigital(tile.network.inventory,l + i * 9, 8 + l * 18, 18 + i * 18));
+                }
             }
         }
     }
 
-    /*@Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean shift, boolean ctrl) {
-        if(tile.network != null){
-            //RetroStorage.LOGGER.debug(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
-            ItemStack item = this.getSlot(i).getStack().copy();
-            ItemStack original = this.getSlot(i).getStack();
-            if(i > 0 && i < 37){
-                if(tile.getAmountOfUsedSlots() < tile.network.drive.virtualDriveMaxStacks) {
-                    this.onStackMergeShiftClick(this.getSlot(i).getStack(), 37, 73, false);
-                }
-            } else {
-                this.onStackMergeShiftClick(this.getSlot(i).getStack(),1,36,false);
-                this.getSlot(i).onPickupFromSlot(item);
-            }
-            if (original.stackSize == 0) {
-                this.getSlot(i).putStack(null);
-            } else {
-                this.getSlot(i).onSlotChanged();
-            }
-        }
-    }*/
     @Override
     public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
         return null;
@@ -74,6 +56,13 @@ public class ContainerDigitalTerminal extends Container
 
     @Override
     public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        int firstDeviceSlot = 36;
+        if(slot instanceof SlotDigital){
+            return getSlots(0, 35, false);
+        }
+        if(slot.id < firstDeviceSlot){
+            return getSlots(36,36,false);
+        }
         return null;
     }
 
@@ -83,5 +72,5 @@ public class ContainerDigitalTerminal extends Container
         return tile.canInteractWith(entityplayer);
     }
     
-    private TileEntityDigitalTerminal tile;
+    private final TileEntityDigitalTerminal tile;
 }

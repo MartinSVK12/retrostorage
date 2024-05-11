@@ -14,7 +14,7 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 
 import java.util.ArrayList;
 
-public class BlockDiscDrive extends BlockTileEntityRotatable {
+public class BlockDiscDrive extends BlockNetworkDevice {
 
     public BlockDiscDrive(String key, int id, Material material) {
         super(key, id, material);
@@ -43,11 +43,6 @@ public class BlockDiscDrive extends BlockTileEntityRotatable {
     @Override
     public void onBlockRemoved(World world, int x, int y, int z, int data) {
         TileEntityDiscDrive tile = (TileEntityDiscDrive) world.getBlockTileEntity(x, y, z);
-        if(tile.network != null){
-            if(tile.network.drive == tile){
-                tile.network.drive = null;
-            }
-        }
         ArrayList<ItemStack> discsUsed = (ArrayList<ItemStack>) tile.discsUsed.clone();
         for (ItemStack ignored : discsUsed) {
             tile.removeLastDisc();

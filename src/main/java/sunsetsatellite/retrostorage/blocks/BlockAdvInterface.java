@@ -12,7 +12,7 @@ import sunsetsatellite.retrostorage.gui.GuiAdvInterface;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityAdvInterface;
 
-public class BlockAdvInterface extends BlockTileEntity {
+public class BlockAdvInterface extends BlockNetworkDevice {
 
     public BlockAdvInterface(String key, int id, Material material) {
         super(key, id, material);

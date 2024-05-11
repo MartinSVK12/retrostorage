@@ -15,7 +15,7 @@ import sunsetsatellite.retrostorage.gui.GuiAssembler;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
-import sunsetsatellite.retrostorage.util.RecipeTask;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 public class BlockAssembler extends BlockTileEntityRotatable {
 
@@ -36,15 +36,16 @@ public class BlockAssembler extends BlockTileEntityRotatable {
         } else
         {
             TileEntityAssembler tile = (TileEntityAssembler) world.getBlockTileEntity(i, j, k);
-            if(entityplayer.isSneaking()){
+            /*if(entityplayer.isSneaking()){
                 if(tile.getStackInSlot(0) != null && tile.getStackInSlot(0).getItem() instanceof ItemRecipeDisc){
                     RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).getData().getCompound("recipe"));
                     if(recipe != null){
-                        tile.task = new RecipeTask(recipe,null,null);
+                        //TODO:
+                        //tile.task = new CraftingTask(recipe,null,null);
                     }
                 }
                 return true;
-            }
+            }*/
             if(tile != null) {
                 ((IOpenGUI)entityplayer).displayGUI(new GuiAssembler(entityplayer.inventory,tile));
             }

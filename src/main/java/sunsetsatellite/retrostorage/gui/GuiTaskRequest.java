@@ -1,34 +1,33 @@
 package sunsetsatellite.retrostorage.gui;
 
 
-import com.mojang.nbt.CompoundTag;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.client.render.FontRenderer;
 
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.containers.ContainerTaskRequest;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
-
-import java.util.ArrayList;
+import sunsetsatellite.retrostorage.util.GuiRenderDigitalItem;
+import sunsetsatellite.retrostorage.util.crafting.*;
 
 public class GuiTaskRequest extends GuiContainer {
     public FontRenderer fontRenderer = RetroStorage.mc.fontRenderer;
     protected String screenTitle = "Scroll Container";
-    private GuiItemSlot slotContainer;
-    public ArrayList<Object> list = new ArrayList<>();
-    public DigitalNetwork network;
+    private GuiRecipeItemSlot slotContainer;
+    public CalculationResult calculationResult;
+    public final DigitalNetwork network;
     public ItemStack requestedItem;
     public ItemStack lastRequestedItem;
     public int requestAmount = 1;
     public TileEntityRequestTerminal tile;
     public int requestedSlotId;
-    public boolean canCraft = true;
+    public GuiRenderDigitalItem guiRenderItem = new GuiRenderDigitalItem(RetroStorage.mc);
 
     public GuiTaskRequest(TileEntityRequestTerminal tile, ItemStack request, int slotId) {
         super(new ContainerTaskRequest(tile));
@@ -36,16 +35,19 @@ public class GuiTaskRequest extends GuiContainer {
         ySize = 256;
         this.requestedItem = request;
         this.tile = tile;
+        this.network = tile.network;
         this.requestedSlotId = slotId;
     }
 
     public void init() {
         I18n stringtranslate = I18n.getInstance();
         this.screenTitle = "Task Request";
-        this.slotContainer = new GuiItemSlot(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
+        this.slotContainer = new GuiRecipeItemSlot(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
 
         this.slotContainer.registerScrollButtons(this.controlList, 4, 5);
         this.initButtons();
+
+        recalculate();
     }
 
     public void initButtons() {
@@ -60,34 +62,36 @@ public class GuiTaskRequest extends GuiContainer {
             if(guibutton.id == 0){
                 if(requestAmount > 1){
                     requestAmount--;
+                    recalculate();
                 }
             }
             if(guibutton.id == 1){
                 requestAmount++;
+                recalculate();
             }
             if(guibutton.id == 2){
-                for (int i = 0; i < requestAmount; i++) {
-                    if(tile.recipeContents[requestedSlotId] instanceof ArrayList){
-                        //RetroStorage.LOGGER.debug("Processing requests work in progress!");
-                        ArrayList<CompoundTag> processList = new ArrayList<>();
-                        for (CompoundTag tagCompound : (ArrayList<CompoundTag>) tile.recipeContents[requestedSlotId]) {
-                            processList.add(new CompoundTag(tagCompound));
-                        }
-                        tile.network.requestProcessing(processList);
-                    } else {
-                        tile.network.requestCrafting((RecipeEntryCrafting<?,?>) tile.recipeContents[requestedSlotId]);
-                    }
+                if(requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
+                if(calculationResult.getType() == CalculationResultType.OK){
+                    network.requestCrafting(calculationResult.getTask());
+                    ((IOpenGUI)mc.thePlayer).displayGUI(new GuiRequestQueue(tile.network, null));
                 }
-                RetroStorage.mc.displayGuiScreen(null);
             }
         }
     }
 
+    private void recalculate(){
+        if(requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
+        NetworkCraftable craftable = network.knownCraftables.get(requestedSlotId);
+        CraftingCalculator calc = new CraftingCalculator(network,requestAmount,requestedItem,craftable,network.knownCraftables);
+        calculationResult = calc.calculate();
+        lastRequestedItem = requestedItem;
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer() {
-        //TODO: drawItemStack(requestedItem,32,32);
+        guiRenderItem.render(requestedItem,32,32);
         fontRenderer.drawString(requestAmount+"x",10,36,0x404040);
-        fontRenderer.drawString(requestedItem.stackSize+"x "+I18n.getInstance().translateKey(requestedItem.getItemName()+".name"), 55, 36, 0x404040);
+        fontRenderer.drawString(requestedItem.getDisplayName(), 55, 36, 0x404040);
         fontRenderer.drawString(this.screenTitle,95,10,0x404040);
     }
 
@@ -102,30 +106,10 @@ public class GuiTaskRequest extends GuiContainer {
     }
 
     public void drawScreen(int x, int y, float renderPartialTicks) {
-        controlList.get(2).enabled = canCraft;
+        controlList.get(2).enabled = calculationResult.getType() == CalculationResultType.OK;
         super.drawScreen(x, y, renderPartialTicks);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(140,this.height-175,this.width*2, this.height+100); //TODO: fix this breaking at lower resolutions than 1080p
-        if(tile.recipeContents[requestedSlotId] instanceof ArrayList) {
-            if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
-                this.list.clear();
-                ArrayList<CompoundTag> tasks = (ArrayList<CompoundTag>) tile.recipeContents[requestedSlotId];
-                for(CompoundTag task : tasks){
-                    if(!task.getBoolean("isOutput")){
-                        ItemStack stack = ItemStack.readItemStackFromNbt(task.getCompound("stack"));
-                        if(stack == null) continue;
-                        list.add(stack);
-                    }
-                }
-                lastRequestedItem = requestedItem;
-            }
-        } else {
-            if(lastRequestedItem == null || !(requestedItem.isItemEqual(lastRequestedItem))){
-                this.list.clear();
-                list.addAll(tile.network.getRequirements((RecipeEntryCrafting<?, ?>) tile.recipeContents[requestedSlotId]));
-                lastRequestedItem = requestedItem;
-            }
-        }
         this.slotContainer.drawScreen(x, y, renderPartialTicks);
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }

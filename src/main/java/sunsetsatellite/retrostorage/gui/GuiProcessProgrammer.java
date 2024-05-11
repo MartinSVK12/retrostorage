@@ -76,6 +76,12 @@ public class GuiProcessProgrammer extends GuiContainer
                 break;
             case 1:
                 tile.clearDisc();
+                tile.isCurrentOutput = false;
+                controlList.get(2).displayString = "Input";
+                tile.currentSlot = 0;
+                tile.currentTask = 0;
+                tile.currentProcessName = "New Process";
+                processName.setText("New Process");
                 break;
             case 2:
                 tile.currentTask++;
@@ -98,7 +104,6 @@ public class GuiProcessProgrammer extends GuiContainer
 
     @Override
     public void mouseClicked(int i1, int i2, int i3) {
-        //System.out.printf("%d %d %d\n",Math.round(width / 2 - i1),Math.round(height / 2 - i2),i3);
         processName.mouseClicked(i1, i2, i3);
         super.mouseClicked(i1, i2, i3);
     }
@@ -115,10 +120,6 @@ public class GuiProcessProgrammer extends GuiContainer
         } else{
             super.keyTyped(c,i,mouseX,mouseY);
         }
-    }
-
-    public void updateScreen()
-    {
     }
 
     public void onClosed(){

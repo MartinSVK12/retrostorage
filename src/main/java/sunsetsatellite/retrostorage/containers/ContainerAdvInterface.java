@@ -17,8 +17,6 @@ public class ContainerAdvInterface extends Container
     {
         tile = TileEntityAdvInterface;
 
-        //addSlot(new SlotDigital(TileEntityInterface, 9, 134, 53));
-
         for(int i = 0; i < 3; i++)
         {
             for(int l = 0; l < 3; l++)
@@ -43,26 +41,6 @@ public class ContainerAdvInterface extends Container
         }
 
     }
-
-    /*@Override
-    public void quickMoveItems(int i, EntityPlayer entityPlayer, boolean bl, boolean bl2) {
-        if(tile.network != null){
-            //RetroStorage.LOGGER.debug(String.format("i:%d player:%s, bool1:%s, bool2:%s",i,entityPlayer,shift,ctrl));
-            ItemStack item = this.getSlot(i).getStack().copy();
-            ItemStack original = this.getSlot(i).getStack();
-            if(i > 0 && i < 9){
-                this.onStackMergeShiftClick(this.getSlot(i).getStack(),9,44,false);
-            } else {
-                this.onStackMergeShiftClick(this.getSlot(i).getStack(),0,9,false);
-                this.getSlot(i).onPickupFromSlot(item);
-            }
-            if (original.stackSize == 0) {
-                this.getSlot(i).putStack(null);
-            } else {
-                this.getSlot(i).onSlotChanged();
-            }
-        }
-    }*/
 
     @Override
     public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {

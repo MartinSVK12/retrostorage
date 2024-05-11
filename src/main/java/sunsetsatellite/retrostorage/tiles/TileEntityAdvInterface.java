@@ -4,26 +4,34 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.ProcessTask;
-import sunsetsatellite.retrostorage.util.Task;
+import sunsetsatellite.retrostorage.util.IProcessor;
+import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.retrostorage.util.ProcessingState;
+import sunsetsatellite.retrostorage.util.crafting.*;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TileEntityAdvInterface extends TileEntityNetworkDevice
-    implements IInventory {
+    implements IInventory, IProcessor {
+
+    private ItemStack[] contents;
+    public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
+    public IInventory workingTile;
+    public ProcessNode workingNode;
+    public CraftingTask workingTask;
 
     public TileEntityAdvInterface() {
         contents = new ItemStack[10];
-        this.workTimer = new TickTimer(this,this::work,10,true);
     }
 
     public int getSizeInventory()
@@ -52,6 +60,12 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     {
         if(contents[i] != null)
         {
+            if(network != null) {
+                if (getStackInSlot(i).getData().containsKey("disc") && getStackInSlot(i).getData().getCompound("disc").containsKey("processName")) {
+                    CraftingProcess process = new CraftingProcess(getStackInSlot(i).getData().getCompound("disc"));
+                    network.knownCraftables.remove(new NetworkCraftable(process));
+                }
+            }
             if(contents[i].stackSize <= j)
             {
                 ItemStack itemstack = contents[i];
@@ -74,6 +88,19 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     public void setInventorySlotContents(int i, ItemStack itemstack)
     {
+        if(network != null) {
+            if (itemstack == null) {
+                if (getStackInSlot(i).getData().containsKey("disc") && getStackInSlot(i).getData().getCompound("disc").containsKey("processName")) {
+                    CraftingProcess process = new CraftingProcess(getStackInSlot(i).getData().getCompound("disc"));
+                    network.knownCraftables.remove(new NetworkCraftable(process));
+                }
+            } else {
+                if (itemstack.getData().containsKey("disc") && itemstack.getData().getCompound("disc").containsKey("processName")) {
+                    CraftingProcess process = new CraftingProcess(itemstack.getData().getCompound("disc"));
+                    network.knownCraftables.add(new NetworkCraftable(process));
+                }
+            }
+        }
         contents[i] = itemstack;
         if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
         {
@@ -106,13 +133,6 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
-        /*if(!Objects.equals(CompoundTag.getCompound("processing"), new CompoundTag())){
-            processing = new ItemStack(CompoundTag.getCompound("processing"));
-            CompoundTag tasks = CompoundTag.getCompound("tasks");
-            tasks.func_28110_c().forEach((key)->{
-                processTasks.add(tasks.getCompound((String) key));
-            });
-        }*/
     }
 
     public void writeToNBT(CompoundTag CompoundTag)
@@ -129,17 +149,6 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 listTag.addTag(CompoundTag1);
             }
         }
-        /*if(processing != null) {
-            CompoundTag compound = new CompoundTag();
-            CompoundTag tasks = new CompoundTag();
-            processing.writeToNBT(compound);
-            CompoundTag.putCompound("processing", compound);
-            processTasks.forEach((nbt)->{
-                tasks.putCompound(nbt.getKey(),nbt);
-            });
-            CompoundTag.putCompound("tasks",tasks);
-            //CompoundTag.putInt("processingAmount", processingAmount);
-        }*/
         CompoundTag.put("Items", listTag);
     }
 
@@ -161,14 +170,13 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     @Override
     public void tick() {
         if(network != null && network.drive != null){
-            workTimer.tick();
             ArrayList<Class<?>> tiles = new ArrayList<>();
             tiles.add(IInventory.class);
             connectedTiles = getConnectedTileEntity(tiles);
             int i = 0;
             for (TileEntity tile : connectedTiles.values()) {
-                if(tile != null){
-                    workingTile = tile;
+                if(tile instanceof IInventory && !(tile instanceof TileEntityAdvInterface)){
+                    workingTile = (IInventory) tile;
                     break;
                 }
                 i++;
@@ -176,281 +184,34 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
             if(i >= 6){
                 workingTile = null;
             }
-        }
 
-    }
-
-    public void work(){
-        if(network != null && network.drive != null){
-            if(request == null){
-                if(stack == null || stack.size() == 0){
-                    stack = network.requestQueue.clone();
-                }
-                if(network.requestQueue.size() > 0){
-                    boolean result = acceptNextTask();
-                    if(result){
-                        RetroStorage.LOGGER.debug(this+" Accepted task "+ request +".");
+            if(isInUse() && workingTile != null){
+                for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+                    if(step.output) {
+                        ItemStack slotStack = workingTile.getStackInSlot(step.slot);
+                        ItemStack stepStack = step.stack;
+                        if(slotStack == null){
+                            continue;
+                        }
+                        workingTile.setInventorySlotContents(step.slot, null);
+                        workingTask.insertFromProcess(slotStack);
                     }
                 }
-            } else {
-                fulfillRequest();
+            }
+
+            if(isInUse() && workingNode.getState() == ProcessingState.FINISHED){
+                workingTask.processor = null;
+                workingNode = null;
+                workingTask = null;
             }
         }
     }
 
-    public void fulfillRequest(){
-        if(request != null && request.tasks.size() > 0){
-            ArrayList<CompoundTag> tasks = request.tasks;
-            int i = 0;
-            while(tasks.get(i).getBoolean("isOutput")){
-                if(tasks.size()-1 == i){
-                    break;
-                }
-                i++;
-            }
-            runTask(tasks.get(i));
-        }
-        if(request != null && request.tasks.size() == 0){
-            RetroStorage.LOGGER.debug(this+" Task fulfilled!");
-            this.request.completed = true;
-            this.request.processor = null;
-            network.requestQueue.remove(request);
-            this.request = null;
-        }
-    }
-
-    public void runTask(CompoundTag task){
-        if(network != null && network.drive != null){
-            boolean isOutput = task.getBoolean("isOutput");
-            int slot = task.getInteger("slot");
-            ItemStack stack = ItemStack.readItemStackFromNbt(task.getCompound("stack"));
-            if(workingTile == null){
-                failTask(task,"Interface not attached",true);
-                return;
-            }
-            IInventory inv = ((IInventory) workingTile);
-            if(!isOutput) {
-                if (inv.getSizeInventory() > slot) {
-                    ItemStack slotStack = ((IInventory) workingTile).getStackInSlot(slot);
-                    if(slotStack != null) {
-                        if (slotStack.isItemEqual(stack)) {
-                            if (slotStack.stackSize + stack.stackSize <= 64) {
-                                int networkSlot = network.inventory.getInventorySlotContainItem(stack.itemID,stack.getMetadata());
-                                int networkAmount = network.inventory.getItemCount(stack.itemID,stack.getMetadata());
-                                if(networkSlot != -1) {
-                                    if (networkAmount >= stack.stackSize) {
-                                        network.inventory.decrStackSize(networkSlot, stack.stackSize);
-                                        DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-                                        slotStack.stackSize += stack.stackSize;
-                                        finishTask(task);
-                                    } else {
-                                        RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
-                                        ArrayList<Task> subtasks = network.getSubtask(request);
-                                        if(subtasks == null){
-                                            failTask(task, "Not enough resources and no subtasks could be made", true);
-                                        } else {
-                                            if(subtasks.size() == 0){
-                                                failTask(task, "Not enough resources and no subtasks could be made", true);
-                                            }
-                                            for (Task subtask : subtasks) {
-                                                if(request != null){
-                                                    request.requires.add(subtask);
-                                                    request.processor = null;
-                                                    request = null;
-                                                }
-                                                network.requestQueue.addFirst(subtask);
-                                                if(request != null){
-                                                    request.processor = null;
-                                                    request = null;
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                } else {
-                                    RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
-                                    ArrayList<Task> subtasks = network.getSubtask(request);
-                                    if(subtasks == null){
-                                        failTask(task, "Not enough resources and no subtasks could be made", true);
-                                    } else {
-                                        if(subtasks.size() == 0){
-                                            failTask(task, "Not enough resources and no subtasks could be made", true);
-                                        }
-                                        for (Task subtask : subtasks) {
-                                            if(request != null){
-                                                request.requires.add(subtask);
-                                                request.processor = null;
-                                                request = null;
-                                            }
-                                            network.requestQueue.addFirst(subtask);
-                                            if(request != null){
-                                                request.processor = null;
-                                                request = null;
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                failTask(task, "Slot full",false);
-                            }
-                        } else {
-                            failTask(task, "Slot already occupied",false);
-                        }
-                    } else {
-                        int networkSlot = network.inventory.getInventorySlotContainItem(stack.itemID,stack.getMetadata());
-                        int networkAmount = network.inventory.getItemCount(stack.itemID,stack.getMetadata());
-                        if(networkSlot != -1){
-                            if(networkAmount >= stack.stackSize) {
-                                network.inventory.decrStackSize(networkSlot, stack.stackSize);
-                                DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-                                inv.setInventorySlotContents(slot, stack.copy());
-                                finishTask(task);
-                            } else {
-                                RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
-                                ArrayList<Task> subtasks = network.getSubtask(request);
-                                if(subtasks == null){
-                                    failTask(task, "Not enough resources and no subtasks could be made", true);
-                                } else {
-                                    if(subtasks.size() == 0){
-                                        failTask(task, "Not enough resources and no subtasks could be made", true);
-                                    }
-                                    for (Task subtask : subtasks) {
-                                        if(request != null){
-                                            request.requires.add(subtask);
-                                            request.processor = null;
-                                            request = null;
-                                        }
-                                        network.requestQueue.addFirst(subtask);
-                                        if(request != null){
-                                            request.processor = null;
-                                            request = null;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            RetroStorage.LOGGER.debug("Not enough resources for task "+request+", attempting to create subtasks..");
-                            ArrayList<Task> subtasks = network.getSubtask(request);
-                            if(subtasks == null){
-                                failTask(task, "Not enough resources and no subtasks could be made", true);
-                            } else {
-                                if(subtasks.size() == 0){
-                                    failTask(task, "Not enough resources and no subtasks could be made", true);
-                                }
-                                for (Task subtask : subtasks) {
-                                    if(request != null){
-                                        request.requires.add(subtask);
-                                        request.processor = null;
-                                        request = null;
-                                    }
-                                    network.requestQueue.addFirst(subtask);
-                                    if(request != null){
-                                        request.processor = null;
-                                        request = null;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    failTask(task, "Invalid slot",true);
-                }
-            } else {
-                if(inv.getSizeInventory() > slot) {
-                    ItemStack slotStack = ((IInventory) workingTile).getStackInSlot(slot);
-                    if (slotStack != null) {
-                        if(slotStack.stackSize == stack.stackSize ){
-                            if(slotStack.isItemEqual(stack)){
-                                if (network.inventory.addItemStackToInventory(slotStack.copy())) {
-                                    inv.setInventorySlotContents(slot, null);
-                                    DiscManipulator.saveDisc(network.drive.virtualDisc,network.inventory);
-                                    finishTask(task);
-                                } else {failTask(task,"Failed to add to network",false);}
-                            } else {failTask(task,"Stack mismatch",false);}
-                        }
-                    } //else {failTask(task, "Empty slot",false);}
-                } else {failTask(task, "Invalid slot",true);}
-            }
-        }
-    }
-
-
-    public void finishTask(CompoundTag task){
-        //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Task "+task.getInteger("id")+" succeeded!");
-        RetroStorage.LOGGER.debug(this+" "+"Step "+task.getInteger("id")+" succeeded!");
-        request.tasks.remove(task);
-    }
-
-    public void failTask(CompoundTag task, String reason, boolean fatal){
-        //ModLoader.getMinecraftInstance().thePlayer.addChatMessage((fatal ? "FATAL! " : "")+"Task "+task.getInteger("id")+" failed: "+reason+"!");
-        RetroStorage.LOGGER.debug(this+" "+(fatal ? "FATAL! " : "")+"Step "+task.getInteger("id")+" failed: "+reason+"!");
-        if(fatal){
-            //ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Processing failed!");
-            if(request.attempts > 0){
-                request.attempts--;
-            } else {
-                RetroStorage.LOGGER.debug("Too many failed attempts, cancelling task!");
-                network.requestQueue.clone().forEach((V)->{
-                    if(V.requires.contains(request) || V.parent == request){
-                        network.requestQueue.remove(V);
-                    }
-                });
-                network.requestQueue.remove(request);
-                request.processor = null;
-                request = null;
-                return;
-            }
-
-            request.processor = null;
-            request = null;
-        }
-    }
-
-    public void cancelProcessing(){
-        request.processor = null;
-        request = null;
-    }
-
-    public boolean acceptNextTask() {
-        if(!stack.isEmpty() && network != null && network.drive != null){
-            Task t = stack.pop();
-            if (t instanceof ProcessTask) {
-                if (t.processor == null) {
-                    if (!t.completed) {
-                        if (t.requirementsMet()) {
-                            ArrayList<ProcessTask> processTasks = new ArrayList<>();
-                            for (ArrayList<CompoundTag> process : getProcesses()) {
-                                processTasks.add(new ProcessTask(process,null,null));
-                            }
-                            boolean found = processTasks.stream().anyMatch((T)-> T.output.isItemEqual(((ProcessTask) t).output));
-                            if(found){
-                                this.request = (ProcessTask) t;
-                                t.processor = this;
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        } else {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                acceptNextTask();
-            }
-        }
-        return false;
-    }
-
-    public ArrayList<ArrayList<CompoundTag>> getProcesses(){
-        ArrayList<ArrayList<CompoundTag>> processes = new ArrayList<>();
+    public ArrayList<CraftingProcess> getProcesses(){
+        ArrayList<CraftingProcess> processes = new ArrayList<>();
         for (ItemStack stack : contents){
-            if(stack != null && stack.getItem() instanceof ItemAdvRecipeDisc){
-                processes.add(DiscManipulator.getProcessesFromDisc(stack));
+            if(stack != null && stack.getItem() instanceof ItemAdvRecipeDisc && stack.getData().containsKey("disc")){
+                processes.add(new CraftingProcess(stack.getData().getCompound("disc")));
             }
         }
         return processes;
@@ -470,11 +231,93 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     }
 
-    private ItemStack[] contents;
-    public TickTimer workTimer;
-    public HashMap<String,TileEntity> connectedTiles = new HashMap<>();
-    public TileEntity workingTile;
-    public ArrayDeque<Task> stack;
-    public ProcessTask request;
+    @Override
+    public List<NetworkCraftable> getCraftables() {
+        return getProcesses().stream().map(NetworkCraftable::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isInUse() {
+        return workingNode != null && workingTask != null;
+    }
+
+    @Override
+    public void setFocus(ProcessNode node, CraftingTask task) {
+        workingNode = node;
+        workingTask = task;
+        if(task != null){
+            task.processor = this;
+        }
+    }
+
+    @Override
+    public IInventory getConnectedTile() {
+        return workingTile;
+    }
+
+    @Override
+    public ProcessNode getWorkingNode() {
+        return workingNode;
+    }
+
+    @Override
+    public CraftingTask getWorkingTask() {
+        return workingTask;
+    }
+
+    @Override
+    public boolean insertItems(ItemStackList items) {
+        if(!isInUse() || workingTile == null) return false;
+        if(!canInsertItems(items)) return false;
+        for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+            if (!step.output) {
+                ItemStack slotStack = workingTile.getStackInSlot(step.slot);
+                ItemStack stepStack = step.stack;
+                ItemStack removed = items.remove(stepStack.itemID,stepStack.getMetadata(),stepStack.stackSize,false,false);
+                if(removed == null){
+                    return false;
+                }
+                if(slotStack == null){
+                    workingTile.setInventorySlotContents(step.slot,removed);
+                } else {
+                    workingTile.getStackInSlot(step.slot).stackSize += removed.stackSize;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canInsertItems(ItemStackList items) {
+        boolean can = true;
+        if(!isInUse() || workingTile == null) return false;
+        for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+            if(!step.output){
+                ItemStack slotStack = workingTile.getStackInSlot(step.slot);
+                ItemStack stepStack = step.stack;
+                if (slotStack != null) {
+                    if (!slotStack.isItemEqual(stepStack)) {
+                        can = false;
+                        break;
+                    } else {
+                        ItemStack testStack = items.get(stepStack.itemID,stepStack.getMetadata());
+                        if(testStack == null){
+                            can = false;
+                            break;
+                        }
+                        if(testStack.stackSize < stepStack.stackSize){
+                            can = false;
+                            break;
+                        }
+                        if(slotStack.stackSize+stepStack.stackSize > slotStack.getMaxStackSize()){
+                            can = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return can;
+    }
 }
 

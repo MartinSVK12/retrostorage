@@ -81,6 +81,14 @@ repositories {
 		metadataSources { artifact() }
 	}
 	ivy {
+		url = "https://github.com/MartinSVK12"
+		patternLayout {
+			artifact "[organisation]/releases/download/"+project.catalyst_secondary_version+"/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
 		url = "https://github.com/ToufouMaster"
 		patternLayout {
 			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
@@ -109,11 +117,10 @@ dependencies {
 	// If you do not need Halplibe you can comment this line out or delete this line
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
-	modImplementation "ModMenu:ModMenu:2.0.4"
-	//implementation project(path: ":catalyst",configuration: "namedElements")
-	//implementation project(path: ":catalyst:energy",configuration: "namedElements")
-	modImplementation "catalyst:catalyst-core:1.1.6"
-	modImplementation "catalyst:catalyst-energy:1.0.6"
+	modImplementation "ModMenu:ModMenu:2.0.5"
+	modImplementation "catalyst:catalyst-core:1.2.0"
+	modImplementation "catalyst:catalyst-energy:1.0.9"
+	modImplementation "catalyst:catalyst-fluids:1.1.0"
 	modImplementation "BTWaila:btwaila:1.0.9-7.1"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
@@ -130,13 +137,13 @@ dependencies {
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 	withSourcesJar()
 }
 
 tasks.withType(JavaCompile).configureEach {
-	options.release.set 17
+	options.release.set 8
 }
 
 jar {

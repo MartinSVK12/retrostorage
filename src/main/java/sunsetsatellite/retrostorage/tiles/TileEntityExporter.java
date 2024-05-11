@@ -7,6 +7,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 
@@ -107,7 +108,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
         {
             CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
-            if(j >= 0 && j < contents.length)
+            if(j < contents.length)
             {
                 contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
@@ -183,17 +184,17 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                         if(isWhitelist){
                             for (ItemStack stack : contents) {
                                 if(stack != null){
-                                    networkSlot = network.inventory.getInventorySlotContainItem(stack.itemID,stack.getMetadata());
+                                    networkSlot = network.inventory.find(stack.itemID,stack.getMetadata());
                                     if(networkSlot != -1){
                                         break;
                                     }
                                 }
                             }
                         } else if(isEmpty()) {
-                            networkSlot = network.inventory.getLastOccupiedStack();
+                            networkSlot = network.inventory.getLastSlot();
                         } else {
-                            networkSlot = network.inventory.getLastOccupiedStack();
-                            ItemStack networkStack = network.inventory.getStackInSlot(networkSlot);
+                            networkSlot = network.inventory.getLastSlot();
+                            ItemStack networkStack = network.inventory.get(networkSlot);
                             for (ItemStack stack : contents) {
                                 if (stack != null) {
                                     if(networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata()){
@@ -212,10 +213,9 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                             }
                         }
                         if(networkSlot != -1){
-                            ItemStack stack = network.inventory.getStackInSlot(networkSlot);
+                            ItemStack stack = network.inventory.remove(networkSlot,false,false);
                             if(stack != null && availableSlot != -1){
                                 inv.setInventorySlotContents(availableSlot,stack);
-                                network.inventory.setInventorySlotContents(networkSlot,null);
                                 DiscManipulator.saveDisc(network.drive.virtualDisc,network.inventory);
                             }
                         }
@@ -232,17 +232,17 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                         if(isWhitelist){
                             for (ItemStack stack : contents) {
                                 if(stack != null){
-                                    networkSlot = network.inventory.getInventorySlotContainItem(stack.itemID,stack.getMetadata());
+                                    networkSlot = network.inventory.find(stack.itemID,stack.getMetadata());
                                     if(networkSlot != -1){
                                         break;
                                     }
                                 }
                             }
                         } else if(isEmpty()) {
-                            networkSlot = network.inventory.getLastOccupiedStack();
+                            networkSlot = network.inventory.getLastSlot();
                         } else {
-                            networkSlot = network.inventory.getLastOccupiedStack();
-                            ItemStack networkStack = network.inventory.getStackInSlot(networkSlot);
+                            networkSlot = network.inventory.getLastSlot();
+                            ItemStack networkStack = network.inventory.get(networkSlot);
                             for (ItemStack stack : contents) {
                                 if (stack != null) {
                                     if(networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata()){
@@ -261,10 +261,9 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                             }
                         }
                         if(networkSlot != -1){
-                            ItemStack stack = network.inventory.getStackInSlot(networkSlot);
+                            ItemStack stack = network.inventory.remove(networkSlot,false,false);
                             if(stack != null && availableSlot != -1){
                                 inv.setInventorySlotContents(availableSlot,stack);
-                                network.inventory.setInventorySlotContents(networkSlot,null);
                                 DiscManipulator.saveDisc(network.drive.virtualDisc,network.inventory);
                             }
                         }
@@ -279,5 +278,5 @@ public class TileEntityExporter extends TileEntityNetworkDevice
     public int slot = -1;
     public boolean isWhitelist = true;
     public boolean enabled = true;
-    public HashMap<String,TileEntity> connectedTiles = new HashMap<>();
+    public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 }

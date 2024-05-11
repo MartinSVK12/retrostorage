@@ -11,9 +11,11 @@ import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.gui.GuiDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
 import sunsetsatellite.retrostorage.gui.GuiRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 
@@ -27,7 +29,7 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
     public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
         TileEntity tile = world.getBlockTileEntity(blockX,blockY,blockZ);
         if(tile != null){
-            if((tile.getClass() == TileEntityDigitalTerminal.class && this == RetroStorage.mobileTerminal) || (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal)){
+            if((tile.getClass() == TileEntityDigitalTerminal.class && this == RetroStorage.mobileTerminal) || (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal) || (tile.getClass() == TileEntityDigitalFluidTerminal.class && this == RetroStorage.mobileFluidTerminal)){
                 CompoundTag positionNBT = (new CompoundTag());
                 positionNBT.putInt("x",blockX);
                 positionNBT.putInt("y",blockY);
@@ -56,6 +58,10 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
         } else if(itemstack.getItem() == RetroStorage.mobileRequestTerminal){
             if(tile != null){
                 ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer, (TileEntityRequestTerminal) tile));
+            }
+        } else if(itemstack.getItem() == RetroStorage.mobileFluidTerminal){
+            if(tile != null){
+                ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalFluidTerminal(entityplayer.inventory, (TileEntityDigitalFluidTerminal) tile));
             }
         }
 

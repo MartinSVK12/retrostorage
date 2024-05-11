@@ -3,17 +3,17 @@ package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.lang.I18n;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
-import sunsetsatellite.retrostorage.util.ProcessTask;
-import sunsetsatellite.retrostorage.util.RecipeTask;
-import sunsetsatellite.retrostorage.util.Task;
+import sunsetsatellite.retrostorage.util.IProcessor;
+import sunsetsatellite.retrostorage.util.ProcessingState;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
+import sunsetsatellite.retrostorage.util.crafting.Node;
+import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 
 public class GuiTaskSlot extends GuiSlot {
     public GuiRequestQueue parent;
-    public GuiTaskSlot(Minecraft minecraft, int i, int j, int k, int l, int i1, GuiRequestQueue gui) {
-        super(minecraft, i, j, k, l, i1);
+    public GuiTaskSlot(Minecraft minecraft, int i, int j, int k, int l, int slotHeight, GuiRequestQueue gui) {
+        super(minecraft, i, j, k, l, slotHeight);
         parent = gui;
     }
 
@@ -38,46 +38,55 @@ public class GuiTaskSlot extends GuiSlot {
     }
 
     protected int getContentHeight() {
-        return this.parent.list.size() * 36;
+        int i = 1;
+        for (CraftingTask craftingTask : this.parent.list) {
+            i += craftingTask.nodes.all().size();
+        }
+        return this.parent.list.size() * (36 * i) + 36;
     }
 
     @Override
     protected void drawSlot(int i, int j, int k, int l, Tessellator tessellator) {
-        Task task = this.parent.list.get(i);
-        if(task instanceof RecipeTask){
-            int color = 0xFFFFFF;
-            if(task.processor != null){
-                color = 0x00FF00;
-            }
-            if(task.attempts == 0){
-                color = 0xFF0000;
-            }
-            I18n trans = I18n.getInstance();
-            String name = trans.translateKey(((ItemStack)((RecipeTask)task).recipe.getOutput()).getItemName() + ".name");
-            this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((ItemStack)((RecipeTask)task).recipe.getOutput()).stackSize+"x "+name, j + 2, k + 1, color);
-            if(task.attempts > 0) {
-                this.parent.drawString(this.parent.fontRenderer, "Attempts left: " + task.attempts, j + 2, k + 12, 0x808080);
-            } else {
-                this.parent.drawString(this.parent.fontRenderer, "Task failed! Too many unsuccessful attempts!", j + 2, k + 12, 0xFF8080);
-            }
-            this.parent.drawString(this.parent.fontRenderer,"Processor: "+(task.processor == null ? "None" : ((TileEntityNetworkDevice)task.processor).toStringFormatted().replace("TileEntity","")), j + 2, k + 12 + 10, 0x808080);
-        } else if(task instanceof ProcessTask){
-            int color = 0x87CEFA;
-            if(task.processor != null){
-                color = 0x00FF00;
-            }
-            if(task.attempts == 0){
-                color = 0xFF0000;
-            }
-            I18n trans = I18n.getInstance();
-            String name = trans.translateKey(((ProcessTask) task).output.getItemName() + ".name");
-            this.parent.drawString(this.parent.fontRenderer,task.getClass().getSimpleName()+" #"+i+" - "+((ProcessTask) task).output.stackSize+"x "+name, j + 2, k + 1, color);
-            if(task.attempts > 0) {
-                this.parent.drawString(this.parent.fontRenderer, "Steps left: "+((ProcessTask) task).tasks.size()+" | Attempts left: " + task.attempts, j + 2, k + 12, 0x808080);
-            } else {
-                this.parent.drawString(this.parent.fontRenderer, "Task failed! Too many unsuccessful attempts!", j + 2, k + 12, 0xFF8080);
-            }
-            this.parent.drawString(this.parent.fontRenderer,"Processor: "+(task.processor == null ? "None" : ((TileEntityNetworkDevice)task.processor).toStringFormatted().replace("TileEntity","")), j + 2, k + 12 + 10, 0x808080);
+        CraftingTask task = this.parent.list.get(i);
+        int color = 0xFFFFFF;
+        if(task.isStarted()){
+            color = 0x00FF00;
+            int size = task.nodes.all().size();
+            drawString(String.format("%dx %s",task.getQuantity(),task.getCraftable().getOutput().getDisplayName()),j + 2, k + 1, color);
+            drawString(String.format("%d s | %d%%",(System.currentTimeMillis()-task.getStartTime())/1000,task.getCompletionPercentage()), j + 2, k + 12, 0xFFFFFF);
+            drawString(String.format("%d subtask%s remain%s.",size,size > 1 ? "s" : "",size <= 1 ? "s" : ""),j + 2, k + 12 + 10, 0x808080);
+        } else {
+            drawString(String.format("%dx %s",task.getQuantity(),task.getCraftable().getOutput().getDisplayName()),j + 2, k + 1, color);
+            drawString("Waiting..", j + 2, k + 12, 0x808080);
         }
+
+        int y = k + 12 + 20;
+        int x = j+2;
+        for (Node node : task.nodes.all()) {
+            if(node instanceof ProcessNode){
+                ProcessNode pNode = (ProcessNode) node;
+                ProcessingState state = pNode.getState();
+                IProcessor processor = parent.network.findProcessorWithNode(pNode);
+                color = (state == ProcessingState.BLOCKED || state == ProcessingState.NO_MACHINE) ? 0xFF0000 : (state == ProcessingState.ALREADY_IN_USE) ? 0xFF8C00 : (state == ProcessingState.ACTIVE) ? 0x00FF00 : 0xFFFFFF;
+                if(state == ProcessingState.WAITING){
+                    drawString(" "+node.getClass().getSimpleName().replace("Node","")+": "+node.getPattern().getOutput().getDisplayName(),x,y+=10,color);
+                    drawString(" Waiting..",x,y+=10,0x808080);
+                    y+=10;
+                } else {
+                    drawString(" "+node.getClass().getSimpleName().replace("Node","")+": "+node.getPattern().getOutput().stackSize * node.getTotalQuantity()+"x "+node.getPattern().getOutput().getDisplayName(),x,y+=10,color);
+                    drawString(String.format(" %d/%d (%d%%) | %s",pNode.getFinishedQuantity(),pNode.getTotalQuantity(),pNode.getCompletionPercentage(),pNode.getState()),x,y+=10,0xFFFFFF);
+                    drawString(" Processor: "+(processor == null ? "None" : ((TileEntityNetworkDevice)processor).toStringFormatted().replace("TileEntity","")), x, y+=10, 0x808080);
+                }
+            } else {
+                drawString(" "+node.getClass().getSimpleName().replace("Node","")+": "+node.getPattern().getOutput().stackSize+"x "+node.getPattern().getOutput().getDisplayName(),x,y+=10,0xFFFFFF);
+                drawString(" Waiting..",x,y+=10,0x808080);
+                y+=10;
+            }
+            y+=10;
+        }
+    }
+
+    protected void drawString(String s, int x, int y, int color){
+        this.parent.drawString(this.parent.fontRenderer,s,x,y,color);
     }
 }
