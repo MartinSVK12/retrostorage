@@ -592,7 +592,7 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
                 .addInput('5', machineCasing)
                 .addInput('6', chipDematerializer)
                 .addInput('7', networkCable)
-                .addInput('8', Block.chestPlanksOak)
+                .addInput('8', "minecraft:chests")
                 .addInput('9', networkCable)
                 .create("digital_terminal", new ItemStack(digitalTerminal, 1));
 
