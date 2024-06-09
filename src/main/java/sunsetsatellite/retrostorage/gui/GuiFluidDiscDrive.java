@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.containers.ContainerDiscDrive;
 import sunsetsatellite.retrostorage.containers.ContainerFluidDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
 
@@ -41,7 +40,7 @@ public class GuiFluidDiscDrive extends GuiContainer
 
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("/assets/retrostorage/gui/discdrivegui.png");
+        int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/discdrivegui.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;

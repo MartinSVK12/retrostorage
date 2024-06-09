@@ -58,14 +58,14 @@ public class BlockRedstoneEmitter extends BlockTileEntity {
         return tile != null && tile.isActive;
     }
 
-    @Override
+    /*@Override
     public int getBlockTexture(WorldSource blockAccess, int x, int y, int z, Side side) {
         TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter)blockAccess.getBlockTileEntity(x, y, z);
         if(tile != null && tile.isActive){
             return Block.texCoordToIndex(RetroStorage.emitterOnTex[0],RetroStorage.emitterOnTex[1]);
         }
         return super.getBlockTexture(blockAccess, x, y, z, side);
-    }
+    }*/
 
     @Override
     protected TileEntity getNewBlockEntity() {

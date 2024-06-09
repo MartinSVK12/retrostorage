@@ -40,7 +40,7 @@ public class GuiDiscDrive extends GuiContainer
 
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("/assets/retrostorage/gui/discdrivegui.png");
+        int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/discdrivegui.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;

@@ -2,7 +2,7 @@ package sunsetsatellite.retrostorage.gui;
 
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.tessellator.Tessellator;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 import sunsetsatellite.retrostorage.util.IProcessor;
 import sunsetsatellite.retrostorage.util.ProcessingState;

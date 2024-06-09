@@ -6,6 +6,11 @@ import net.minecraft.client.gui.GuiRenderItem;
 import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.block.color.BlockColorDispatcher;
+import net.minecraft.client.render.block.model.BlockModel;
+import net.minecraft.client.render.block.model.BlockModelDispatcher;
+import net.minecraft.client.render.item.model.ItemModel;
+import net.minecraft.client.render.item.model.ItemModelDispatcher;
+import net.minecraft.client.render.tessellator.Tessellator;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
@@ -16,9 +21,9 @@ import net.minecraft.core.util.helper.Color;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import sunsetsatellite.catalyst.core.util.IColorOverride;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.catalyst.fluids.impl.GuiFluid;
-import sunsetsatellite.catalyst.fluids.render.RenderFluid;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalFluid;
 import sunsetsatellite.retrostorage.containers.ContainerFluidFake;
@@ -168,14 +173,22 @@ public class GuiFluidFake extends GuiFluid {
                 return;
             }
 
-            RenderFluid.drawFluidIntoGui(this.fontRenderer, this.mc.renderEngine, itemStack4.itemID,itemStack4.getMetadata(),itemStack4.getIconIndex(), i2, i3, 16, 16);
-            if(slot1.getFluidStack().getLiquid() == Block.fluidWaterFlowing){
+            ItemModel itemModel = ItemModelDispatcher.getInstance().getDispatch(slot1.getFluidStack().getLiquid().getDefaultStack().getItem());
+            BlockModel<?> blockModel = BlockModelDispatcher.getInstance().getDispatch(slot1.getFluidStack().getLiquid());
+
+            if(slot1.getFluidStack().getLiquid() == Block.fluidWaterFlowing && mc.gameSettings.biomeWater.value){
                 int waterColor = BlockColorDispatcher.getInstance().getDispatch(Block.fluidWaterFlowing).getWorldColor(this.mc.theWorld, (int) this.mc.thePlayer.x, (int) this.mc.thePlayer.y, (int) this.mc.thePlayer.z);
                 Color c = new Color().setARGB(waterColor);
                 c.setRGBA(c.getRed(),c.getGreen(),c.getBlue(),0x40);
-                RenderFluid.drawFluidIntoGui(this.fontRenderer, this.mc.renderEngine, itemStack4.itemID,itemStack4.getMetadata(),itemStack4.getIconIndex(), i2, i3, 16, 16,c.value);
+                ((IColorOverride)itemModel).overrideColor(c.getRed(),c.getGreen(),c.getBlue(),c.getAlpha());
+                ((IColorOverride)blockModel).overrideColor(c.getRed(),c.getGreen(),c.getBlue(),c.getAlpha());
+                itemModel.renderItemIntoGui(Tessellator.instance,this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3,1.0F);
+            } else {
+                itemModel.renderItemIntoGui(Tessellator.instance,this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3,1.0F);
             }
-            itemRender.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3, "",1.0F);
+            ((IColorOverride)itemModel).overrideColor(1,1,1,1);
+            ((IColorOverride)blockModel).overrideColor(1,1,1,1);
+            itemModel.renderItemOverlayIntoGUI(Tessellator.instance,this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3, "", 1.0F);
         }
     }
 }

@@ -29,11 +29,11 @@ public class BlockWirelessLink extends BlockNetworkDevice {
         {
             TileEntityWirelessLink tile = (TileEntityWirelessLink) world.getBlockTileEntity(i, j, k);
             if (tile != null) {
-                entityplayer.addChatMessage("Online: "+(tile.network != null));
+                entityplayer.sendMessage("Online: "+(tile.network != null));
                 if(tile.remoteLink == null){
-                    entityplayer.addChatMessage("action.retrostorage.linkUnlinked");
+                    entityplayer.sendTranslatedChatMessage("action.retrostorage.linkUnlinked");
                 } else {
-                    entityplayer.addChatMessage("action.retrostorage.linkLinked");
+                    entityplayer.sendTranslatedChatMessage("action.retrostorage.linkLinked");
                     RetroStorage.mc.ingameGUI.addChatMessage(tile.remoteLink.toStringFormatted().replace("TileEntity",""));
                 }
             }

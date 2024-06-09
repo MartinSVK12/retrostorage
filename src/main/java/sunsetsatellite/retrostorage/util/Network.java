@@ -5,6 +5,8 @@ import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.BlockInstance;
+import sunsetsatellite.catalyst.core.util.ConduitCapability;
+import sunsetsatellite.catalyst.core.util.IMultiConduit;
 import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
@@ -146,7 +148,7 @@ public class Network {
             /*if(tile != null){
                 System.out.printf("%s %s %s %s\n",tile,tile.getClass().isAssignableFrom(classFilter),tile.getClass(),tile.getClass().getSuperclass());
             }*/
-            if((tile != null && classFilter.isAssignableFrom(tile.getClass())) || idFilter.contains(world.getBlockId(pos.x+V.x,pos.y+V.y,pos.z+V.z))){
+            if((tile != null && (classFilter.isAssignableFrom(tile.getClass()) || (tile instanceof IMultiConduit && ((IMultiConduit) tile).supports(ConduitCapability.NETWORK)))) || idFilter.contains(world.getBlockId(pos.x+V.x,pos.y+V.y,pos.z+V.z))){
                 BlockInstance inst = new BlockInstance(Block.blocksList[world.getBlockId(pos.x+V.x,pos.y+V.y,pos.z+V.z)],new Vec3i(pos.x+V.x,pos.y+V.y,pos.z+V.z),tile);
                 sides.put(K,inst);
             }
@@ -174,7 +176,7 @@ public class Network {
             String K = entry.getKey();
             BlockInstance V = entry.getValue();
             if(V != null){
-                if(!data.contains(V) && ((V.tile != null && classFilter.isAssignableFrom(V.tile.getClass())) || idFilter.contains(V.block.id))){
+                if(!data.contains(V) && ((V.tile != null && (classFilter.isAssignableFrom(V.tile.getClass())) || (V.tile instanceof IMultiConduit && ((IMultiConduit) V.tile).supports(ConduitCapability.NETWORK))) || idFilter.contains(V.block.id))){
                     add(V);
                     addRecursive(scan(controller.worldObj,V.pos));
                 }
@@ -212,7 +214,7 @@ public class Network {
      * @return Number of actual devices in the network.
      */
     public long devicesSize(){
-        return data.stream().filter((V)-> V.tile instanceof TileEntityNetworkDevice).count();
+        return data.stream().filter((V)-> (V.tile instanceof TileEntityNetworkDevice) || (V.tile instanceof IMultiConduit && ((IMultiConduit) V.tile).supports(ConduitCapability.NETWORK))).count();
     }
 
     @Override

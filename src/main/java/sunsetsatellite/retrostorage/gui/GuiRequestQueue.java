@@ -54,7 +54,7 @@ public class GuiRequestQueue extends GuiScreen {
         int xSize = 256;
         int ySize = 256;
         super.drawScreen(x, y, renderPartialTicks);
-        int i = mc.renderEngine.getTexture("assets/retrostorage/gui/request_queue.png");
+        int i = mc.renderEngine.getTexture("assets/retrostorage/textures/gui/request_queue.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;

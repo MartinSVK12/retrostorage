@@ -23,7 +23,7 @@ public class GuiRedstoneEmitter extends GuiContainer
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f) {
-        int l = mc.renderEngine.getTexture("/assets/retrostorage/gui/emittergui.png");
+        int l = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/emittergui.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(l);
         int j = (width - xSize) / 2;

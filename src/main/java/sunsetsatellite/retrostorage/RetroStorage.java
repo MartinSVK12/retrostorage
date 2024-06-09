@@ -4,6 +4,9 @@ package sunsetsatellite.retrostorage;
 import com.mojang.nbt.CompoundTag;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.block.model.BlockModelHorizontalRotation;
+import net.minecraft.client.render.item.model.ItemModelStandard;
+import net.minecraft.client.render.stitcher.TextureRegistry;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.BlockFluid;
 import net.minecraft.core.block.material.Material;
@@ -15,16 +18,21 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryFurnace;
+import net.minecraft.core.data.tag.Tag;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.item.tag.ItemTags;
 import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.player.inventory.InventoryCrafting;
 import net.minecraft.core.sound.BlockSounds;
 import net.minecraft.core.util.helper.DyeColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.useless.dragonfly.model.block.DFBlockModelBuilder;
 import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.blocks.*;
+import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
+import sunsetsatellite.retrostorage.blocks.states.NetworkCableStateInterpreter;
 import sunsetsatellite.retrostorage.items.*;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
@@ -32,16 +40,19 @@ import sunsetsatellite.retrostorage.util.crafting.CraftableType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.*;
+import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 import turniplabs.halplibe.util.TomlConfigHandler;
 import turniplabs.halplibe.util.toml.Toml;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class RetroStorage implements ModInitializer, RecipeEntrypoint {
+public class RetroStorage implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
     public static final String MOD_ID = "retrostorage";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final TomlConfigHandler config;
@@ -53,6 +64,8 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
 
     public static final Set<BlockFluid> DISALLOWED_FLUIDS = new HashSet<>();
 
+    public static final Tag<Block> NETWORK_CABLES_CONNECT = Tag.of("network_cables_connect");
+
     static {
         Toml configToml = new Toml("RetroStorage configuration file.");
         configToml.addCategory("BlockIDs");
@@ -60,11 +73,11 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
         configToml.addCategory("Other");
         configToml.addEntry("Other.goldenDiscLoot",false);
 
-        List<Field> blockFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Block.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
+        List<Field> blockFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)-> Block.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
         for (Field blockField : blockFields) {
             configToml.addEntry("BlockIDs."+blockField.getName(),nextBlockId++);
         }
-        List<Field> itemFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)->Item.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
+        List<Field> itemFields = Arrays.stream(RetroStorage.class.getDeclaredFields()).filter((F)-> Item.class.isAssignableFrom(F.getType())).collect(Collectors.toList());
         for (Field itemField : itemFields) {
             configToml.addEntry("ItemIDs."+itemField.getName(),nextItemId++);
         }
@@ -73,70 +86,67 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
 
         //this is here to possibly fix some class loading issues, do not delete
         try {
-            Class.forName("net.minecraft.core.block.Block");
-            Class.forName("net.minecraft.core.item.Item");
+            Class.forName("net.minecraft.block.Block");
+            Class.forName("net.minecraft.item.Item");
         } catch (ClassNotFoundException ignored) {
         }
     }
 
-    public static final Item blankDisc = ItemHelper.createItem(MOD_ID, new Item("blankDisc",config.getInt("ItemIDs.blankDisc")),  "blankdisc.png");
-    public static final Item storageDisc1 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc1", config.getInt("ItemIDs.storageDisc1"), 64,64*64), "disc1.png").setMaxStackSize(1);
-    public static final Item storageDisc2 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc2",config.getInt("ItemIDs.storageDisc2"), 128,128*64),  "disc2.png").setMaxStackSize(1);
-    public static final Item storageDisc3 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc3",config.getInt("ItemIDs.storageDisc3"), 196,196*64),  "disc3.png").setMaxStackSize(1);
-    public static final Item storageDisc4 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc4",config.getInt("ItemIDs.storageDisc4"), 256,256*64),  "disc4.png").setMaxStackSize(1);
-    public static final Item storageDisc5 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320,320*64), "disc5.png").setMaxStackSize(1);
-    public static final Item storageDisc6 = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384,384*64), "disc6.png").setMaxStackSize(1);
+    public static final Item blankDisc = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/blankdisc").build(new Item("blankDisc",config.getInt("ItemIDs.blankDisc")));
+    public static final Item storageDisc1 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/disc1").build(new ItemStorageDisc("storageDisc1", config.getInt("ItemIDs.storageDisc1"), 64,64*64)).setMaxStackSize(1);
+    public static final Item storageDisc2 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/disc2").build(new ItemStorageDisc("storageDisc2",config.getInt("ItemIDs.storageDisc2"), 128,128*64)).setMaxStackSize(1);
+    public static final Item storageDisc3 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/disc3").build(new ItemStorageDisc("storageDisc3",config.getInt("ItemIDs.storageDisc3"), 196,196*64)).setMaxStackSize(1);
+    public static final Item storageDisc4 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/disc4").build(new ItemStorageDisc("storageDisc4",config.getInt("ItemIDs.storageDisc4"), 256,256*64)).setMaxStackSize(1);
+    public static final Item storageDisc5 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/disc5").build(new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320,320*64)).setMaxStackSize(1);
+    public static final Item storageDisc6 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/disc6").build(new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384,384*64)).setMaxStackSize(1);
+    public static final Item fluidStorageDisc1 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/fluid_disc_1").build(new ItemFluidStorageDisc("fluidStorageDisc1", config.getInt("ItemIDs.fluidStorageDisc1"), 2,2000)).setMaxStackSize(1);
+    public static final Item fluidStorageDisc2 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/fluid_disc_2").build(new ItemFluidStorageDisc("fluidStorageDisc2",config.getInt("ItemIDs.fluidStorageDisc2"), 4,4000)).setMaxStackSize(1);
+    public static final Item fluidStorageDisc3 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/fluid_disc_3").build(new ItemFluidStorageDisc("fluidStorageDisc3",config.getInt("ItemIDs.fluidStorageDisc3"), 6,8000)).setMaxStackSize(1);
+    public static final Item fluidStorageDisc4 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/fluid_disc_4").build(new ItemFluidStorageDisc("fluidStorageDisc4",config.getInt("ItemIDs.fluidStorageDisc4"), 8,16000)).setMaxStackSize(1);
+    public static final Item fluidStorageDisc5 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/fluid_disc_5").build(new ItemFluidStorageDisc("fluidStorageDisc5", config.getInt("ItemIDs.fluidStorageDisc5"), 10,32000)).setMaxStackSize(1);
+    public static final Item fluidStorageDisc6 = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/fluid_disc_6").build(new ItemFluidStorageDisc("fluidStorageDisc6", config.getInt("ItemIDs.fluidStorageDisc6"), 12,64000)).setMaxStackSize(1);
 
-    public static final Item fluidStorageDisc1 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc1", config.getInt("ItemIDs.fluidStorageDisc1"), 2,2000), "fluid_disc_1.png").setMaxStackSize(1);
-    public static final Item fluidStorageDisc2 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc2",config.getInt("ItemIDs.fluidStorageDisc2"), 4,4000),  "fluid_disc_2.png").setMaxStackSize(1);
-    public static final Item fluidStorageDisc3 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc3",config.getInt("ItemIDs.fluidStorageDisc3"), 6,8000),  "fluid_disc_3.png").setMaxStackSize(1);
-    public static final Item fluidStorageDisc4 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc4",config.getInt("ItemIDs.fluidStorageDisc4"), 8,16000),  "fluid_disc_4.png").setMaxStackSize(1);
-    public static final Item fluidStorageDisc5 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc5", config.getInt("ItemIDs.fluidStorageDisc5"), 10,32000), "fluid_disc_5.png").setMaxStackSize(1);
-    public static final Item fluidStorageDisc6 = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("fluidStorageDisc6", config.getInt("ItemIDs.fluidStorageDisc6"), 12,64000), "fluid_disc_6.png").setMaxStackSize(1);
+    public static final Item virtualDisc = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/virtualdisc").build(new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2,(Short.MAX_VALUE * 2) * 64).withTags(ItemTags.NOT_IN_CREATIVE_MENU)).setMaxStackSize(1);
+    public static final Item virtualFluidDisc = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/virtualdisc").build(new ItemFluidStorageDisc("virtualFluidDisc", config.getInt("ItemIDs.virtualFluidDisc"), Short.MAX_VALUE * 2,Integer.MAX_VALUE).withTags(ItemTags.NOT_IN_CREATIVE_MENU)).setMaxStackSize(1);
+    public static final Item recipeDisc = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/recipedisc").build(new ItemRecipeDisc("recipeDisc", config.getInt("ItemIDs.recipeDisc"))).setMaxStackSize(1);
+    public static final Item goldenDisc = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/goldendisc").build(new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024, 1024 * 64)).setMaxStackSize(1);
+    public static final Item advRecipeDisc =  new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/advrecipedisc").build(new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc"))).setMaxStackSize(1);
+    public static final Item machineCasing = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/machinecasing").build(new Item("machineCasing", config.getInt("ItemIDs.machineCasing")));
+    public static final Item advMachineCasing = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/advmachinecasing").build(new Item("advMachineCasing",config.getInt("ItemIDs.advMachineCasing")));
+    public static final Item energyCore = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/energycore").build(new Item("energyCore", config.getInt("ItemIDs.energyCore")));
+    public static final Item chipShell = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/chipshell").build(new Item("chipShell", config.getInt("ItemIDs.chipShell")));
+    public static final Item chipShellFilled = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/filledchipshell").build(new Item("chipShellFilled", config.getInt("ItemIDs.chipShellFilled")));
+    public static final Item chipDigitizer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/digitizerchip").build(new Item("chipDigitizer",config.getInt("ItemIDs.chipDigitizer")));
+    public static final Item chipCrafting = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/craftingprocessor").build(new Item("chipCrafting", config.getInt("ItemIDs.chipCrafting")));
+    public static final Item chipDematerializer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/dematerializerchip").build(new Item("chipDematerializer", config.getInt("ItemIDs.chipDematerializer")));
+    public static final Item chipRematerializer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/rematerializerchip").build(new Item("chipRematerializer", config.getInt("ItemIDs.chipRematerializer")));
+    public static final Item chipDieDigitizer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/digitizerdie").build(new Item("chipDieDigitizer", config.getInt("ItemIDs.chipDieDigitizer")));
+    public static final Item chipDieCrafting = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/craftingdie").build(new Item("chipDieCrafting",config.getInt("ItemIDs.chipDieCrafting")));
+    public static final Item chipDieRematerializer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/rematerializerdie").build(new Item("chipDieRematerializer",config.getInt("ItemIDs.chipDieRematerializer")));
+    public static final Item chipDieDematerializer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/dematerializerdie").build(new Item("chipDieDematerializer", config.getInt("ItemIDs.chipDieDematerializer")));
+    public static final Item silicon = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/silicon").build(new Item("silicon", config.getInt("ItemIDs.silicon")));
+    public static final Item siliconWafer = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/siliconwafer").build(new Item("siliconWafer", config.getInt("ItemIDs.siliconWafer")));
+    public static final Item ceramicPlate = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/ceramicplate").build(new Item("ceramicPlate", config.getInt("ItemIDs.ceramicPlate")));
+    public static final Item ceramicPlateUnfired = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/ceramicplateunfired").build(new Item("ceramicPlateUnfired",config.getInt("ItemIDs.ceramicPlateUnfired")));
+    public static final Item chipDieWireless = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/wirelessnetworkingdie").build(new Item("chipDieWireless", config.getInt("ItemIDs.chipDieWireless")));
 
-    public static final Item virtualDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2,(Short.MAX_VALUE * 2) * 64), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
-    public static final Item virtualFluidDisc = ItemHelper.createItem(MOD_ID, new ItemFluidStorageDisc("virtualFluidDisc", config.getInt("ItemIDs.virtualFluidDisc"), Short.MAX_VALUE * 2,Integer.MAX_VALUE), "virtualdisc.png").setMaxStackSize(1).setNotInCreativeMenu();
-    public static final Item recipeDisc = ItemHelper.createItem(MOD_ID, new ItemRecipeDisc("recipeDisc", config.getInt("ItemIDs.recipeDisc")), "recipedisc.png").setMaxStackSize(1);
-    public static final Item goldenDisc = ItemHelper.createItem(MOD_ID, new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024, 1024 * 64), "goldendisc.png").setMaxStackSize(1);
-    public static final Item advRecipeDisc = ItemHelper.createItem(MOD_ID, new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc")), "advrecipedisc.png").setMaxStackSize(1);
-
-    public static Item machineCasing = ItemHelper.createItem(MOD_ID, new Item("machineCasing", config.getInt("ItemIDs.machineCasing")), "machinecasing.png");
-    public static Item advMachineCasing = ItemHelper.createItem(MOD_ID, new Item("advMachineCasing",config.getInt("ItemIDs.advMachineCasing")),  "advmachinecasing.png");
-    public static Item energyCore = ItemHelper.createItem(MOD_ID, new Item("energyCore", config.getInt("ItemIDs.energyCore")), "energycore.png");
-    public static Item chipShell = ItemHelper.createItem(MOD_ID, new Item("chipShell", config.getInt("ItemIDs.chipShell")), "chipshell.png");
-    public static Item chipShellFilled = ItemHelper.createItem(MOD_ID, new Item("chipShellFilled", config.getInt("ItemIDs.chipShellFilled")), "filledchipshell.png");
-    public static Item chipDigitizer = ItemHelper.createItem(MOD_ID, new Item("chipDigitizer",config.getInt("ItemIDs.chipDigitizer")),  "digitizerchip.png");
-    public static Item chipCrafting = ItemHelper.createItem(MOD_ID, new Item("chipCrafting", config.getInt("ItemIDs.chipCrafting")), "craftingprocessor.png");
-    public static Item chipDematerializer = ItemHelper.createItem(MOD_ID, new Item("chipDematerializer", config.getInt("ItemIDs.chipDematerializer")), "dematerializerchip.png");
-    public static Item chipRematerializer = ItemHelper.createItem(MOD_ID, new Item("chipRematerializer", config.getInt("ItemIDs.chipRematerializer")), "rematerializerchip.png");
-    public static Item chipDieDigitizer = ItemHelper.createItem(MOD_ID, new Item("chipDieDigitizer", config.getInt("ItemIDs.chipDieDigitizer")), "digitizerdie.png");
-    public static Item chipDieCrafting = ItemHelper.createItem(MOD_ID, new Item("chipDieCrafting",config.getInt("ItemIDs.chipDieCrafting")),  "craftingdie.png");
-    public static Item chipDieRematerializer = ItemHelper.createItem(MOD_ID, new Item("chipDieRematerializer",config.getInt("ItemIDs.chipDieRematerializer")),  "rematerializerdie.png");
-    public static Item chipDieDematerializer = ItemHelper.createItem(MOD_ID, new Item("chipDieDematerializer", config.getInt("ItemIDs.chipDieDematerializer")), "dematerializerdie.png");
-    public static Item silicon = ItemHelper.createItem(MOD_ID, new Item("silicon", config.getInt("ItemIDs.silicon")), "silicon.png");
-    public static Item siliconWafer = ItemHelper.createItem(MOD_ID, new Item("siliconWafer", config.getInt("ItemIDs.siliconWafer")), "siliconwafer.png");
-    public static Item ceramicPlate = ItemHelper.createItem(MOD_ID, new Item("ceramicPlate", config.getInt("ItemIDs.ceramicPlate")), "ceramicplate.png");
-    public static Item ceramicPlateUnfired = ItemHelper.createItem(MOD_ID, new Item("ceramicPlateUnfired",config.getInt("ItemIDs.ceramicPlateUnfired")),  "ceramicplateunfired.png");
-    public static Item chipDieWireless = ItemHelper.createItem(MOD_ID, new Item("chipDieWireless", config.getInt("ItemIDs.chipDieWireless")), "wirelessnetworkingdie.png");
-    public static Item chipWireless = ItemHelper.createItem(MOD_ID, new Item("chipWireless", config.getInt("ItemIDs.chipWireless")), "wirelessnetworkingchip.png");
-    public static Item wirelessAntenna = ItemHelper.createItem(MOD_ID, new Item("wirelessAntenna", config.getInt("ItemIDs.wirelessAntenna")), "wirelessantenna.png");
-    public static Item redstoneCore = ItemHelper.createItem(MOD_ID, new Item("redstoneCore", config.getInt("ItemIDs.redstoneCore")), "redstonecore.png");
-
-    public static Item slotIdFinder = ItemHelper.createItem(MOD_ID, new Item("slotIdFinder", config.getInt("ItemIDs.slotIdFinder")), "idfinder.png").setMaxStackSize(1);
-    /*public static Item portableCell = ItemHelper.createItem(MOD_ID, new ItemPortableCell("portableCell", config.getInt("ItemIDs.portableCell")), "portablecell.png").setMaxStackSize(1);*/
-    public static Item mobileTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileTerminal", config.getInt("ItemIDs.mobileTerminal")), "mobileterminal.png").setMaxStackSize(1);
-    public static Item mobileFluidTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileFluidTerminal", config.getInt("ItemIDs.mobileFluidTerminal")), "mobilefluidterminal.png").setMaxStackSize(1);
-    public static Item mobileRequestTerminal = ItemHelper.createItem(MOD_ID, new ItemMobileTerminal("mobileRequestTerminal",config.getInt("ItemIDs.mobileRequestTerminal")),  "mobilerequestterminal.png").setMaxStackSize(1);
-
-    public static final Item linkingCard = ItemHelper.createItem(MOD_ID, new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard")), "linkingcard.png").setMaxStackSize(1);
-    public static final Item blankCard = ItemHelper.createItem(MOD_ID, new Item("blankCard", config.getInt("ItemIDs.blankCard")), "blankcard.png");
+    public static final Item chipWireless = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/wirelessnetworkingchip").build(new Item("chipWireless", config.getInt("ItemIDs.chipWireless")));
+    public static final Item wirelessAntenna = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/wirelessantenna").build(new Item("wirelessAntenna", config.getInt("ItemIDs.wirelessAntenna")));
+    public static final Item redstoneCore = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/redstonecore").build(new Item("redstoneCore", config.getInt("ItemIDs.redstoneCore")));
+    public static final Item slotIdFinder = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/idfinder").build(new Item("slotIdFinder", config.getInt("ItemIDs.slotIdFinder"))).setMaxStackSize(1);
+    public static final Item mobileTerminal = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/mobileterminal").build(new ItemMobileTerminal("mobileTerminal", config.getInt("ItemIDs.mobileTerminal"))).setMaxStackSize(1);
+    public static final Item mobileFluidTerminal = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/mobilefluidterminal").build(new ItemMobileTerminal("mobileFluidTerminal", config.getInt("ItemIDs.mobileFluidTerminal"))).setMaxStackSize(1);
+    public static final Item mobileRequestTerminal = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/mobilerequestterminal").build(new ItemMobileTerminal("mobileRequestTerminal",config.getInt("ItemIDs.mobileRequestTerminal"))).setMaxStackSize(1);
+    public static final Item linkingCard = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/linkingcard").build(new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard"))).setMaxStackSize(1);
+    public static final Item blankCard = new ItemBuilder(MOD_ID).setItemModel((item)->new ItemModelStandard(item,MOD_ID)).setIcon("retrostorage:item/blankcard").build(new Item("blankCard", config.getInt("ItemIDs.blankCard")));
 
     public static final Block digitalController = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("digital_controller.png")
+            .setTextures("retrostorage:block/digital_controller")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockDigitalController("digitalController", config.getInt("BlockIDs.digitalController"), Material.stone));
 
     public static final Block networkCable = new BlockBuilder(MOD_ID)
@@ -144,7 +154,15 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(0.2f)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("block_cable.png")
+            .setTextures("retrostorage:block/block_cable")
+            .setBlockModel(
+                    block ->
+                            new DFBlockModelBuilder(MOD_ID)
+                                    .setBlockModel("network_cable/cable_base.json")
+                                    .setBlockState("network_cable.json")
+                                    .setMetaStateInterpreter(new NetworkCableStateInterpreter())
+                                    .build(block)
+            )
             .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.cloth));
 
     public static final Block discDrive = new BlockBuilder(MOD_ID)
@@ -152,8 +170,9 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machine_side.png")
-            .setNorthTexture("disc_drive.png")
+            .setTextures("retrostorage:block/machine_side")
+            .setNorthTexture("retrostorage:block/disc_drive")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockDiscDrive("discDrive", config.getInt("BlockIDs.discDrive"), Material.stone));
 
     public static final Block fluidDiscDrive = new BlockBuilder(MOD_ID)
@@ -161,9 +180,10 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setSideTextures("fluid_machine_side.png")
-            .setTopBottomTexture("machine_side.png")
-            .setNorthTexture("fluid_disc_drive.png")
+            .setSideTextures("retrostorage:block/fluid_machine_side")
+            .setTopBottomTextures("retrostorage:block/machine_side")
+            .setNorthTexture("retrostorage:block/fluid_disc_drive")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockFluidDiscDrive("fluidDiscDrive", config.getInt("BlockIDs.fluidDiscDrive"), Material.stone));
 
     public static final Block digitalTerminal = new BlockBuilder(MOD_ID)
@@ -171,8 +191,9 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machine_side.png")
-            .setNorthTexture("terminal_front.png")
+            .setTextures("retrostorage:block/machine_side")
+            .setNorthTexture("retrostorage:block/terminal_front")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockDigitalTerminal("digitalTerminal", config.getInt("BlockIDs.digitalTerminal"), Material.stone));
 
     public static final Block digitalFluidTerminal = new BlockBuilder(MOD_ID)
@@ -180,9 +201,10 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTopBottomTexture("machine_side.png")
-            .setSideTextures("fluid_machine_side.png")
-            .setNorthTexture("fluid_terminal_front.png")
+            .setTopBottomTextures("retrostorage:block/machine_side")
+            .setSideTextures("retrostorage:block/fluid_machine_side")
+            .setNorthTexture("retrostorage:block/fluid_terminal_front")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockDigitalFluidTerminal("digitalFluidTerminal", config.getInt("BlockIDs.digitalFluidTerminal"), Material.stone));
 
     public static final Block recipeEncoder = new BlockBuilder(MOD_ID)
@@ -190,103 +212,106 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machine_side.png")
-            .setTopTexture("recipe_encoder_top_filled.png")
-            .setNorthTexture("recipe_encoder_front.png")
+            .setTextures("retrostorage:block/machine_side")
+            .setTopTexture("retrostorage:block/recipe_encoder_top_filled")
+            .setNorthTexture("retrostorage:block/recipe_encoder_front")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockRecipeEncoder("recipeEncoder", config.getInt("BlockIDs.recipeEncoder"), Material.stone));
     public static final Block assembler = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machine_side.png")
-            .setTopTexture("recipe_encoder_top_filled.png")
-            .setSideTextures("assembler_side.png")
+            .setTextures("retrostorage:block/machine_side")
+            .setTopTexture("retrostorage:block/recipe_encoder_top_filled")
+            .setSideTextures("retrostorage:block/assembler_side")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockAssembler("assembler", config.getInt("BlockIDs.assembler"), Material.stone));
     public static final Block requestTerminal = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("machine_side.png")
-            .setNorthTexture("request_terminal_front.png")
+            .setTextures("retrostorage:block/machine_side")
+            .setNorthTexture("retrostorage:block/request_terminal_front")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockRequestTerminal("requestTerminal", config.getInt("BlockIDs.requestTerminal"), Material.stone));
     public static final Block importer = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("importer.png")
+            .setTextures("retrostorage:block/importer")
             .build(new BlockImporter("importer", config.getInt("BlockIDs.importer"), Material.stone));
     public static final Block fluidImporter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("fluid_importer.png")
+            .setTextures("retrostorage:block/fluid_importer")
             .build(new BlockFluidImporter("fluidImporter", config.getInt("BlockIDs.fluidImporter"), Material.stone));
     public static final Block exporter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("exporter.png")
+            .setTextures("retrostorage:block/exporter")
             .build(new BlockExporter("exporter", config.getInt("BlockIDs.exporter"), Material.stone));
     public static final Block fluidExporter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("fluid_exporter.png")
+            .setTextures("retrostorage:block/fluid_exporter")
             .build(new BlockFluidExporter("fluidExporter", config.getInt("BlockIDs.fluidExporter"), Material.stone));
     public static final Block processProgrammer = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("adv_machine_side.png")
-            .setTopTexture("process_programmer_top_filled.png")
-            .setNorthTexture("process_programmer_front.png")
+            .setTextures("retrostorage:block/adv_machine_side")
+            .setTopTexture("retrostorage:block/process_programmer_top_filled")
+            .setNorthTexture("retrostorage:block/process_programmer_front")
+            .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockProcessProgrammer("processProgrammer", config.getInt("BlockIDs.processProgrammer"), Material.stone));
     public static final Block advInterface = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("adv_interface_side.png")
+            .setTextures("retrostorage:block/adv_interface_side")
             .build(new BlockAdvInterface("advInterface", config.getInt("BlockIDs.advInterface"), Material.stone));
     public static final Block wirelessLink = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("wireless_link.png")
+            .setTextures("retrostorage:block/wireless_link")
             .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));
     public static final Block energyAcceptor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("energy_acceptor.png")
+            .setTextures("retrostorage:block/energy_acceptor")
             .build(new BlockEnergyAcceptor("energyAcceptor", config.getInt("BlockIDs.energyAcceptor"), Material.stone));
     public static final Block redstoneEmitter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("redstone_emitter_off.png")
+            .setBlockModel(BlockModelRedstoneEmitter::new)
+            .setTextures("retrostorage:block/redstone_emitter_off")
             .build(new BlockRedstoneEmitter("redstoneEmitter", config.getInt("BlockIDs.redstoneEmitter"), Material.stone));
     public static final Block craftingCoprocessor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
-            .setTextures("coprocessor.png")
+            .setTextures("retrostorage:block/coprocessor")
             .build(new BlockCoprocessor("craftingCoprocessor", config.getInt("BlockIDs.craftingCoprocessor"), Material.stone));
 
     public static HashMap<String, Vec3i> directions = new HashMap<>();
-
-    public static final int[] emitterOnTex = TextureHelper.getOrCreateBlockTexture(RetroStorage.MOD_ID, "redstone_emitter_on.png");
 
     public RetroStorage() {
         directions.put("X+", new Vec3i(1, 0, 0));
@@ -312,25 +337,25 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
     @SuppressWarnings("UnreachableCode")
     @Override
     public void onInitialize() {
-        EntityHelper.Core.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
-        EntityHelper.Core.createTileEntity(TileEntityDigitalFluidTerminal.class, "Digital Fluid Terminal");
-        EntityHelper.Core.createTileEntity(TileEntityDigitalController.class, "Digital Controller");
-        EntityHelper.Core.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
-        EntityHelper.Core.createTileEntity(TileEntityFluidDiscDrive.class, "Fluid Disc Drive");
-        EntityHelper.Core.createTileEntity(TileEntityNetworkCable.class, "Network Cable");
-        EntityHelper.Core.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
-        EntityHelper.Core.createTileEntity(TileEntityAssembler.class, "Assembler");
-        EntityHelper.Core.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
-        EntityHelper.Core.createTileEntity(TileEntityImporter.class, "Item Importer");
-        EntityHelper.Core.createTileEntity(TileEntityFluidImporter.class, "Fluid Importer");
-        EntityHelper.Core.createTileEntity(TileEntityExporter.class, "Item Exporter");
-        EntityHelper.Core.createTileEntity(TileEntityFluidExporter.class, "Fluid Exporter");
-        EntityHelper.Core.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
-        EntityHelper.Core.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
-        EntityHelper.Core.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
-        EntityHelper.Core.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
-        EntityHelper.Core.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
-        EntityHelper.Core.createTileEntity(TileEntityCoprocessor.class, "Crafting Coprocessor");
+        EntityHelper.createTileEntity(TileEntityDigitalTerminal.class, "Digital Terminal");
+        EntityHelper.createTileEntity(TileEntityDigitalFluidTerminal.class, "Digital Fluid Terminal");
+        EntityHelper.createTileEntity(TileEntityDigitalController.class, "Digital Controller");
+        EntityHelper.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
+        EntityHelper.createTileEntity(TileEntityFluidDiscDrive.class, "Fluid Disc Drive");
+        EntityHelper.createTileEntity(TileEntityNetworkCable.class, "Network Cable");
+        EntityHelper.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
+        EntityHelper.createTileEntity(TileEntityAssembler.class, "Assembler");
+        EntityHelper.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
+        EntityHelper.createTileEntity(TileEntityImporter.class, "Item Importer");
+        EntityHelper.createTileEntity(TileEntityFluidImporter.class, "Fluid Importer");
+        EntityHelper.createTileEntity(TileEntityExporter.class, "Item Exporter");
+        EntityHelper.createTileEntity(TileEntityFluidExporter.class, "Fluid Exporter");
+        EntityHelper.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
+        EntityHelper.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
+        EntityHelper.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
+        EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
+        EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
+        EntityHelper.createTileEntity(TileEntityCoprocessor.class, "Crafting Coprocessor");
         LOGGER.info("RetroStorage initialized.");
     }
 
@@ -954,5 +979,21 @@ public class RetroStorage implements ModInitializer, RecipeEntrypoint {
             }
         }
         return null;
+    }
+
+    @Override
+    public void beforeGameStart() {
+        try {
+            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.blockAtlas);
+            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.itemAtlas);
+            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.particleAtlas);
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void afterGameStart() {
+
     }
 }

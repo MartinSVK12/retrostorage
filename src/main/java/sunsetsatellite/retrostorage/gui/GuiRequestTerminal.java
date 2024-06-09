@@ -45,7 +45,7 @@ public class GuiRequestTerminal extends GuiContainer
     
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("assets/retrostorage/gui/digital_terminal.png");
+        int i = mc.renderEngine.getTexture("assets/retrostorage/textures/gui/digital_terminal.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;
@@ -81,7 +81,7 @@ public class GuiRequestTerminal extends GuiContainer
         if(guibutton.id == 3){
             if(tile.network != null) {
                 tile.network.clearRequestQueue();
-                player.addChatMessage("action.retrostorage.clearTaskQueue");
+                player.sendTranslatedChatMessage("action.retrostorage.clearTaskQueue");
             }
         }
         //System.out.println(tile.page);

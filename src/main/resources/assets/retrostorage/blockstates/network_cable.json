@@ -1,0 +1,57 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_base"
+      }
+    },
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_up"
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_down"
+      },
+      "when": {
+        "down": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_north"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_east"
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_south"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "retrostorage:network_cable/cable_west"
+      },
+      "when": {
+        "west": "true"
+      }
+    }
+  ]
+}

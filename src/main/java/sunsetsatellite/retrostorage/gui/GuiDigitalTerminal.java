@@ -2,7 +2,6 @@ package sunsetsatellite.retrostorage.gui;
 
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
@@ -49,7 +48,7 @@ public class GuiDigitalTerminal extends GuiDigital
     
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("assets/retrostorage/gui/digital_terminal.png");
+        int i = mc.renderEngine.getTexture("assets/retrostorage/textures/gui/digital_terminal.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;

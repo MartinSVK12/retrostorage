@@ -104,6 +104,22 @@ repositories {
 		}
 		metadataSources { artifact() }
 	}
+	ivy {
+		url = "https://github.com/UselessBullets"
+		patternLayout {
+			artifact "[organisation]/releases/download/r[revision]/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://github.com/UselessBullets"
+		patternLayout {
+			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
 }
 
 dependencies {
@@ -118,10 +134,12 @@ dependencies {
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
 	modImplementation "ModMenu:ModMenu:2.0.5"
-	modImplementation "catalyst:catalyst-core:1.2.0"
-	modImplementation "catalyst:catalyst-energy:1.0.9"
-	modImplementation "catalyst:catalyst-fluids:1.1.0"
-	modImplementation "BTWaila:btwaila:1.0.9-7.1"
+	modImplementation "catalyst:catalyst-core:1.4.0"
+	modImplementation "catalyst:catalyst-energy:1.0.11"
+	modImplementation "catalyst:catalyst-fluids:1.1.3"
+	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
+	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"
+
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"

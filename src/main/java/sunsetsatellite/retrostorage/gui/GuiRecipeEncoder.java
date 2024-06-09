@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.core.data.registry.Registries;
-import net.minecraft.core.data.registry.recipe.RecipeBranch;
 import net.minecraft.core.data.registry.recipe.RecipeEntryBase;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
@@ -79,10 +78,10 @@ public class GuiRecipeEncoder extends GuiContainer
                     if(recipe instanceof RecipeEntryCraftingShaped || recipe instanceof RecipeEntryCraftingShapeless){
                         tile.encodeDisc((RecipeEntryCrafting<?, ItemStack>) recipe);
                     } else {
-                        player.addChatMessage(TextFormatting.RED+"Only workbench recipes are supported!");
+                        player.sendMessage(TextFormatting.RED+"Only workbench recipes are supported!");
                     }
                 } catch (Exception e){
-                    player.addChatMessage(TextFormatting.RED+e.getMessage());
+                    player.sendMessage(TextFormatting.RED+e.getMessage());
                 }
             } else {
                 tile.encodeDisc();
@@ -117,7 +116,7 @@ public class GuiRecipeEncoder extends GuiContainer
 
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("/assets/retrostorage/gui/recipe_encoder.png");
+        int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/recipe_encoder.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;

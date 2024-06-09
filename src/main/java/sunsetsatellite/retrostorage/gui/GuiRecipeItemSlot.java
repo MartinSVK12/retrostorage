@@ -2,7 +2,7 @@ package sunsetsatellite.retrostorage.gui;
 
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.tessellator.Tessellator;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.collection.Pair;
 import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;

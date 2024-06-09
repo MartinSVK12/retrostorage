@@ -33,7 +33,7 @@ public class ItemLinkingCard extends Item {
                 if(link.network != null){
                     link.network.reload();
                 }
-                entityplayer.addChatMessage("action.retrostorage.linkBroken");
+                entityplayer.sendTranslatedChatMessage("action.retrostorage.linkBroken");
                 return true;
             }
             CompoundTag data = itemstack.getData().getCompound("position");
@@ -43,12 +43,12 @@ public class ItemLinkingCard extends Item {
                 positionNBT.putInt("y",blockY);
                 positionNBT.putInt("z",blockZ);
                 itemstack.getData().putCompound("position",positionNBT);
-                entityplayer.addChatMessage("action.retrostorage.cardBound");
+                entityplayer.sendTranslatedChatMessage("action.retrostorage.cardBound");
             } else {
                 TileEntity tile = world.getBlockTileEntity(data.getInteger("x"),data.getInteger("y"),data.getInteger("z"));
                 TileEntity self = world.getBlockTileEntity(blockX, blockY, blockZ);
                 if(tile == self){
-                    entityplayer.addChatMessage("action.retrostorage.linkSelfError");
+                    entityplayer.sendTranslatedChatMessage("action.retrostorage.linkSelfError");
                 } else if(tile instanceof TileEntityWirelessLink){
                     link.remoteLink = (TileEntityWirelessLink) tile;
                     if(link.network != null){
@@ -59,16 +59,16 @@ public class ItemLinkingCard extends Item {
                         ((TileEntityWirelessLink) tile).network.addRecursive(scan);
                     }
                     link.remoteLink.remoteLink = link;
-                    entityplayer.addChatMessage("action.retrostorage.linkEstablished");
+                    entityplayer.sendTranslatedChatMessage("action.retrostorage.linkEstablished");
                 } else {
-                    entityplayer.addChatMessage("action.retrostorage.linkInvalidBlock");
+                    entityplayer.sendTranslatedChatMessage("action.retrostorage.linkInvalidBlock");
                 }
 
             }
         } else {
             if (entityplayer.isSneaking()) {
                 itemstack.getData().putCompound("position",new CompoundTag());
-                entityplayer.addChatMessage("action.retrostorage.cardUnbound");
+                entityplayer.sendTranslatedChatMessage("action.retrostorage.cardUnbound");
             }
         }
         return true;

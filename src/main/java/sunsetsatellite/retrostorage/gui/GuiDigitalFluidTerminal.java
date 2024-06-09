@@ -4,13 +4,9 @@ package sunsetsatellite.retrostorage.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.catalyst.fluids.impl.GuiFluid;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalFluid;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
-import sunsetsatellite.retrostorage.util.SlotDigital;
 import sunsetsatellite.retrostorage.util.SlotDigitalFluid;
 
 public class GuiDigitalFluidTerminal extends GuiDigitalFluid
@@ -54,7 +50,7 @@ public class GuiDigitalFluidTerminal extends GuiDigitalFluid
     
     protected void drawGuiContainerBackgroundLayer(float f)
     {
-        int i = mc.renderEngine.getTexture("assets/retrostorage/gui/digital_terminal.png");
+        int i = mc.renderEngine.getTexture("assets/retrostorage/textures/gui/digital_terminal.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;

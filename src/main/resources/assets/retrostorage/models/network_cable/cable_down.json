@@ -1,0 +1,6 @@
+{
+  "parent": "retrostorage:template_conduit_down",
+  "textures": {
+    "conduit": "retrostorage:block/block_cable"
+  }
+}

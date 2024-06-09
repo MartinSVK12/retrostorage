@@ -35,12 +35,12 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
                 positionNBT.putInt("y",blockY);
                 positionNBT.putInt("z",blockZ);
                 itemstack.getData().putCompound("position",positionNBT);
-                entityplayer.addChatMessage("action.retrostorage.terminalBound");
+                entityplayer.sendTranslatedChatMessage("action.retrostorage.terminalBound");
             }
         } else {
             if(entityplayer.isSneaking()){
                 itemstack.getData().getValue().remove("position");
-                entityplayer.addChatMessage("action.retrostorage.terminalUnbound");
+                entityplayer.sendTranslatedChatMessage("action.retrostorage.terminalUnbound");
             }
         }
         return true;
