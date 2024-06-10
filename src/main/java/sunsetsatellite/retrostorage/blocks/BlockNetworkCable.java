@@ -5,10 +5,10 @@ import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import sunsetsatellite.catalyst.core.util.ConduitCapability;
-import sunsetsatellite.catalyst.core.util.IConduit;
+import sunsetsatellite.catalyst.core.util.IConduitBlock;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkCable;
 
-public class BlockNetworkCable extends BlockNetworkDevice implements IConduit {
+public class BlockNetworkCable extends BlockNetworkDevice implements IConduitBlock {
 
     public BlockNetworkCable(String key, int id, Material material) {
         super(key, id, material);

@@ -134,9 +134,15 @@ dependencies {
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
 	modImplementation "ModMenu:ModMenu:2.0.5"
-	modImplementation "catalyst:catalyst-core:1.4.0"
-	modImplementation "catalyst:catalyst-energy:1.0.11"
-	modImplementation "catalyst:catalyst-fluids:1.1.3"
+	if(findProject(":catalyst") != null){
+		implementation project(path: ':catalyst', configuration: "namedElements")
+		implementation project(path: ':catalyst:energy', configuration: "namedElements")
+		implementation project(path: ':catalyst:fluids', configuration: "namedElements")
+	} else {
+		modImplementation "catalyst:catalyst-core:1.4.0"
+		modImplementation "catalyst:catalyst-energy:1.0.11"
+		modImplementation "catalyst:catalyst-fluids:1.1.3"
+	}
 	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
 	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"
 
