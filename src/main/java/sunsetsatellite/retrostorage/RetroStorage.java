@@ -29,10 +29,14 @@ import net.minecraft.core.util.helper.DyeColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.useless.dragonfly.model.block.DFBlockModelBuilder;
+import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.MpGuiEntry;
 import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.blocks.*;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
 import sunsetsatellite.retrostorage.blocks.states.NetworkCableStateInterpreter;
+import sunsetsatellite.retrostorage.containers.*;
+import sunsetsatellite.retrostorage.gui.*;
 import sunsetsatellite.retrostorage.items.*;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
@@ -356,6 +360,23 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
         EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
         EntityHelper.createTileEntity(TileEntityCoprocessor.class, "Crafting Coprocessor");
+
+        Catalyst.GUIS.register("Digital Terminal",new MpGuiEntry(TileEntityDigitalTerminal.class, GuiDigitalTerminal.class, ContainerDigitalTerminal.class));
+        Catalyst.GUIS.register("Digital Fluid Terminal", new MpGuiEntry(TileEntityDigitalFluidTerminal.class, GuiDigitalFluidTerminal.class, ContainerDigitalFluidTerminal.class));
+        Catalyst.GUIS.register("Digital Controller", new MpGuiEntry(TileEntityDigitalController.class, GuiDigitalController.class, null));
+        Catalyst.GUIS.register("Disc Drive", new MpGuiEntry(TileEntityDiscDrive.class, GuiDiscDrive.class, ContainerDiscDrive.class));
+        Catalyst.GUIS.register("Fluid Disc Drive", new MpGuiEntry(TileEntityFluidDiscDrive.class, GuiFluidDiscDrive.class, ContainerFluidDiscDrive.class));
+        Catalyst.GUIS.register("Recipe Encoder", new MpGuiEntry(TileEntityRecipeEncoder.class, GuiRecipeEncoder.class, ContainerRecipeEncoder.class));
+        Catalyst.GUIS.register("Assembler", new MpGuiEntry(TileEntityAssembler.class, GuiAssembler.class, ContainerAssembler.class));
+        Catalyst.GUIS.register("Request Terminal", new MpGuiEntry(TileEntityRequestTerminal.class, GuiRequestTerminal.class, ContainerRequestTerminal.class));
+        Catalyst.GUIS.register("Item Importer", new MpGuiEntry(TileEntityImporter.class, GuiImporter.class, ContainerImporter.class));
+        Catalyst.GUIS.register("Fluid Importer", new MpGuiEntry(TileEntityFluidImporter.class, GuiFluidImporter.class, ContainerFluidImporter.class));
+        Catalyst.GUIS.register("Item Exporter", new MpGuiEntry(TileEntityExporter.class, GuiExporter.class, ContainerExporter.class));
+        Catalyst.GUIS.register("Fluid Exporter", new MpGuiEntry(TileEntityFluidExporter.class, GuiFluidExporter.class, ContainerFluidExporter.class));
+        Catalyst.GUIS.register("Process Programmer", new MpGuiEntry(TileEntityProcessProgrammer.class, GuiProcessProgrammer.class, ContainerProcessProgrammer.class));
+        Catalyst.GUIS.register("Adv. Interface", new MpGuiEntry(TileEntityAdvInterface.class, GuiAdvInterface.class, ContainerAdvInterface.class));
+        Catalyst.GUIS.register("Energy Acceptor", new MpGuiEntry(TileEntityEnergyAcceptor.class, GuiEnergyAcceptor.class, ContainerEnergyAcceptor.class));
+        Catalyst.GUIS.register("Redstone Emitter", new MpGuiEntry(TileEntityRedstoneEmitter.class, GuiRedstoneEmitter.class, ContainerRedstoneEmitter.class));
         LOGGER.info("RetroStorage initialized.");
     }
 

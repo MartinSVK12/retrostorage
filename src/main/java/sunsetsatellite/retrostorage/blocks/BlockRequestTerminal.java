@@ -6,6 +6,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiRequestTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
@@ -31,7 +32,7 @@ public class BlockRequestTerminal extends BlockTileEntityRotatable {
             TileEntityRequestTerminal tile = (TileEntityRequestTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer,tile));
+                Catalyst.displayGui(entityplayer,tile,"Request Terminal");
             }
             return true;
         }

@@ -1,11 +1,17 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.world.World;
+import org.jetbrains.annotations.NotNull;
+import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
 import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
@@ -31,7 +37,7 @@ public class BlockDigitalTerminal extends BlockNetworkDevice {
             TileEntityDigitalTerminal tile = (TileEntityDigitalTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalTerminal(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Digital Terminal");
             }
             return true;
         }

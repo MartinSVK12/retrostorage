@@ -6,6 +6,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiEnergyAcceptor;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
@@ -30,7 +31,7 @@ public class BlockEnergyAcceptor extends BlockTileEntityRotatable {
         {
             TileEntityEnergyAcceptor tile = (TileEntityEnergyAcceptor)world.getBlockTileEntity(i, j, k);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiEnergyAcceptor(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Energy Acceptor");
             }
             return true;
         }

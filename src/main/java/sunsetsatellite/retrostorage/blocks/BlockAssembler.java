@@ -10,6 +10,7 @@ import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiAssembler;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -47,7 +48,7 @@ public class BlockAssembler extends BlockTileEntityRotatable {
                 return true;
             }*/
             if(tile != null) {
-                ((IOpenGUI)entityplayer).displayGUI(new GuiAssembler(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Assembler");
             }
             return true;
         }

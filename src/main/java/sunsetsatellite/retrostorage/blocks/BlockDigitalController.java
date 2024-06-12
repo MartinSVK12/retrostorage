@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
@@ -11,8 +12,11 @@ import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import org.jetbrains.annotations.NotNull;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiDigitalController;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -20,6 +24,9 @@ import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.util.crafting.CalculationResult;
 import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingCalculator;
+import turniplabs.halplibe.helper.gui.RegisteredGui;
+import turniplabs.halplibe.helper.gui.factory.GuiFactory;
+import turniplabs.halplibe.helper.gui.factory.TileGUIFactory;
 
 import java.util.ArrayList;
 
@@ -58,7 +65,7 @@ public class BlockDigitalController extends BlockNetworkDevice {
                     tile.energy += 20*60*65535;
                 }
                 if(tile.network != null){
-                    ((IOpenGUI)entityplayer).displayGUI(new GuiDigitalController(tile));
+                    Catalyst.displayGui(entityplayer,tile,"Digital Controller");
                     tile.network.reload();
                 }
             }

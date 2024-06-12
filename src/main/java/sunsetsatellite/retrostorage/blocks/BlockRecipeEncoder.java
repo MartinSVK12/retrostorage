@@ -8,6 +8,7 @@ import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiRecipeEncoder;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
@@ -32,7 +33,7 @@ public class BlockRecipeEncoder extends BlockTileEntityRotatable {
         {
             TileEntityRecipeEncoder tile = (TileEntityRecipeEncoder) world.getBlockTileEntity(i, j, k);
             if(tile != null) {
-                ((IOpenGUI)entityplayer).displayGUI(new GuiRecipeEncoder(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Recipe Encoder");
             }
             return true;
         }

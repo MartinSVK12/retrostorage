@@ -11,6 +11,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.WorldSource;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.gui.GuiRedstoneEmitter;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -30,7 +31,7 @@ public class BlockRedstoneEmitter extends BlockTileEntity {
         {
             TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter)world.getBlockTileEntity(i, j, k);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiRedstoneEmitter(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Redstone Emitter");
             }
             return true;
         }

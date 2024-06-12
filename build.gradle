@@ -89,6 +89,14 @@ repositories {
 		metadataSources { artifact() }
 	}
 	ivy {
+		url = "https://github.com/MartinSVK12"
+		patternLayout {
+			artifact "[organisation]/releases/download/"+project.catalyst_tertiary_version+"/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
 		url = "https://github.com/ToufouMaster"
 		patternLayout {
 			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
@@ -133,15 +141,15 @@ dependencies {
 	// If you do not need Halplibe you can comment this line out or delete this line
 	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
-	modImplementation "ModMenu:ModMenu:2.0.5"
+	modImplementation "ModMenu:ModMenu:2.0.6"
 	if(findProject(":catalyst") != null){
 		implementation project(path: ':catalyst', configuration: "namedElements")
 		implementation project(path: ':catalyst:energy', configuration: "namedElements")
 		implementation project(path: ':catalyst:fluids', configuration: "namedElements")
 	} else {
-		modImplementation "catalyst:catalyst-core:1.4.0"
-		modImplementation "catalyst:catalyst-energy:1.0.11"
-		modImplementation "catalyst:catalyst-fluids:1.1.3"
+		modImplementation "catalyst:catalyst-core:1.4.3"
+		modImplementation "catalyst:catalyst-energy:1.0.12"
+		modImplementation "catalyst:catalyst-fluids:1.1.6"
 	}
 	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
 	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"

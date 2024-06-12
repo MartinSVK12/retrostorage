@@ -8,6 +8,7 @@ import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiProcessProgrammer;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityProcessProgrammer;
@@ -32,7 +33,7 @@ public class BlockProcessProgrammer extends BlockTileEntityRotatable {
         {
             TileEntityProcessProgrammer tile = (TileEntityProcessProgrammer) world.getBlockTileEntity(i, j, k);
             if(tile != null) {
-                ((IOpenGUI)entityplayer).displayGUI(new GuiProcessProgrammer(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Process Programmer");
             }
             return true;
         }

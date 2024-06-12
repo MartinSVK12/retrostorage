@@ -8,6 +8,7 @@ import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiDiscDrive;
 import sunsetsatellite.retrostorage.gui.GuiFluidDiscDrive;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -36,7 +37,7 @@ public class BlockFluidDiscDrive extends BlockNetworkDevice {
         {
             TileEntityFluidDiscDrive tile = (TileEntityFluidDiscDrive) world.getBlockTileEntity(i, j, k);
             if(tile != null) {
-                ((IOpenGUI)entityplayer).displayGUI(new GuiFluidDiscDrive(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Fluid Disc Drive");
             }
             return true;
         }

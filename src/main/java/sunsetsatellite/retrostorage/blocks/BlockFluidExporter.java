@@ -4,6 +4,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiFluidExporter;
 import sunsetsatellite.retrostorage.gui.GuiFluidImporter;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -25,7 +26,7 @@ public class BlockFluidExporter extends BlockNetworkDevice {
         {
             TileEntityFluidExporter tile = (TileEntityFluidExporter) world.getBlockTileEntity(i, j, k);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiFluidExporter(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Fluid Exporter");
             }
             return true;
         }

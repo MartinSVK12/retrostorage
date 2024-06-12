@@ -3,13 +3,14 @@ package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.gui.GuiScreen;
 
+import net.minecraft.core.player.inventory.InventoryPlayer;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkCable;
 
 public class GuiDigitalController extends GuiScreen
 {
 
-    public GuiDigitalController(TileEntityDigitalController tile)
+    public GuiDigitalController(InventoryPlayer inventoryPlayer, TileEntityDigitalController tile)
     {
         super();
         this.tile = tile;

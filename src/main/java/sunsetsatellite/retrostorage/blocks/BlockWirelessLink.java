@@ -34,7 +34,7 @@ public class BlockWirelessLink extends BlockNetworkDevice {
                     entityplayer.sendTranslatedChatMessage("action.retrostorage.linkUnlinked");
                 } else {
                     entityplayer.sendTranslatedChatMessage("action.retrostorage.linkLinked");
-                    RetroStorage.mc.ingameGUI.addChatMessage(tile.remoteLink.toStringFormatted().replace("TileEntity",""));
+                    entityplayer.sendMessage(tile.remoteLink.toStringFormatted().replace("TileEntity",""));
                 }
             }
             return true;

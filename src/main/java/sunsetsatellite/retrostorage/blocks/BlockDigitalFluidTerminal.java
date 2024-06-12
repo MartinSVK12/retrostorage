@@ -5,6 +5,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
@@ -32,7 +33,7 @@ public class BlockDigitalFluidTerminal extends BlockNetworkDevice {
             TileEntityDigitalFluidTerminal tile = (TileEntityDigitalFluidTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalFluidTerminal(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Digital Fluid Terminal");
             }
             return true;
         }

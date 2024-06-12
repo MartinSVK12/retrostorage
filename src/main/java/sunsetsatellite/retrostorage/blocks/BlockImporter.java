@@ -8,6 +8,7 @@ import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.gui.GuiImporter;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
@@ -34,7 +35,7 @@ public class BlockImporter extends BlockNetworkDevice {
             TileEntityImporter tile = (TileEntityImporter) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiImporter(entityplayer.inventory,tile));
+                Catalyst.displayGui(entityplayer,tile,"Item Importer");
             }
             return true;
         }
