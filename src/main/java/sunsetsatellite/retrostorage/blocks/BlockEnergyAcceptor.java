@@ -5,10 +5,9 @@ import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.gui.GuiEnergyAcceptor;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
 
 public class BlockEnergyAcceptor extends BlockTileEntityRotatable {
@@ -22,16 +21,13 @@ public class BlockEnergyAcceptor extends BlockTileEntityRotatable {
         return new TileEntityEnergyAcceptor();
     }
 
-    public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
-    {
-        if(world.isClientSide)
-        {
+    public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
+        if (world.isClientSide) {
             return true;
-        } else
-        {
-            TileEntityEnergyAcceptor tile = (TileEntityEnergyAcceptor)world.getBlockTileEntity(i, j, k);
+        } else {
+            TileEntityEnergyAcceptor tile = (TileEntityEnergyAcceptor) world.getBlockTileEntity(i, j, k);
             if (tile != null) {
-                Catalyst.displayGui(entityplayer,tile,"Energy Acceptor");
+                Catalyst.displayGui(entityplayer, tile, "Energy Acceptor");
             }
             return true;
         }

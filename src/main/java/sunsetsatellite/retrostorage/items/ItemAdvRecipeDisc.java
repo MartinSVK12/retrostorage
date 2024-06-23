@@ -21,9 +21,9 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
     @Override
     public String getDescription(ItemStack stack) {
         StringBuilder text = new StringBuilder();
-        if(!stack.getData().getCompound("disc").getValues().isEmpty()){
+        if (!stack.getData().getCompound("disc").getValues().isEmpty()) {
             text.append(TextFormatting.MAGENTA).append(stack.getData().getCompound("disc").getCompound("tasks").getValues().size()).append(" steps.").append("\n");
-        } else if(stack.getData().getCompound("disc").getValues().isEmpty()){
+        } else if (stack.getData().getCompound("disc").getValues().isEmpty()) {
             text.append(TextFormatting.MAGENTA).append("0 steps.");
         }
         CompoundTag tasksNBT = stack.getData().getCompound("disc").getCompound("tasks");
@@ -31,9 +31,9 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
         for (Tag<?> value : tasksNBT.getValues()) {
             tasks.add((CompoundTag) value);
         }
-        ItemStack output = RetroStorage.getMainOutputOfProcess(tasks);
-        if(output != null){
-            String name = I18n.getInstance().translateKey(output.getItemName() + ".name");
+        ItemStack output = RetroStorage.getFirstOutputOfProcess(tasks);
+        if (output != null) {
+            String name = I18n.getInstance().translateKey(output.getItemKey() + ".name");
             text.append(TextFormatting.MAGENTA).append("Output: ").append(output.stackSize).append("x ").append(name);
         }
         return text.toString();

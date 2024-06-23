@@ -1,5 +1,3 @@
-
-
 package sunsetsatellite.retrostorage.gui;
 
 
@@ -26,8 +24,7 @@ import sunsetsatellite.retrostorage.util.GuiRenderDigitalItem;
 
 import java.util.Objects;
 
-public class GuiRecipeEncoder extends GuiContainer
-{
+public class GuiRecipeEncoder extends GuiContainer {
 
     public GuiRenderDigitalItem guiRenderItem = new GuiRenderDigitalItem(RetroStorage.mc);
     /*public GuiRecipeEncoder(InventoryPlayer inventoryplayer, World world, int i, int j, int k)
@@ -36,52 +33,46 @@ public class GuiRecipeEncoder extends GuiContainer
     }*/
 
     public GuiRecipeEncoder(InventoryPlayer inventoryplayer, TileEntityRecipeEncoder tileEntityRecipeEncoder) {
-    	super(new ContainerRecipeEncoder(inventoryplayer, tileEntityRecipeEncoder));
-    	tile = tileEntityRecipeEncoder;
+        super(new ContainerRecipeEncoder(inventoryplayer, tileEntityRecipeEncoder));
+        tile = tileEntityRecipeEncoder;
         player = inventoryplayer.player;
-		
-	}
+
+    }
 
     @Override
-	public void onClosed()
-    {
+    public void onClosed() {
         super.onClosed();
         inventorySlots.onCraftGuiClosed(Minecraft.getMinecraft(Minecraft.class).thePlayer);
     }
 
-    protected void drawGuiContainerForegroundLayer()
-    {
+    protected void drawGuiContainerForegroundLayer() {
         fontRenderer.drawString("Recipe Encoder", 28, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
-    
-    public void init()
-    {
-    	super.init();
-        if(player.getGamemode() == Gamemode.creative){
-            recipeNameField = new GuiTextField(this, fontRenderer, Math.round((float) width / 2 - 81),Math.round((float) height/2 - 112),160,20, "","Recipe name...");
+
+    public void init() {
+        super.init();
+        if (player.getGamemode() == Gamemode.creative) {
+            recipeNameField = new GuiTextField(this, fontRenderer, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 160, 20, "", "Recipe name...");
         }
         controlList.add(new GuiButton(0, Math.round(width / 2 + 15), Math.round(height / 2 - 25), 60, 20, "Encode"));
     }
-    
-    protected void buttonPressed(GuiButton guibutton)
-    {
-        if(!guibutton.enabled)
-        {
+
+    protected void buttonPressed(GuiButton guibutton) {
+        if (!guibutton.enabled) {
             return;
         }
-        if(guibutton.id == 0)
-        {
-            if(recipeNameField != null && !Objects.equals(recipeNameField.getText(), "")){
+        if (guibutton.id == 0) {
+            if (recipeNameField != null && !Objects.equals(recipeNameField.getText(), "")) {
                 try {
                     RecipeEntryBase<?, ?, ?> recipe = Registries.RECIPES.getRecipeFromKey(recipeNameField.getText()).recipe;
-                    if(recipe instanceof RecipeEntryCraftingShaped || recipe instanceof RecipeEntryCraftingShapeless){
+                    if (recipe instanceof RecipeEntryCraftingShaped || recipe instanceof RecipeEntryCraftingShapeless) {
                         tile.encodeDisc((RecipeEntryCrafting<?, ItemStack>) recipe);
                     } else {
-                        player.sendMessage(TextFormatting.RED+"Only workbench recipes are supported!");
+                        player.sendMessage(TextFormatting.RED + "Only workbench recipes are supported!");
                     }
-                } catch (Exception e){
-                    player.sendMessage(TextFormatting.RED+e.getMessage());
+                } catch (Exception e) {
+                    player.sendMessage(TextFormatting.RED + e.getMessage());
                 }
             } else {
                 tile.encodeDisc();
@@ -92,7 +83,7 @@ public class GuiRecipeEncoder extends GuiContainer
 
     @Override
     public void mouseClicked(int i1, int i2, int i3) {
-        if(recipeNameField != null){
+        if (recipeNameField != null) {
             recipeNameField.mouseClicked(i1, i2, i3);
         }
         super.mouseClicked(i1, i2, i3);
@@ -100,35 +91,34 @@ public class GuiRecipeEncoder extends GuiContainer
 
     @Override
     public void keyTyped(char c, int i, int mouseX, int mouseY) {
-        if(recipeNameField != null){
-            if(recipeNameField.isFocused) {
+        if (recipeNameField != null) {
+            if (recipeNameField.isFocused) {
                 Keyboard.enableRepeatEvents(true);
                 if (c == Keyboard.KEY_ESCAPE) {
                     Keyboard.enableRepeatEvents(false);
                     recipeNameField.setFocused(false);
                 } else recipeNameField.textboxKeyTyped(c, i);
                 recipeName = recipeNameField.getText();
-            } else{
-                super.keyTyped(c,i,mouseX,mouseY);
+            } else {
+                super.keyTyped(c, i, mouseX, mouseY);
             }
         }
     }
 
-    protected void drawGuiContainerBackgroundLayer(float f)
-    {
+    protected void drawGuiContainerBackgroundLayer(float f) {
         int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/recipe_encoder.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-        if(recipeNameField != null){
+        if (recipeNameField != null) {
             recipeNameField.drawTextBox();
         }
     }
-    
-    private TileEntityRecipeEncoder tile;
+
+    private final TileEntityRecipeEncoder tile;
     public GuiTextField recipeNameField;
     public String recipeName;
-    private EntityPlayer player;
+    private final EntityPlayer player;
 }

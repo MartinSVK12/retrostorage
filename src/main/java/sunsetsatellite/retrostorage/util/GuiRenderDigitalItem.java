@@ -3,32 +3,23 @@ package sunsetsatellite.retrostorage.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.render.EntityRenderDispatcher;
+import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.block.model.BlockModel;
 import net.minecraft.client.render.item.model.ItemModel;
 import net.minecraft.client.render.item.model.ItemModelDispatcher;
 import net.minecraft.client.render.stitcher.IconCoordinate;
 import net.minecraft.client.render.stitcher.TextureRegistry;
 import net.minecraft.client.render.tessellator.Tessellator;
-import net.minecraft.core.Global;
-import net.minecraft.core.WeightedRandomBag;
-import net.minecraft.core.WeightedRandomLootObject;
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryTrommel;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.client.render.Lighting;
-import net.minecraft.client.render.entity.ItemEntityRenderer;
 import net.minecraft.core.player.inventory.slot.Slot;
-import net.minecraft.core.player.inventory.slot.SlotGuidebook;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
 
-public class GuiRenderDigitalItem extends Gui
-{
+public class GuiRenderDigitalItem extends Gui {
 
     Minecraft mc;
 
-    public GuiRenderDigitalItem(Minecraft mc)
-    {
+    public GuiRenderDigitalItem(Minecraft mc) {
         this.mc = mc;
     }
 
@@ -75,13 +66,11 @@ public class GuiRenderDigitalItem extends Gui
         GL11.glDisable(2929);
     }
 
-    public void render(ItemStack itemStack, int x, int y, boolean isSelected)
-    {
+    public void render(ItemStack itemStack, int x, int y, boolean isSelected) {
         render(itemStack, x, y, isSelected, null);
     }
 
-    public void render(ItemStack itemStack, int x, int y)
-    {
+    public void render(ItemStack itemStack, int x, int y) {
         render(itemStack, x, y, false);
     }
 }

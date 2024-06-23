@@ -1,34 +1,15 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.core.block.Block;
-import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
-import net.minecraft.core.data.registry.Registries;
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
-import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
-import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.gui.GuiDigitalController;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.util.crafting.CalculationResult;
-import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;
-import sunsetsatellite.retrostorage.util.crafting.CraftingCalculator;
-import turniplabs.halplibe.helper.gui.RegisteredGui;
-import turniplabs.halplibe.helper.gui.factory.GuiFactory;
-import turniplabs.halplibe.helper.gui.factory.TileGUIFactory;
-
-import java.util.ArrayList;
 
 public class BlockDigitalController extends BlockNetworkDevice {
 
@@ -43,29 +24,29 @@ public class BlockDigitalController extends BlockNetworkDevice {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
-    {
-        if(world.isClientSide)
-        {
+    public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
+        if (super.onBlockRightClicked(world, i, j, k, entityplayer, side, xHit, yHit)) {
             return true;
-        } else
-        {
+        }
+        if (world.isClientSide) {
+            return true;
+        } else {
             TileEntityDigitalController tile = (TileEntityDigitalController) world.getBlockTileEntity(i, j, k);
-            if(tile != null) {
+            if (tile != null) {
                 if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().getItem() == Item.dustRedstone) {
                     entityplayer.inventory.getCurrentItem().stackSize--;
-                    tile.energy += 20*60;
+                    tile.energy += 20 * 60;
                 }
                 if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.blockRedstone.id) {
                     entityplayer.inventory.getCurrentItem().stackSize--;
-                    tile.energy += 20*60*9;
+                    tile.energy += 20 * 60 * 9;
                 }
                 if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().itemID == Block.bedrock.id) {
                     entityplayer.inventory.getCurrentItem().stackSize--;
-                    tile.energy += 20*60*65535;
+                    tile.energy += 20 * 60 * 65535;
                 }
-                if(tile.network != null){
-                    Catalyst.displayGui(entityplayer,tile,"Digital Controller");
+                if (tile.network != null) {
+                    Catalyst.displayGui(entityplayer, tile, "Digital Controller");
                     tile.network.reload();
                 }
             }
@@ -76,7 +57,7 @@ public class BlockDigitalController extends BlockNetworkDevice {
     @Override
     public void onBlockRemoved(World world, int x, int y, int z, int data) {
         TileEntityDigitalController tile = (TileEntityDigitalController) world.getBlockTileEntity(x, y, z);
-        if(tile.network != null){
+        if (tile.network != null) {
             tile.network.removeAll();
         }
         super.onBlockRemoved(world, x, y, z, data);

@@ -3,7 +3,6 @@ package sunsetsatellite.retrostorage.mixin;
 
 import com.mojang.nbt.Tag;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(
         value = Tag.class,

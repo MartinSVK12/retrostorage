@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 
 @Mixin(
-        value={EntityPlayerSP.class},
+        value = {EntityPlayerSP.class},
         remap = false
 )
 

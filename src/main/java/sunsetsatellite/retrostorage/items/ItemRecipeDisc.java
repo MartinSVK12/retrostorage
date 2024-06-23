@@ -16,9 +16,9 @@ public class ItemRecipeDisc extends Item implements ICustomDescription {
     @Override
     public String getDescription(ItemStack itemStack) {
         ItemStack result = RetroStorage.findRecipeResultFromNBT(itemStack.getData().getCompound("recipe"));
-        if(result != null) {
-            return TextFormatting.MAGENTA+"Output: "+String.valueOf(result.stackSize)+"x "+result.getDisplayName()+TextFormatting.WHITE;
+        if (result != null) {
+            return TextFormatting.MAGENTA + "Output: " + result.stackSize + "x " + result.getDisplayName() + TextFormatting.WHITE;
         }
-        return TextFormatting.GRAY+"Empty"+TextFormatting.WHITE;
+        return TextFormatting.GRAY + "Empty" + TextFormatting.WHITE;
     }
 }

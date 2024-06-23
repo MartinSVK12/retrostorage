@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.item.ItemStack;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class NodeList {
     private final LinkedHashMap<NetworkCraftable, Node> nodes = new LinkedHashMap<>();

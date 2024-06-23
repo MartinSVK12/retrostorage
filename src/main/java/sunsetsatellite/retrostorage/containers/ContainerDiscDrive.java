@@ -1,5 +1,3 @@
-
-
 package sunsetsatellite.retrostorage.containers;
 
 
@@ -13,28 +11,23 @@ import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.List;
 
-public class ContainerDiscDrive extends Container
-{
+public class ContainerDiscDrive extends Container {
 
-    public ContainerDiscDrive(IInventory iinventory, TileEntityDiscDrive tileEntitydiscdrive)
-    {
-    	tile = tileEntitydiscdrive;
-    	
-    	addSlot(new SlotViewOnly(tileEntitydiscdrive, 2, 80, 35));
+    public ContainerDiscDrive(IInventory iinventory, TileEntityDiscDrive tileEntitydiscdrive) {
+        tile = tileEntitydiscdrive;
+
+        addSlot(new SlotViewOnly(tileEntitydiscdrive, 2, 80, 35));
         addSlot(new Slot(tileEntitydiscdrive, 0, 45, 35));
         addSlot(new Slot(tileEntitydiscdrive, 1, 115, 35));
 
-        for(int j = 0; j < 3; j++)
-        {
-            for(int i1 = 0; i1 < 9; i1++)
-            {
+        for (int j = 0; j < 3; j++) {
+            for (int i1 = 0; i1 < 9; i1++) {
                 addSlot(new Slot(iinventory, i1 + j * 9 + 9, 8 + i1 * 18, 84 + j * 18));
             }
 
         }
 
-        for(int k = 0; k < 9; k++)
-        {
+        for (int k = 0; k < 9; k++) {
             addSlot(new Slot(iinventory, k, 8 + k * 18, 142));
         }
 
@@ -50,11 +43,10 @@ public class ContainerDiscDrive extends Container
         return null;
     }
 
-    public boolean isUsableByPlayer(EntityPlayer entityplayer)
-    {
+    public boolean isUsableByPlayer(EntityPlayer entityplayer) {
         return tile.canInteractWith(entityplayer);
     }
 
-    private TileEntityDiscDrive tile;
+    private final TileEntityDiscDrive tile;
 
 }

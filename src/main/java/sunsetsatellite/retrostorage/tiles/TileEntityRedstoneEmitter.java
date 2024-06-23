@@ -4,7 +4,6 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
@@ -12,7 +11,7 @@ import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
+import sunsetsatellite.retrostorage.util.VariantStack;
 import sunsetsatellite.retrostorage.util.crafting.*;
 
 import java.util.ArrayList;
@@ -26,20 +25,17 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     public int amount = 0;
     public boolean useMeta = true;
     public boolean useData = false;
-    public TickTimer workTimer = new TickTimer(this,this::work,100, true);
+    public TickTimer workTimer = new TickTimer(this, this::work, 100, true);
 
-    public TileEntityRedstoneEmitter()
-    {
+    public TileEntityRedstoneEmitter() {
         contents = new ItemStack[1];
     }
 
-    public int getSizeInventory()
-    {
+    public int getSizeInventory() {
         return contents.length;
     }
 
-    public ItemStack getStackInSlot(int i)
-    {
+    public ItemStack getStackInSlot(int i) {
         return contents[i];
     }
 
@@ -62,42 +58,42 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         }
     }
 
-    public void work(){
+    public void work() {
         ArrayList<Class<?>> list = new ArrayList<>();
         list.add(TileEntityAssembler.class);
         list.add(TileEntityAdvInterface.class);
         HashMap<Direction, TileEntity> map = getConnectedTileEntity(list);
-        map.forEach((K,V)->{
-            if(V != null){
+        map.forEach((K, V) -> {
+            if (V != null) {
                 connectedTile = V;
             }
         });
-        if(connectedTile != null && network != null && isActive){
-            if(connectedTile instanceof TileEntityAssembler){
-                ItemStack stack = ((TileEntityAssembler)connectedTile).getStackInSlot(asmSlot);
-                if(stack != null){
-                    if(stack.getItem() == RetroStorage.recipeDisc){
-                        RecipeEntryCrafting<?,ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
-                        if(recipe != null){
-                            CraftingCalculator calc = new CraftingCalculator(network,1,recipe.getOutput(),new NetworkCraftable(recipe),network.knownCraftables);
+        if (connectedTile != null && network != null && isActive) {
+            if (connectedTile instanceof TileEntityAssembler) {
+                ItemStack stack = ((TileEntityAssembler) connectedTile).getStackInSlot(asmSlot);
+                if (stack != null) {
+                    if (stack.getItem() == RetroStorage.recipeDisc) {
+                        RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
+                        if (recipe != null) {
+                            CraftingCalculator calc = new CraftingCalculator(network, 1, new VariantStack(recipe.getOutput()), new NetworkCraftable(recipe), network.knownCraftables);
                             CalculationResult result = calc.calculate();
-                            if(result.getType() == CalculationResultType.OK){
+                            if (result.getType() == CalculationResultType.OK) {
                                 network.requestCrafting(result.getTask());
                             }
                         }
                     }
                 }
             } else if (connectedTile instanceof TileEntityAdvInterface) {
-                if(!((TileEntityAdvInterface) connectedTile).isInUse()) {
+                if (!((TileEntityAdvInterface) connectedTile).isInUse()) {
                     ItemStack stack = ((TileEntityAdvInterface) connectedTile).getStackInSlot(asmSlot);
                     if (stack != null) {
                         if (stack.getItem() == RetroStorage.advRecipeDisc) {
-                            if(stack.getData().containsKey("disc") && stack.getData().getCompound("disc").containsKey("processName")){
+                            if (stack.getData().containsKey("disc") && stack.getData().getCompound("disc").containsKey("processName")) {
                                 CraftingProcess process = new CraftingProcess(stack.getData().getCompound("disc"));
                                 NetworkCraftable craftable = new NetworkCraftable(process);
-                                CraftingCalculator calc = new CraftingCalculator(network,1,craftable.getOutput(),craftable,network.knownCraftables);
+                                CraftingCalculator calc = new CraftingCalculator(network, 1, craftable.getOutput().get(0), craftable, network.knownCraftables);
                                 CalculationResult result = calc.calculate();
-                                if(result.getType() == CalculationResultType.OK){
+                                if (result.getType() == CalculationResultType.OK) {
                                     network.requestCrafting(result.getTask());
                                 }
                             }
@@ -112,19 +108,19 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     @Override
     public void tick() {
         workTimer.tick();
-        worldObj.markBlocksDirty(x,y,z,x,y,z);
-        worldObj.notifyBlocksOfNeighborChange(x,y,z,isActive ? 15 : 0);
-        if(network != null){
-            if(getStackInSlot(0) != null){
+        worldObj.markBlocksDirty(x, y, z, x, y, z);
+        worldObj.notifyBlocksOfNeighborChange(x, y, z, isActive ? 15 : 0);
+        if (network != null) {
+            if (getStackInSlot(0) != null) {
                 int id = getStackInSlot(0).itemID;
                 int dmg = getStackInSlot(0).getMaxDamage();
                 int count = 0;
-                if(useMeta){
-                    count = network.inventory.count(id,dmg);
+                if (useMeta) {
+                    count = network.inventory.count(id, dmg);
                 } else {
                     count = network.inventory.count(id);
                 }
-                switch (mode){
+                switch (mode) {
                     case 0:
                         isActive = count == amount;
                         break;
@@ -153,11 +149,9 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         super.tick();
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack)
-    {
+    public void setInventorySlotContents(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
-        {
+        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
             itemstack.stackSize = getInventoryStackLimit();
         }
         onInventoryChanged();
@@ -170,11 +164,10 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
 
     @Override
     public boolean canInteractWith(EntityPlayer entityPlayer) {
-        if(worldObj.getBlockTileEntity(x, y, z) != this)
-        {
+        if (worldObj.getBlockTileEntity(x, y, z) != this) {
             return false;
         }
-        return entityPlayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
+        return entityPlayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
@@ -182,14 +175,12 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
 
     }
 
-    public String getInvName()
-    {
+    public String getInvName() {
         return "Redstone Emitter";
     }
 
 
-    public void readFromNBT(CompoundTag nbttagcompound)
-    {
+    public void readFromNBT(CompoundTag nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         ListTag nbttaglist = nbttagcompound.getList("Items");
         contents = new ItemStack[getSizeInventory()];
@@ -198,12 +189,10 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         amount = nbttagcompound.getInteger("checkAmount");
         useMeta = nbttagcompound.getBoolean("useMeta");
         asmSlot = nbttagcompound.getInteger("asmSlot");
-        for(int i = 0; i < nbttaglist.tagCount(); i++)
-        {
-            CompoundTag nbttagcompound1 = (CompoundTag)nbttaglist.tagAt(i);
+        for (int i = 0; i < nbttaglist.tagCount(); i++) {
+            CompoundTag nbttagcompound1 = (CompoundTag) nbttaglist.tagAt(i);
             int j = nbttagcompound1.getByte("Slot") & 0xff;
-            if(j >= 0 && j < contents.length)
-            {
+            if (j >= 0 && j < contents.length) {
                 contents[j] = ItemStack.readItemStackFromNbt(nbttagcompound1);
             }
         }
@@ -211,30 +200,26 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     }
 
 
-    public void writeToNBT(CompoundTag nbttagcompound)
-    {
+    public void writeToNBT(CompoundTag nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         ListTag nbttaglist = new ListTag();
-        for(int i = 0; i < contents.length; i++)
-        {
-            if(contents[i] != null)
-            {
+        for (int i = 0; i < contents.length; i++) {
+            if (contents[i] != null) {
                 CompoundTag nbttagcompound1 = new CompoundTag();
-                nbttagcompound1.putByte("Slot", (byte)i);
+                nbttagcompound1.putByte("Slot", (byte) i);
                 contents[i].writeToNBT(nbttagcompound1);
                 nbttaglist.addTag(nbttagcompound1);
             }
         }
         nbttagcompound.put("Items", nbttaglist);
-        nbttagcompound.putBoolean("isActive",isActive);
-        nbttagcompound.putInt("checkAmount",amount);
-        nbttagcompound.putInt("mode",mode);
-        nbttagcompound.putBoolean("useMeta",useMeta);
-        nbttagcompound.putInt("asmSlot",asmSlot);
+        nbttagcompound.putBoolean("isActive", isActive);
+        nbttagcompound.putInt("checkAmount", amount);
+        nbttagcompound.putInt("mode", mode);
+        nbttagcompound.putBoolean("useMeta", useMeta);
+        nbttagcompound.putInt("asmSlot", asmSlot);
     }
 
-    public int getInventoryStackLimit()
-    {
+    public int getInventoryStackLimit() {
         return 64;
     }
 

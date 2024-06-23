@@ -28,12 +28,12 @@ public class ContainerMixin {
 
     @Inject(
             method = "clickInventorySlot",
-            at = @At(value = "INVOKE",target = "Lnet/minecraft/core/player/inventory/slot/Slot;getStack()Lnet/minecraft/core/item/ItemStack;",ordinal = 0,shift = At.Shift.AFTER),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/core/player/inventory/slot/Slot;getStack()Lnet/minecraft/core/item/ItemStack;", ordinal = 0, shift = At.Shift.AFTER),
             locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true
     )
     public void clickInventorySlot(InventoryAction action, int[] args, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir, InventoryPlayer inventory, int slotId, Slot slot, ItemStack controlStack) {
-        if(slot instanceof SlotViewOnly){
+        if (slot instanceof SlotViewOnly) {
             cir.setReturnValue(null);
         }
     }

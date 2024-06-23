@@ -1,7 +1,8 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
-import sunsetsatellite.retrostorage.util.InventoryDigital;
+import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.ItemStackList;
 
 import javax.annotation.Nullable;
@@ -12,8 +13,15 @@ public class NodeRequirements {
     private final Map<Integer, ItemStackList> itemRequirements = new LinkedHashMap<>();
     private final Map<Integer, Integer> itemsNeededPerCraft = new LinkedHashMap<>();
 
+    private final Map<Integer, FluidStackList> fluidRequirements = new LinkedHashMap<>();
+    private final Map<Integer, Integer> fluidsNeededPerCraft = new LinkedHashMap<>();
+
     @Nullable
     private List<ItemStack> cachedSimulatedItemRequirementSet = null;
+
+    @Nullable
+    private List<FluidStack> cachedSimulatedFluidRequirementSet = null;
+
 
     public void addItemRequirement(int ingredientNumber, ItemStack stack, int size, int perCraft) {
         stack = stack.copy();
@@ -27,11 +35,25 @@ public class NodeRequirements {
         list.add(stack);
     }
 
+    public void addFluidRequirement(int ingredientNumber, FluidStack stack, int size, int perCraft) {
+        stack = stack.copy();
+        if (!fluidsNeededPerCraft.containsKey(ingredientNumber)) {
+            fluidsNeededPerCraft.put(ingredientNumber, perCraft);
+        }
+
+        FluidStackList list = fluidRequirements.computeIfAbsent(ingredientNumber, key -> new FluidStackList());
+
+        stack.amount = size;
+        list.add(stack);
+    }
+
     @Override
     public String toString() {
         return "NodeRequirements{" +
-                "itemRequirements=" + itemRequirements +
+                "fluidsNeededPerCraft=" + fluidsNeededPerCraft +
+                ", fluidRequirements=" + fluidRequirements +
                 ", itemsNeededPerCraft=" + itemsNeededPerCraft +
+                ", itemRequirements=" + itemRequirements +
                 '}';
     }
 
@@ -52,7 +74,7 @@ public class NodeRequirements {
                 while (needed > 0 && it.hasNext()) {
                     ItemStack toUse = it.next();
 
-                    if(needed < toUse.stackSize) {
+                    if (needed < toUse.stackSize) {
                         if (!simulate) {
                             itemRequirements.get(i).remove(toUse.itemID, toUse.getMetadata(), needed, false, true);
                         }
@@ -63,7 +85,7 @@ public class NodeRequirements {
 
                         needed = 0;
                     } else {
-                        if (!simulate){
+                        if (!simulate) {
                             it.remove();
                         }
 
@@ -78,6 +100,53 @@ public class NodeRequirements {
         }
 
         cachedSimulatedItemRequirementSet = simulate ? toReturn : null;
+
+        return toReturn;
+    }
+
+    public List<FluidStack> getSingleFluidRequirements(boolean simulate) {
+        List<FluidStack> cached = cachedSimulatedFluidRequirementSet;
+        if (simulate && cached != null && !(cached.isEmpty())) {
+            return cached;
+        }
+
+        List<FluidStack> toReturn = new ArrayList<>();
+
+        for (int i = 0; i < fluidRequirements.size(); i++) {
+            int needed = fluidsNeededPerCraft.get(i);
+
+            if (!fluidRequirements.get(i).isEmpty()) {
+                Iterator<FluidStack> it = fluidRequirements.get(i).iterator();
+
+                while (needed > 0 && it.hasNext()) {
+                    FluidStack toUse = it.next();
+
+                    if (needed < toUse.amount) {
+                        if (!simulate) {
+                            fluidRequirements.get(i).removeById(toUse.liquid.id, needed, false);
+                        }
+
+                        FluidStack copy = toUse.copy();
+                        copy.amount = needed;
+                        toReturn.add(copy);
+
+                        needed = 0;
+                    } else {
+                        if (!simulate) {
+                            it.remove();
+                        }
+
+                        toReturn.add(toUse);
+
+                        needed -= toUse.amount;
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
+
+        cachedSimulatedFluidRequirementSet = simulate ? toReturn : null;
 
         return toReturn;
     }

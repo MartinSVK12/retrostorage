@@ -34,6 +34,8 @@ public interface IDigitalFluidInventory {
     //if strict is true, method returns null if amount is more than actually present
     FluidStack remove(int slot, int amount, boolean strict);
 
+    FluidStack removeById(int id, int amount, boolean strict);
+
     FluidStack remove(int slot, boolean strict);
 
     boolean move(List<FluidStack> what, FluidStackList where, boolean strict);

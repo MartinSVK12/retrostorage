@@ -15,7 +15,7 @@ import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
 public class GuiEnergyAcceptor extends GuiContainer {
 
     public GuiEnergyAcceptor(InventoryPlayer inventoryPlayer, TileEntityEnergyAcceptor tile) {
-        super(new ContainerEnergyAcceptor(inventoryPlayer,tile));
+        super(new ContainerEnergyAcceptor(inventoryPlayer, tile));
         this.tile = tile;
     }
 
@@ -23,8 +23,7 @@ public class GuiEnergyAcceptor extends GuiContainer {
     public TileEntityEnergyContainer tile;
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float f)
-    {
+    protected void drawGuiContainerBackgroundLayer(float f) {
         int i = mc.renderEngine.getTexture("assets/retrostorage/textures/gui/acceptor.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
@@ -35,12 +34,12 @@ public class GuiEnergyAcceptor extends GuiContainer {
         int y = (this.height - this.ySize) / 2;
         int color;
         //1 (red, empty) -> 0.65 (green, full)
-        double color_mapped = CatalystEnergy.map((float)tile.energy/(float)tile.capacity,0,1,1,0.65);
-        double x_mapped = CatalystEnergy.map((float)tile.energy/(float)tile.capacity, 0,1,0,15);
+        double color_mapped = CatalystEnergy.map((float) tile.energy / (float) tile.capacity, 0, 1, 1, 0.65);
+        double x_mapped = CatalystEnergy.map((float) tile.energy / (float) tile.capacity, 0, 1, 0, 15);
         Color c = new Color();
-        c.fromHSB((float) color_mapped,1.0F,1.0F);
+        c.fromHSB((float) color_mapped, 1.0F, 1.0F);
         color = c.getAlpha() << 24 | c.getRed() << 16 | c.getBlue() << 8 | c.getGreen();
-        drawRectWidthHeight(x+80,y+40, (int) x_mapped,7,color);
+        drawRectWidthHeight(x + 80, y + 40, (int) x_mapped, 7, color);
         GL11.glEnable(3553);
     }
 
@@ -59,16 +58,14 @@ public class GuiEnergyAcceptor extends GuiContainer {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer()
-    {
+    protected void drawGuiContainerForegroundLayer() {
         super.drawGuiContainerForegroundLayer();
         fontRenderer.drawString(name, 48, 6, 0xFF404040);
     }
 
 
     @Override
-    public void init()
-    {
+    public void init() {
         super.init();
     }
 }

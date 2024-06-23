@@ -15,7 +15,8 @@ import sunsetsatellite.retrostorage.RetroStorage;
 )
 public class MinecraftMixin {
 
-    @Shadow private static Minecraft INSTANCE;
+    @Shadow
+    private static Minecraft INSTANCE;
 
     @Inject(
             method = "startGame",

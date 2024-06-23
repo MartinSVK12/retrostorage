@@ -10,8 +10,6 @@ import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.BlockInstance;
 import sunsetsatellite.catalyst.core.util.Vec3i;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.blocks.BlockWirelessLink;
 import sunsetsatellite.retrostorage.tiles.TileEntityWirelessLink;
 
 import java.util.HashMap;
@@ -24,34 +22,34 @@ public class ItemLinkingCard extends Item {
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+    public boolean onUseItemOnBlock(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
         TileEntityWirelessLink link = (TileEntityWirelessLink) world.getBlockTileEntity(blockX, blockY, blockZ);
         if (link != null) {
-            if(link.remoteLink != null){
+            if (link.remoteLink != null) {
                 link.remoteLink.remoteLink = null;
                 link.remoteLink = null;
-                if(link.network != null){
+                if (link.network != null) {
                     link.network.reload();
                 }
                 entityplayer.sendTranslatedChatMessage("action.retrostorage.linkBroken");
                 return true;
             }
             CompoundTag data = itemstack.getData().getCompound("position");
-            if (!(data.containsKey("x") && data.containsKey("y") && data.containsKey("z"))){
+            if (!(data.containsKey("x") && data.containsKey("y") && data.containsKey("z"))) {
                 CompoundTag positionNBT = (new CompoundTag());
-                positionNBT.putInt("x",blockX);
-                positionNBT.putInt("y",blockY);
-                positionNBT.putInt("z",blockZ);
-                itemstack.getData().putCompound("position",positionNBT);
+                positionNBT.putInt("x", blockX);
+                positionNBT.putInt("y", blockY);
+                positionNBT.putInt("z", blockZ);
+                itemstack.getData().putCompound("position", positionNBT);
                 entityplayer.sendTranslatedChatMessage("action.retrostorage.cardBound");
             } else {
-                TileEntity tile = world.getBlockTileEntity(data.getInteger("x"),data.getInteger("y"),data.getInteger("z"));
+                TileEntity tile = world.getBlockTileEntity(data.getInteger("x"), data.getInteger("y"), data.getInteger("z"));
                 TileEntity self = world.getBlockTileEntity(blockX, blockY, blockZ);
-                if(tile == self){
+                if (tile == self) {
                     entityplayer.sendTranslatedChatMessage("action.retrostorage.linkSelfError");
-                } else if(tile instanceof TileEntityWirelessLink){
+                } else if (tile instanceof TileEntityWirelessLink) {
                     link.remoteLink = (TileEntityWirelessLink) tile;
-                    if(link.network != null){
+                    if (link.network != null) {
                         HashMap<String, BlockInstance> scan = link.network.scan(world, new Vec3i(tile.x, tile.y, tile.z));
                         link.network.addRecursive(scan);
                     } else if (((TileEntityWirelessLink) tile).network != null) {
@@ -67,7 +65,7 @@ public class ItemLinkingCard extends Item {
             }
         } else {
             if (entityplayer.isSneaking()) {
-                itemstack.getData().putCompound("position",new CompoundTag());
+                itemstack.getData().putCompound("position", new CompoundTag());
                 entityplayer.sendTranslatedChatMessage("action.retrostorage.cardUnbound");
             }
         }

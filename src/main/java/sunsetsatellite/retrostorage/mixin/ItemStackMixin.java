@@ -20,9 +20,8 @@ public class ItemStackMixin implements UnlimitedItemStack {
     }
 
     @Inject(method = "getMaxStackSize()I", at = @At("HEAD"), cancellable = true)
-    public void getMaxStackSize(CallbackInfoReturnable<Integer> cir)
-    {
-        if(unlimited){
+    public void getMaxStackSize(CallbackInfoReturnable<Integer> cir) {
+        if (unlimited) {
             cir.setReturnValue(Integer.MAX_VALUE);
         }
     }

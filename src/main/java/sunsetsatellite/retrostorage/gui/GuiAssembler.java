@@ -1,5 +1,3 @@
-
-
 package sunsetsatellite.retrostorage.gui;
 
 
@@ -9,22 +7,18 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerAssembler;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
 
-public class GuiAssembler extends GuiContainer
-{
+public class GuiAssembler extends GuiContainer {
 
-    public GuiAssembler(InventoryPlayer inventoryplayer, TileEntityAssembler TileEntityAssembler)
-    {
+    public GuiAssembler(InventoryPlayer inventoryplayer, TileEntityAssembler TileEntityAssembler) {
         super(new ContainerAssembler(inventoryplayer, TileEntityAssembler));
     }
 
-    protected void drawGuiContainerForegroundLayer()
-    {
+    protected void drawGuiContainerForegroundLayer() {
         fontRenderer.drawString("Assembler", 64, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
-    protected void drawGuiContainerBackgroundLayer(float f)
-    {
+    protected void drawGuiContainerBackgroundLayer(float f) {
         int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/disc_container.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);

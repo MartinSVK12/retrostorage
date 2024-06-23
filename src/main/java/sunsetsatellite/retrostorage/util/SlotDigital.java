@@ -1,10 +1,8 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.core.achievement.stat.StatList;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import net.minecraft.core.player.inventory.InventoryPlayer;
 import net.minecraft.core.player.inventory.slot.Slot;
 
 public class SlotDigital extends Slot {
@@ -18,33 +16,27 @@ public class SlotDigital extends Slot {
         this.inventory = inventory;
     }
 
-    public boolean hasStack()
-    {
+    public boolean hasStack() {
         return getStack() != null;
     }
 
-    public int getSlotStackLimit()
-    {
+    public int getSlotStackLimit() {
         return Integer.MAX_VALUE;
     }
 
-    public ItemStack getStack()
-    {
+    public ItemStack getStack() {
         return inventory.get(variableIndex);
     }
 
-    public boolean isHere(final IInventory iinventory, final int i)
-    {
+    public boolean isHere(final IInventory iinventory, final int i) {
         return iinventory == inventory && i == variableIndex;
     }
 
-    public void onPickupFromSlot(final ItemStack itemstack)
-    {
+    public void onPickupFromSlot(final ItemStack itemstack) {
         onSlotChanged();
     }
 
-    public void onSlotChanged()
-    {
+    public void onSlotChanged() {
         inventory.inventoryChanged();
     }
 
@@ -53,27 +45,26 @@ public class SlotDigital extends Slot {
         return inventory.canAdd(itemstack);
     }
 
-    public void putStack(final ItemStack itemstack)
-    {
-        if(itemstack == null){
-            if(inventory.get(variableIndex) == null) return;
+    public void putStack(final ItemStack itemstack) {
+        if (itemstack == null) {
+            if (inventory.get(variableIndex) == null) return;
             int limit = inventory.get(variableIndex).getItem().getItemStackLimit();
             ItemStack removed = inventory.remove(variableIndex, limit, false, false);
-            if(removed != null){
+            if (removed != null) {
                 onSlotChanged();
             }
         }
         boolean success = inventory.add(itemstack);
-        if(success){
+        if (success) {
             onSlotChanged();
         }
     }
 
-    public boolean getIsDiscovered(EntityPlayer player){
+    public boolean getIsDiscovered(EntityPlayer player) {
         return true;
     }
 
-    public int getSlotIndex(){
+    public int getSlotIndex() {
         return slotIndex;
     }
 }

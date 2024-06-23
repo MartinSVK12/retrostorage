@@ -1,4 +1,4 @@
 package sunsetsatellite.retrostorage.tiles;
 
-public class TileEntityNetworkCable extends TileEntityNetworkDevice{
+public class TileEntityNetworkCable extends TileEntityNetworkDevice {
 }

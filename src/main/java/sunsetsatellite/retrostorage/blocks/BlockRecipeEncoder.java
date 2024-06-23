@@ -7,10 +7,9 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.gui.GuiRecipeEncoder;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
 
 public class BlockRecipeEncoder extends BlockTileEntityRotatable {
@@ -24,55 +23,46 @@ public class BlockRecipeEncoder extends BlockTileEntityRotatable {
         return new TileEntityRecipeEncoder();
     }
 
-    public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
-    {
-        if(world.isClientSide)
-        {
+    public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
+        if (world.isClientSide) {
             return true;
-        } else
-        {
+        } else {
             TileEntityRecipeEncoder tile = (TileEntityRecipeEncoder) world.getBlockTileEntity(i, j, k);
-            if(tile != null) {
-                Catalyst.displayGui(entityplayer,tile,"Recipe Encoder");
+            if (tile != null) {
+                Catalyst.displayGui(entityplayer, tile, "Recipe Encoder");
             }
             return true;
         }
     }
 
-     public void onBlockRemoved(World world, int x, int y, int z, int data)
-    {
-        TileEntityRecipeEncoder tileEntityRecipeEncoder = (TileEntityRecipeEncoder)world.getBlockTileEntity(x, y, z);
+    public void onBlockRemoved(World world, int x, int y, int z, int data) {
+        TileEntityRecipeEncoder tileEntityRecipeEncoder = (TileEntityRecipeEncoder) world.getBlockTileEntity(x, y, z);
         label0:
-        for(int l = 0; l < tileEntityRecipeEncoder.getSizeInventory(); l++)
-        {
+        for (int l = 0; l < tileEntityRecipeEncoder.getSizeInventory(); l++) {
             ItemStack itemstack = tileEntityRecipeEncoder.getStackInSlot(l);
-            if(itemstack == null)
-            {
+            if (itemstack == null) {
                 continue;
             }
             float f = world.rand.nextFloat() * 0.8F + 0.1F;
             float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
             float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
-            do
-            {
-                if(itemstack.stackSize <= 0)
-                {
+            do {
+                if (itemstack.stackSize <= 0) {
                     continue label0;
                 }
                 int i1 = world.rand.nextInt(21) + 10;
-                if(i1 > itemstack.stackSize)
-                {
+                if (i1 > itemstack.stackSize) {
                     i1 = itemstack.stackSize;
                 }
                 itemstack.stackSize -= i1;
-                EntityItem entityitem = new EntityItem(world, (float)x + f, (float)y + f1, (float)z + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
+                EntityItem entityitem = new EntityItem(world, (float) x + f, (float) y + f1, (float) z + f2, new ItemStack(itemstack.itemID, i1, itemstack.getMetadata(), itemstack.getData()));
                 float f3 = 0.05F;
-                entityitem.xd = (float)world.rand.nextGaussian() * f3;
-                entityitem.yd = (float)world.rand.nextGaussian() * f3 + 0.2F;
-                entityitem.zd = (float)world.rand.nextGaussian() * f3;
+                entityitem.xd = (float) world.rand.nextGaussian() * f3;
+                entityitem.yd = (float) world.rand.nextGaussian() * f3 + 0.2F;
+                entityitem.zd = (float) world.rand.nextGaussian() * f3;
                 world.entityJoinedWorld(entityitem);
-            } while(true);
+            } while (true);
         }
-        super.onBlockRemoved(world,x,y,z,data);
+        super.onBlockRemoved(world, x, y, z, data);
     }
 }

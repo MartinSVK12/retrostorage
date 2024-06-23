@@ -3,7 +3,6 @@ package sunsetsatellite.retrostorage.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
-import net.minecraft.client.gui.GuiRenderItem;
 import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
@@ -28,8 +27,7 @@ public abstract class GuiDigital extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTick)
-    {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTick) {
         drawDefaultBackground();
         final int centerX = (width - xSize) / 2;
         final int centerY = (height - ySize) / 2;
@@ -38,50 +36,45 @@ public abstract class GuiDigital extends GuiContainer {
         GL11.glTranslatef(centerX, centerY, 0.0F);
         drawGuiContainerForegroundLayer();
         Slot slot = null;
-        for (int i = 0; i < inventorySlots.inventorySlots.size(); i++)
-        {
+        for (int i = 0; i < inventorySlots.inventorySlots.size(); i++) {
             final Slot slot1 = inventorySlots.inventorySlots.get(i);
             boolean mouseOver = getIsMouseOverSlot(slot1, mouseX, mouseY);
-            if(!itemDragHandler.isSlotDragged(slot1)) {
+            if (!itemDragHandler.isSlotDragged(slot1)) {
                 guiRenderItem.render(slot1.getStack(), slot1.xDisplayPosition, slot1.yDisplayPosition, mouseOver, slot1);
             }
-            if (mouseOver)
-            {
+            if (mouseOver) {
                 slot = slot1;
             }
         }
 
         final InventoryPlayer inventoryplayer = mc.thePlayer.inventory;
         ItemStack grabbedItem = inventoryplayer.getHeldItemStack();
-        if(mc.gameSettings.enableItemDragging.value) {
+        if (mc.gameSettings.enableItemDragging.value) {
             itemDragHandler.drawScreen(mouseX, mouseY, partialTick);
 
             ItemStack grabbedItemOverride = itemDragHandler.getHeldItemRenderOverride();
-            if(grabbedItemOverride != null) {
+            if (grabbedItemOverride != null) {
                 grabbedItem = grabbedItemOverride;
             }
         }
 
-        if (grabbedItem != null)
-        {
+        if (grabbedItem != null) {
             GL11.glTranslatef(0.0F, 0.0F, 64F);
             guiRenderItem.render(grabbedItem, mouseX - centerX - 8, mouseY - centerY - 8);
         }
         GL11.glPopMatrix();
 
-        for(int i = 0; i < this.controlList.size(); ++i) {
+        for (int i = 0; i < this.controlList.size(); ++i) {
             GuiButton guibutton = this.controlList.get(i);
             guibutton.drawButton(this.mc, mouseX, mouseY);
         }
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        if (inventoryplayer.getHeldItemStack() == null && slot != null && slot.hasStack())
-        {
+        if (inventoryplayer.getHeldItemStack() == null && slot != null && slot.hasStack()) {
             boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || mc.gameSettings.alwaysShowDescriptions.value;
             String str = guiTooltip.getTooltipText(slot.getStack(), showDescription, slot);
-            if(!str.isEmpty())
-            {
-                if(slot instanceof SlotDigital && slot.getStack().stackSize >= 1000){
+            if (!str.isEmpty()) {
+                if (slot instanceof SlotDigital && slot.getStack().stackSize >= 1000) {
                     str += ("\n" + TextFormatting.GRAY + slot.getStack().stackSize + TextFormatting.WHITE);
                 }
                 guiTooltip.render(str, mouseX, mouseY, 8, -8);

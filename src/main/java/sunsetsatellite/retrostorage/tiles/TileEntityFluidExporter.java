@@ -9,7 +9,6 @@ import sunsetsatellite.catalyst.core.util.Connection;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.IFluidIO;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
-import sunsetsatellite.catalyst.fluids.api.IFluidTransfer;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 
@@ -30,8 +29,8 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
         @Override
         public FluidStack insertFluid(int slot, FluidStack fluidStack) {
             FluidStack stack = fluidContents[slot];
-            FluidStack split = fluidStack.splitStack(Math.min(fluidStack.amount,getRemainingCapacity(slot)));
-            if(stack != null && split.amount > 0){
+            FluidStack split = fluidStack.splitStack(Math.min(fluidStack.amount, getRemainingCapacity(slot)));
+            if (stack != null && split.amount > 0) {
                 fluidContents[slot].amount += split.amount;
             } else {
                 fluidContents[slot] = split;
@@ -45,15 +44,15 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
         }
 
         @Override
-        public boolean canInsertFluid(int slot,FluidStack fluidStack){
-            if(getFluidInSlot(slot) != null) if(!getFluidInSlot(slot).isFluidEqual(fluidStack)) return false;
-            return Math.min(fluidStack.amount,getRemainingCapacity(slot)) > 0;
+        public boolean canInsertFluid(int slot, FluidStack fluidStack) {
+            if (getFluidInSlot(slot) != null) if (!getFluidInSlot(slot).isFluidEqual(fluidStack)) return false;
+            return Math.min(fluidStack.amount, getRemainingCapacity(slot)) > 0;
         }
 
         @Override
         public FluidStack getFluidInSlot(int slot) {
-            if(this.fluidContents.length == 0) return null;
-            if(this.fluidContents[slot] == null || this.fluidContents[slot].getLiquid() == null || this.fluidContents[slot].amount == 0){
+            if (this.fluidContents.length == 0) return null;
+            if (this.fluidContents[slot] == null || this.fluidContents[slot].getLiquid() == null || this.fluidContents[slot].amount == 0) {
                 this.fluidContents[slot] = null;
             }
             return fluidContents[slot];
@@ -73,14 +72,14 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
 
         @Override
         public void setFluidInSlot(int slot, FluidStack fluid) {
-            if(fluid == null || fluid.amount == 0 || fluid.liquid == null){
+            if (fluid == null || fluid.amount == 0 || fluid.liquid == null) {
                 this.fluidContents[slot] = null;
                 this.onFluidInventoryChanged();
                 return;
             }
             ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
-            if(allFluids.contains(fluid.liquid)){
+            if (allFluids.contains(fluid.liquid)) {
                 this.fluidContents[slot] = fluid;
                 this.onFluidInventoryChanged();
             }
@@ -107,9 +106,9 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
             return 0;
         }
 
-        public boolean hasFluid(FluidStack fluidStack){
-            if(fluidStack == null) return false;
-            return Arrays.stream(fluidContents).anyMatch((F)-> F != null && F.isFluidEqual(fluidStack));
+        public boolean hasFluid(FluidStack fluidStack) {
+            if (fluidStack == null) return false;
+            return Arrays.stream(fluidContents).anyMatch((F) -> F != null && F.isFluidEqual(fluidStack));
         }
     }
 
@@ -133,7 +132,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
                                     if (networkFluid != null && ((isWhitelist && filter.hasFluid(networkFluid)) || (!isWhitelist && !filter.hasFluid(networkFluid)))) {
                                         int transferPortion = Math.min(Math.min(networkFluid.amount, inv.getTransferSpeed()), inv.getRemainingCapacity(i));
                                         if (fluid == null || (fluid.isFluidEqual(networkFluid))) {
-                                            if(transferPortion > 0){
+                                            if (transferPortion > 0) {
                                                 FluidStack fluidStack = networkFluid.splitStack(transferPortion);
                                                 inv.insertFluid(i, fluidStack);
                                                 break label;
@@ -150,7 +149,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
                                     if (networkFluid != null && ((isWhitelist && filter.hasFluid(networkFluid)) || (!isWhitelist && !filter.hasFluid(networkFluid)))) {
                                         int transferPortion = Math.min(Math.min(networkFluid.amount, inv.getTransferSpeed()), inv.getRemainingCapacity(slot));
                                         if (fluid == null || (fluid.isFluidEqual(networkFluid))) {
-                                            if(transferPortion > 0){
+                                            if (transferPortion > 0) {
                                                 FluidStack fluidStack = networkFluid.splitStack(transferPortion);
                                                 inv.insertFluid(i, fluidStack);
                                                 break label;
@@ -172,20 +171,17 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 
     @Override
-    public void readFromNBT(CompoundTag CompoundTag)
-    {
+    public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Fluids");
         isWhitelist = CompoundTag.getBoolean("isWhitelist");
         enabled = CompoundTag.getBoolean("enabled");
         slot = CompoundTag.getInteger("workSlot");
         filter.fluidContents = new FluidStack[filter.getFluidInventorySize()];
-        for(int i = 0; i < listTag.tagCount(); i++)
-        {
-            CompoundTag tag = (CompoundTag)listTag.tagAt(i);
+        for (int i = 0; i < listTag.tagCount(); i++) {
+            CompoundTag tag = (CompoundTag) listTag.tagAt(i);
             int j = tag.getByte("Slot") & 0xff;
-            if(j < filter.fluidContents.length)
-            {
+            if (j < filter.fluidContents.length) {
                 filter.fluidContents[j] = new FluidStack(tag);
             }
         }
@@ -193,24 +189,21 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     }
 
     @Override
-    public void writeToNBT(CompoundTag CompoundTag)
-    {
+    public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
-        for(int i = 0; i <  filter.fluidContents.length; i++)
-        {
-            if( filter.fluidContents[i] != null)
-            {
+        for (int i = 0; i < filter.fluidContents.length; i++) {
+            if (filter.fluidContents[i] != null) {
                 CompoundTag CompoundTag1 = new CompoundTag();
-                CompoundTag1.putByte("Slot", (byte)i);
+                CompoundTag1.putByte("Slot", (byte) i);
                 filter.fluidContents[i].writeToNBT(CompoundTag1);
                 listTag.addTag(CompoundTag1);
             }
         }
 
-        CompoundTag.putInt("workSlot",slot);
-        CompoundTag.putBoolean("isWhitelist",isWhitelist);
-        CompoundTag.putBoolean("enabled",enabled);
+        CompoundTag.putInt("workSlot", slot);
+        CompoundTag.putBoolean("isWhitelist", isWhitelist);
+        CompoundTag.putBoolean("enabled", enabled);
         CompoundTag.put("Fluids", listTag);
     }
 
@@ -222,6 +215,10 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     @Override
     public Connection getFluidIOForSide(Direction dir) {
         return Connection.NONE;
+    }
+
+    @Override
+    public void setFluidIOForSide(Direction dir, Connection con) {
     }
 
     @Override

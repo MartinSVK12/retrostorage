@@ -3,73 +3,163 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
+import net.minecraft.core.block.BlockFluid;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.CatalystFluids;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
+import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class TileEntityProcessProgrammer extends TileEntity
-    implements IInventory
-{
+        implements IInventory {
 
     public TileEntityProcessProgrammer() {
-        contents = new ItemStack[2];
+        contents = new ItemStack[3];
     }
 
-    public int getSizeInventory()
-    {
+    public final Filter filter = new Filter();
+
+    public static class Filter implements IFluidInventory {
+        public FluidStack[] fluidContents = new FluidStack[1];
+
+
+        @Override
+        public FluidStack insertFluid(int slot, FluidStack fluidStack) {
+            FluidStack stack = fluidContents[slot];
+            FluidStack split = fluidStack.splitStack(Math.min(fluidStack.amount, getRemainingCapacity(slot)));
+            if (stack != null && split.amount > 0) {
+                fluidContents[slot].amount += split.amount;
+            } else {
+                fluidContents[slot] = split;
+            }
+            return fluidStack;
+        }
+
+        @Override
+        public int getRemainingCapacity(int slot) {
+            return 1;
+        }
+
+        @Override
+        public boolean canInsertFluid(int slot, FluidStack fluidStack) {
+            if (getFluidInSlot(slot) != null) if (!getFluidInSlot(slot).isFluidEqual(fluidStack)) return false;
+            return Math.min(fluidStack.amount, getRemainingCapacity(slot)) > 0;
+        }
+
+        @Override
+        public FluidStack getFluidInSlot(int slot) {
+            if (this.fluidContents.length == 0) return null;
+            if (this.fluidContents[slot] == null || this.fluidContents[slot].getLiquid() == null || this.fluidContents[slot].amount == 0) {
+                this.fluidContents[slot] = null;
+            }
+            return fluidContents[slot];
+        }
+
+        @Override
+        public int getFluidCapacityForSlot(int slot) {
+            return 1;
+        }
+
+        @Override
+        public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
+            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+            allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
+            return allFluids;
+        }
+
+        @Override
+        public void setFluidInSlot(int slot, FluidStack fluid) {
+            if (fluid == null || fluid.amount == 0 || fluid.liquid == null) {
+                this.fluidContents[slot] = null;
+                this.onFluidInventoryChanged();
+                return;
+            }
+            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+            allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
+            if (allFluids.contains(fluid.liquid)) {
+                this.fluidContents[slot] = fluid;
+                this.onFluidInventoryChanged();
+            }
+
+        }
+
+        @Override
+        public int getFluidInventorySize() {
+            return fluidContents.length;
+        }
+
+        @Override
+        public void onFluidInventoryChanged() {
+
+        }
+
+        @Override
+        public int getTransferSpeed() {
+            return 0;
+        }
+
+        @Override
+        public int getActiveFluidSlot(Direction dir) {
+            return 0;
+        }
+
+        public boolean hasFluid(FluidStack fluidStack) {
+            if (fluidStack == null) return false;
+            return Arrays.stream(fluidContents).anyMatch((F) -> F != null && F.isFluidEqual(fluidStack));
+        }
+    }
+
+    public int getSizeInventory() {
         return contents.length;
     }
 
     public boolean isEmpty() {
-        for(int i = 0; i < getSizeInventory()-1; i++) {
-            if(getStackInSlot(i) != null) {
+        for (int i = 0; i < getSizeInventory() - 1; i++) {
+            if (getStackInSlot(i) != null) {
                 return false;
-            } else
-            {
+            } else {
                 continue;
             }
         }
         return true;
     }
 
-    public ItemStack getStackInSlot(int i)
-    {
+    public ItemStack getStackInSlot(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j)
-    {
-        if(contents[i] != null)
-        {
-            if(contents[i].stackSize <= j)
-            {
+    public ItemStack decrStackSize(int i, int j) {
+        if (contents[i] != null) {
+            if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
                 onInventoryChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
-            if(contents[i].stackSize == 0)
-            {
+            if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
             onInventoryChanged();
             return itemstack1;
-        } else
-        {
+        } else {
             return null;
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack)
-    {
+    public void setInventorySlotContents(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
-        {
+        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
             itemstack.stackSize = getInventoryStackLimit();
         }
         onInventoryChanged();
@@ -79,37 +169,30 @@ public class TileEntityProcessProgrammer extends TileEntity
         super.onInventoryChanged();
     }
 
-    public String getInvName()
-    {
+    public String getInvName() {
         return "Process Programmer";
     }
 
-    public void readFromNBT(CompoundTag CompoundTag)
-    {
+    public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getSizeInventory()];
-        for(int i = 0; i < listTag.tagCount(); i++)
-        {
-            CompoundTag CompoundTag1 = (CompoundTag)listTag.tagAt(i);
+        for (int i = 0; i < listTag.tagCount(); i++) {
+            CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
-            if(j >= 0 && j < contents.length)
-            {
+            if (j >= 0 && j < contents.length) {
                 contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
     }
 
-    public void writeToNBT(CompoundTag CompoundTag)
-    {
+    public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
-        for(int i = 0; i < contents.length; i++)
-        {
-            if(contents[i] != null)
-            {
+        for (int i = 0; i < contents.length; i++) {
+            if (contents[i] != null) {
                 CompoundTag CompoundTag1 = new CompoundTag();
-                CompoundTag1.putByte("Slot", (byte)i);
+                CompoundTag1.putByte("Slot", (byte) i);
                 contents[i].writeToNBT(CompoundTag1);
                 listTag.addTag(CompoundTag1);
             }
@@ -118,68 +201,83 @@ public class TileEntityProcessProgrammer extends TileEntity
         CompoundTag.put("Items", listTag);
     }
 
-    public int getInventoryStackLimit()
-    {
+    public int getInventoryStackLimit() {
         return 64;
     }
 
-    public void tick()
-    {
-        return;
+    public void tick() {
     }
 
-    public void setTask() {
-        if(getStackInSlot(0) != null){
-            HashMap<String,Object> task = new HashMap<>();
-            task.put("slot",currentSlot);
-            task.put("stack",getStackInSlot(0).copy());
-            task.put("isOutput",isCurrentOutput);
-            tasks.put(currentTask,task);
-        } else {
-            tasks.remove(currentTask);
+    public void setTask(String selected) {
+        if (Objects.equals(selected, "item")) {
+            if (getStackInSlot(0) != null) {
+                HashMap<String, Object> task = new HashMap<>();
+                task.put("slot", currentSlot);
+                task.put("stack", getStackInSlot(0).copy());
+                task.put("isOutput", isCurrentOutput);
+                task.put("type", "item");
+                tasks.put(currentTask, task);
+            } else {
+                tasks.remove(currentTask);
+            }
+        } else if (Objects.equals(selected, "fluid")) {
+            if (filter.getFluidInSlot(0) != null) {
+                HashMap<String, Object> task = new HashMap<>();
+                task.put("slot", currentSlot);
+                task.put("stack", filter.getFluidInSlot(0).copy());
+                task.put("isOutput", isCurrentOutput);
+                task.put("type", "fluid");
+                tasks.put(currentTask, task);
+            } else {
+                tasks.remove(currentTask);
+            }
         }
+
         //System.out.println(tasks);
     }
 
     public void clearDisc() {
-        if(getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc){
+        if (getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc) {
             ItemStack disc = getStackInSlot(1);
-            disc.getData().putCompound("disc",new CompoundTag());
-            disc.getData().putString("name","");
-            disc.getData().putBoolean("overrideName",false);
+            disc.getData().putCompound("disc", new CompoundTag());
+            disc.getData().putString("name", "");
+            disc.getData().putBoolean("overrideName", false);
         }
         tasks.clear();
     }
 
     public void saveProcess() {
-        if(getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc){
+        if (getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc) {
             CompoundTag data = new CompoundTag();
             CompoundTag taskData = new CompoundTag();
-            tasks.forEach((K,V) -> {
+            tasks.forEach((K, V) -> {
                 CompoundTag task = new CompoundTag();
-                task.putInt("id",K);
+                task.putInt("id", K);
+                task.putString("type", (String) V.get("type"));
                 task.putInt("slot", (Integer) V.get("slot"));
                 task.putBoolean("isOutput", (Boolean) V.get("isOutput"));
                 CompoundTag stack = new CompoundTag();
-                ((ItemStack)V.get("stack")).writeToNBT(stack);
-                task.putCompound("stack",stack);
-                taskData.putCompound("task"+K,task);
+                if (V.get("type") == "item") {
+                    ((ItemStack) V.get("stack")).writeToNBT(stack);
+                } else if (V.get("type") == "fluid") {
+                    ((FluidStack) V.get("stack")).writeToNBT(stack);
+                }
+                task.putCompound("stack", stack);
+                taskData.putCompound("task" + K, task);
             });
-            getStackInSlot(1).getData().putString("name","Adv. Recipe Disc: "+currentProcessName);
-            getStackInSlot(1).getData().putBoolean("overrideName",true);
-            data.putCompound("tasks",taskData);
-            data.putString("processName",currentProcessName);
-            getStackInSlot(1).getData().putCompound("disc",data);
+            getStackInSlot(1).getData().putString("name", "Adv. Recipe Disc: " + currentProcessName);
+            getStackInSlot(1).getData().putBoolean("overrideName", true);
+            data.putCompound("tasks", taskData);
+            data.putString("processName", currentProcessName);
+            getStackInSlot(1).getData().putCompound("disc", data);
         }
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer)
-    {
-        if(worldObj.getBlockTileEntity(x, y, z) != this)
-        {
+    public boolean canInteractWith(EntityPlayer entityplayer) {
+        if (worldObj.getBlockTileEntity(x, y, z) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override

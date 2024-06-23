@@ -1,19 +1,12 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.player.inventory.Container;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
-import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
-import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 
 public class BlockDigitalTerminal extends BlockNetworkDevice {
@@ -27,17 +20,14 @@ public class BlockDigitalTerminal extends BlockNetworkDevice {
         return new TileEntityDigitalTerminal();
     }
 
-    public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
-    {
-        if(world.isClientSide)
-        {
+    public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
+        if (world.isClientSide) {
             return true;
-        } else
-        {
+        } else {
             TileEntityDigitalTerminal tile = (TileEntityDigitalTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                Catalyst.displayGui(entityplayer,tile,"Digital Terminal");
+                Catalyst.displayGui(entityplayer, tile, "Digital Terminal");
             }
             return true;
         }

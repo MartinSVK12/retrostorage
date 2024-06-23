@@ -21,11 +21,11 @@ public class WorldGenLabyrinthMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    public void pickCheckLootItem(Random random, CallbackInfoReturnable<ItemStack> cir){
-        if(RetroStorage.config.getBoolean("Other.goldenDiscLoot")){
+    public void pickCheckLootItem(Random random, CallbackInfoReturnable<ItemStack> cir) {
+        if (RetroStorage.config.getBoolean("Other.goldenDiscLoot")) {
             int i = random.nextInt(200);
-            if(i == 0){
-                cir.setReturnValue(new ItemStack(RetroStorage.goldenDisc,1));
+            if (i == 0) {
+                cir.setReturnValue(new ItemStack(RetroStorage.goldenDisc, 1));
             }
         }
     }

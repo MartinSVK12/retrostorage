@@ -16,10 +16,8 @@ public class ContainerFluidExporter extends ContainerFluidFake {
         super(iinventory, tileEntityExporter.filter);
         tile = tileEntityExporter;
 
-        for(int i = 0; i < 3; i++)
-        {
-            for(int l = 0; l < 3; l++)
-            {
+        for (int i = 0; i < 3; i++) {
+            for (int l = 0; l < 3; l++) {
                 addFluidSlot(new SlotFluid(tileEntityExporter.filter, l + i * 3, 62 + l * 18, 17 + i * 18));
             }
 

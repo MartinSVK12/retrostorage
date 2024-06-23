@@ -1,6 +1,5 @@
 package sunsetsatellite.retrostorage.util;
 
-import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
 
 public class SlotDigitalFluid extends SlotFluid {

@@ -2,12 +2,10 @@ package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidImporter;
-import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
 
 import java.util.List;
 
@@ -18,10 +16,8 @@ public class ContainerFluidImporter extends ContainerFluidFake {
         super(iinventory, tileEntityImporter.filter);
         tile = tileEntityImporter;
 
-        for(int i = 0; i < 3; i++)
-        {
-            for(int l = 0; l < 3; l++)
-            {
+        for (int i = 0; i < 3; i++) {
+            for (int l = 0; l < 3; l++) {
                 addFluidSlot(new SlotFluid(tileEntityImporter.filter, l + i * 3, 62 + l * 18, 17 + i * 18));
             }
 

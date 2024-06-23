@@ -9,11 +9,9 @@ import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 
 import java.util.List;
 
-public class ContainerTaskRequest extends Container
-{
+public class ContainerTaskRequest extends Container {
 
-    public ContainerTaskRequest(TileEntityRequestTerminal TileEntityRequestTerminal)
-    {
+    public ContainerTaskRequest(TileEntityRequestTerminal TileEntityRequestTerminal) {
         tile = TileEntityRequestTerminal;
 
     }
@@ -28,11 +26,10 @@ public class ContainerTaskRequest extends Container
         return null;
     }
 
-    public boolean isUsableByPlayer(EntityPlayer entityplayer)
-    {
+    public boolean isUsableByPlayer(EntityPlayer entityplayer) {
         return tile.canInteractWith(entityplayer);
     }
 
-    private TileEntityRequestTerminal tile;
+    private final TileEntityRequestTerminal tile;
 }
 

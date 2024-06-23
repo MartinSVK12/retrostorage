@@ -9,7 +9,6 @@ import sunsetsatellite.catalyst.core.util.BlockInstance;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
 
@@ -22,26 +21,26 @@ public abstract class BlockNetworkDevice extends BlockTileEntityRotatable {
     public void onBlockAdded(World world, int x, int y, int z) {
         super.onBlockAdded(world, x, y, z);
         TileEntityNetworkDevice validNetworkTile = null;
-        Vec3i vec = new Vec3i(x,y,z);
+        Vec3i vec = new Vec3i(x, y, z);
         for (Direction dir : Direction.values()) {
             TileEntity otherTile = dir.getTileEntity(world, vec);
-            if(otherTile instanceof TileEntityNetworkDevice){
-                if(((TileEntityNetworkDevice) otherTile).network != null){
+            if (otherTile instanceof TileEntityNetworkDevice) {
+                if (((TileEntityNetworkDevice) otherTile).network != null) {
                     validNetworkTile = (TileEntityNetworkDevice) otherTile;
                     break;
                 }
             }
         }
-        if(validNetworkTile != null){
+        if (validNetworkTile != null) {
             for (Direction dir : Direction.values()) {
                 Vec3i dirVec = vec.copy().add(dir.getVec());
-                Block otherBlock = dir.getBlock(world,vec);
+                Block otherBlock = dir.getBlock(world, vec);
                 TileEntity otherTile = dir.getTileEntity(world, vec);
-                if(otherTile instanceof TileEntityNetworkDevice && otherTile != validNetworkTile){
-                    validNetworkTile.network.add(new BlockInstance(otherBlock,dirVec,world.getBlockMetadata(dirVec.x, dirVec.y, dirVec.z),otherTile));
+                if (otherTile instanceof TileEntityNetworkDevice && otherTile != validNetworkTile) {
+                    validNetworkTile.network.add(new BlockInstance(otherBlock, dirVec, world.getBlockMetadata(dirVec.x, dirVec.y, dirVec.z), otherTile));
                 }
             }
-            validNetworkTile.network.add(new BlockInstance(this,vec,world.getBlockMetadata(vec.x, vec.y, vec.z),world.getBlockTileEntity(vec.x, vec.y, vec.z)));
+            validNetworkTile.network.add(new BlockInstance(this, vec, world.getBlockMetadata(vec.x, vec.y, vec.z), world.getBlockTileEntity(vec.x, vec.y, vec.z)));
         }
 
     }
@@ -49,9 +48,9 @@ public abstract class BlockNetworkDevice extends BlockTileEntityRotatable {
     @Override
     public void onBlockRemoved(World world, int x, int y, int z, int data) {
         TileEntityNetworkDevice tile = (TileEntityNetworkDevice) world.getBlockTileEntity(x, y, z);
-        if(tile != null && tile.network != null && !(tile instanceof TileEntityDigitalController)) {
+        if (tile != null && tile.network != null && !(tile instanceof TileEntityDigitalController)) {
             DigitalNetwork network = tile.network;
-            network.remove(new BlockInstance(this,new Vec3i(x,y,z),data,tile));
+            network.remove(new BlockInstance(this, new Vec3i(x, y, z), data, tile));
             //network.reload();
         }
         super.onBlockRemoved(world, x, y, z, data);

@@ -10,32 +10,27 @@ import sunsetsatellite.retrostorage.tiles.TileEntityRedstoneEmitter;
 
 import java.util.List;
 
-public class ContainerRedstoneEmitter extends Container
-{
+public class ContainerRedstoneEmitter extends Container {
 
-    public ContainerRedstoneEmitter(IInventory iinventory, TileEntityRedstoneEmitter tileEntityRedstoneEmitter)
-    {
-    	tile = tileEntityRedstoneEmitter;
+    public ContainerRedstoneEmitter(IInventory iinventory, TileEntityRedstoneEmitter tileEntityRedstoneEmitter) {
+        tile = tileEntityRedstoneEmitter;
 
         addSlot(new Slot(tileEntityRedstoneEmitter, 0, 45, 35));
 
-        for(int j = 0; j < 3; j++)
-        {
-            for(int i1 = 0; i1 < 9; i1++)
-            {
+        for (int j = 0; j < 3; j++) {
+            for (int i1 = 0; i1 < 9; i1++) {
                 addSlot(new Slot(iinventory, i1 + j * 9 + 9, 8 + i1 * 18, 84 + j * 18));
             }
 
         }
 
-        for(int k = 0; k < 9; k++)
-        {
+        for (int k = 0; k < 9; k++) {
             addSlot(new Slot(iinventory, k, 8 + k * 18, 142));
         }
 
     }
 
-    private TileEntityRedstoneEmitter tile;
+    private final TileEntityRedstoneEmitter tile;
 
     @Override
     public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {

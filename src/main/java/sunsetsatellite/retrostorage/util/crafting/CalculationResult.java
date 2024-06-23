@@ -1,8 +1,5 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.item.ItemStack;
-
 public class CalculationResult {
     private final CalculationResultType type;
     private final CraftingPreviewInfo craftingPreviewInfo;

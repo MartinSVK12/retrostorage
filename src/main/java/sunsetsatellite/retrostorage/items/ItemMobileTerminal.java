@@ -26,54 +26,54 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
-        TileEntity tile = world.getBlockTileEntity(blockX,blockY,blockZ);
-        if(tile != null){
-            if((tile.getClass() == TileEntityDigitalTerminal.class && this == RetroStorage.mobileTerminal) || (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal) || (tile.getClass() == TileEntityDigitalFluidTerminal.class && this == RetroStorage.mobileFluidTerminal)){
+    public boolean onUseItemOnBlock(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+        TileEntity tile = world.getBlockTileEntity(blockX, blockY, blockZ);
+        if (tile != null) {
+            if ((tile.getClass() == TileEntityDigitalTerminal.class && this == RetroStorage.mobileTerminal) || (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal) || (tile.getClass() == TileEntityDigitalFluidTerminal.class && this == RetroStorage.mobileFluidTerminal)) {
                 CompoundTag positionNBT = (new CompoundTag());
-                positionNBT.putInt("x",blockX);
-                positionNBT.putInt("y",blockY);
-                positionNBT.putInt("z",blockZ);
-                itemstack.getData().putCompound("position",positionNBT);
+                positionNBT.putInt("x", blockX);
+                positionNBT.putInt("y", blockY);
+                positionNBT.putInt("z", blockZ);
+                itemstack.getData().putCompound("position", positionNBT);
                 entityplayer.sendTranslatedChatMessage("action.retrostorage.terminalBound");
             }
         } else {
-            if(entityplayer.isSneaking()){
+            if (entityplayer.isSneaking()) {
                 itemstack.getData().getValue().remove("position");
                 entityplayer.sendTranslatedChatMessage("action.retrostorage.terminalUnbound");
             }
         }
         return true;
-        //return super.onItemUse(itemstack, entityplayer, world, i, j, k, l, heightPlaced);
+        //return super.onUseItemOnBlock(itemstack, entityplayer, world, i, j, k, l, heightPlaced);
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer) {
+    public ItemStack onUseItem(ItemStack itemstack, World world, EntityPlayer entityplayer) {
         CompoundTag positionNBT = itemstack.getData().getCompound("position");
-        TileEntity tile = world.getBlockTileEntity(positionNBT.getInteger("x"),positionNBT.getInteger("y"),positionNBT.getInteger("z"));
-        if(itemstack.getItem() == RetroStorage.mobileTerminal){
-            if(tile != null){
+        TileEntity tile = world.getBlockTileEntity(positionNBT.getInteger("x"), positionNBT.getInteger("y"), positionNBT.getInteger("z"));
+        if (itemstack.getItem() == RetroStorage.mobileTerminal) {
+            if (tile != null) {
                 ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalTerminal(entityplayer.inventory, (TileEntityDigitalTerminal) tile));
             }
-        } else if(itemstack.getItem() == RetroStorage.mobileRequestTerminal){
-            if(tile != null){
-                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer, (TileEntityRequestTerminal) tile));
+        } else if (itemstack.getItem() == RetroStorage.mobileRequestTerminal) {
+            if (tile != null) {
+                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer.inventory, (TileEntityRequestTerminal) tile));
             }
-        } else if(itemstack.getItem() == RetroStorage.mobileFluidTerminal){
-            if(tile != null){
+        } else if (itemstack.getItem() == RetroStorage.mobileFluidTerminal) {
+            if (tile != null) {
                 ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalFluidTerminal(entityplayer.inventory, (TileEntityDigitalFluidTerminal) tile));
             }
         }
 
-        return super.onItemRightClick(itemstack, world, entityplayer);
+        return super.onUseItem(itemstack, world, entityplayer);
     }
 
     @Override
     public String getDescription(ItemStack itemStack) {
-        CompoundTag pos = itemStack.getData().getCompoundOrDefault("position",null);
-        if(pos != null){
-            return TextFormatting.MAGENTA+ "Bound to X: "+pos.getInteger("x")+" Y: "+pos.getInteger("y")+" Z: "+pos.getInteger("z")+"!";
+        CompoundTag pos = itemStack.getData().getCompoundOrDefault("position", null);
+        if (pos != null) {
+            return TextFormatting.MAGENTA + "Bound to X: " + pos.getInteger("x") + " Y: " + pos.getInteger("y") + " Z: " + pos.getInteger("z") + "!";
         }
-        return TextFormatting.GRAY+"Unbound.";
+        return TextFormatting.GRAY + "Unbound.";
     }
 }

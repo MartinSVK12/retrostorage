@@ -1,16 +1,14 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
-import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.gui.GuiDiscDrive;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 
 import java.util.ArrayList;
@@ -26,16 +24,13 @@ public class BlockDiscDrive extends BlockNetworkDevice {
         return new TileEntityDiscDrive();
     }
 
-    public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
-    {
-        if(world.isClientSide)
-        {
+    public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
+        if (world.isClientSide) {
             return true;
-        } else
-        {
+        } else {
             TileEntityDiscDrive tile = (TileEntityDiscDrive) world.getBlockTileEntity(i, j, k);
-            if(tile != null) {
-                Catalyst.displayGui(entityplayer,tile,"DIsc Drive");
+            if (tile != null) {
+                Catalyst.displayGui(entityplayer, tile, "Disc Drive");
             }
             return true;
         }

@@ -22,12 +22,12 @@ public class GuiTooltipMixin extends Gui {
 
     @Inject(
             method = "getTooltipText(Lnet/minecraft/core/item/ItemStack;ZLnet/minecraft/core/player/inventory/slot/Slot;)Ljava/lang/String;",
-            at = @At(value = "INVOKE",target = "Lnet/minecraft/client/gui/GuiTooltip;formatDescription(Ljava/lang/String;I)Ljava/lang/String;", shift = At.Shift.AFTER),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiTooltip;formatDescription(Ljava/lang/String;I)Ljava/lang/String;", shift = At.Shift.AFTER),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void getTooltipText(ItemStack itemStack, boolean showDescription, Slot slot, CallbackInfoReturnable<String> cir, I18n trans, StringBuilder text) {
         ItemStack stack = slot.getStack();
-        if(stack != null && stack.getItem() == RetroStorage.slotIdFinder){
+        if (stack != null && stack.getItem() == RetroStorage.slotIdFinder) {
             text.append(TextFormatting.MAGENTA).append("ID of this slot is: ").append(slot.id).append(" (").append(slot.getClass().getSimpleName()).append(")").append("\n");
         }
     }

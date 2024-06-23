@@ -3,11 +3,9 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.DoubleTag;
-import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
 
-public class TileEntityDigitalController extends TileEntityNetworkDevice
-{
+public class TileEntityDigitalController extends TileEntityNetworkDevice {
 
     public TileEntityDigitalController() {
         network = new DigitalNetwork(this);
@@ -17,25 +15,25 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
     public void tick() {
 
         externalEnergy = (TileEntityEnergyAcceptor) getConnectedTileEntity(TileEntityEnergyAcceptor.class);
-        if(network != null){
-            if(!init){
+        if (network != null) {
+            if (!init) {
                 network.reload();
                 init = true;
             }
-            if(externalEnergy == null){
-                if(energy > 0){
+            if (externalEnergy == null) {
+                if (energy > 0) {
                     int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
-                    energy -= (network.devicesSize()-cableSize)+1;
+                    energy -= (network.devicesSize() - cableSize) + 1;
                     network.tick();
                 }
-                if(energy <= 0){
-                    if(energy < 0){
+                if (energy <= 0) {
+                    if (energy < 0) {
                         energy = 0;
                     }
-                    if(network.inventory.sizeStacks() != 0){
+                    if (network.inventory.sizeStacks() != 0) {
                         network.inventory.clear();
                     }
-                    if(network.fluidInventory.sizeStacks() != 0){
+                    if (network.fluidInventory.sizeStacks() != 0) {
                         network.fluidInventory.clear();
                     }
                     network.removeAll();
@@ -44,18 +42,18 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice
                     active = true;
                 }
             } else {
-                if(externalEnergy.energy > 0){
+                if (externalEnergy.energy > 0) {
                     int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
-                    externalEnergy.modifyEnergy((int) (-((network.devicesSize()-cableSize)+1)));
+                    externalEnergy.modifyEnergy((int) (-((network.devicesSize() - cableSize) + 1)));
                     network.tick();
                 }
-                if(externalEnergy.energy <= 0){
+                if (externalEnergy.energy <= 0) {
                     network.removeAll();
                     active = false;
-                    if(network.inventory.sizeStacks() != 0){
+                    if (network.inventory.sizeStacks() != 0) {
                         network.inventory.clear();
                     }
-                    if(network.fluidInventory.sizeStacks() != 0){
+                    if (network.fluidInventory.sizeStacks() != 0) {
                         network.fluidInventory.clear();
                     }
                 } else {

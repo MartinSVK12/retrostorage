@@ -1,7 +1,6 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
-import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import sunsetsatellite.catalyst.core.util.ConduitCapability;
@@ -24,8 +23,7 @@ public class BlockNetworkCable extends BlockNetworkDevice implements IConduitBlo
         return false;
     }
 
-    public boolean renderAsNormalBlock()
-    {
+    public boolean renderAsNormalBlock() {
         return false;
     }
 

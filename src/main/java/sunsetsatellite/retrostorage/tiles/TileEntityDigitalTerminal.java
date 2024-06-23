@@ -2,13 +2,11 @@ package sunsetsatellite.retrostorage.tiles;
 
 public class TileEntityDigitalTerminal extends TileEntityNetworkDevice {
 
-    public TileEntityDigitalTerminal()
-    {
+    public TileEntityDigitalTerminal() {
 
     }
 
-    public void tick()
-    {
+    public void tick() {
         super.tick();
     }
 

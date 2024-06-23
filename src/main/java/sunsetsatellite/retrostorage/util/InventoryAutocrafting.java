@@ -12,12 +12,12 @@ import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.InventoryCrafting;
 
 public class InventoryAutocrafting extends InventoryCrafting {
-    private ItemStack[] stackList;
-    private int field_21104_b;
+    private final ItemStack[] stackList;
+    private final int field_21104_b;
     private Container eventHandler;
 
     public InventoryAutocrafting(int i, int j) {
-        super(null,i,j);
+        super(null, i, j);
         int k = i * j;
         this.stackList = new ItemStack[k];
         this.field_21104_b = i;

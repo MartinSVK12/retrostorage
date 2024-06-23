@@ -23,4 +23,8 @@ public interface IProcessor {
     boolean insertItems(ItemStackList items);
 
     boolean canInsertItems(ItemStackList items);
+
+    boolean insertFluids(FluidStackList items);
+
+    boolean canInsertFluids(FluidStackList items);
 }

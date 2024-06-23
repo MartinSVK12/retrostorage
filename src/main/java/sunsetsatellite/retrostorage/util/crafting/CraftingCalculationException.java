@@ -1,9 +1,5 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.item.ItemStack;
-import sunsetsatellite.retrostorage.util.ItemStackList;
-
 public class CraftingCalculationException extends Exception {
     private final CalculationResultType type;
     private final NetworkCraftable recursiveRecipe;

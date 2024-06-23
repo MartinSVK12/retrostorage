@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "retrostorage",
   "version": "${version}",
-
   "name": "RetroStorage",
   "description": "Digital storage mod for old versions of Minecraft, adapted to work with Better than Adventure.",
   "icon": "icon.png",
@@ -13,7 +12,6 @@
     "homepage": "https://github.com/MartinSVK12/retrostorage/tree/bta",
     "sources": ""
   },
-
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
@@ -27,7 +25,6 @@
   "mixins": [
     "retrostorage.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.15.5",
     "halplibe": ">=3.5.4",

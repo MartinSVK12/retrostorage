@@ -25,13 +25,13 @@ import sunsetsatellite.catalyst.core.util.IColorOverride;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.catalyst.fluids.impl.GuiFluid;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
-import sunsetsatellite.retrostorage.containers.ContainerDigitalFluid;
 import sunsetsatellite.retrostorage.containers.ContainerFluidFake;
 
 public class GuiFluidFake extends GuiFluid {
 
     public GuiTooltip guiTooltip;
     public GuiRenderItem guiRenderItem;
+    public boolean renderAmount = false;
 
     public GuiFluidFake(ContainerFluidFake containerFluid, InventoryPlayer invP) {
         super(containerFluid, invP);
@@ -51,12 +51,12 @@ public class GuiFluidFake extends GuiFluid {
         int centerY = (this.height - this.ySize) / 2;
         this.drawGuiContainerBackgroundLayer(partialTick);
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)centerX, (float)centerY, 0.0F);
+        GL11.glTranslatef((float) centerX, (float) centerY, 0.0F);
         this.drawGuiContainerForegroundLayer();
         Slot slot = null;
 
         boolean showDescription;
-        for(int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
+        for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
             Slot slot1 = this.inventorySlots.inventorySlots.get(i);
             showDescription = this.getIsMouseOverSlot(slot1, mouseX, mouseY);
             if (!this.itemDragHandler.isSlotDragged(slot1)) {
@@ -86,7 +86,7 @@ public class GuiFluidFake extends GuiFluid {
         GL11.glPopMatrix();
 
         //GuiScreen
-        for(int i = 0; i < this.controlList.size(); ++i) {
+        for (int i = 0; i < this.controlList.size(); ++i) {
             GuiButton guibutton = this.controlList.get(i);
             guibutton.drawButton(this.mc, mouseX, mouseY);
         }
@@ -110,17 +110,17 @@ public class GuiFluidFake extends GuiFluid {
         Lighting.disable();
         GL11.glPopMatrix();
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)i4, (float)i5, 0.0F);
+        GL11.glTranslatef((float) i4, (float) i5, 0.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         int i9;
         int i10;
         SlotFluid slot6 = null;
         ContainerFluidFake fluidContainer = ((ContainerFluidFake) inventorySlots);
-        for(int i7 = 0; i7 < fluidContainer.fluidSlots.size(); i7++) {
+        for (int i7 = 0; i7 < fluidContainer.fluidSlots.size(); i7++) {
             SlotFluid slot8 = fluidContainer.fluidSlots.get(i7);
             this.drawFluidSlotInventory(slot8);
-            if(this.getIsMouseOverFluidSlot(slot8, mouseX, mouseY)) {
+            if (this.getIsMouseOverFluidSlot(slot8, mouseX, mouseY)) {
                 slot6 = slot8;
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -131,24 +131,27 @@ public class GuiFluidFake extends GuiFluid {
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
         }
-        if(slot6 != null && slot6.getHasStack() && slot6.getFluidStack().getLiquid() != null) {
+        if (slot6 != null && slot6.getHasStack() && slot6.getFluidStack().getLiquid() != null) {
             i9 = mouseX - i4;
             i10 = mouseY - i5;
-            String name = I18n.getInstance().translateNameKey(slot6.getFluidStack().getLiquid().getLanguageKey(0)).replace("Flowing ","").replace("Still ","");
+            String name = I18n.getInstance().translateNameKey(slot6.getFluidStack().getLiquid().getLanguageKey(0)).replace("Flowing ", "").replace("Still ", "");
+            String amount = slot6.getFluidStack().getAmount() + " mB";
             GuiTooltip tooltip = new GuiTooltip(mc);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_DEPTH_TEST);
-            tooltip.render(name,i9,i10,8,-8);
+            if (renderAmount && slot6.getFluidStack().getAmount() > 1)
+                name += "\n" + TextFormatting.LIGHT_GRAY + amount + TextFormatting.WHITE;
+            tooltip.render(name, i9, i10, 8, -8);
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
-        } else if(slot6 != null) {
+        } else if (slot6 != null) {
             i9 = mouseX - i4;
             i10 = mouseY - i5;
             String name = "Empty";
             GuiTooltip tooltip = new GuiTooltip(mc);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_DEPTH_TEST);
-            tooltip.render(name,i9,i10,8,-8);
+            tooltip.render(name, i9, i10, 8, -8);
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
@@ -162,10 +165,10 @@ public class GuiFluidFake extends GuiFluid {
     protected void drawFluidSlotInventory(SlotFluid slot1) {
         int i2 = slot1.xPos;
         int i3 = slot1.yPos;
-        if(slot1.getHasStack() && slot1.getFluidStack().liquid != null){
-            ItemStack itemStack4 = new ItemStack(slot1.getFluidStack().getLiquid(),slot1.getFluidStack().amount,0);
+        if (slot1.getHasStack() && slot1.getFluidStack().liquid != null) {
+            ItemStack itemStack4 = new ItemStack(slot1.getFluidStack().getLiquid(), slot1.getFluidStack().amount, 0);
             int i5 = slot1.getBackgroundIconIndex();
-            if(i5 >= 0) {
+            if (i5 >= 0) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 this.mc.renderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
                 this.drawTexturedModalRect(i2, i3, i5 % 16 * 16, i5 / 16 * 16, 16, 16);
@@ -176,19 +179,19 @@ public class GuiFluidFake extends GuiFluid {
             ItemModel itemModel = ItemModelDispatcher.getInstance().getDispatch(slot1.getFluidStack().getLiquid().getDefaultStack().getItem());
             BlockModel<?> blockModel = BlockModelDispatcher.getInstance().getDispatch(slot1.getFluidStack().getLiquid());
 
-            if(slot1.getFluidStack().getLiquid() == Block.fluidWaterFlowing && mc.gameSettings.biomeWater.value){
+            if (slot1.getFluidStack().getLiquid() == Block.fluidWaterFlowing && mc.gameSettings.biomeWater.value) {
                 int waterColor = BlockColorDispatcher.getInstance().getDispatch(Block.fluidWaterFlowing).getWorldColor(this.mc.theWorld, (int) this.mc.thePlayer.x, (int) this.mc.thePlayer.y, (int) this.mc.thePlayer.z);
                 Color c = new Color().setARGB(waterColor);
-                c.setRGBA(c.getRed(),c.getGreen(),c.getBlue(),0x40);
-                
-                ((IColorOverride)blockModel).overrideColor(c.getRed(),c.getGreen(),c.getBlue(),c.getAlpha());
-                itemModel.renderItemIntoGui(Tessellator.instance,this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3,1.0F);
+                c.setRGBA(c.getRed(), c.getGreen(), c.getBlue(), 0x40);
+
+                ((IColorOverride) blockModel).overrideColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
+                itemModel.renderItemIntoGui(Tessellator.instance, this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3, 1.0F);
             } else {
-                itemModel.renderItemIntoGui(Tessellator.instance,this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3,1.0F);
+                itemModel.renderItemIntoGui(Tessellator.instance, this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3, 1.0F);
             }
-            
-            ((IColorOverride)blockModel).overrideColor(1,1,1,1);
-            itemModel.renderItemOverlayIntoGUI(Tessellator.instance,this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3, "", 1.0F);
+
+            ((IColorOverride) blockModel).overrideColor(1, 1, 1, 1);
+            itemModel.renderItemOverlayIntoGUI(Tessellator.instance, this.fontRenderer, this.mc.renderEngine, itemStack4, i2, i3, (renderAmount && slot1.getFluidStack() != null && slot1.getFluidStack().amount > 1) ? NumberUtil.format(slot1.getFluidStack().amount) : "", 1.0F);
         }
     }
 }

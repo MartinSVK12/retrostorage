@@ -4,7 +4,6 @@ package sunsetsatellite.retrostorage.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.client.render.FontRenderer;
-
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
@@ -14,7 +13,11 @@ import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
 import sunsetsatellite.retrostorage.util.GuiRenderDigitalItem;
-import sunsetsatellite.retrostorage.util.crafting.*;
+import sunsetsatellite.retrostorage.util.VariantStack;
+import sunsetsatellite.retrostorage.util.crafting.CalculationResult;
+import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;
+import sunsetsatellite.retrostorage.util.crafting.CraftingCalculator;
+import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 
 public class GuiTaskRequest extends GuiContainer {
     public FontRenderer fontRenderer = RetroStorage.mc.fontRenderer;
@@ -59,40 +62,40 @@ public class GuiTaskRequest extends GuiContainer {
 
     protected void buttonPressed(GuiButton guibutton) {
         if (guibutton.enabled) {
-            if(guibutton.id == 0){
-                if(requestAmount > 1){
+            if (guibutton.id == 0) {
+                if (requestAmount > 1) {
                     requestAmount--;
                     recalculate();
                 }
             }
-            if(guibutton.id == 1){
+            if (guibutton.id == 1) {
                 requestAmount++;
                 recalculate();
             }
-            if(guibutton.id == 2){
-                if(requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
-                if(calculationResult.getType() == CalculationResultType.OK){
+            if (guibutton.id == 2) {
+                if (requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
+                if (calculationResult.getType() == CalculationResultType.OK) {
                     network.requestCrafting(calculationResult.getTask());
-                    ((IOpenGUI)mc.thePlayer).displayGUI(new GuiRequestQueue(tile.network, null));
+                    ((IOpenGUI) mc.thePlayer).displayGUI(new GuiRequestQueue(tile.network, null));
                 }
             }
         }
     }
 
-    private void recalculate(){
-        if(requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
+    private void recalculate() {
+        if (requestedSlotId < 0 || requestedSlotId >= network.knownCraftables.size()) return;
         NetworkCraftable craftable = network.knownCraftables.get(requestedSlotId);
-        CraftingCalculator calc = new CraftingCalculator(network,requestAmount,requestedItem,craftable,network.knownCraftables);
+        CraftingCalculator calc = new CraftingCalculator(network, requestAmount, new VariantStack(requestedItem), craftable, network.knownCraftables);
         calculationResult = calc.calculate();
         lastRequestedItem = requestedItem;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer() {
-        guiRenderItem.render(requestedItem,32,32);
-        fontRenderer.drawString(requestAmount+"x",10,36,0x404040);
+        guiRenderItem.render(requestedItem, 32, 32);
+        fontRenderer.drawString(requestAmount + "x", 10, 36, 0x404040);
         fontRenderer.drawString(requestedItem.getDisplayName(), 55, 36, 0x404040);
-        fontRenderer.drawString(this.screenTitle,95,10,0x404040);
+        fontRenderer.drawString(this.screenTitle, 95, 10, 0x404040);
     }
 
     @Override
@@ -109,7 +112,7 @@ public class GuiTaskRequest extends GuiContainer {
         controlList.get(2).enabled = calculationResult.getType() == CalculationResultType.OK;
         super.drawScreen(x, y, renderPartialTicks);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(140,this.height-175,this.width*2, this.height+100); //TODO: fix this breaking at lower resolutions than 1080p
+        GL11.glScissor(140, this.height - 175, this.width * 2, this.height + 100); //TODO: fix this breaking at lower resolutions than 1080p
         this.slotContainer.drawScreen(x, y, renderPartialTicks);
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }

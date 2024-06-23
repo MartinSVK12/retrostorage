@@ -2,7 +2,10 @@ package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.retrostorage.util.VariantStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class NetworkCraftable {
@@ -27,8 +30,8 @@ public class NetworkCraftable {
         return process;
     }
 
-    public CraftableType getType(){
-        if(recipe != null){
+    public CraftableType getType() {
+        if (recipe != null) {
             return CraftableType.RECIPE;
         } else if (process != null) {
             return CraftableType.PROCESS;
@@ -36,12 +39,21 @@ public class NetworkCraftable {
         return null;
     }
 
-    public ItemStack getOutput(){
-        switch (getType()){
-            case RECIPE:
-                return recipe != null ? recipe.getOutput().copy() : null;
+    public List<VariantStack> getOutput() {
+        switch (getType()) {
+            case RECIPE: {
+                if (recipe != null) {
+                    ArrayList<VariantStack> list = new ArrayList<>();
+                    list.add(new VariantStack(recipe.getOutput()));
+                    return list;
+                }
+                return null;
+            }
             case PROCESS:
-                return process != null ? process.mainOutput.copy() : null;
+                if (process != null) {
+                    return new ArrayList<>(process.getAllOutputs());
+                }
+                return null;
             default:
                 return null;
         }

@@ -1,7 +1,9 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
+import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.IProcessor;
 import sunsetsatellite.retrostorage.util.ItemStackList;
 
@@ -18,18 +20,21 @@ public class CraftingTask {
     private boolean started = false;
 
     private final ItemStackList internalStorage = new ItemStackList();
+    private final FluidStackList internalFluidStorage = new FluidStackList();
     private final ItemStackList initialRequirements;
+    private final FluidStackList initialFluidRequirements;
 
-    public CraftingTask(DigitalNetwork network, int quantity, NodeList nodes, NetworkCraftable craftable, ItemStackList initialRequirements) {
+    public CraftingTask(DigitalNetwork network, int quantity, NodeList nodes, NetworkCraftable craftable, ItemStackList initialRequirements, FluidStackList initialFluidRequirements) {
         this.network = network;
         this.quantity = quantity;
         this.nodes = nodes;
         this.craftable = craftable;
         this.initialRequirements = initialRequirements;
+        this.initialFluidRequirements = initialFluidRequirements;
     }
 
-    public void start(){
-        if(started) return;
+    public void start() {
+        if (started) return;
         nodes.all().forEach(node -> {
             totalSteps += node.getQuantity();
             node.onCalculationFinished();
@@ -37,29 +42,39 @@ public class CraftingTask {
 
         startTime = System.currentTimeMillis();
 
-        network.inventory.move(initialRequirements,internalStorage,false);
+        network.inventory.move(initialRequirements, internalStorage, false);
+
+        network.fluidInventory.move(initialFluidRequirements, internalFluidStorage, false);
 
         started = true;
     }
 
-    public boolean update(){
-        if(!started) return false;
+    public boolean update() {
+        if (!started) return false;
         ticks++;
 
         //task finished
-        if(nodes.isEmpty()){
+        if (nodes.isEmpty()) {
             network.inventory.addAll(internalStorage);
-            return internalStorage.isEmpty();
+            network.fluidInventory.addAll(internalFluidStorage);
+            return internalStorage.isEmpty() && internalFluidStorage.isEmpty();
         } else { //task not finished
-            if(!initialRequirements.isEmpty()){
-                network.inventory.move(initialRequirements,internalStorage,false);
-                if(!initialRequirements.isEmpty()){
+            if (!initialRequirements.isEmpty()) {
+                network.inventory.move(initialRequirements, internalStorage, false);
+                if (!initialRequirements.isEmpty()) {
+                    return false;
+                }
+            }
+
+            if (!initialFluidRequirements.isEmpty()) {
+                network.fluidInventory.move(initialFluidRequirements, internalFluidStorage, false);
+                if (!initialFluidRequirements.isEmpty()) {
                     return false;
                 }
             }
 
             for (Node node : nodes.all()) {
-                node.update(network, nodes, internalStorage, this);
+                node.update(network, nodes, internalStorage, internalFluidStorage, this);
             }
 
             nodes.removeMarkedForRemoval();
@@ -68,7 +83,7 @@ public class CraftingTask {
         }
     }
 
-    public int insertFromProcess(ItemStack stack){
+    public int insertFromProcess(ItemStack stack) {
         int size = stack.stackSize;
         for (Node node : this.nodes.all()) {
             if (node instanceof ProcessNode) {
@@ -102,10 +117,45 @@ public class CraftingTask {
         return size;
     }
 
+    public int insertFromProcess(FluidStack stack) {
+        int size = stack.amount;
+        for (Node node : this.nodes.all()) {
+            if (node instanceof ProcessNode) {
+                ProcessNode processing = (ProcessNode) node;
+
+                int needed = processing.getNeeded(stack);
+                if (needed > 0) {
+                    if (needed > size) {
+                        needed = size;
+                    }
+
+                    processing.markReceived(stack);
+
+                    size -= needed;
+
+                    if (!processing.isRoot()) {
+                        internalFluidStorage.add(stack);
+                    } else {
+                        FluidStack remainder = network.fluidInventory.addAndReturnOverflow(stack);
+
+                        internalFluidStorage.add(remainder);
+                    }
+
+                    if (size == 0) {
+                        return 0;
+                    }
+                }
+            }
+        }
+
+        return size;
+    }
+
     public void onCancelled() {
         network.inventory.addAll(internalStorage);
-        if(processor != null){
-            processor.setFocus(null,null);
+        network.fluidInventory.addAll(internalFluidStorage);
+        if (processor != null) {
+            processor.setFocus(null, null);
         }
     }
 

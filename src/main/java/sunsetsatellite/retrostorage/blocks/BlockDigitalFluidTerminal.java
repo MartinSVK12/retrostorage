@@ -4,13 +4,10 @@ package sunsetsatellite.retrostorage.blocks;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.gui.GuiDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 
 public class BlockDigitalFluidTerminal extends BlockNetworkDevice {
 
@@ -23,17 +20,14 @@ public class BlockDigitalFluidTerminal extends BlockNetworkDevice {
         return new TileEntityDigitalFluidTerminal();
     }
 
-    public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer)
-    {
-        if(world.isClientSide)
-        {
+    public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
+        if (world.isClientSide) {
             return true;
-        } else
-        {
+        } else {
             TileEntityDigitalFluidTerminal tile = (TileEntityDigitalFluidTerminal) world.getBlockTileEntity(i, j, k);
             //System.out.println(TileEntityDigitalChest);
             if (tile != null) {
-                Catalyst.displayGui(entityplayer,tile,"Digital Fluid Terminal");
+                Catalyst.displayGui(entityplayer, tile, "Digital Fluid Terminal");
             }
             return true;
         }

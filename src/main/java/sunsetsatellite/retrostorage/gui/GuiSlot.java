@@ -78,7 +78,7 @@ public abstract class GuiSlot {
     public int func_27256_c(int i, int j) {
         int k = this.width / 2 - 110;
         int l = this.width / 2 + 110;
-        int i1 = j - this.top - this.field_27261_r + (int)this.amountScrolled - 4;
+        int i1 = j - this.top - this.field_27261_r + (int) this.amountScrolled - 4;
         int j1 = i1 / this.posZ;
         return i >= k && i <= l && j1 >= 0 && i1 >= 0 && j1 < this.getSize() ? j1 : -1;
     }
@@ -98,8 +98,8 @@ public abstract class GuiSlot {
             this.amountScrolled = 0.0F;
         }
 
-        if (this.amountScrolled > (float)i) {
-            this.amountScrolled = (float)i;
+        if (this.amountScrolled > (float) i) {
+            this.amountScrolled = (float) i;
         }
 
     }
@@ -107,11 +107,11 @@ public abstract class GuiSlot {
     public void buttonPressed(GuiButton guibutton) {
         if (guibutton.enabled) {
             if (guibutton.id == this.scrollUpButtonID) {
-                this.amountScrolled -= (float)(this.posZ * 2 / 3);
+                this.amountScrolled -= (float) (this.posZ * 2 / 3);
                 this.initialClickY = -2.0F;
                 this.bindAmountScrolled();
             } else if (guibutton.id == this.scrollDownButtonID) {
-                this.amountScrolled += (float)(this.posZ * 2 / 3);
+                this.amountScrolled += (float) (this.posZ * 2 / 3);
                 this.initialClickY = -2.0F;
                 this.bindAmountScrolled();
             }
@@ -136,7 +136,7 @@ public abstract class GuiSlot {
             if (j >= this.top && j <= this.bottom) {
                 int j1 = this.width / 2 - 110;
                 l1 = this.width / 2 + 110;
-                i2 = j - this.top - this.field_27261_r + (int)this.amountScrolled - 4;
+                i2 = j - this.top - this.field_27261_r + (int) this.amountScrolled - 4;
                 slotId = i2 / this.posZ;
                 if (i >= j1 && i <= l1 && slotId >= 0 && i2 >= 0 && slotId < amountSlots) {
                     boolean flag1 = slotId == this.selectedElement && System.currentTimeMillis() - this.lastClicked < 250L;
@@ -144,7 +144,7 @@ public abstract class GuiSlot {
                     this.selectedElement = slotId;
                     this.lastClicked = System.currentTimeMillis();
                 } else if (i >= j1 && i <= l1 && i2 < 0) {
-                    this.func_27255_a(i - j1, j - this.top + (int)this.amountScrolled - 4);
+                    this.func_27255_a(i - j1, j - this.top + (int) this.amountScrolled - 4);
                     flag = false;
                 }
 
@@ -155,7 +155,7 @@ public abstract class GuiSlot {
                         yBegin = 1;
                     }
 
-                    yEnd = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getContentHeight());
+                    yEnd = (int) ((float) ((this.bottom - this.top) * (this.bottom - this.top)) / (float) this.getContentHeight());
                     if (yEnd < 32) {
                         yEnd = 32;
                     }
@@ -164,13 +164,13 @@ public abstract class GuiSlot {
                         yEnd = this.bottom - this.top - 8;
                     }
 
-                    this.scrollMultiplier /= (float)(this.bottom - this.top - yEnd) / (float)yBegin;
+                    this.scrollMultiplier /= (float) (this.bottom - this.top - yEnd) / (float) yBegin;
                 } else {
                     this.scrollMultiplier = 1.0F;
                 }
 
                 if (flag) {
-                    this.initialClickY = (float)j;
+                    this.initialClickY = (float) j;
                 } else {
                     this.initialClickY = -2.0F;
                 }
@@ -178,8 +178,8 @@ public abstract class GuiSlot {
                 this.initialClickY = -2.0F;
             }
         } else if (this.initialClickY >= 0.0F) {
-            this.amountScrolled -= ((float)j - this.initialClickY) * this.scrollMultiplier;
-            this.initialClickY = (float)j;
+            this.amountScrolled -= ((float) j - this.initialClickY) * this.scrollMultiplier;
+            this.initialClickY = (float) j;
         }
 
         this.bindAmountScrolled();
@@ -189,13 +189,13 @@ public abstract class GuiSlot {
         GL11.glBindTexture(3553, 0);//this.mc.renderEngine.getTexture("/gui/background.png"));
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         l1 = this.width / 2 - 92 - 16;
-        i2 = this.top + 4 - (int)this.amountScrolled;
+        i2 = this.top + 4 - (int) this.amountScrolled;
         if (this.field_27262_q) {
             this.func_27260_a(l1, i2, tessellator);
         }
 
         int xBegin;
-        for(slotId = 0; slotId < amountSlots; ++slotId) {
+        for (slotId = 0; slotId < amountSlots; ++slotId) {
             yBegin = i2 + slotId * this.posZ + this.field_27261_r;
             yEnd = this.posZ - 4;
             if (this.field_25123_p) {
@@ -234,7 +234,7 @@ public abstract class GuiSlot {
                 yEnd = this.bottom - this.top - 8;
             }
 
-            xBegin = (int)this.amountScrolled * (this.bottom - this.top - yEnd) / yBegin + this.top;
+            xBegin = (int) this.amountScrolled * (this.bottom - this.top - yEnd) / yBegin + this.top;
             if (xBegin < this.top) {
                 xBegin = this.top;
             }
@@ -277,11 +277,11 @@ public abstract class GuiSlot {
         float f = 32.0F;
         tessellator.startDrawingQuads();
         tessellator.setColorRGBA_I(4210752, l);
-        tessellator.addVertexWithUV(0.0, j, 0.0, 0.0, (float)j / f);
-        tessellator.addVertexWithUV(this.width, j, 0.0, (float)this.width / f, (float)j / f);
+        tessellator.addVertexWithUV(0.0, j, 0.0, 0.0, (float) j / f);
+        tessellator.addVertexWithUV(this.width, j, 0.0, (float) this.width / f, (float) j / f);
         tessellator.setColorRGBA_I(4210752, k);
-        tessellator.addVertexWithUV(this.width, i, 0.0, (float)this.width / f, (float)i / f);
-        tessellator.addVertexWithUV(0.0, i, 0.0, 0.0, (float)i / f);
+        tessellator.addVertexWithUV(this.width, i, 0.0, (float) this.width / f, (float) i / f);
+        tessellator.addVertexWithUV(0.0, i, 0.0, 0.0, (float) i / f);
         tessellator.draw();
     }
 }

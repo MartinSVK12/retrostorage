@@ -8,18 +8,19 @@ import net.minecraft.core.player.inventory.slot.Slot;
 public class SlotViewOnly extends Slot {
 
     public int variableIndex = 0;
+
     public SlotViewOnly(IInventory iinventory, int id, int x, int y) {
         super(iinventory, id, x, y);
         variableIndex = id;
     }
 
-    public boolean canPutStackInSlot(ItemStack itemstack)
-    {
+    public boolean canPutStackInSlot(ItemStack itemstack) {
         return false;
     }
 
     @Override
-    public void onPickupFromSlot(ItemStack itemstack) {}
+    public void onPickupFromSlot(ItemStack itemstack) {
+    }
 
     @Override
     public void putStack(ItemStack itemstack) {
@@ -35,7 +36,6 @@ public class SlotViewOnly extends Slot {
     public void sortSlotInventory() {
 
     }
-
 
 
     @Override

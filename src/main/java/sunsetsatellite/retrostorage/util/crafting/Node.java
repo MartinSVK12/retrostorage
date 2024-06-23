@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import sunsetsatellite.retrostorage.util.DigitalNetwork;
+import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.ItemStackList;
 
 public abstract class Node {
@@ -47,5 +48,5 @@ public abstract class Node {
         quantity--;
     }
 
-    public abstract void update(DigitalNetwork network, NodeList nodes, ItemStackList internalStorage, CraftingTask craftingTask);
+    public abstract void update(DigitalNetwork network, NodeList nodes, ItemStackList internalStorage, FluidStackList internalFluidStorage, CraftingTask craftingTask);
 }

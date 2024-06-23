@@ -1,5 +1,3 @@
-
-
 package sunsetsatellite.retrostorage.gui;
 
 
@@ -10,32 +8,27 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerExporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
 
-public class GuiExporter extends GuiContainer
-{
+public class GuiExporter extends GuiContainer {
 
-    public GuiExporter(InventoryPlayer inventoryplayer, TileEntityExporter tileentityexporter)
-    {
+    public GuiExporter(InventoryPlayer inventoryplayer, TileEntityExporter tileentityexporter) {
         super(new ContainerExporter(inventoryplayer, tileentityexporter));
         tile = tileentityexporter;
     }
 
-    public void init()
-    {
+    public void init() {
         super.init();
         controlList.add(new GuiButton(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 60), 20, 20, "-"));
         controlList.add(new GuiButton(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isWhitelist ? "W" : "B"));
         controlList.add(new GuiButton(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 60), 20, 20, "+"));
     }
 
-    protected void drawGuiContainerForegroundLayer()
-    {
+    protected void drawGuiContainerForegroundLayer() {
         fontRenderer.drawString("Item Exporter", 56, 6, 0x404040);
-        fontRenderer.drawString("Slot: "+tile.slot, 16, 50, 0x404040);
+        fontRenderer.drawString("Slot: " + tile.slot, 16, 50, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
-    protected void drawGuiContainerBackgroundLayer(float f)
-    {
+    protected void drawGuiContainerBackgroundLayer(float f) {
         int i = mc.renderEngine.getTexture("/gui/trap.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
@@ -51,14 +44,14 @@ public class GuiExporter extends GuiContainer
             return;
         }
         if (guibutton.id == 0) {
-            if(tile.slot >= 0){
+            if (tile.slot >= 0) {
                 tile.slot--;
             }
         }
         if (guibutton.id == 1) {
             tile.slot++;
         }
-        if(guibutton.id == 2){
+        if (guibutton.id == 2) {
             tile.isWhitelist = !tile.isWhitelist;
             guibutton.displayString = tile.isWhitelist ? "W" : "B";
         }

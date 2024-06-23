@@ -1,8 +1,6 @@
 package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
-import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 
 public class SlotRequest extends SlotViewOnly {
@@ -15,16 +13,16 @@ public class SlotRequest extends SlotViewOnly {
 
     @Override
     public ItemStack getStack() {
-        if(variableIndex < 0 || variableIndex >= network.knownCraftables.size()) return null;
+        if (variableIndex < 0 || variableIndex >= network.knownCraftables.size()) return null;
         NetworkCraftable craftable = network.knownCraftables.get(variableIndex);
         ItemStack output;
-        switch (craftable.getType()){
+        switch (craftable.getType()) {
             case RECIPE: {
                 output = craftable.getRecipe().getOutput();
                 break;
             }
             case PROCESS: {
-                output = craftable.getProcess().mainOutput;
+                output = craftable.getProcess().getAllOutputs().get(0).forceGetItem();
                 break;
             }
             default: {

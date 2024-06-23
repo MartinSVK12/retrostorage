@@ -20,8 +20,8 @@ public class BlockModelRedstoneEmitter extends BlockModelStandard<BlockRedstoneE
 
     @Override
     public IconCoordinate getBlockTexture(WorldSource blockAccess, int x, int y, int z, Side side) {
-        TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter)blockAccess.getBlockTileEntity(x, y, z);
-        if(tile != null && tile.isActive){
+        TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter) blockAccess.getBlockTileEntity(x, y, z);
+        if (tile != null && tile.isActive) {
             return emitterActive;
         }
         return emitterInactive;

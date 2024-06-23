@@ -6,8 +6,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 
-public class ItemStorageDisc extends Item implements ICustomDescription
-{
+public class ItemStorageDisc extends Item implements ICustomDescription {
 
     public ItemStorageDisc(String name, int id, int maxStackCapacity, int maxItemCapacity) {
         super(name, id);
@@ -37,7 +36,7 @@ public class ItemStorageDisc extends Item implements ICustomDescription
 
     @Override
     public String getDescription(ItemStack itemStack) {
-        return TextFormatting.MAGENTA+""+itemStack.getData().getCompound("Disc").getValues().size()+" entries out of "+maxStackCapacity;
+        return TextFormatting.MAGENTA + "" + itemStack.getData().getCompound("Disc").getValues().size() + " entries out of " + maxStackCapacity;
     }
 
 
