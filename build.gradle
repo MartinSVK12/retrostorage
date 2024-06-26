@@ -147,9 +147,9 @@ dependencies {
 		implementation project(path: ':catalyst:energy', configuration: "namedElements")
 		implementation project(path: ':catalyst:fluids', configuration: "namedElements")
 	} else {
-		modImplementation "catalyst:catalyst-core:1.4.3"
-		modImplementation "catalyst:catalyst-energy:1.0.12"
-		modImplementation "catalyst:catalyst-fluids:1.1.6"
+		modImplementation "catalyst:catalyst-core:1.4.4"
+		modImplementation "catalyst:catalyst-energy:1.0.13"
+		modImplementation "catalyst:catalyst-fluids:1.1.7"
 	}
 	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
 	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"
