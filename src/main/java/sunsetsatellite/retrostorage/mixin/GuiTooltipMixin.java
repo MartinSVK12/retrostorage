@@ -26,9 +26,11 @@ public class GuiTooltipMixin extends Gui {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void getTooltipText(ItemStack itemStack, boolean showDescription, Slot slot, CallbackInfoReturnable<String> cir, I18n trans, StringBuilder text) {
-        ItemStack stack = slot.getStack();
-        if (stack != null && stack.getItem() == RetroStorage.slotIdFinder) {
-            text.append(TextFormatting.MAGENTA).append("ID of this slot is: ").append(slot.id).append(" (").append(slot.getClass().getSimpleName()).append(")").append("\n");
+        if(slot != null){
+            ItemStack stack = slot.getStack();
+            if (stack != null && stack.getItem() == RetroStorage.slotIdFinder) {
+                text.append(TextFormatting.MAGENTA).append("ID of this slot is: ").append(slot.id).append(" (").append(slot.getClass().getSimpleName()).append(")").append("\n");
+            }
         }
     }
 }
