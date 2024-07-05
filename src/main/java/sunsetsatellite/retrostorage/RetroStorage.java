@@ -397,6 +397,11 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('R', Item.dustRedstone)
                 .addInput('P', new ItemStack(Item.dye, 1, 5))
                 .create("recipe_disc", new ItemStack(recipeDisc, 1));
+        RecipeBuilder.Shaped(MOD_ID, "OPO", "PDP", "OPO")
+                .addInput('O', Block.obsidian)
+                .addInput('D', recipeDisc)
+                .addInput('P', new ItemStack(Item.dye, 1, 5))
+                .create("recipe_disc", new ItemStack(advRecipeDisc, 1));
         RecipeBuilder.Shaped(MOD_ID, "RRR", "RDR", "RRR")
                 .addInput('R', Item.dustRedstone)
                 .addInput('D', blankDisc)
