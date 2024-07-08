@@ -77,22 +77,25 @@ public class ContainerDigitalFluid extends ContainerFluid {
             //insert fluid from bucket
             if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucket) {
                 ItemBucket bucket = (ItemBucket) inventoryPlayer.getHeldItemStack().getItem();
-                BlockFluid fluid = CatalystFluids.FLUIDS.findFluidsWithFilledContainer(bucket).get(0);
-                if (slot.getFluidStack() == null) {
-                    if (inv.getAllowedFluidsForSlot(slotID).isEmpty() || inv.getAllowedFluidsForSlot(slotID).contains(fluid)) {
-                        if (slot.isFluidValid(fluid)) {
-                            inventoryPlayer.setHeldItemStack(new ItemStack(bucket.getContainerItem(), 1));
-                            slot.putStack(new FluidStack(fluid, 1000));
-                            slot.onSlotChanged();
-                        }
-                    }
-                } else if (slot.getFluidStack() != null && slot.getFluidStack().getLiquid() == fluid) {
-                    if (slot.getFluidStack().amount + 1000 <= inv.getFluidCapacityForSlot(slot.slotIndex)) {
+                List<BlockFluid> fluids = CatalystFluids.FLUIDS.findFluidsWithFilledContainer(bucket);
+                if(!fluids.isEmpty()){
+                    BlockFluid fluid = fluids.get(0);
+                    if (slot.getFluidStack() == null) {
                         if (inv.getAllowedFluidsForSlot(slotID).isEmpty() || inv.getAllowedFluidsForSlot(slotID).contains(fluid)) {
                             if (slot.isFluidValid(fluid)) {
                                 inventoryPlayer.setHeldItemStack(new ItemStack(bucket.getContainerItem(), 1));
-                                slot.getFluidStack().amount += 1000;
+                                slot.putStack(new FluidStack(fluid, 1000));
                                 slot.onSlotChanged();
+                            }
+                        }
+                    } else if (slot.getFluidStack() != null && slot.getFluidStack().getLiquid() == fluid) {
+                        if (slot.getFluidStack().amount + 1000 <= inv.getFluidCapacityForSlot(slot.slotIndex)) {
+                            if (inv.getAllowedFluidsForSlot(slotID).isEmpty() || inv.getAllowedFluidsForSlot(slotID).contains(fluid)) {
+                                if (slot.isFluidValid(fluid)) {
+                                    inventoryPlayer.setHeldItemStack(new ItemStack(bucket.getContainerItem(), 1));
+                                    slot.getFluidStack().amount += 1000;
+                                    slot.onSlotChanged();
+                                }
                             }
                         }
                     }
