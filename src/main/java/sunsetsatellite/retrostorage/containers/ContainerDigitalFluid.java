@@ -113,10 +113,10 @@ public class ContainerDigitalFluid extends ContainerFluid {
                         //drain
                         if (item.canDrain(inventoryPlayer.getHeldItemStack())) {
                             if (inv.getFluidInSlot(slot.slotIndex) == null) {
-                                item.drain(inventoryPlayer.getHeldItemStack(), slot, inv);
+                                item.drain(inventoryPlayer.getHeldItemStack(), slot.slotIndex, inv);
                                 slot.onSlotChanged();
                             } else if (inv.getFluidInSlot(slot.slotIndex).amount < inv.getFluidCapacityForSlot(slot.slotIndex)) {
-                                item.drain(inventoryPlayer.getHeldItemStack(), slot, inv);
+                                item.drain(inventoryPlayer.getHeldItemStack(), slot.slotIndex, inv);
                                 slot.onSlotChanged();
                             } else if (inv.getFluidInSlot(slot.slotIndex).amount >= inv.getFluidCapacityForSlot(slot.slotIndex)) {
                                 if (item.canFill(inventoryPlayer.getHeldItemStack())) {
