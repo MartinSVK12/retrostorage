@@ -65,7 +65,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
 
         @Override
         public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             return allFluids;
         }
@@ -77,7 +77,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
                 this.onFluidInventoryChanged();
                 return;
             }
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             if (allFluids.contains(fluid.liquid)) {
                 this.fluidContents[slot] = fluid;
@@ -99,11 +99,6 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
         @Override
         public int getTransferSpeed() {
             return transferSpeed;
-        }
-
-        @Override
-        public int getActiveFluidSlot(Direction dir) {
-            return 0;
         }
 
         public boolean hasFluid(FluidStack fluidStack) {
@@ -269,10 +264,5 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     @Override
     public int getTransferSpeed() {
         return transferSpeed;
-    }
-
-    @Override
-    public int getActiveFluidSlot(Direction dir) {
-        return 0;
     }
 }

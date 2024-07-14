@@ -44,7 +44,7 @@ public class ContainerFluidFake extends ContainerFluid {
             } else {
                 if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucket) {
                     ItemBucket bucket = (ItemBucket) inventoryPlayer.getHeldItemStack().getItem();
-                    BlockFluid fluid = CatalystFluids.FLUIDS.findFluidsWithFilledContainer(bucket).get(0);
+                    BlockFluid fluid = CatalystFluids.CONTAINERS.findFluidsWithFilledContainer(bucket).get(0);
                     if (slot.getFluidStack() == null) {
                         if (inv.getAllowedFluidsForSlot(slotID).isEmpty() || inv.getAllowedFluidsForSlot(slotID).contains(fluid)) {
                             if (slot.isFluidValid(fluid)) {
@@ -57,11 +57,11 @@ public class ContainerFluidFake extends ContainerFluid {
                 if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
                     ItemStack stack = inventoryPlayer.getHeldItemStack();
                     IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                    List<BlockFluid> fluids = CatalystFluids.FLUIDS.findFluidsWithAnyContainer((Item) item);
+                    List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithAnyContainer((Item) item);
                     if (fluids != null && !fluids.isEmpty()) {
                         if (inv.getAllowedFluidsForSlot(slotID).isEmpty()
                                 || inv.getAllowedFluidsForSlot(slotID).stream().anyMatch(fluids::contains)
-                                || (slot.getFluidStack() != null && CatalystFluids.FLUIDS.findContainers(slot.getFluidStack().liquid).contains(item))
+                                || (slot.getFluidStack() != null && CatalystFluids.CONTAINERS.findContainers(slot.getFluidStack().liquid).contains(item))
                                 && slot.isAnyFluidValid(fluids)) {
                             if (item.canDrain(inventoryPlayer.getHeldItemStack())) {
                                 BlockFluid itemFluid = item.getCurrentFluid(stack).getLiquid();

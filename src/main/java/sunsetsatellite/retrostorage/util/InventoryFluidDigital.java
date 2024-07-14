@@ -3,7 +3,6 @@ package sunsetsatellite.retrostorage.util;
 import net.minecraft.core.block.BlockFluid;
 import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.catalyst.CatalystFluids;
-import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
@@ -432,7 +431,7 @@ public class InventoryFluidDigital implements IDigitalFluidInventory, IFluidInve
 
     @Override
     public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
-        ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+        ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
         allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
         return allFluids;
     }
@@ -465,11 +464,6 @@ public class InventoryFluidDigital implements IDigitalFluidInventory, IFluidInve
     @Override
     public int getTransferSpeed() {
         return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public int getActiveFluidSlot(Direction dir) {
-        return 0;
     }
 
     public FluidStackList toList() {

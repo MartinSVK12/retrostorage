@@ -9,7 +9,6 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.CatalystFluids;
-import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
@@ -72,7 +71,7 @@ public class TileEntityProcessProgrammer extends TileEntity
 
         @Override
         public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             return allFluids;
         }
@@ -84,7 +83,7 @@ public class TileEntityProcessProgrammer extends TileEntity
                 this.onFluidInventoryChanged();
                 return;
             }
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.FLUIDS.getAllFluids();
+            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             if (allFluids.contains(fluid.liquid)) {
                 this.fluidContents[slot] = fluid;
@@ -105,11 +104,6 @@ public class TileEntityProcessProgrammer extends TileEntity
 
         @Override
         public int getTransferSpeed() {
-            return 0;
-        }
-
-        @Override
-        public int getActiveFluidSlot(Direction dir) {
             return 0;
         }
 

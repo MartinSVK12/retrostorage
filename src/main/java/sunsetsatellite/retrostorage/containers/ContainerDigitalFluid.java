@@ -43,9 +43,9 @@ public class ContainerDigitalFluid extends ContainerFluid {
                 //extract fluid into bucket
                 if (inventoryPlayer.getHeldItemStack() != null
                         && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucketEmpty
-                        && CatalystFluids.FLUIDS.findEmptyContainers(slot.getFluidStack().liquid).contains(inventoryPlayer.getHeldItemStack().getItem())) {
+                        && CatalystFluids.CONTAINERS.findEmptyContainers(slot.getFluidStack().liquid).contains(inventoryPlayer.getHeldItemStack().getItem())) {
 
-                    Item item = CatalystFluids.FLUIDS.findFilledContainersWithContainer(slot.getFluidStack().liquid, inventoryPlayer.getHeldItemStack().getItem()).get(0);
+                    Item item = CatalystFluids.CONTAINERS.findFilledContainersWithContainer(slot.getFluidStack().liquid, inventoryPlayer.getHeldItemStack().getItem()).get(0);
                     if (item != null) {
                         ItemStack stack = new ItemStack(item, 1);
                         if (inventoryPlayer.getHeldItemStack().stackSize > 1) {
@@ -77,7 +77,7 @@ public class ContainerDigitalFluid extends ContainerFluid {
             //insert fluid from bucket
             if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucket) {
                 ItemBucket bucket = (ItemBucket) inventoryPlayer.getHeldItemStack().getItem();
-                List<BlockFluid> fluids = CatalystFluids.FLUIDS.findFluidsWithFilledContainer(bucket);
+                List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithFilledContainer(bucket);
                 if(!fluids.isEmpty()){
                     BlockFluid fluid = fluids.get(0);
                     if (slot.getFluidStack() == null) {
@@ -104,11 +104,11 @@ public class ContainerDigitalFluid extends ContainerFluid {
             //I/O from custom fluid container items
             if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
                 IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                List<BlockFluid> fluids = CatalystFluids.FLUIDS.findFluidsWithAnyContainer((Item) item);
+                List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithAnyContainer((Item) item);
                 if (fluids != null && !fluids.isEmpty()) {
                     if (inv.getAllowedFluidsForSlot(slotID).isEmpty()
                             || inv.getAllowedFluidsForSlot(slotID).stream().anyMatch(fluids::contains)
-                            || (slot.getFluidStack() != null && CatalystFluids.FLUIDS.findContainers(slot.getFluidStack().liquid).contains(item))
+                            || (slot.getFluidStack() != null && CatalystFluids.CONTAINERS.findContainers(slot.getFluidStack().liquid).contains(item))
                             && slot.isAnyFluidValid(fluids)) {
                         //drain
                         if (item.canDrain(inventoryPlayer.getHeldItemStack())) {
