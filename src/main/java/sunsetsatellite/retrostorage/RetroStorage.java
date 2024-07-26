@@ -1058,9 +1058,9 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
     @Override
     public void beforeGameStart() {
         try {
-            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.blockAtlas);
-            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.itemAtlas);
-            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.particleAtlas);
+            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.blockAtlas,true);
+            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.itemAtlas,true);
+            TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.particleAtlas,true);
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
