@@ -191,3 +191,7 @@ processResources {
 		expand "version": version
 	}
 }
+
+remapJar {
+	archiveVersion.set(archiveVersion.get()+"-${bta_version}")
+}
