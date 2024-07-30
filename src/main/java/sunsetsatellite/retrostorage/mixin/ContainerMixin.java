@@ -7,6 +7,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import net.minecraft.core.player.inventory.slot.Slot;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,6 +18,9 @@ import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.List;
 
+@Debug(
+        export = true
+)
 @Mixin(
         value = Container.class,
         remap = false
@@ -32,10 +36,9 @@ public class ContainerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true
     )
-    public void clickInventorySlot(InventoryAction action, int[] args, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir, InventoryPlayer inventory, int slotId, Slot slot, ItemStack controlStack) {
+    public void preventInteractionIfViewOnly(InventoryAction action, int[] args, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir, InventoryPlayer inventory, int slotId, Slot slot, ItemStack controlStack) {
         if (slot instanceof SlotViewOnly) {
             cir.setReturnValue(null);
         }
     }
-
 }

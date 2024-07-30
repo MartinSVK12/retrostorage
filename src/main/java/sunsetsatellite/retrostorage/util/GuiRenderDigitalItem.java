@@ -31,7 +31,10 @@ public class GuiRenderDigitalItem extends Gui {
         GL11.glEnable(32826);
         if (slot != null) {
             discovered = slot.getIsDiscovered(this.mc.thePlayer);
-            IconCoordinate iconIndex = TextureRegistry.getTexture(slot.getBackgroundIconId());
+            IconCoordinate iconIndex = null;
+            if(slot.getBackgroundIconId() != null){
+                iconIndex = TextureRegistry.getTexture(slot.getBackgroundIconId());
+            }
             if (iconIndex != null && itemStack == null) {
                 GL11.glDisable(2896);
                 this.drawTexturedIcon(x, y, 16, 16, iconIndex);

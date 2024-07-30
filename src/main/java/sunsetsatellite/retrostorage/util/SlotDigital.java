@@ -60,6 +60,11 @@ public class SlotDigital extends Slot {
         }
     }
 
+    @Override
+    public ItemStack decrStackSize(int i) {
+        return this.inventory.remove(this.variableIndex, i,false,false);
+    }
+
     public boolean getIsDiscovered(EntityPlayer player) {
         return true;
     }
