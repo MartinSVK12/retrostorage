@@ -1,7 +1,7 @@
 # RetroStorage 
 Digital storage system mod for Minecraft r1.2.5. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
-# Maybe you're looking for the [BTA](https://github.com/MartinSVK12/retrostorage/tree/bta) or [b1.7.3](https://github.com/MartinSVK12/retrostorage) version instead?
+# Maybe you're looking for the [BTA](https://github.com/MartinSVK12/retrostorage/tree/bta) or [b1.7.3](https://github.com/MartinSVK12/retrostorage/tree/b1.7.3) version instead?
 
 Requires Forge for 1.2.5 (3.4.9.171+) and IC2 (1.97+). Currently, singleplayer only, probably (multiplayer wasn't tested).
 
