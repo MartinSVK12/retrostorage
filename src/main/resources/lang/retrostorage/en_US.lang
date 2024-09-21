@@ -21,7 +21,7 @@ item.retrostorage.fluidStorageDisc3.desc=Can hold 8 buckets of 6 different fluid
 item.retrostorage.fluidStorageDisc4.name=Fluid Storage Disc MK IV
 item.retrostorage.fluidStorageDisc4.desc=Can hold 16 buckets of 8 different fluids.
 item.retrostorage.fluidStorageDisc5.name=Fluid Storage Disc MK V
-item.retrostorage.fluidStorageDisc5.desc=Can hold 432buckets of 10 different fluids.
+item.retrostorage.fluidStorageDisc5.desc=Can hold 32 buckets of 10 different fluids.
 item.retrostorage.fluidStorageDisc6.name=Fluid Storage Disc MK VI
 item.retrostorage.fluidStorageDisc6.desc=Can hold 64 buckets of 12 different fluids.
 item.retrostorage.goldenDisc.name=Golden Disc
@@ -133,6 +133,7 @@ item.retrostorage.linkingCard.name=Linking Card
 item.retrostorage.linkingCard.desc=Use this to pair 2 [Wireless Links] together.
 item.retrostorage.blankCard.name=Blank Card
 item.retrostorage.blankCard.desc=Template for [Cards].
+
 action.retrostorage.terminalBound=Terminal bound!
 action.retrostorage.terminalUnbound=Terminal unbound!
 action.retrostorage.clearTaskQueue=Task queue cleared!

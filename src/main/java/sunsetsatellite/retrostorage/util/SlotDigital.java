@@ -8,7 +8,7 @@ import net.minecraft.core.player.inventory.slot.Slot;
 public class SlotDigital extends Slot {
 
     public int variableIndex = 0;
-    IDigitalInventory inventory;
+    public IDigitalInventory inventory;
 
     public SlotDigital(InventoryDigital inventory, int id, int x, int y) {
         super(inventory, id, x, y);
