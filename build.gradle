@@ -234,8 +234,8 @@ tasks.register('github') {
 		def repository = github.getRepository("MartinSVK12/retrostorage")
 
 		def releaseBuilder = new GHReleaseBuilder(repository, version as String)
-		releaseBuilder.name("$version")
-		releaseBuilder.body(Files.readString(java.nio.file.Path.of("${rootProject.projectDir}/CHANGELOG.md")))
+		releaseBuilder.name("${version} - BTA")
+		releaseBuilder.body(Files.readString(java.nio.file.Path.of("${project.projectDir}/CHANGELOG.md")))
 		releaseBuilder.commitish("bta")
 		releaseBuilder.prerelease(true)
 
