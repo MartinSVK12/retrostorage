@@ -248,6 +248,6 @@ tasks.register('github') {
 tasks.register('deploy'){
 	description "Publish mod to modrinth and github."
 	group "publishing"
-	dependsOn modrinth
-	dependsOn github
+	dependsOn 'modrinth'
+	dependsOn 'github'
 }
