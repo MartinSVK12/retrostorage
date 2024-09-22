@@ -237,7 +237,6 @@ tasks.register('github') {
 		releaseBuilder.name("${version} - BTA")
 		releaseBuilder.body(Files.readString(java.nio.file.Path.of("${project.projectDir}/CHANGELOG.md")))
 		releaseBuilder.commitish("bta")
-		releaseBuilder.prerelease(true)
 
 		def release = releaseBuilder.create()
 		release.uploadAsset(project.file(remapJar.getArchiveFile().get().getAsFile()),"application/java-archive")
