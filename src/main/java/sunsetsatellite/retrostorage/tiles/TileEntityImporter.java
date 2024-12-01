@@ -148,7 +148,7 @@ public class TileEntityImporter extends TileEntityNetworkDevice
         if (network != null && network.drive != null && enabled) {
             //RetroStorage.LOGGER.debug(connectedTiles.toString());
             for (TileEntity tile : connectedTiles.values()) {
-                if (tile != null) {
+                if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
                     IInventory inv = (IInventory) tile;
                     if (slot == -1) {
                         for (int i = 0; i < inv.getSizeInventory(); i++) {

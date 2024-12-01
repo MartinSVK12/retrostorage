@@ -8,6 +8,11 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice {
     public TileEntityDigitalTerminal() {}
 
     public void tick() {
+        if(network != null && network.inventory != null) {
+            this.pages = ((network.inventory.getLastSlot()+1)/36)+1;
+        } else {
+            pages = 0;
+        }
         super.tick();
     }
 

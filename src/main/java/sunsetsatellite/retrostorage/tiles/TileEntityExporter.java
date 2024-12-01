@@ -148,7 +148,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
     public void work() {
         if (network != null && network.drive != null && enabled) {
             for (TileEntity tile : connectedTiles.values()) {
-                if (tile != null) {
+                if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
                     IInventory inv = (IInventory) tile;
                     if (slot == -1) {
                         int availableSlot = -1;
