@@ -79,30 +79,6 @@ repositories {
 		metadataSources { artifact() }
 	}
 	ivy {
-		url = "https://github.com/MartinSVK12"
-		patternLayout {
-			artifact "[organisation]/releases/download/"+project.catalyst_main_version+"/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/MartinSVK12"
-		patternLayout {
-			artifact "[organisation]/releases/download/"+project.catalyst_secondary_version+"/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/MartinSVK12"
-		patternLayout {
-			artifact "[organisation]/releases/download/"+project.catalyst_tertiary_version+"/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
 		url = "https://github.com/ToufouMaster"
 		patternLayout {
 			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
@@ -134,6 +110,10 @@ repositories {
 		}
 		metadataSources { artifact() }
 	}
+	maven {
+		name = 'SignalumMaven'
+		url = 'https://maven.thesignalumproject.net/releases'
+	}
 }
 
 dependencies {
@@ -153,9 +133,9 @@ dependencies {
 		implementation project(path: ':catalyst:energy', configuration: "namedElements")
 		implementation project(path: ':catalyst:fluids', configuration: "namedElements")
 	} else {
-		modImplementation "catalyst:catalyst-core:1.4.4"
-		modImplementation "catalyst:catalyst-energy:1.0.13"
-		modImplementation "catalyst:catalyst-fluids:1.1.7"
+		modImplementation "sunsetsatellite:catalyst-core:${project.catalyst_core_version}"
+		modImplementation "sunsetsatellite:catalyst-energy:${project.catalyst_energy_version}"
+		modImplementation "sunsetsatellite:catalyst-fluids:${project.catalyst_fluids_version}"
 	}
 	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
 	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"
