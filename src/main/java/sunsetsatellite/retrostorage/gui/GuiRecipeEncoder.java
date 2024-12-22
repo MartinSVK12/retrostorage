@@ -102,6 +102,8 @@ public class GuiRecipeEncoder extends GuiContainer {
             } else {
                 super.keyTyped(c, i, mouseX, mouseY);
             }
+        } else {
+            super.keyTyped(c, i, mouseX, mouseY);
         }
     }
 

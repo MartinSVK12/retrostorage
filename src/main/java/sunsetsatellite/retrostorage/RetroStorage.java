@@ -491,12 +491,9 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('9', Block.obsidian)
                 .create("adv_machine_casing", new ItemStack(RetroStorage.advMachineCasing, 1));
 
-        RecipeBuilder.Shaped(MOD_ID, "1 3", " 5 ", "7 8")
+        RecipeBuilder.Shaped(MOD_ID, "1", "5")
                 .addInput('1', Item.ingotGold)
-                .addInput('3', Item.ingotGold)
                 .addInput('5', RetroStorage.ceramicPlate)
-                .addInput('7', Item.ingotGold)
-                .addInput('8', Item.ingotGold)
                 .create("chip_shell", new ItemStack(RetroStorage.chipShell, 1));
 
         RecipeBuilder.Shaped(MOD_ID, "1", "5", "8")
