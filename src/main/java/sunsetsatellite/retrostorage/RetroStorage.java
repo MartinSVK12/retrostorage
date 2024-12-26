@@ -734,10 +734,9 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('8', chipWireless)
                 .create("wireless_link", new ItemStack(wirelessLink, 1));
 
-        RecipeBuilder.Shaped(MOD_ID, "SRS", "RER", "SRS")
+        RecipeBuilder.Shaped(MOD_ID, "SRS", "R R", "SRS")
                 .addInput('S', machineCasing)
                 .addInput('R', redstoneCore)
-                .addInput('E', energyCore)
                 .create("energy_acceptor", new ItemStack(energyAcceptor, 1));
 
         RecipeBuilder.Shaped(MOD_ID, "MTM", "CRD", "MEM")
