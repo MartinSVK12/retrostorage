@@ -30,9 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.useless.dragonfly.model.block.DFBlockModelBuilder;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.CatalystMultipart;
 import sunsetsatellite.catalyst.core.util.MpGuiEntry;
 import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import sunsetsatellite.catalyst.multipart.block.model.BlockModelMultipart;
+import sunsetsatellite.catalyst.multipart.block.model.MultipartBlockModelBuilder;
 import sunsetsatellite.retrostorage.blocks.*;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
 import sunsetsatellite.retrostorage.blocks.states.NetworkCableStateInterpreter;
@@ -166,12 +169,16 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             .setLuminance(1)
             .setTextures("retrostorage:block/block_cable")
             .setBlockModel(
-                    block ->
-                            new DFBlockModelBuilder(MOD_ID)
-                                    .setBlockModel("network_cable/cable_base.json")
-                                    .setBlockState("network_cable.json")
-                                    .setMetaStateInterpreter(new NetworkCableStateInterpreter())
-                                    .build(block)
+                    block -> {
+                        BlockModelMultipart modelMultipart = new MultipartBlockModelBuilder(CatalystMultipart.MOD_ID)
+                                .build(block);
+                        modelMultipart.parentModel = new DFBlockModelBuilder(MOD_ID)
+                                .setBlockModel("network_cable/cable_base.json")
+                                .setBlockState("network_cable.json")
+                                .setMetaStateInterpreter(new NetworkCableStateInterpreter())
+                                .build(block);
+                        return modelMultipart;
+                    }
             )
             .build(new BlockNetworkCable("networkCable", config.getInt("BlockIDs.networkCable"), Material.cloth));
 

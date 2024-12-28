@@ -1,0 +1,3 @@
+- Fix oversight where network inventory was deleted if the network lost power.
+- Chip shell recipe reduced to 1 gold from 4.
+- Fix bug where you couldn't close the recipe encoder gui. 

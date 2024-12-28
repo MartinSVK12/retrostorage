@@ -132,10 +132,12 @@ dependencies {
 		implementation project(path: ':catalyst', configuration: "namedElements")
 		implementation project(path: ':catalyst:energy', configuration: "namedElements")
 		implementation project(path: ':catalyst:fluids', configuration: "namedElements")
+		implementation project(path: ':catalyst:multipart', configuration: "namedElements")
 	} else {
 		modImplementation "sunsetsatellite:catalyst-core:${project.catalyst_core_version}"
 		modImplementation "sunsetsatellite:catalyst-energy:${project.catalyst_energy_version}"
 		modImplementation "sunsetsatellite:catalyst-fluids:${project.catalyst_fluids_version}"
+		modImplementation "sunsetsatellite:catalyst-multipart:${project.catalyst_multipart_version}"
 	}
 	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
 	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"
