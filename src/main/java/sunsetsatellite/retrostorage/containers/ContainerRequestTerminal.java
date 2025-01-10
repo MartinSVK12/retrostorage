@@ -48,7 +48,7 @@ public class ContainerRequestTerminal extends Container {
             Slot slot = this.getSlot(args[0]);
             if (slot instanceof SlotViewOnly) {
                 if (tile.network != null && slot.getStack() != null) {
-                    RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile, slot.getStack(), ((SlotViewOnly) slot).variableIndex));
+                    RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile, slot.getStack().copy(), ((SlotViewOnly) slot).variableIndex));
                 }
                 return null;
             }

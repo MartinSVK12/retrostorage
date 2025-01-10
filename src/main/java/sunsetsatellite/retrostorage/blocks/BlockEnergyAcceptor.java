@@ -8,9 +8,11 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.network.NetworkComponent;
+import sunsetsatellite.catalyst.core.util.network.NetworkType;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
 
-public class BlockEnergyAcceptor extends BlockTileEntityRotatable {
+public class BlockEnergyAcceptor extends BlockTileEntityRotatable implements NetworkComponent {
 
     public BlockEnergyAcceptor(String key, int id, Material material) {
         super(key, id, material);
@@ -31,5 +33,10 @@ public class BlockEnergyAcceptor extends BlockTileEntityRotatable {
             }
             return true;
         }
+    }
+
+    @Override
+    public NetworkType getType() {
+        return NetworkType.CATALYST_ENERGY;
     }
 }

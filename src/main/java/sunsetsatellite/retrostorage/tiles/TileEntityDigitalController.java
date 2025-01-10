@@ -42,12 +42,12 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice {
                     active = true;
                 }
             } else {
-                if (externalEnergy.energy > 0) {
+                if (externalEnergy.getEnergy() > 0) {
                     int cableSize = network.searchAll(TileEntityNetworkCable.class).size();
-                    externalEnergy.modifyEnergy((int) (-((network.devicesSize() - cableSize) + 1)));
+                    externalEnergy.internalRemoveEnergy(((network.devicesSize() - cableSize) + 1));
                     network.tick();
                 }
-                if (externalEnergy.energy <= 0) {
+                if (externalEnergy.getEnergy() <= 0) {
                     network.removeAll();
                     active = false;
                     /*if (network.inventory.sizeStacks() != 0) {

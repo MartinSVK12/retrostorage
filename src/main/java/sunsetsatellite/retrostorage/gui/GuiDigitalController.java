@@ -38,7 +38,7 @@ public class GuiDigitalController extends GuiScreen {
                 if (tile.active && tile.energy > 0) {
                     int cableSize = tile.network.searchAll(TileEntityNetworkCable.class).size();
                     fontRenderer.drawString(String.format("Usage: %d (%ds left)", (tile.network.devicesSize() - cableSize) + 1, Math.round(
-                            ((float) tile.externalEnergy.energy / ((tile.network.devicesSize() - cableSize) + 1)) / 20
+                            ((float) tile.externalEnergy.getEnergy() / ((tile.network.devicesSize() - cableSize) + 1)) / 20
                     )), 2, i, 0xFFFFFFFF);
                 }
             }

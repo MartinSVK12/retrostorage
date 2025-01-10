@@ -108,10 +108,10 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
     public static final Item blankDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/blankdisc").build(new Item("blankDisc", config.getInt("ItemIDs.blankDisc")));
     public static final Item storageDisc1 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc1").build(new ItemStorageDisc("storageDisc1", config.getInt("ItemIDs.storageDisc1"), 64, 64 * 64)).setMaxStackSize(1);
     public static final Item storageDisc2 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc2").build(new ItemStorageDisc("storageDisc2", config.getInt("ItemIDs.storageDisc2"), 128, 128 * 64)).setMaxStackSize(1);
-    public static final Item storageDisc3 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc3").build(new ItemStorageDisc("storageDisc3", config.getInt("ItemIDs.storageDisc3"), 196, 196 * 64)).setMaxStackSize(1);
-    public static final Item storageDisc4 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc4").build(new ItemStorageDisc("storageDisc4", config.getInt("ItemIDs.storageDisc4"), 256, 256 * 64)).setMaxStackSize(1);
-    public static final Item storageDisc5 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc5").build(new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 320, 320 * 64)).setMaxStackSize(1);
-    public static final Item storageDisc6 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc6").build(new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 384, 384 * 64)).setMaxStackSize(1);
+    public static final Item storageDisc3 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc3").build(new ItemStorageDisc("storageDisc3", config.getInt("ItemIDs.storageDisc3"), 256, 256 * 64)).setMaxStackSize(1);
+    public static final Item storageDisc4 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc4").build(new ItemStorageDisc("storageDisc4", config.getInt("ItemIDs.storageDisc4"), 512, 512 * 64)).setMaxStackSize(1);
+    public static final Item storageDisc5 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc5").build(new ItemStorageDisc("storageDisc5", config.getInt("ItemIDs.storageDisc5"), 1024, 1024 * 64)).setMaxStackSize(1);
+    public static final Item storageDisc6 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/disc6").build(new ItemStorageDisc("storageDisc6", config.getInt("ItemIDs.storageDisc6"), 2048, 2048 * 64)).setMaxStackSize(1);
     public static final Item fluidStorageDisc1 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/fluid_disc_1").build(new ItemFluidStorageDisc("fluidStorageDisc1", config.getInt("ItemIDs.fluidStorageDisc1"), 2, 2000)).setMaxStackSize(1);
     public static final Item fluidStorageDisc2 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/fluid_disc_2").build(new ItemFluidStorageDisc("fluidStorageDisc2", config.getInt("ItemIDs.fluidStorageDisc2"), 4, 4000)).setMaxStackSize(1);
     public static final Item fluidStorageDisc3 = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/fluid_disc_3").build(new ItemFluidStorageDisc("fluidStorageDisc3", config.getInt("ItemIDs.fluidStorageDisc3"), 6, 8000)).setMaxStackSize(1);
@@ -122,7 +122,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
     public static final Item virtualDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/virtualdisc").build(new ItemStorageDisc("virtualDisc", config.getInt("ItemIDs.virtualDisc"), Short.MAX_VALUE * 2, (Short.MAX_VALUE * 2) * 64).withTags(ItemTags.NOT_IN_CREATIVE_MENU)).setMaxStackSize(1);
     public static final Item virtualFluidDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/virtualdisc").build(new ItemFluidStorageDisc("virtualFluidDisc", config.getInt("ItemIDs.virtualFluidDisc"), Short.MAX_VALUE * 2, Integer.MAX_VALUE).withTags(ItemTags.NOT_IN_CREATIVE_MENU)).setMaxStackSize(1);
     public static final Item recipeDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/recipedisc").build(new ItemRecipeDisc("recipeDisc", config.getInt("ItemIDs.recipeDisc"))).setMaxStackSize(1);
-    public static final Item goldenDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/goldendisc").build(new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 1024, 1024 * 64)).setMaxStackSize(1);
+    public static final Item goldenDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/goldendisc").build(new ItemStorageDisc("goldenDisc", config.getInt("ItemIDs.goldenDisc"), 8192, 8192 * 64)).setMaxStackSize(1);
     public static final Item advRecipeDisc = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/advrecipedisc").build(new ItemAdvRecipeDisc("advRecipeDisc", config.getInt("ItemIDs.advRecipeDisc"))).setMaxStackSize(1);
     public static final Item machineCasing = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/machinecasing").build(new Item("machineCasing", config.getInt("ItemIDs.machineCasing")));
     public static final Item advMachineCasing = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/advmachinecasing").build(new Item("advMachineCasing", config.getInt("ItemIDs.advMachineCasing")));
@@ -960,12 +960,11 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             ArrayList<ItemStack> inputs = new ArrayList<>();
             if (recipe instanceof RecipeEntryCraftingShapeless) {
                 RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
-                inputs = r.getInput().stream().map((S) -> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
+                inputs = r.getInput().stream().map((S) -> S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
             }
             if (recipe instanceof RecipeEntryCraftingShaped) {
                 RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
-                inputs = new ArrayList<>();
-                inputs = Arrays.stream(r.getInput()).map((S) -> S.resolve().get(0)).collect(Collectors.toCollection(ArrayList::new));
+                inputs = Arrays.stream(r.getInput()).map((S) -> S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
             }
             inputs.removeIf(Objects::isNull);
             for (ItemStack input : inputs) {
@@ -976,7 +975,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             ArrayList<ItemStack> inputs = new ArrayList<>();
             for (CraftingProcess.Step step : craftable.getProcess().steps) {
                 if (!step.output && step.type == StackType.ITEM) {
-                    inputs.add(step.stack);
+                    inputs.add(step.stack.copy());
                 }
             }
             return inputs;
@@ -992,7 +991,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             ArrayList<FluidStack> inputs = new ArrayList<>();
             for (CraftingProcess.Step step : craftable.getProcess().steps) {
                 if (!step.output && step.type == StackType.FLUID) {
-                    inputs.add(step.fluidStack);
+                    inputs.add(step.fluidStack.copy());
                 }
             }
             return inputs;

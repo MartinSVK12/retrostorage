@@ -1,13 +1,19 @@
 package sunsetsatellite.retrostorage.containers;
 
 
+import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
-import sunsetsatellite.catalyst.energy.impl.ContainerEnergy;
 import sunsetsatellite.retrostorage.tiles.TileEntityEnergyAcceptor;
 
-public class ContainerEnergyAcceptor extends ContainerEnergy {
+import java.util.List;
+
+public class ContainerEnergyAcceptor extends Container {
+
+    public TileEntityEnergyAcceptor tile;
+
     public ContainerEnergyAcceptor(IInventory iInventory, TileEntityEnergyAcceptor tileEntity) {
         tile = tileEntity;
 
@@ -25,6 +31,16 @@ public class ContainerEnergyAcceptor extends ContainerEnergy {
         for (int k = 0; k < 9; k++) {
             addSlot(new Slot(iInventory, k, 8 + k * 18, 142));
         }
+    }
+
+    @Override
+    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, EntityPlayer entityPlayer) {
+        return null;
     }
 
     @Override
