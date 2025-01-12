@@ -113,60 +113,61 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
         boolean space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean mod = shift || control || alt || space;
 
-        Slot invSlot = getSlotAtPosition(mouseX, mouseY);
-        if(invSlot != null) {
-            INetworkController controller = tile.getController();
-            //left shift click to network
-            if(mouseButton == 0 && shift){
-                ItemStack stack = invSlot.getStack();
-                invSlot.putStack(controller.addItemToNetwork(stack));
-                return;
-            }
-        }
-
-        for (int i = 0; i < slots.size(); i++) {
-            Vec2i slot = slots.get(i);
-            int id = i + (tile.page * 36);
-            INetworkController controller = tile.getController();
-            List<ItemStack> stacks = getFilteredStacks();
-            if(mouseHoveringOverSlot(slot,mouseX,mouseY)){
-                //left click
-                if(mouseButton == 0){
-                    //left shift click from network
-                    if(shift){
-                        if(id >= stacks.size()) break;
-                        ItemStack stack = stacks.get(id);
-                        if(stack == null) break;
-                        int amount = stack.getItem().getItemStackLimit();
-                        inventoryPlayer.insertItem(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount),false);
-                        break;
-                    }
-                    ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
-                    if(heldItemStack != null){
-                        inventoryPlayer.setHeldItemStack(controller.addItemToNetwork(heldItemStack));
-                    } else {
-                        if(id >= stacks.size()) break;
-                        ItemStack stack = stacks.get(id);
-                        if(stack == null) break;
-                        int amount = stack.getItem().getItemStackLimit();
-                        inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
-                    }
+        INetworkController controller = tile.getController();
+        if(controller != null){
+            Slot invSlot = getSlotAtPosition(mouseX, mouseY);
+            if(invSlot != null) {
+                //left shift click to network
+                if(mouseButton == 0 && shift){
+                    ItemStack stack = invSlot.getStack();
+                    invSlot.putStack(controller.addItemToNetwork(stack));
+                    return;
                 }
-                //right click
-                if(mouseButton == 1){
-                    ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
-                    if(heldItemStack != null){
-                        Optional<ItemStack> leftovers = Optional.ofNullable(controller.addItemToNetwork(heldItemStack.splitStack(1)));
-                        if(heldItemStack.stackSize <= 0) {
-                            inventoryPlayer.setHeldItemStack(leftovers.orElse(null));
+            }
+
+            for (int i = 0; i < slots.size(); i++) {
+                Vec2i slot = slots.get(i);
+                int id = i + (tile.page * 36);
+                List<ItemStack> stacks = getFilteredStacks();
+                if(mouseHoveringOverSlot(slot,mouseX,mouseY)){
+                    //left click
+                    if(mouseButton == 0){
+                        //left shift click from network
+                        if(shift){
+                            if(id >= stacks.size()) break;
+                            ItemStack stack = stacks.get(id);
+                            if(stack == null) break;
+                            int amount = stack.getItem().getItemStackLimit();
+                            inventoryPlayer.insertItem(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount),false);
+                            break;
                         }
-                        leftovers.ifPresent((S)->heldItemStack.stackSize += S.stackSize);
-                    } else {
-                        if(id >= stacks.size()) break;
-                        ItemStack stack = stacks.get(id);
-                        if(stack == null) break;
-                        int amount = stack.getItem().getItemStackLimit() / 2;
-                        inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
+                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
+                        if(heldItemStack != null){
+                            inventoryPlayer.setHeldItemStack(controller.addItemToNetwork(heldItemStack));
+                        } else {
+                            if(id >= stacks.size()) break;
+                            ItemStack stack = stacks.get(id);
+                            if(stack == null) break;
+                            int amount = stack.getItem().getItemStackLimit();
+                            inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
+                        }
+                    }
+                    //right click
+                    if(mouseButton == 1){
+                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
+                        if(heldItemStack != null){
+                            Optional<ItemStack> leftovers = Optional.ofNullable(controller.addItemToNetwork(heldItemStack.splitStack(1)));
+                            if(heldItemStack.stackSize <= 0) {
+                                inventoryPlayer.setHeldItemStack(leftovers.orElse(null));
+                            }
+                            leftovers.ifPresent((S)->heldItemStack.stackSize += S.stackSize);
+                        } else {
+                            if(id >= stacks.size()) break;
+                            ItemStack stack = stacks.get(id);
+                            if(stack == null) break;
+                            int amount = stack.getItem().getItemStackLimit() / 2;
+                            inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
+                        }
                     }
                 }
             }

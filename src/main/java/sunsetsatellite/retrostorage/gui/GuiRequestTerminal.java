@@ -130,18 +130,20 @@ public class GuiRequestTerminal extends GuiContainer implements IExtendedScreenD
 
         //RetroStorage.mc.displayGuiScreen(new GuiTaskRequest(tile, slot.getStack().copy(), ((SlotViewOnly) slot).variableIndex));
 
-        for (int i = 0; i < slots.size(); i++) {
-            Vec2i slot = slots.get(i);
-            int id = i + (tile.page * 36);
-            INetworkController controller = tile.getController();
-            @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> stacks = getFilteredStacks();
-            if(mouseHoveringOverSlot(slot,mouseX,mouseY)){
-                if(mouseButton == 0){
-                    if(id >= stacks.size()) break;
-                    ItemStack stack = stacks.get(id).getLeft();
-                    NetworkCraftable craftable = stacks.get(id).getRight();
-                    if(stack == null) break;
-                    mc.displayGuiScreen(new GuiTaskRequest(tile, stack, craftable));
+        INetworkController controller = tile.getController();
+        if(controller != null) {
+            for (int i = 0; i < slots.size(); i++) {
+                Vec2i slot = slots.get(i);
+                int id = i + (tile.page * 36);
+                @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> stacks = getFilteredStacks();
+                if (mouseHoveringOverSlot(slot, mouseX, mouseY)) {
+                    if (mouseButton == 0) {
+                        if (id >= stacks.size()) break;
+                        ItemStack stack = stacks.get(id).getLeft();
+                        NetworkCraftable craftable = stacks.get(id).getRight();
+                        if (stack == null) break;
+                        mc.displayGuiScreen(new GuiTaskRequest(tile, stack, craftable));
+                    }
                 }
             }
         }
