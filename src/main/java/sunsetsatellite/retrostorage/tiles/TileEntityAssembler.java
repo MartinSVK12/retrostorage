@@ -3,13 +3,10 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
-import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.block.entity.TileEntityChest;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.IProcessor;
@@ -19,7 +16,6 @@ import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,12 +44,12 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     public ItemStack decrStackSize(int i, int j) {
         if (contents[i] != null) {
-            if (network != null) {
+            /*if (network != null) {
                 RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getStackInSlot(i).getData().getCompound("recipe"));
                 if (recipe != null) {
                     network.knownCraftables.remove(new NetworkCraftable(recipe));
                 }
-            }
+            }*/
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
@@ -72,7 +68,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     public void setInventorySlotContents(int i, ItemStack itemstack) {
-        if (network != null) {
+        /*if (network != null) {
             if (itemstack == null) {
                 RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getStackInSlot(i).getData().getCompound("recipe"));
                 if (recipe != null) {
@@ -84,7 +80,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
                     network.knownCraftables.add(new NetworkCraftable(recipe));
                 }
             }
-        }
+        }*/
         contents[i] = itemstack;
         if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
             itemstack.stackSize = getInventoryStackLimit();
@@ -148,9 +144,9 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
-        ArrayList<Class<?>> tiles = new ArrayList<>();
+        /*ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(TileEntityChest.class);
-        connectedTiles = getConnectedTileEntity(tiles);
+        connectedTiles = getConnectedTileEntity(tiles);*/
     }
 
     public ArrayList<RecipeEntryCrafting<?, ItemStack>> getRecipes() {
@@ -217,6 +213,6 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     private ItemStack[] contents;
-    public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
+   // public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 
 }

@@ -2,14 +2,16 @@ package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.util.DigitalNetwork;
 import sunsetsatellite.retrostorage.util.FluidStackList;
+import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.IProcessor;
 import sunsetsatellite.retrostorage.util.ItemStackList;
 
+import java.util.List;
+
 public class CraftingTask {
     public IProcessor processor;
-    public final DigitalNetwork network;
+    public final INetworkController network;
     private final int quantity;
     public final NodeList nodes;
     private final NetworkCraftable craftable;
@@ -24,7 +26,7 @@ public class CraftingTask {
     private final ItemStackList initialRequirements;
     private final FluidStackList initialFluidRequirements;
 
-    public CraftingTask(DigitalNetwork network, int quantity, NodeList nodes, NetworkCraftable craftable, ItemStackList initialRequirements, FluidStackList initialFluidRequirements) {
+    public CraftingTask(INetworkController network, int quantity, NodeList nodes, NetworkCraftable craftable, ItemStackList initialRequirements, FluidStackList initialFluidRequirements) {
         this.network = network;
         this.quantity = quantity;
         this.nodes = nodes;
@@ -42,9 +44,12 @@ public class CraftingTask {
 
         startTime = System.currentTimeMillis();
 
-        network.inventory.move(initialRequirements, internalStorage, false);
-
-        network.fluidInventory.move(initialFluidRequirements, internalFluidStorage, false);
+        List<ItemStack> leftovers = network.moveItems(initialRequirements, internalStorage);
+        initialRequirements.clear();
+        initialRequirements.addAll(leftovers);
+        List<FluidStack> fluidLeftovers = network.moveFluids(initialFluidRequirements, internalFluidStorage);
+        initialFluidRequirements.clear();
+        initialFluidRequirements.addAll(fluidLeftovers);
 
         started = true;
     }
@@ -55,19 +60,23 @@ public class CraftingTask {
 
         //task finished
         if (nodes.isEmpty()) {
-            network.inventory.addAll(internalStorage);
-            network.fluidInventory.addAll(internalFluidStorage);
+            network.addItemsToNetwork(internalStorage.getStacks());
+            network.addFluidsToNetwork(internalFluidStorage.getStacks());
             return internalStorage.isEmpty() && internalFluidStorage.isEmpty();
         } else { //task not finished
             if (!initialRequirements.isEmpty()) {
-                network.inventory.move(initialRequirements, internalStorage, false);
+                List<ItemStack> leftovers = network.moveItems(initialRequirements, internalStorage);
+                initialRequirements.clear();
+                initialRequirements.addAll(leftovers);
                 if (!initialRequirements.isEmpty()) {
                     return false;
                 }
             }
 
             if (!initialFluidRequirements.isEmpty()) {
-                network.fluidInventory.move(initialFluidRequirements, internalFluidStorage, false);
+                List<FluidStack> leftovers = network.moveFluids(initialFluidRequirements, internalFluidStorage);
+                initialFluidRequirements.clear();
+                initialFluidRequirements.addAll(leftovers);
                 if (!initialFluidRequirements.isEmpty()) {
                     return false;
                 }
@@ -102,7 +111,7 @@ public class CraftingTask {
                     if (!processing.isRoot()) {
                         internalStorage.add(stack);
                     } else {
-                        ItemStack remainder = network.inventory.addAndReturnOverflow(stack);
+                        ItemStack remainder = network.addItemToNetwork(stack);
 
                         internalStorage.add(remainder);
                     }
@@ -136,7 +145,7 @@ public class CraftingTask {
                     if (!processing.isRoot()) {
                         internalFluidStorage.add(stack);
                     } else {
-                        FluidStack remainder = network.fluidInventory.addAndReturnOverflow(stack);
+                        FluidStack remainder = network.addFluidToNetwork(stack);
 
                         internalFluidStorage.add(remainder);
                     }
@@ -152,8 +161,8 @@ public class CraftingTask {
     }
 
     public void onCancelled() {
-        network.inventory.addAll(internalStorage);
-        network.fluidInventory.addAll(internalFluidStorage);
+        network.addItemsToNetwork(internalStorage.getStacks());
+        network.addFluidsToNetwork(internalFluidStorage.getStacks());
         if (processor != null) {
             processor.setFocus(null, null);
         }

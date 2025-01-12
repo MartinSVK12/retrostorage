@@ -2,25 +2,36 @@ package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.core.block.BlockFluid;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
+import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.*;
 
-public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidStack> {
+public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     protected final ArrayList<FluidStack> contents;
-    private final int maxFluidAmount = Integer.MAX_VALUE;
-    private final int maxFluidStackSize = Integer.MAX_VALUE;
+    private final int maxFluidAmount;
+    private final int maxFluidStackSize;
 
     public FluidStackList(ArrayList<FluidStack> contents) {
         this.contents = contents;
+        this.maxFluidAmount = Integer.MAX_VALUE;
+        this.maxFluidStackSize = Integer.MAX_VALUE;
     }
 
     public FluidStackList() {
         this.contents = new ArrayList<>();
+        maxFluidAmount = Integer.MAX_VALUE;
+        maxFluidStackSize = Integer.MAX_VALUE;
     }
 
-    @Override
+    public FluidStackList(int maxFluidAmount, int maxFluidStackSize) {
+        this.contents = new ArrayList<>();
+        this.maxFluidAmount = maxFluidAmount;
+        this.maxFluidStackSize = maxFluidStackSize;
+    }
+
+    /*@Override
     public boolean add(FluidStack stack) {
         if (stack == null) {
             return false;
@@ -42,10 +53,10 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
             }
         }
         return false;
-    }
+    }*/
 
     @Override
-    public FluidStack addAndReturnOverflow(FluidStack stack) {
+    public FluidStack add(FluidStack stack) {
         if (stack == null) {
             return null;
         }
@@ -81,6 +92,22 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
     }
 
     @Override
+    public @UnmodifiableView List<FluidStack> addAll(FluidStackList stacks) {
+        return addAll(stacks.getStacks());
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> addAll(List<FluidStack> stacks) {
+        ArrayList<FluidStack> newStacks = new ArrayList<>();
+
+        for (FluidStack stack : stacks) {
+            newStacks.add(add(stack));
+        }
+
+        return Collections.unmodifiableList(RetroStorage.condenseFluidList(newStacks));
+    }
+
+    /*@Override
     public boolean addAll(FluidStackList stacks) {
         boolean allSuccessful = true;
         ArrayList<FluidStack> toRemove = new ArrayList<>();
@@ -99,9 +126,9 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
             }
         }
         return allSuccessful;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean addAll(List<FluidStack> stacks) {
         boolean allSuccessful = true;
         ArrayList<FluidStack> toRemove = new ArrayList<>();
@@ -126,17 +153,7 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
         } else {
             return sizeItems() + stack.amount <= getMaxFluidAmount() && sizeStacks() + 1 <= getMaxFluidStackSize();
         }
-    }
-
-    @Override
-    public void updateSizes(TileEntityFluidDiscDrive drive) {
-
-    }
-
-    @Override
-    public void resetSizes() {
-
-    }
+    }*/
 
     @Override
     public int getMaxFluidAmount() {
@@ -201,7 +218,7 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
 
     @Override
     public boolean move(FluidStackList what, FluidStackList where, boolean strict) {
-        boolean allSuccessful = true;
+        /*boolean allSuccessful = true;
         FluidStack toRemove = null;
         for (FluidStack stack : what) {
             FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
@@ -225,12 +242,13 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
         } else {
             return false;
         }
-        return allSuccessful;
+        return allSuccessful;*/
+        return false;
     }
 
     @Override
     public boolean move(List<FluidStack> what, FluidStackList where, boolean strict) {
-        boolean allSuccessful = true;
+        /*boolean allSuccessful = true;
         for (FluidStack stack : what) {
             FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
             if (removed == null) {
@@ -242,7 +260,8 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
                 allSuccessful = false;
             }
         }
-        return allSuccessful;
+        return allSuccessful;*/
+        return false;
     }
 
     @Override
@@ -372,10 +391,15 @@ public class FluidStackList implements IDigitalFluidInventory, Iterable<FluidSta
     }
 
     @Override
-    public IDigitalFluidInventory copy() {
-        FluidStackList inv = new FluidStackList();
+    public IFluidStackList copy() {
+        FluidStackList inv = new FluidStackList(maxFluidAmount,maxFluidStackSize);
         inv.contents.stream().map(FluidStack::copy).forEach(inv.contents::add);
         return inv;
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> getStacks() {
+        return Collections.unmodifiableList(contents);
     }
 
     @Override

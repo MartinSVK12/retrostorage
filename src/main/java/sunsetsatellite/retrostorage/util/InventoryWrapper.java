@@ -3,124 +3,65 @@ package sunsetsatellite.retrostorage.util;
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.world.World;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
-import sunsetsatellite.catalyst.core.util.mixin.interfaces.UnlimitedItemStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-@SuppressWarnings({"UnreachableCode", "RedundantSuppression"})
-public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
-    protected final ArrayList<ItemStack> contents;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final int maxItemSize = Integer.MAX_VALUE;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final int maxStackSize = Integer.MAX_VALUE;
+public class InventoryWrapper implements IItemStackList {
 
-    public ItemStackList() {
-        contents = new ArrayList<>();
+    public IInventory connected;
+
+    public InventoryWrapper(IInventory inventory) {
+        connected = inventory;
     }
-
-    public ItemStackList(List<ItemStack> contents) {
-        this.contents = new ArrayList<>(contents);
-    }
-
-    /*@Override
-    public boolean add(ItemStack stack) {
-        if (stack == null) {
-            return false;
-        }
-        stack = stack.copy();
-        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
-        if (index != -1) {
-            ItemStack invStack = contents.get(index);
-            if (!invStack.getData().equals(stack.getData())) {
-                index = -1;
-            }
-        }
-        if (index != -1) {
-            if (getAmount() + stack.stackSize <= getItemCapacity()) {
-                ItemStack invStack = contents.get(index);
-                invStack.stackSize += stack.stackSize;
-                inventoryChanged();
-                return true;
-            }
-        } else {
-            if (getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity()) {
-                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
-                contents.add(stack);
-                inventoryChanged();
-                return true;
-            }
-        }
-        return false;
-    }*/
 
     @Override
     public ItemStack add(ItemStack stack) {
-        if (stack == null) {
-            return stack;
-        }
-        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
-        if (index != -1) {
-            ItemStack invStack = contents.get(index);
-            if (!invStack.getData().equals(stack.getData())) {
-                index = -1;
+        if(stack == null || connected == null) return stack;
+
+        int n = stack.stackSize;
+
+        for (int i = 0; i < connected.getSizeInventory(); i++) {
+            ItemStack invStack = connected.getStackInSlot(i);
+            if(invStack == null) {
+                int amount = Math.min(stack.stackSize, stack.getMaxStackSize(connected));
+                n -= amount;
+                connected.setInventorySlotContents(i, stack.splitStack(amount));
+                if(n <= 0) break;
+            } else if(invStack.isItemEqual(stack)) {
+                int remaining = Math.min(n,invStack.getMaxStackSize(connected) - invStack.stackSize);
+                n -= remaining;
+                invStack.stackSize += remaining;
             }
         }
-        if (index != -1) {
-            if (getAmount() + stack.stackSize <= getItemCapacity()) {
-                ItemStack invStack = contents.get(index);
-                invStack.stackSize += stack.stackSize;
-                inventoryChanged();
-                return null;
-            } else {
-                long remainder = (getAmount() + stack.stackSize) - getItemCapacity();
-                ItemStack split = stack.splitStack((int) remainder);
-                ItemStack invStack = contents.get(index);
-                invStack.stackSize += stack.stackSize;
-                inventoryChanged();
-                return split;
-            }
-        } else {
-            if (getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity()) {
-                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
-                contents.add(stack);
-                inventoryChanged();
-                return null;
-            } else if (getAmount() + stack.stackSize > getItemCapacity()) {
-                long remainder = (getAmount() + stack.stackSize) - getItemCapacity();
-                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
-                ItemStack split = stack.splitStack((int) remainder);
-                contents.add(stack);
-                inventoryChanged();
-                return split;
-            }
+
+        if(n <= 0){
+            return null;
         }
-        return stack;
+
+        return new ItemStack(stack.itemID,n,stack.getMetadata(),stack.getData());
     }
 
     @Override
     public ItemStack add(int index, ItemStack stack) {
-        if(index >= contents.size()) {
-            return stack;
-        }
-        ItemStack invStack = contents.get(index);
-        if (invStack == null){
-            contents.add(index, stack);
-            inventoryChanged();
-            return null;
-        } else if(invStack.isItemEqual(stack) && invStack.getData().equals(stack.getData())) {
-            if (getAmount() + stack.stackSize > getItemCapacity()) {
-                long remainder = (getAmount() + stack.stackSize) - getItemCapacity();
-                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
-                ItemStack split = stack.splitStack((int) remainder);
-                invStack.stackSize += stack.stackSize;
-                inventoryChanged();
-                return split.stackSize <= 0 ? null : split;
-            }
+        if(stack == null || connected == null) return stack;
+
+        ItemStack invStack = connected.getStackInSlot(index);
+        if(invStack == null) {
+            ItemStack split = stack.splitStack(Math.min(stack.stackSize,stack.getMaxStackSize(connected)));
+            connected.setInventorySlotContents(index, split);
+            return stack.stackSize <= 0 ? null : stack;
+        } else if(invStack.isItemEqual(stack)) {
+            int remaining = Math.min(stack.stackSize,invStack.getMaxStackSize(connected) - invStack.stackSize);
+            ItemStack split = stack.splitStack(remaining);
+            invStack.stackSize += split.stackSize;
+            return  stack.stackSize <= 0 ? null : stack;
         }
         return stack;
     }
@@ -181,47 +122,72 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
 
     @Override
     public boolean canAdd(ItemStack stack) {
-        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
-        if (index != -1) {
-            ItemStack invStack = contents.get(index);
-            if (!invStack.getData().equals(stack.getData())) {
-                index = -1;
+        if(stack == null || connected == null) return false;
+        int n = stack.stackSize;
+        ItemStack[] stacks = RetroStorage.collectStacks(connected).toArray(new ItemStack[connected.getSizeInventory()]);
+        for (ItemStack invStack : stacks) {
+            if(invStack == null) {
+                n -= stack.getMaxStackSize(connected);
+            } else if(invStack.isItemEqual(stack)) {
+                n -= invStack.getMaxStackSize(connected) - invStack.stackSize;
             }
         }
-        if (index != -1) {
-            return getAmount() + stack.stackSize <= getItemCapacity();
-        } else {
-            return getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity();
+        return n <= 0;
+    }
+
+    @Override
+    public boolean add(ItemStack stack) {
+        if(stack == null || connected == null) return false;
+
+        int n = stack.stackSize;
+
+        if (!canAdd(stack)) {
+            return false;
         }
+
+        for (int i = 0; i < connected.getSizeInventory(); i++) {
+            ItemStack invStack = connected.getStackInSlot(i);
+            if(invStack == null) {
+                n -= stack.getMaxStackSize(connected);
+                connected.setInventorySlotContents(i, stack);
+            } else if(invStack.isItemEqual(stack)) {
+                int remaining = Math.min(n,invStack.getMaxStackSize(connected) - invStack.stackSize);
+                n -= remaining;
+                stack.stackSize += remaining;
+            }
+        }
+
+        return n == 0;
     }*/
 
     @Override
     public long getItemCapacity() {
-        return maxItemSize;
+        return connected != null ? (long) connected.getSizeInventory() * connected.getInventoryStackLimit() : 0;
     }
 
     @Override
     public long getStackCapacity() {
-        return maxStackSize;
+        return getItemCapacity() / 64;
     }
 
     @Override
     public long getStackAmount() {
-        return contents.stream().filter(Objects::nonNull).count();
+        return getAmount() / 64;
     }
 
     @Override
     public long getAmount() {
-        return contents.stream().mapToInt((C) -> C.stackSize).sum();
+        return RetroStorage.collectAndCondenseStacks(connected).stream().filter(Objects::nonNull).mapToInt((S)->S.stackSize).sum();
     }
 
-    //if strict is true, method returns null if amount is more than actually present
     @Override
     public ItemStack remove(int slot, long amount, boolean strict, boolean unlimited) {
-        if (slot >= contents.size()) {
+        if(connected == null) return null;
+        List<ItemStack> stacks = RetroStorage.collectStacks(connected);
+        if (slot >= stacks.size()) {
             return null;
         }
-        ItemStack stack = contents.get(slot);
+        ItemStack stack = stacks.get(slot);
         if (stack == null) return null;
         if (strict && amount > stack.stackSize) {
             return null;
@@ -230,7 +196,7 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
             if (!unlimited) amount = Math.min(amount, stack.getItem().getItemStackLimit());
             ItemStack splitStack = stack.splitStack((int) amount);
             if (stack.stackSize <= 0) {
-                contents.remove(slot);
+                connected.setInventorySlotContents(slot,null);
             }
             inventoryChanged();
             return splitStack;
@@ -240,12 +206,33 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
 
     @Override
     public ItemStack remove(int slot, boolean strict, boolean unlimited) {
-        if (slot >= contents.size()) {
+        List<ItemStack> stacks = RetroStorage.collectStacks(connected);
+        if (slot >= stacks.size()) {
             return null;
         }
-        ItemStack stack = contents.get(slot);
+        ItemStack stack = stacks.get(slot);
         if (stack == null) return null;
         return remove(slot, stack.getItem().getItemStackLimit(), strict, unlimited);
+    }
+
+    @Override
+    public ItemStack remove(int id, int meta, long amount, CompoundTag data, boolean strict, boolean unlimited) {
+        int index = find(id, meta, data);
+        if (index != -1) {
+            return remove(index, amount, strict, unlimited);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean removeAll(List<ItemStack> stacks, boolean strict, boolean unlimited) {
+        for (ItemStack stack : stacks) {
+            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, stack.getData(), strict, unlimited);
+            if (removed == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -267,27 +254,6 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
             leftovers.add(addLeftover);
         }
         return Collections.unmodifiableList(RetroStorage.condenseItemList(leftovers));
-    }
-
-
-    @Override
-    public ItemStack remove(int id, int meta, long amount, CompoundTag data, boolean strict, boolean unlimited) {
-        int index = find(id, meta, data);
-        if (index != -1) {
-            return remove(index, amount, strict, unlimited);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean removeAll(List<ItemStack> stacks, boolean strict, boolean unlimited) {
-        for (ItemStack stack : stacks) {
-            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, stack.getData(), strict, unlimited);
-            if (removed == null) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -350,33 +316,29 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
 
     @Override
     public boolean contains(int id, int meta, CompoundTag data) {
-        return contents.stream().anyMatch((S) -> S.itemID == id && S.getMetadata() == meta);
+        List<ItemStack> stacks = getStacks();
+        return stacks.stream().anyMatch(stack -> stack.itemID == id && stack.getMetadata() == id);
     }
 
     @Override
     public boolean containsAtLeast(int id, int meta, CompoundTag data, long amount) {
-        return contents.stream().anyMatch((S) -> S.itemID == id && S.getMetadata() == meta && S.stackSize >= amount);
+        List<ItemStack> stacks = getStacks();
+        return stacks.stream().anyMatch((stack) -> stack.itemID == id && stack.getMetadata() == id && stack.stackSize >= amount);
     }
 
     @Override
-    public boolean containsAtLeast(List<ItemStack> stacks) {
-        for (ItemStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.itemID, stack.getMetadata(), stack.getData(), stack.stackSize);
-            if (!contains) return false;
-        }
-        return true;
+    public boolean containsAtLeast(List<ItemStack> comparedTo) {
+        List<ItemStack> networkItems = getStacks();
+        return networkItems.stream().filter(Objects::nonNull)
+                .anyMatch((networkStack)->comparedTo.stream().filter(Objects::nonNull)
+                        .anyMatch((comparedToStack) -> networkStack.isItemEqual(comparedToStack) && networkStack.stackSize >= comparedToStack.stackSize));
     }
 
     @Override
     public boolean containsAtLeast(ItemStackList stacks) {
-        for (ItemStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.itemID, stack.getMetadata(), stack.getData(), stack.stackSize);
-            if (!contains) return false;
-        }
-        return true;
+        return containsAtLeast(stacks.getStacks());
     }
 
-    @Override
     public ArrayList<ItemStack> returnMissing(ArrayList<ItemStack> stacks) {
         ArrayList<ItemStack> missing = new ArrayList<>();
         for (ItemStack stack : stacks) {
@@ -394,30 +356,26 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
 
     @Override
     public long count(int id, int meta, CompoundTag data) {
-        return contents.stream().mapToInt((S) -> {
-            if (S.itemID == id && S.getMetadata() == meta) {
-                return S.stackSize;
-            }
-            return 0;
-        }).sum();
+        List<ItemStack> stacks = getStacks();
+        return stacks.stream().filter((S)->S.itemID == id && S.getMetadata() == meta).mapToInt((S)->S.stackSize).sum();
     }
 
     @Override
     public long count(int id) {
-        return contents.stream().mapToInt((S) -> {
-            if (S.itemID == id) {
-                return S.stackSize;
-            }
-            return 0;
-        }).sum();
+        List<ItemStack> stacks = getStacks();
+        return stacks.stream().filter((S)->S.itemID == id).mapToInt((S)->S.stackSize).sum();
     }
+
 
     @Override
     public int find(int id, int meta, CompoundTag data) {
-        for (int i = 0; i < contents.size(); i++) {
-            ItemStack content = contents.get(i);
-            if (content.getMetadata() == meta && content.itemID == id) {
-                return i;
+        List<ItemStack> stacks = RetroStorage.collectStacks(connected);
+        for (int i = 0; i < stacks.size(); i++) {
+            if(stacks.get(i) == null) continue;
+            if(stacks.get(i).itemID == id && stacks.get(i).getMetadata() == meta) {
+                if(stacks.get(i).getData().equals(data) || data == null) {
+                    return i;
+                }
             }
         }
         return -1;
@@ -425,10 +383,11 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
 
     @Override
     public ItemStack get(int index) {
-        if (index < 0 || index >= contents.size()) {
+        List<ItemStack> stacks = RetroStorage.collectStacks(connected);
+        if (index < 0 || index >= stacks.size()) {
             return null;
         }
-        return contents.get(index);
+        return stacks.get(index);
     }
 
     @Override
@@ -438,44 +397,38 @@ public class ItemStackList implements IItemStackList, Iterable<ItemStack> {
 
     @Override
     public ItemStack getLast() {
-        return contents.get(contents.size() - 1);
+        return getStacks().get(getStacks().size() - 1);
     }
 
     @Override
     public void inventoryChanged() {
+
     }
 
+    /**
+     * Unsupported in this class, will always throw {@link UnsupportedOperationException}!
+     */
     @Override
     public void clear() {
-        contents.clear();
-        inventoryChanged();
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * Unsupported in this class, will always throw {@link UnsupportedOperationException}!
+     */
     @Override
     public IItemStackList copy() {
-        ItemStackList inv = new ItemStackList();
-        inv.contents.stream().map(ItemStack::copy).forEach(inv.contents::add);
-        return inv;
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ItemStack> getStacks() {
-        return Collections.unmodifiableList(contents);
+    public @UnmodifiableView List<ItemStack> getStacks() {
+        return RetroStorage.collectAndCondenseStacks(connected);
     }
 
     @Override
     public boolean isEmpty() {
-        return contents.isEmpty();
+        return getStacks().isEmpty();
     }
 
-    @Override
-    public String toString() {
-        return contents.toString();
-    }
-
-    @NotNull
-    @Override
-    public Iterator<ItemStack> iterator() {
-        return contents.iterator();
-    }
 }

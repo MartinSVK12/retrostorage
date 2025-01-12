@@ -4,17 +4,32 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.IntTag;
 import com.mojang.nbt.ListTag;
+import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.world.World;
+import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.catalyst.core.util.mixin.interfaces.UnlimitedItemStack;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
+import sunsetsatellite.retrostorage.util.IItemStackList;
+import sunsetsatellite.retrostorage.util.INetworkItemStorage;
+import sunsetsatellite.retrostorage.util.ItemStackList;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TileEntityDiscDrive extends TileEntityNetworkDevice
-        implements IInventory {
+        implements IInventory, INetworkItemStorage {
+
+    private ItemStack[] contents;
+    public ArrayList<ItemStack> discsUsed = new ArrayList<>();
+    private int maxStacks = 0;
+    private int maxItems = 0;
+    public int maxDiscs = 16;
 
     public TileEntityDiscDrive() {
         contents = new ItemStack[3];
@@ -48,31 +63,14 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     }
 
     public void tick() {
-        setInventorySlotContents(2, virtualDisc);
-        if (network != null) {
-            if (network.drive == null) {
-                network.drive = this;
-            } else {
-                if (getStackInSlot(0) != null) {
-                    if (getStackInSlot(0).getItem() instanceof ItemStorageDisc) {
-                        ItemStorageDisc item = (ItemStorageDisc) getStackInSlot(0).getItem();
-                        maxStacks += item.getMaxStackCapacity();
-                        maxItems += item.getMaxItemCapacity();
-                        network.inventory.updateSizes(this);
-                        ItemStack stack = getStackInSlot(0);
-                        Object[] nbt = stack.getData().getCompound("Disc").getValues().toArray();
-                        for (Object tag : nbt) {
-                            if (tag instanceof CompoundTag) {
-                                ItemStack digitizedItem = DiscManipulator.readUnlimitedStackFromNbt(((CompoundTag) tag));
-                                if (digitizedItem == null) continue;
-                                network.inventory.add(digitizedItem);
-                            }
-                        }
-                        discsUsed.add(stack.copy());
-                        setInventorySlotContents(0, null);
-                        network.inventory.inventoryChanged();
-                    }
-                }
+        if (getStackInSlot(0) != null && discsUsed.size() < maxDiscs) {
+            if (getStackInSlot(0).getItem() instanceof ItemStorageDisc) {
+                ItemStorageDisc item = (ItemStorageDisc) getStackInSlot(0).getItem();
+                maxStacks += item.getMaxStackCapacity();
+                maxItems += item.getMaxItemCapacity();
+                ItemStack stack = getStackInSlot(0);
+                discsUsed.add(stack.copy());
+                setInventorySlotContents(0, null);
             }
         }
     }
@@ -83,28 +81,8 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
             discsUsed.remove(0);
             maxStacks -= Math.min(maxStacks, ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
             maxItems -= Math.min(maxItems, ((ItemStorageDisc) disc.getItem()).getMaxItemCapacity());
-            CompoundTag nbt = new CompoundTag();
-            Object[] V = virtualDisc.getData().getCompound("Disc").getValues().toArray();
-            int stacksToRemove = Math.min(virtualDisc.getData().getCompound("Disc").getValues().size(), ((ItemStorageDisc) disc.getItem()).getMaxStackCapacity());
-            for (int i = 0; i < stacksToRemove; i++) {
-                nbt.putCompound(String.valueOf(i), (CompoundTag) V[i]);
-                if (network != null) {
-                    network.inventory.remove(i, Integer.MAX_VALUE, false, true);
-                }
-            }
-            disc.getData().putCompound("Disc", nbt);
             disc.stackSize = 1;
             setInventorySlotContents(1, disc);
-            if (maxStacks == 0) {
-                if (network != null) {
-                    network.inventory.clear();
-                    network.inventory.resetSizes();
-                }
-                virtualDisc.getData().putCompound("Disc", new CompoundTag());
-            }
-            if (network != null) {
-                network.inventory.inventoryChanged();
-            }
         }
     }
 
@@ -144,7 +122,6 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         }
         maxStacks = compoundTag.getInteger("MaxStacks");
         maxItems = compoundTag.getInteger("MaxItems");
-        virtualDisc.getData().putCompound("Disc", compoundTag.getCompound("Disc"));
     }
 
     public void writeToNBT(CompoundTag compoundTag) {
@@ -172,7 +149,6 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         compoundTag.put("DiscsUsed", listTag);
         compoundTag.put("MaxStacks", new IntTag(maxStacks));
         compoundTag.put("MaxItems", new IntTag(maxItems));
-        compoundTag.putCompound("Disc", virtualDisc.getData().getCompound("Disc"));
     }
 
     public int getInventoryStackLimit() {
@@ -191,18 +167,478 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
 
     }
 
-    private ItemStack[] contents;
-    public ArrayList<ItemStack> discsUsed = new ArrayList<>();
-    public ItemStack virtualDisc = (new ItemStack(RetroStorage.virtualDisc, 1));
-    private int maxStacks = 0;
-    private int maxItems = 0;
+    @Override
+    public int getPriority() {
+        return 0;
+    }
 
+    /*@Override
+    public boolean add(ItemStack stack) {
+        ArrayList<ItemStack> list = new ArrayList<>(getStacks());
+        if (stack == null || DiscManipulator.canSaveAllToDiscs(discsUsed,list)) {
+            return false;
+        }
+        stack = stack.copy();
+        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
+        if (index != -1) {
+            ItemStack invStack = list.get(index);
+            if (!invStack.getData().equals(stack.getData())) {
+                index = -1;
+            }
+        }
+        if (index != -1) {
+            if (getAmount() + stack.stackSize <= getItemCapacity()) {
+                ItemStack invStack = list.get(index);
+                invStack.stackSize += stack.stackSize;
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return true;
+            }
+        } else {
+            if (getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity()) {
+                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
+                list.add(stack);
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return true;
+            }
+        }
+        return false;
+    }*/
 
-    public int getMaxStacks() {
+    @Override
+    public ItemStack add(ItemStack stack) {
+        ArrayList<ItemStack> list = new ArrayList<>(getStacks());
+        if (stack == null || !DiscManipulator.canSaveAllToDiscs(discsUsed,list)) {
+            return stack;
+        }
+        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
+        if (index != -1) {
+            ItemStack invStack = list.get(index);
+            if (!invStack.getData().equals(stack.getData())) {
+                index = -1;
+            }
+        }
+        if (index != -1) {
+            if (getAmount() + stack.stackSize <= getItemCapacity()) {
+                ItemStack invStack = list.get(index);
+                invStack.stackSize += stack.stackSize;
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return null;
+            } else {
+                long remainder = (getAmount() + stack.stackSize) - getItemCapacity();
+                ItemStack split = stack.splitStack((int) remainder);
+                ItemStack invStack = list.get(index);
+                invStack.stackSize += stack.stackSize;
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return split;
+            }
+        } else {
+            if (getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity()) {
+                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
+                list.add(stack);
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return null;
+            } else if (getAmount() + stack.stackSize > getItemCapacity()) {
+                long remainder = (getAmount() + stack.stackSize) - getItemCapacity();
+                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
+                ItemStack split = stack.splitStack((int) remainder);
+                list.add(stack);
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return split;
+            }
+        }
+        return stack;
+    }
+
+    @Override
+    public ItemStack add(int index, ItemStack stack) {
+        ArrayList<ItemStack> list = new ArrayList<>(getStacks());
+        if (stack == null || !DiscManipulator.canSaveAllToDiscs(discsUsed,list)) {
+            return stack;
+        }
+        if(index >= list.size()) {
+            return stack;
+        }
+        ItemStack invStack = list.get(index);
+        if (invStack == null){
+            list.add(index, stack);
+            DiscManipulator.saveToDiscs(discsUsed,list);
+            inventoryChanged();
+            return null;
+        } else if(invStack.isItemEqual(stack) && invStack.getData().equals(stack.getData())) {
+            if (getAmount() + stack.stackSize > getItemCapacity()) {
+                long remainder = (getAmount() + stack.stackSize) - getItemCapacity();
+                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
+                ItemStack split = stack.splitStack((int) remainder);
+                invStack.stackSize += stack.stackSize;
+                DiscManipulator.saveToDiscs(discsUsed,list);
+                inventoryChanged();
+                return split.stackSize <= 0 ? null : split;
+            }
+        }
+        return stack;
+    }
+
+    @Override
+    public @UnmodifiableView List<ItemStack> addAll(ItemStackList stacks) {
+        return addAll(stacks.getStacks());
+    }
+
+    @Override
+    public @UnmodifiableView List<ItemStack> addAll(List<ItemStack> stacks) {
+        ArrayList<ItemStack> newStacks = new ArrayList<>();
+
+        for (ItemStack stack : stacks) {
+            newStacks.add(add(stack));
+        }
+
+        return Collections.unmodifiableList(RetroStorage.condenseItemList(newStacks));
+    }
+
+    /*@Override
+    public boolean addAll(ItemStackList stacks) {
+        boolean allSuccessful = true;
+        ArrayList<ItemStack> toRemove = new ArrayList<>();
+        for (ItemStack stack : stacks) {
+            boolean success = add(stack);
+            if (!success) {
+                allSuccessful = false;
+                continue;
+            }
+            toRemove.add(stack);
+        }
+        for (ItemStack stack : toRemove) {
+            ItemStack removed = stacks.remove(stack.itemID, stack.getMetadata(), false, true);
+            if (removed == null) {
+                allSuccessful = false;
+            }
+        }
+        return allSuccessful;
+    }
+
+    @Override
+    public boolean addAll(List<ItemStack> stacks) {
+        boolean allSuccessful = true;
+        ArrayList<ItemStack> toRemove = new ArrayList<>();
+        for (ItemStack stack : stacks) {
+            boolean success = add(stack);
+            if (!success) {
+                allSuccessful = false;
+            }
+            toRemove.add(stack);
+        }
+        for (ItemStack stack : toRemove) {
+            stacks.remove(stack);
+        }
+        return allSuccessful;
+    }
+
+    @Override
+    public boolean canAdd(ItemStack stack) {
+        List<ItemStack> list = getStacks();
+        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
+        if (index != -1) {
+            ItemStack invStack = list.get(index);
+            if (!invStack.getData().equals(stack.getData())) {
+                index = -1;
+            }
+        }
+        if (index != -1) {
+            return getAmount() + stack.stackSize <= getItemCapacity();
+        } else {
+            return getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity();
+        }
+    }*/
+
+    @Override
+    public long getItemCapacity() {
+        return maxItems;
+    }
+
+    @Override
+    public long getStackCapacity() {
         return maxStacks;
     }
 
-    public int getMaxItems() {
-        return maxItems;
+    @Override
+    public long getStackAmount() {
+        return getAmount() / 64;
+    }
+
+    @Override
+    public long getAmount() {
+        return getStacks().stream().mapToInt((S)->S.stackSize).sum();
+    }
+    
+    @Override
+    public ItemStack remove(int slot, long amount, boolean strict, boolean unlimited) {
+        ArrayList<ItemStack> list = new ArrayList<>(getStacks());
+        if (slot >= list.size() || !DiscManipulator.canSaveAllToDiscs(discsUsed,list)) {
+            return null;
+        }
+        ItemStack stack = list.get(slot);
+        if (stack == null) return null;
+        if (strict && amount > stack.stackSize) {
+            return null;
+        } else if (!strict) {
+            amount = Math.min(amount, stack.stackSize);
+            if (!unlimited) amount = Math.min(amount, stack.getItem().getItemStackLimit());
+            ItemStack splitStack = stack.splitStack((int) amount);
+            if (stack.stackSize <= 0) {
+                list.remove(slot);
+            }
+            DiscManipulator.saveToDiscs(discsUsed,list);
+            inventoryChanged();
+            return splitStack;
+        }
+        return null;
+    }
+
+    @Override
+    public ItemStack remove(int slot, boolean strict, boolean unlimited) {
+        List<ItemStack> list = getStacks();
+        if (slot >= list.size() || DiscManipulator.canSaveAllToDiscs(discsUsed,list)) {
+            return null;
+        }
+        ItemStack stack = list.get(slot);
+        if (stack == null) return null;
+        return remove(slot, stack.getItem().getItemStackLimit(), strict, unlimited);
+    }
+
+    @Override
+    public @UnmodifiableView List<ItemStack> move(ItemStackList what, ItemStackList where, boolean strict) {
+        return move(what.getStacks(),where,strict);
+    }
+
+    @Override
+    public @UnmodifiableView List<ItemStack> move(List<ItemStack> what, ItemStackList where, boolean strict) {
+        ArrayList<ItemStack> leftovers = new ArrayList<>();
+
+        for (ItemStack stack : what) {
+            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, stack.getData(), strict, true);
+            if (removed == null) {
+                leftovers.add(stack);
+                continue;
+            }
+            ItemStack addLeftover = where.add(removed);
+            leftovers.add(addLeftover);
+        }
+        return Collections.unmodifiableList(RetroStorage.condenseItemList(leftovers));
+    }
+
+
+    @Override
+    public ItemStack remove(int id, int meta, long amount, CompoundTag data, boolean strict, boolean unlimited) {
+        int index = find(id, meta, data);
+        if (index != -1) {
+            return remove(index, amount, strict, unlimited);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean removeAll(List<ItemStack> stacks, boolean strict, boolean unlimited) {
+        for (ItemStack stack : stacks) {
+            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, stack.getData(), strict, unlimited);
+            if (removed == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<ItemStack> exportAll(List<ItemStack> stacks, boolean strict, boolean unlimited) {
+        ArrayList<ItemStack> list = new ArrayList<>();
+        for (ItemStack stack : stacks) {
+            ItemStack removed = remove(stack.itemID, stack.getMetadata(), stack.stackSize, stack.getData(), strict, unlimited);
+            if (removed != null) {
+                list.add(removed);
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public boolean eject(World world, int x, int y, int z, int slot, long amount, boolean strict) {
+        ItemStack content = remove(slot, amount, strict, false);
+        if (content != null) {
+            float f = world.rand.nextFloat() * 0.8F + 0.1F;
+            float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
+            float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
+            EntityItem entityitem = new EntityItem(world, (float) x + f, (float) y + f1, (float) z + f2, content);
+            float f3 = 0.05F;
+            entityitem.xd = (float) world.rand.nextGaussian() * f3;
+            entityitem.yd = (float) world.rand.nextGaussian() * f3 + 0.2F;
+            entityitem.zd = (float) world.rand.nextGaussian() * f3;
+            world.entityJoinedWorld(entityitem);
+            inventoryChanged();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean eject(World world, int x, int y, int z, int id, int meta, CompoundTag data, long amount, boolean strict) {
+        ItemStack content = remove(id, meta, amount, data, strict, false);
+        if (content != null) {
+            float f = world.rand.nextFloat() * 0.8F + 0.1F;
+            float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
+            float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
+            EntityItem entityitem = new EntityItem(world, (float) x + f, (float) y + f1, (float) z + f2, content);
+            float f3 = 0.05F;
+            entityitem.xd = (float) world.rand.nextGaussian() * f3;
+            entityitem.yd = (float) world.rand.nextGaussian() * f3 + 0.2F;
+            entityitem.zd = (float) world.rand.nextGaussian() * f3;
+            world.entityJoinedWorld(entityitem);
+            inventoryChanged();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void ejectAll(World world, int x, int y, int z) {
+        for (ItemStack content : getStacks()) {
+            if(content == null) continue;
+            eject(world,x,y,z,content.itemID,content.getMetadata(),content.getData(),content.stackSize,false);
+        }
+    }
+
+    @Override
+    public boolean contains(int id, int meta, CompoundTag data) {
+        List<ItemStack> list = getStacks();
+        return list.stream().anyMatch((S) -> S.itemID == id && S.getMetadata() == meta);
+    }
+
+    @Override
+    public boolean containsAtLeast(int id, int meta, CompoundTag data, long amount) {
+        List<ItemStack> list = getStacks();
+        return list.stream().anyMatch((S) -> S.itemID == id && S.getMetadata() == meta && S.stackSize >= amount);
+    }
+
+    @Override
+    public boolean containsAtLeast(List<ItemStack> stacks) {
+        for (ItemStack stack : stacks) {
+            boolean contains = containsAtLeast(stack.itemID, stack.getMetadata(), stack.getData(), stack.stackSize);
+            if (!contains) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean containsAtLeast(ItemStackList stacks) {
+        for (ItemStack stack : stacks) {
+            boolean contains = containsAtLeast(stack.itemID, stack.getMetadata(), stack.getData(), stack.stackSize);
+            if (!contains) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ArrayList<ItemStack> returnMissing(ArrayList<ItemStack> stacks) {
+        ArrayList<ItemStack> missing = new ArrayList<>();
+        for (ItemStack stack : stacks) {
+            long c = count(stack.itemID, stack.getMetadata(), stack.getData());
+            if (c <= 0) {
+                missing.add(stack.copy());
+            } else if (c != stack.stackSize) {
+                ItemStack copy = stack.copy();
+                copy.stackSize -= (int) c;
+                missing.add(stack.copy());
+            }
+        }
+        return missing;
+    }
+
+    @Override
+    public long count(int id, int meta, CompoundTag data) {
+        List<ItemStack> list = getStacks();
+        return list.stream().mapToInt((S) -> {
+            if (S.itemID == id && S.getMetadata() == meta) {
+                return S.stackSize;
+            }
+            return 0;
+        }).sum();
+    }
+
+    @Override
+    public long count(int id) {
+        List<ItemStack> list = getStacks();
+        return list.stream().mapToInt((S) -> {
+            if (S.itemID == id) {
+                return S.stackSize;
+            }
+            return 0;
+        }).sum();
+    }
+
+    @Override
+    public int find(int id, int meta, CompoundTag data) {
+        List<ItemStack> list = getStacks();
+        for (int i = 0; i < list.size(); i++) {
+            ItemStack content = list.get(i);
+            if (content.getMetadata() == meta && content.itemID == id) {
+                if(content.getData().equals(data) || data == null) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public ItemStack get(int index) {
+        List<ItemStack> list = getStacks();
+        if (index < 0 || index >= list.size()) {
+            return null;
+        }
+        return list.get(index);
+    }
+
+    @Override
+    public ItemStack get(int id, int meta, CompoundTag data) {
+        return get(find(id, meta, data));
+    }
+
+    @Override
+    public ItemStack getLast() {
+        List<ItemStack> list = getStacks();
+        return list.get(list.size() - 1);
+    }
+
+    @Override
+    public void inventoryChanged() {
+
+    }
+
+    /**
+     * Unsupported in this class, will always throw {@link UnsupportedOperationException}!
+     */
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Unsupported in this class, will always throw {@link UnsupportedOperationException}!
+     */
+    @Override
+    public IItemStackList copy() {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public @UnmodifiableView List<ItemStack> getStacks() {
+        return Collections.unmodifiableList(RetroStorage.condenseItemList(DiscManipulator.viewDiscs(discsUsed)));
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return getStacks().isEmpty();
     }
 }

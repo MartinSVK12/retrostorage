@@ -7,8 +7,9 @@
     "CompoundTagMixin",
     "ContainerMixin",
     "EntityPlayerSPMixin",
+    "GuiContainerMixin",
+    "GuiItemDragHandlerMixin",
     "GuiTooltipMixin",
-    "ItemStackMixin",
     "MinecraftMixin",
     "TagMixin",
     "WorldGenLabyrinthMixin"

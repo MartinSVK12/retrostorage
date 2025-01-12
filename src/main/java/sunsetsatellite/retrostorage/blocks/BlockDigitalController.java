@@ -22,7 +22,6 @@ public class BlockDigitalController extends BlockNetworkDevice {
         return new TileEntityDigitalController();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
         if (super.onBlockRightClicked(world, i, j, k, entityplayer, side, xHit, yHit)) {
@@ -47,20 +46,10 @@ public class BlockDigitalController extends BlockNetworkDevice {
                 }
                 if (tile.network != null) {
                     Catalyst.displayGui(entityplayer, tile, "Digital Controller");
-                    tile.network.reload();
                 }
             }
             return true;
         }
-    }
-
-    @Override
-    public void onBlockRemoved(World world, int x, int y, int z, int data) {
-        TileEntityDigitalController tile = (TileEntityDigitalController) world.getBlockTileEntity(x, y, z);
-        if (tile.network != null) {
-            tile.network.removeAll();
-        }
-        super.onBlockRemoved(world, x, y, z, data);
     }
 
 }

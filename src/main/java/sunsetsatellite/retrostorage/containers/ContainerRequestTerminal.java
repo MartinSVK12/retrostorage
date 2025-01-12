@@ -1,23 +1,19 @@
 package sunsetsatellite.retrostorage.containers;
 
-
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.gui.GuiTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
-import sunsetsatellite.retrostorage.util.SlotRequest;
-import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.List;
 
 public class ContainerRequestTerminal extends Container {
 
     public ContainerRequestTerminal(IInventory iinventory, TileEntityRequestTerminal tile) {
+        this.tile = tile;
         //addSlot(new SlotViewOnly(tile, 0, 60, 108));
 
         for (int k = 0; k < 9; k++) {
@@ -31,7 +27,7 @@ public class ContainerRequestTerminal extends Container {
 
         }
 
-        this.tile = tile;
+        /*this.tile = tile;
         if (tile != null && tile.network != null) {
             for (int i = 0; i < 4; i++) {
                 for (int l = 0; l < 9; l++) {
@@ -39,12 +35,12 @@ public class ContainerRequestTerminal extends Container {
                 }
 
             }
-        }
+        }*/
     }
 
     @Override
     public ItemStack clickInventorySlot(InventoryAction action, int[] args, EntityPlayer player) {
-        if (args != null) {
+        /*if (args != null) {
             Slot slot = this.getSlot(args[0]);
             if (slot instanceof SlotViewOnly) {
                 if (tile.network != null && slot.getStack() != null) {
@@ -52,7 +48,7 @@ public class ContainerRequestTerminal extends Container {
                 }
                 return null;
             }
-        }
+        }*/
         return super.clickInventorySlot(action, args, player);
     }
 

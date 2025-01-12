@@ -7,7 +7,6 @@ import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
-import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class ContainerDiscDrive extends Container {
     public ContainerDiscDrive(IInventory iinventory, TileEntityDiscDrive tileEntitydiscdrive) {
         tile = tileEntitydiscdrive;
 
-        addSlot(new SlotViewOnly(tileEntitydiscdrive, 2, 80, 35));
+        //addSlot(new SlotViewOnly(tileEntitydiscdrive, 2, 80, 35));
         addSlot(new Slot(tileEntitydiscdrive, 0, 45, 35));
         addSlot(new Slot(tileEntitydiscdrive, 1, 115, 35));
 

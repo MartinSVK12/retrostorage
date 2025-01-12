@@ -44,7 +44,7 @@ public class ProcessNode extends Node {
     }
 
     @Override
-    public void update(DigitalNetwork network, NodeList nodes, ItemStackList internalStorage, FluidStackList internalFluidStorage, CraftingTask craftingTask) {
+    public void update(INetworkController network, NodeList nodes, ItemStackList internalStorage, FluidStackList internalFluidStorage, CraftingTask craftingTask) {
         IProcessor processor = network.findProcessor(getPattern());
 
         if (craftingTask.processor != null && !(craftingTask.processor.isInUse())) {
@@ -138,7 +138,7 @@ public class ProcessNode extends Node {
     }
 
     public int getNeeded(ItemStack stack) {
-        return singleItemsToReceive.count(stack.itemID, stack.getMetadata()) * totalQuantity - itemsReceived.count(stack.itemID, stack.getMetadata());
+        return (int) (singleItemsToReceive.count(stack.itemID, stack.getMetadata(), stack.getData()) * totalQuantity - itemsReceived.count(stack.itemID, stack.getMetadata(), stack.getData()));
     }
 
     public int getNeeded(FluidStack stack) {
@@ -167,8 +167,8 @@ public class ProcessNode extends Node {
         int tempQuantityFinished = totalQuantity;
 
         for (ItemStack stack : singleItemsToReceive) {
-            if (itemsReceived.get(stack.itemID, stack.getMetadata()) != null) {
-                int ratioReceived = itemsReceived.count(stack.itemID, stack.getMetadata()) / stack.stackSize;
+            if (itemsReceived.get(stack.itemID, stack.getMetadata(), stack.getData()) != null) {
+                int ratioReceived = (int) (itemsReceived.count(stack.itemID, stack.getMetadata(), stack.getData()) / stack.stackSize);
                 if (tempQuantityFinished > ratioReceived) {
                     tempQuantityFinished = ratioReceived;
                 }

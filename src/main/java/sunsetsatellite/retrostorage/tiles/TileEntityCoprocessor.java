@@ -1,4 +1,6 @@
 package sunsetsatellite.retrostorage.tiles;
 
-public class TileEntityCoprocessor extends TileEntityNetworkDevice {
+import sunsetsatellite.retrostorage.util.ICoprocessor;
+
+public class TileEntityCoprocessor extends TileEntityNetworkDevice implements ICoprocessor {
 }

@@ -46,7 +46,7 @@ public class BlockNetworkCable extends BlockNetworkDevice implements IConduitBlo
 
     @Override
     public ConduitCapability getConduitCapability() {
-        return ConduitCapability.NETWORK;
+        return ConduitCapability.RES_NETWORK;
     }
 
     @Override

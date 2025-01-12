@@ -9,7 +9,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
+import sunsetsatellite.retrostorage.util.INetworkController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,21 +144,24 @@ public class TileEntityImporter extends TileEntityNetworkDevice
         connectedTiles = getConnectedTileEntity(tiles);
     }
 
+    public boolean matchesFilter(ItemStack stack){
+        if(stack == null) return false;
+        return (getInventorySlotContainItem(stack.itemID,stack.getMetadata()) != -1 && isWhitelist) || (getInventorySlotContainItem(stack.itemID, stack.getMetadata()) == -1 && !isWhitelist);
+    }
+
     public void work() {
-        if (network != null && network.drive != null && enabled) {
-            //RetroStorage.LOGGER.debug(connectedTiles.toString());
+        INetworkController controller = getController();
+        if(controller != null && enabled){
             for (TileEntity tile : connectedTiles.values()) {
                 if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
                     IInventory inv = (IInventory) tile;
-                    if (slot == -1) {
+                    if(slot == -1){
                         for (int i = 0; i < inv.getSizeInventory(); i++) {
                             ItemStack stack = inv.getStackInSlot(i);
-                            if (stack != null && ((getInventorySlotContainItem(stack.itemID, stack.getMetadata()) != -1 && isWhitelist) || (getInventorySlotContainItem(stack.itemID, stack.getMetadata()) == -1 && !isWhitelist))) {
-                                if (network.inventory.add(stack)) {
-                                    inv.setInventorySlotContents(i, null);
-                                    DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-                                    break;
-                                }
+                            if(matchesFilter(stack)){
+                                ItemStack leftovers = controller.addItemToNetwork(stack);
+                                inv.setInventorySlotContents(i, leftovers);
+                                break;
                             }
                         }
                     } else {
@@ -166,11 +169,9 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                             return;
                         }
                         ItemStack stack = inv.getStackInSlot(slot);
-                        if (stack != null && ((getInventorySlotContainItem(stack.itemID, stack.getMetadata()) != -1 && isWhitelist) || (getInventorySlotContainItem(stack.itemID, stack.getMetadata()) == -1 && !isWhitelist))) {
-                            if (network.inventory.add(stack)) {
-                                inv.setInventorySlotContents(slot, null);
-                                DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-                            }
+                        if(matchesFilter(stack)){
+                            ItemStack leftovers = controller.addItemToNetwork(stack);
+                            inv.setInventorySlotContents(slot, leftovers);
                         }
                     }
                 }

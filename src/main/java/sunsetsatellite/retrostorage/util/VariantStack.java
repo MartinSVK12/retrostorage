@@ -4,6 +4,8 @@ import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 
+import java.util.Objects;
+
 public class VariantStack {
     private final ItemStack itemStack;
     private final FluidStack fluidStack;
@@ -36,9 +38,9 @@ public class VariantStack {
     public ItemStack forceGetItem(){
         switch (type) {
             case ITEM:
-                return itemStack;
+                return Objects.requireNonNull(itemStack);
             case FLUID:
-                return new ItemStack(fluidStack.liquid,fluidStack.amount);
+                return new ItemStack(Objects.requireNonNull(fluidStack).liquid,fluidStack.amount);
         }
         return null;
     }
@@ -46,9 +48,9 @@ public class VariantStack {
     public VariantStack copy() {
         switch (type) {
             case ITEM:
-                return new VariantStack(itemStack.copy());
+                return new VariantStack(Objects.requireNonNull(itemStack).copy());
             case FLUID:
-                return new VariantStack(fluidStack.copy());
+                return new VariantStack(Objects.requireNonNull(fluidStack).copy());
         }
         return null;
     }

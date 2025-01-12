@@ -1,7 +1,6 @@
 package sunsetsatellite.retrostorage.blocks;
 
 
-import net.minecraft.core.block.BlockTileEntityRotatable;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.EntityItem;
@@ -12,7 +11,7 @@ import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
 
-public class BlockAssembler extends BlockTileEntityRotatable {
+public class BlockAssembler extends BlockNetworkDevice {
 
     public BlockAssembler(String key, int id, Material material) {
         super(key, id, material);

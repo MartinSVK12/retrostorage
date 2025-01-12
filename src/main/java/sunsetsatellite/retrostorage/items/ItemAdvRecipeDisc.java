@@ -20,11 +20,16 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
 
     @Override
     public String getDescription(ItemStack stack) {
+        return "";
+    }
+
+    @Override
+    public String getPersistentDescription(ItemStack stack) {
         StringBuilder text = new StringBuilder();
         if (!stack.getData().getCompound("disc").getValues().isEmpty()) {
             text.append(TextFormatting.MAGENTA).append(stack.getData().getCompound("disc").getCompound("tasks").getValues().size()).append(" steps.").append("\n");
         } else if (stack.getData().getCompound("disc").getValues().isEmpty()) {
-            text.append(TextFormatting.MAGENTA).append("0 steps.");
+            text.append(TextFormatting.GRAY).append("Empty");
         }
         CompoundTag tasksNBT = stack.getData().getCompound("disc").getCompound("tasks");
         ArrayList<CompoundTag> tasks = new ArrayList<>();

@@ -10,12 +10,12 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice {
     }
 
     public void tick() {
-        if (network != null && network.drive != null) {
+        /*if (network != null && network.drive != null) {
             this.pages = ((network.getAvailableRecipes().size() + network.getAvailableProcesses().size()) / 36) + 1;
         } else {
             page = 1;
             pages = 1;
-        }
+        }*/
     }
 
     @Override
@@ -26,6 +26,6 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice {
         return super.canInteractWith(entityplayer);
     }
 
-    public int page = 1;
-    public int pages = 1;
+    public int page = 0;
+    public int pages = 0;
 }

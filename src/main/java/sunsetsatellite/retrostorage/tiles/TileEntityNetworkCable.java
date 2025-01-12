@@ -2,18 +2,25 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.net.packet.Packet;
 import net.minecraft.core.net.packet.Packet140TileEntityData;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.ConduitCapability;
 import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.IConduitTile;
+import sunsetsatellite.catalyst.core.util.Vec3i;
+import sunsetsatellite.catalyst.core.util.network.Network;
+import sunsetsatellite.catalyst.core.util.network.NetworkType;
 import sunsetsatellite.catalyst.multipart.api.ISupportsMultiparts;
 import sunsetsatellite.catalyst.multipart.api.Multipart;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TileEntityNetworkCable extends TileEntityNetworkDevice implements ISupportsMultiparts {
+public class TileEntityNetworkCable extends TileEntity implements ISupportsMultiparts, IConduitTile {
 
+    public Network network;
     public final HashMap<Direction, Multipart> parts = (HashMap<Direction, Multipart>) Catalyst.mapOf(Direction.values(),new Multipart[Direction.values().length]);
 
     @Override
@@ -53,4 +60,32 @@ public class TileEntityNetworkCable extends TileEntityNetworkDevice implements I
         return parts;
     }
 
+    @Override
+    public ConduitCapability getConduitCapability() {
+        return ConduitCapability.RES_NETWORK;
+    }
+
+    public Vec3i getPosition() {
+        return new Vec3i(x,y,z);
+    }
+
+    @Override
+    public boolean isConnected(Direction direction) {
+        return direction.getTileEntity(worldObj,this) instanceof TileEntityNetworkCable || direction.getTileEntity(worldObj,this) instanceof TileEntityNetworkDevice;
+    }
+
+    @Override
+    public void networkChanged(Network network) {
+        this.network = (Network) network;
+    }
+
+    @Override
+    public void removedFromNetwork(Network network) {
+        this.network = null;
+    }
+
+    @Override
+    public NetworkType getType() {
+        return NetworkType.RES_NETWORK;
+    }
 }

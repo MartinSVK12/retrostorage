@@ -1,25 +1,25 @@
 package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.core.block.BlockFluid;
+import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public interface IDigitalFluidInventory {
-    FluidStack addAndReturnOverflow(FluidStack stack);
+public interface IFluidStackList {
+    FluidStack add(FluidStack stack);
 
-    boolean addAll(FluidStackList stacks);
+    @UnmodifiableView List<FluidStack> addAll(FluidStackList stacks);
+
+    @UnmodifiableView List<FluidStack> addAll(List<FluidStack> stacks);
+
+    /*boolean addAll(FluidStackList stacks);
 
     boolean addAll(List<FluidStack> stacks);
 
-    boolean canAdd(FluidStack stack);
-
-    void updateSizes(TileEntityFluidDiscDrive drive);
-
-    void resetSizes();
+    boolean canAdd(FluidStack stack);*/
 
     int getMaxFluidAmount();
 
@@ -29,7 +29,7 @@ public interface IDigitalFluidInventory {
 
     int sizeItems();
 
-    boolean add(FluidStack stack);
+    //boolean add(FluidStack stack);
 
     //if strict is true, method returns null if amount is more than actually present
     FluidStack remove(int slot, int amount, boolean strict);
@@ -74,7 +74,13 @@ public interface IDigitalFluidInventory {
 
     void clear();
 
-    IDigitalFluidInventory copy();
+    IFluidStackList copy();
+
+    /**
+     * @return Standard unmodifiable java list made from the contents of this list.
+     */
+    @UnmodifiableView
+    List<FluidStack> getStacks();
 
     boolean isEmpty();
 }

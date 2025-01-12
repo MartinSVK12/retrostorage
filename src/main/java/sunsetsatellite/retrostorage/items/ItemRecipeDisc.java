@@ -14,11 +14,17 @@ public class ItemRecipeDisc extends Item implements ICustomDescription {
     }
 
     @Override
-    public String getDescription(ItemStack itemStack) {
-        ItemStack result = RetroStorage.findRecipeResultFromNBT(itemStack.getData().getCompound("recipe"));
+    public String getDescription(ItemStack stack) {
+        return "";
+    }
+
+    @Override
+    public String getPersistentDescription(ItemStack stack) {
+        ItemStack result = RetroStorage.findRecipeResultFromNBT(stack.getData().getCompound("recipe"));
         if (result != null) {
             return TextFormatting.MAGENTA + "Output: " + result.stackSize + "x " + result.getDisplayName() + TextFormatting.WHITE;
         }
         return TextFormatting.GRAY + "Empty" + TextFormatting.WHITE;
     }
+
 }

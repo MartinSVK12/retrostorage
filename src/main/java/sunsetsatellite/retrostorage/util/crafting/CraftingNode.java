@@ -2,8 +2,8 @@ package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
-import sunsetsatellite.retrostorage.util.DigitalNetwork;
 import sunsetsatellite.retrostorage.util.FluidStackList;
+import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.ItemStackList;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class CraftingNode extends Node {
     }
 
     @Override
-    public void update(DigitalNetwork network, NodeList nodes, ItemStackList internalStorage, FluidStackList internalFluidStorage, CraftingTask craftingTask) {
+    public void update(INetworkController network, NodeList nodes, ItemStackList internalStorage, FluidStackList internalFluidStorage, CraftingTask craftingTask) {
         List<ItemStack> simulatedRequirements = requirements.getSingleItemRequirements(true);
         if (simulatedRequirements == null) {
             return;
@@ -38,7 +38,7 @@ public class CraftingNode extends Node {
             if (!isRoot()) {
                 internalStorage.add(output);
             } else {
-                ItemStack stack = network.inventory.addAndReturnOverflow(output);
+                ItemStack stack = network.addItemToNetwork(output);
                 internalStorage.add(stack);
             }
 

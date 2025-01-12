@@ -76,7 +76,7 @@ public class NodeRequirements {
 
                     if (needed < toUse.stackSize) {
                         if (!simulate) {
-                            itemRequirements.get(i).remove(toUse.itemID, toUse.getMetadata(), needed, false, true);
+                            itemRequirements.get(i).remove(toUse.itemID, toUse.getMetadata(), needed, toUse.getData(), false, true);
                         }
 
                         ItemStack copy = toUse.copy();

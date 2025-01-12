@@ -60,7 +60,7 @@ public class CraftingPreviewInfo {
     private List<Pair<ItemStack, String>> listCache = new ArrayList<>();
 
     public int size() {
-        return missing.sizeStacks() + missingFluids.sizeStacks() + toTake.sizeStacks() + toTakeFluids.sizeStacks() + toCraft.size() + toCraftFluids.size() + toProcess.size() + toProcessFluids.size();
+        return (int) (missing.getStackAmount() + missingFluids.sizeStacks() + toTake.getStackAmount() + toTakeFluids.sizeStacks() + toCraft.size() + toCraftFluids.size() + toProcess.size() + toProcessFluids.size());
     }
 
     public List<Pair<ItemStack, String>> toList() {
@@ -68,7 +68,7 @@ public class CraftingPreviewInfo {
             return listCache;
         }
         List<Pair<ItemStack, String>> list = new ArrayList<>();
-        for (int i = 0; i < missing.sizeStacks(); i++) {
+        for (int i = 0; i < missing.getStackAmount(); i++) {
             list.add(Pair.of(missing.get(i), "missing"));
         }
 
@@ -82,7 +82,7 @@ public class CraftingPreviewInfo {
         for (ItemStack stack : toProcess) {
             list.add(Pair.of(stack, "toProcess"));
         }
-        for (int i = 0; i < toTake.sizeStacks(); i++) {
+        for (int i = 0; i < toTake.getStackAmount(); i++) {
             list.add(Pair.of(toTake.get(i), "toTake"));
         }
 

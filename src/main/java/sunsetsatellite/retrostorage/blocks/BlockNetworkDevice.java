@@ -1,23 +1,22 @@
 package sunsetsatellite.retrostorage.blocks;
 
-import net.minecraft.core.block.Block;
 import net.minecraft.core.block.BlockTileEntityRotatable;
-import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
-import net.minecraft.core.world.World;
-import sunsetsatellite.catalyst.core.util.BlockInstance;
-import sunsetsatellite.catalyst.core.util.Direction;
-import sunsetsatellite.catalyst.core.util.Vec3i;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
-import sunsetsatellite.retrostorage.util.DigitalNetwork;
+import sunsetsatellite.catalyst.core.util.network.NetworkComponent;
+import sunsetsatellite.catalyst.core.util.network.NetworkType;
 
-public abstract class BlockNetworkDevice extends BlockTileEntityRotatable {
+public abstract class BlockNetworkDevice extends BlockTileEntityRotatable implements NetworkComponent {
+
     public BlockNetworkDevice(String key, int id, Material material) {
         super(key, id, material);
     }
 
     @Override
+    public NetworkType getType() {
+        return NetworkType.RES_NETWORK;
+    }
+
+    /*@Override
     public void onBlockAdded(World world, int x, int y, int z) {
         super.onBlockAdded(world, x, y, z);
         TileEntityNetworkDevice validNetworkTile = null;
@@ -54,5 +53,5 @@ public abstract class BlockNetworkDevice extends BlockTileEntityRotatable {
             //network.reload();
         }
         super.onBlockRemoved(world, x, y, z, data);
-    }
+    }*/
 }

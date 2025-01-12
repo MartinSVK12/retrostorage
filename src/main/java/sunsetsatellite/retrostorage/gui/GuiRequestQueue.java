@@ -7,7 +7,7 @@ import net.minecraft.client.render.FontRenderer;
 import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.DigitalNetwork;
+import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayList;
@@ -17,10 +17,10 @@ public class GuiRequestQueue extends GuiScreen {
     protected String screenTitle = "Scroll Container";
     private GuiTaskSlot slotContainer;
     public ArrayList<CraftingTask> list = new ArrayList<>();
-    public DigitalNetwork network;
+    public INetworkController network;
     public GuiRequestTerminal parent;
 
-    public GuiRequestQueue(DigitalNetwork network, GuiRequestTerminal parent) {
+    public GuiRequestQueue(INetworkController network, GuiRequestTerminal parent) {
         super(null);
         this.parent = parent;
         this.network = network;
@@ -54,7 +54,7 @@ public class GuiRequestQueue extends GuiScreen {
         int xSize = 256;
         int ySize = 256;
         super.drawScreen(x, y, renderPartialTicks);
-        int i = mc.renderEngine.getTexture("assets/retrostorage/textures/gui/request_queue.png");
+        int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/request_queue.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;
@@ -65,8 +65,8 @@ public class GuiRequestQueue extends GuiScreen {
         GL11.glScissor(140, this.height - 175, this.width * 2, this.height + 351); //TODO: fix this breaking at lower resolutions than 1080p
         this.list.clear();
         if (network != null) {
-            list.addAll(network.requestQueue);
-            for (CraftingTask task : network.requestQueue) {
+            list.addAll(network.getRequestQueue());
+            for (CraftingTask task : network.getRequestQueue()) {
                 slotContainer.posZ = (36 * (task.nodes.all().size() + 2));
             }
         }

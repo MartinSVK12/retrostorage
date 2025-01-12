@@ -1,14 +1,20 @@
 package sunsetsatellite.retrostorage.gui;
 
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.containers.ContainerDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
+import sunsetsatellite.retrostorage.util.GuiRenderDigitalItem;
+import sunsetsatellite.retrostorage.util.INetworkController;
 
 public class GuiDiscDrive extends GuiContainer {
+
+    public final GuiRenderDigitalItem renderDigitalItem = new GuiRenderDigitalItem(Minecraft.getMinecraft(this));
 
     public GuiDiscDrive(InventoryPlayer inventoryplayer, TileEntityDiscDrive tileentitydiscdrive) {
         super(new ContainerDiscDrive(inventoryplayer, tileentitydiscdrive));
@@ -18,12 +24,25 @@ public class GuiDiscDrive extends GuiContainer {
     protected void drawGuiContainerForegroundLayer() {
         fontRenderer.drawString("Disc Drive", 60, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
-        if (tile.virtualDisc != null && tile.network != null) {
-            int color = 0xFFFFFF;
-            if (tile.virtualDisc.getData().getCompound("Disc").getValues().toArray().length >= tile.getMaxStacks()) {
-                color = 0xFF4040;
+        if(tile.network != null) {
+            INetworkController controller = tile.getController();
+            if (controller != null) {
+                int color = 0xFFFFFF;
+                if (controller.getAmount() >= controller.getItemCapacity() * 0.9) {
+                    color = 0xFF4040;
+                }
+                fontRenderer.drawCenteredString(controller.getStackAmount() + "/" + controller.getStackCapacity(), 88, 40, color);
             }
-            fontRenderer.drawCenteredString(tile.virtualDisc.getData().getCompound("Disc").getValues().toArray().length + "/" + tile.getMaxStacks(), 88, 20, color);
+        }
+        if(!tile.discsUsed.isEmpty()){
+            fontRenderer.drawCenteredString(tile.discsUsed.size()+"/"+tile.maxDiscs+" discs in use.", 88, 20, 0xFFFFFF);
+        } else {
+            fontRenderer.drawCenteredString("No discs in use.", 88, 20, 0xFFFFFF);
+        }
+
+        for (int i = 0; i < Math.min(tile.discsUsed.size(),16); i++) {
+            ItemStack disc = tile.discsUsed.get(i);
+            renderDigitalItem.render(disc, 5 + (10 * i), 55);
         }
     }
 

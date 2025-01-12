@@ -65,8 +65,8 @@ public class GuiRecipeItemSlot extends GuiSlot {
                 List<Pair<ItemStack, String>> list = parent.calculationResult.getCraftingPreviewInfo().toList();
                 Pair<ItemStack, String> pair = list.get(i);
                 ItemStack stack = pair.getLeft();
-                int availableAmount = parent.tile.network.inventory.count(stack.itemID, stack.getMetadata());
-                int availableAmountFluids = parent.tile.network.fluidInventory.count(stack.itemID);
+                long availableAmount = parent.network.countItems(stack.itemID,stack.getMetadata(),stack.getData());
+                long availableAmountFluids = parent.network.countFluids(stack.itemID);
                 if(stack.itemID < 16384 && Block.blocksList[stack.itemID] instanceof BlockFluid){
                     this.parent.drawString(this.parent.fontRenderer, stack.stackSize + "mB " + stack.getDisplayName(), j + 2, k + 2, 0xFFFFFF);
                 } else {

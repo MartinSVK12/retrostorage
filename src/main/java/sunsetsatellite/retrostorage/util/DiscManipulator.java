@@ -4,13 +4,16 @@ package sunsetsatellite.retrostorage.util;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
 import net.minecraft.core.item.ItemStack;
-import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DiscManipulator {
 
-    public static void saveDisc(ItemStack disc, IDigitalInventory inv) {
+    /*public static void saveDisc(ItemStack disc, IItemStackList inv) {
         if (disc == null || inv == null) {
             return;
         }
@@ -33,7 +36,7 @@ public class DiscManipulator {
         disc.getData().putCompound("Disc", discNBT);
     }
 
-    public static void saveDisc(ItemStack disc, IDigitalFluidInventory inv) {
+    public static void saveDisc(ItemStack disc, IFluidStackList inv) {
         if (disc == null || inv == null) {
             return;
         }
@@ -51,7 +54,7 @@ public class DiscManipulator {
         disc.getData().putCompound("Disc", discNBT);
     }
 
-    public static void loadDisc(ItemStack disc, IDigitalInventory inv) {
+    public static void loadDisc(ItemStack disc, IItemStackList inv) {
         if (disc == null || inv == null) {
             return;
         }
@@ -69,7 +72,7 @@ public class DiscManipulator {
         });
     }
 
-    public static void loadDisc(ItemStack disc, IDigitalFluidInventory inv) {
+    public static void loadDisc(ItemStack disc, IFluidStackList inv) {
         if (disc == null || inv == null) {
             return;
         }
@@ -84,6 +87,94 @@ public class DiscManipulator {
                 }
             }
         });
+    }*/
+
+    public static @UnmodifiableView List<ItemStack> viewDisc(ItemStack disc) {
+        ArrayList<ItemStack> result = new ArrayList<>();
+        if (disc == null || !(disc.getItem() instanceof ItemStorageDisc)) {
+            return Collections.emptyList();
+        }
+
+        Collection<?> values = disc.getData().getCompound("Disc").getValues();
+        values.forEach((V) -> {
+            if (V instanceof CompoundTag) {
+                String K = ((Tag<?>) V).getTagName();
+                ItemStack itemStack = readUnlimitedStackFromNbt((CompoundTag) V);
+                if (itemStack == null) return;
+                if (itemStack.getItem() != null) {
+                    result.add(itemStack);
+                }
+            }
+        });
+
+        return Collections.unmodifiableList(result);
+    }
+
+    public static void serializeStacks(CompoundTag tag, List<ItemStack> stacks) {
+        for (int i = 0; i < stacks.size(); i++) {
+            ItemStack item = stacks.get(i);
+            CompoundTag itemNBT = new CompoundTag();
+            if (item != null) {
+                itemNBT.putInt("Count", item.stackSize);
+                itemNBT.putShort("id", (short) item.itemID);
+                itemNBT.putShort("Damage", (short) item.getMetadata());
+                itemNBT.putByte("Expanded", (byte) 1);
+                itemNBT.putInt("Version", 19133);
+                itemNBT.putCompound("Data", item.getData());
+                tag.putCompound(String.valueOf(i), itemNBT);
+            } else {
+                tag.getValue().remove(String.valueOf(i));
+            }
+        }
+    }
+
+    public static boolean canSaveAllToDiscs(List<ItemStack> discs, List<ItemStack> list) {
+        int itemAmount = list.stream().filter(Objects::nonNull).filter((S) -> S.getItem() != null).mapToInt((S) -> S.stackSize).sum();
+        int stackAmount = RetroStorage.condenseItemList(list).size();
+
+        int maxItemCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof ItemStorageDisc).mapToInt(item -> ((ItemStorageDisc) item).getMaxItemCapacity()).sum();
+        int maxStackCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof ItemStorageDisc).mapToInt(item -> ((ItemStorageDisc) item).getMaxStackCapacity()).sum();
+
+        return itemAmount <= maxItemCapacity && stackAmount <= maxStackCapacity;
+    }
+
+    public static void saveToDiscs(List<ItemStack> discs, List<ItemStack> stacks) {
+        if(!canSaveAllToDiscs(discs, stacks)) return;
+        ArrayList<ItemStack> mutableStacks = RetroStorage.condenseItemList(stacks);
+
+        discs = discs.stream().filter(Objects::nonNull).filter((S)-> S.getItem() instanceof ItemStorageDisc).collect(Collectors.toList());
+
+        for (ItemStack discStack : discs) {
+            ItemStorageDisc disc = (ItemStorageDisc) discStack.getItem();
+            int maxItemCapacity = disc.getMaxItemCapacity();
+            int maxStackCapacity = disc.getMaxStackCapacity();
+            CompoundTag tag = new CompoundTag();
+
+            int itemAmount = 0;
+            int stackAmount = 0;
+
+            ListIterator<ItemStack> iter = mutableStacks.listIterator();
+            int i = 0;
+            while (iter.hasNext()) {
+                ItemStack stack = iter.next();
+                if (itemAmount >= maxItemCapacity || stackAmount >= maxStackCapacity) break;
+                itemAmount += stack.stackSize;
+                stackAmount += 1;
+                CompoundTag itemNBT = new CompoundTag();
+                itemNBT.putInt("Count", stack.stackSize);
+                itemNBT.putShort("id", (short) stack.itemID);
+                itemNBT.putShort("Damage", (short) stack.getMetadata());
+                itemNBT.putByte("Expanded", (byte) 1);
+                itemNBT.putInt("Version", 19133);
+                itemNBT.putCompound("Data", stack.getData());
+                tag.putCompound(String.valueOf(i), itemNBT);
+                i++;
+                iter.remove();
+            }
+
+            discStack.getData().putCompound("Disc", tag);
+        }
+
     }
 
     public static ItemStack readUnlimitedStackFromNbt(CompoundTag tag) {
@@ -93,4 +184,14 @@ public class DiscManipulator {
         return stack.getItem() != null && stack.stackSize > 0 ? stack : null;
     }
 
+    public static @UnmodifiableView List<ItemStack> viewDiscs(ArrayList<ItemStack> discsUsed) {
+        ArrayList<ItemStack> result = new ArrayList<>();
+        for (ItemStack disc : discsUsed) {
+            if (disc == null || !(disc.getItem() instanceof ItemStorageDisc)) {
+                continue;
+            }
+            result.addAll(viewDisc(disc));
+        }
+        return Collections.unmodifiableList(result);
+    }
 }

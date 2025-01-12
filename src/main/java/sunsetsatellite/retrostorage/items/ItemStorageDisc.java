@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.items;
 
 
+import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
@@ -35,9 +36,31 @@ public class ItemStorageDisc extends Item implements ICustomDescription {
     private int maxItemCapacity;
 
     @Override
+    public String getPersistentDescription(ItemStack stack) {
+        return TextFormatting.MAGENTA + "" + stack.getData().getCompound("Disc").getValues().size() + " entries out of " + maxStackCapacity;
+    }
+
+    @Override
     public String getDescription(ItemStack itemStack) {
-        return TextFormatting.MAGENTA + "" + itemStack.getData().getCompound("Disc").getValues().size() + " entries out of " + maxStackCapacity;
+        return "";
     }
 
 
+    @Override
+    public CompoundTag getDefaultTag() {
+        /*if(this == RetroStorage.goldenDisc){
+            CompoundTag tag = new CompoundTag();
+            CompoundTag disc = new CompoundTag();
+            ArrayList<ItemStack> items = new ArrayList<>();
+            ContainerPlayerCreative.creativeItems.forEach((S)-> {
+                ItemStack copy = S.copy();
+                copy.stackSize = copy.getMaxStackSize();
+                items.add(copy);
+            });
+            DiscManipulator.serializeStacks(disc, items);
+            tag.put("Disc", disc);
+            return tag;
+        }*/
+        return super.getDefaultTag();
+    }
 }

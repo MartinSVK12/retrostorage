@@ -53,7 +53,7 @@ public class InventoryAutocrafting extends InventoryCrafting {
 
     @Override
     public String getInvName() {
-        return "Crafting";
+        return "Autocrafting";
     }
 
     @Override

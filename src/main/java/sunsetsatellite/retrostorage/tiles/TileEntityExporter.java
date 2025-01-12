@@ -9,10 +9,11 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
+import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.util.InventoryWrapper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TileEntityExporter extends TileEntityNetworkDevice
         implements IInventory {
@@ -146,7 +147,34 @@ public class TileEntityExporter extends TileEntityNetworkDevice
     }
 
     public void work() {
-        if (network != null && network.drive != null && enabled) {
+        INetworkController controller = getController();
+        if(controller != null && enabled){
+            for (TileEntity tile : connectedTiles.values()) {
+                if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
+                    InventoryWrapper wrapper = new InventoryWrapper((IInventory) tile);
+                    if(slot == -1){
+                        Arrays.stream(contents).filter(Objects::nonNull).forEach((S)->{
+                            Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, S.getMaxStackSize(wrapper.connected)));
+                            AtomicReference<Optional<ItemStack>> leftovers = new AtomicReference<>(Optional.empty());
+                            stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(S2))));
+                            leftovers.get().ifPresent(controller::addItemToNetwork);
+                        });
+                    } else {
+                        ItemStack invStack = wrapper.get(slot);
+                        if(invStack == null){
+                            Arrays.stream(contents).filter(Objects::nonNull).findAny().ifPresent((S)->{
+                                Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, S.getMaxStackSize(wrapper.connected)));
+                                AtomicReference<Optional<ItemStack>> leftovers = new AtomicReference<>(Optional.empty());
+                                stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(slot,S2))));
+                                leftovers.get().ifPresent(controller::addItemToNetwork);
+                            });
+                        }
+                    }
+                }
+
+            }
+        }
+        /*if (network != null && network.drive != null && enabled) {
             for (TileEntity tile : connectedTiles.values()) {
                 if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
                     IInventory inv = (IInventory) tile;
@@ -250,7 +278,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                     }
                 }
             }
-        }
+        }*/
     }
 
     private ItemStack[] contents;

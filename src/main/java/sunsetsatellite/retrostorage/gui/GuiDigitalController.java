@@ -4,7 +4,6 @@ package sunsetsatellite.retrostorage.gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.core.player.inventory.InventoryPlayer;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
-import sunsetsatellite.retrostorage.tiles.TileEntityNetworkCable;
 
 public class GuiDigitalController extends GuiScreen {
 
@@ -20,14 +19,26 @@ public class GuiDigitalController extends GuiScreen {
         fontRenderer.drawString("Digital Controller", 2, i, 0xFFFFFFFF);
         fontRenderer.drawString("Press ESC to exit.", 2, i += 10, 0xFFFFFFFF);
         if (tile.network != null) {
-            fontRenderer.drawString(tile.active ? "Network online!" : "Network offline.", 2, i += 20, 0xFFFFFFFF);
             if (tile.externalEnergy != null) {
                 fontRenderer.drawString("External energy source connected.", 2, i += 10, 0xFFFFFFFF);
             } else {
                 fontRenderer.drawString(String.format("Network energy: %d", Math.round(tile.energy)), 2, i += 10, 0xFFFFFFFF);
             }
             i += 10;
-            if (tile.externalEnergy == null) {
+            fontRenderer.drawString(
+                    String.format("Network: %s", tile.network
+                    ), 2, i += 10, 0xFFFFFFFF);
+            i += 10;
+            fontRenderer.drawString(
+                    String.format("%d storage devices connected.", tile.getAttachedStorage().size()
+                    ), 2, i += 10, 0xFFFFFFFF);
+            fontRenderer.drawString(
+                    String.format("%d processors connected.", tile.getProcessors().size()
+                    ), 2, i += 10, 0xFFFFFFFF);
+            fontRenderer.drawString(
+                    String.format("%d co-processors connected.", tile.getCoprocessors().size()
+                    ), 2, i += 10, 0xFFFFFFFF);
+            /*if (tile.externalEnergy == null) {
                 if (tile.active && tile.energy > 0) {
                     int cableSize = tile.network.searchAll(TileEntityNetworkCable.class).size();
                     fontRenderer.drawString(String.format("Usage: %d (%ds left)", (tile.network.devicesSize() - cableSize) + 1, Math.round(
@@ -43,9 +54,7 @@ public class GuiDigitalController extends GuiScreen {
                 }
             }
 
-            fontRenderer.drawString(
-                    String.format("Network size: %d", tile.network.size()
-                    ), 2, i += 10, 0xFFFFFFFF);
+
             i += 10;
             if (tile.network.drive != null) {
                 fontRenderer.drawString(String.format("Drive detected: %s", tile.network.drive.toStringFormatted()), 2, i, 0xFFFFFFFF);
@@ -57,18 +66,9 @@ public class GuiDigitalController extends GuiScreen {
             fontRenderer.drawString(String.format("Assemblers: %d", tile.network.getAssemblers().size()), 2, i += 10, 0xFFFFFFFF);
             fontRenderer.drawString(String.format("Interfaces: %d", tile.network.getAdvInterfaces().size()), 2, i += 10, 0xFFFFFFFF);
             fontRenderer.drawString(String.format("Coprocessors: %d", tile.network.getCoprocessors().size()), 2, i += 10, 0xFFFFFFFF);
-            /*HashMap<BlockInstance, ArrayList<RecipeEntryCrafting<?,?>>> recipes = tile.network.getAvailableRecipesWithSource();
-            int recipeCount = 0;
-            for (Map.Entry<BlockInstance, ArrayList<RecipeEntryCrafting<?,?>>> entry : recipes.entrySet()) {
-                ArrayList<RecipeEntryCrafting<?,?>> V = entry.getValue();
-                recipeCount += V.size();
-            }*/
             fontRenderer.drawString(String.format("Available craftables: %d", tile.network.knownCraftables.size()), 2, i += 10, 0xFFFFFFFF);
-            /*fontRenderer.drawString(String.format("Available processes: %d",tile.network.getAvailableProcesses().size()),2,i+=10,0xFFFFFFFF);*/
             fontRenderer.drawString(String.format("Current active tasks: %d / %d", tile.network.currentTasks.size(), tile.network.getCoprocessors().size() + 1), 2, i += 10, 0xFFFFFFFF);
-            fontRenderer.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()), 2, i += 10, 0xFFFFFFFF);
-            //fontRenderer.drawString(String.format("Request queue: %s", tile.network.requestQueue),2,i+=10,0xFFFFFFFF);
-            //RetroStorage.LOGGER.debug(tile.network.toString());
+            fontRenderer.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()), 2, i += 10, 0xFFFFFFFF);*/
         }
     }
 

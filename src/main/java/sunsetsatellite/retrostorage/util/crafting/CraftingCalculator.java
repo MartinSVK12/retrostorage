@@ -7,10 +7,11 @@ import sunsetsatellite.retrostorage.util.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class CraftingCalculator {
-    private final DigitalNetwork network;
+    private final INetworkController network;
     private final int quantity;
     private final VariantStack requested;
     private final NetworkCraftable recipe;
@@ -25,9 +26,9 @@ public class CraftingCalculator {
     private final FluidStackList toExtractInitialFluids = new FluidStackList();
 
     private long calculationStarted = -1;
-    private final ArrayList<NetworkCraftable> knownRecipes;
+    private final List<NetworkCraftable> knownRecipes;
 
-    public CraftingCalculator(DigitalNetwork network, int quantity, VariantStack requested, NetworkCraftable recipe, ArrayList<NetworkCraftable> knownRecipes) {
+    public CraftingCalculator(INetworkController network, int quantity, VariantStack requested, NetworkCraftable recipe, List<NetworkCraftable> knownRecipes) {
         this.network = network;
         this.quantity = quantity;
         this.requested = requested;
@@ -44,8 +45,8 @@ public class CraftingCalculator {
 
         ItemStackList results = new ItemStackList();
         FluidStackList fluidResults = new FluidStackList();
-        ItemStackList source = network.inventory.toList();
-        FluidStackList fluidSource = network.fluidInventory.toList();
+        ItemStackList source = new ItemStackList(network.getAllItems());
+        FluidStackList fluidSource = new FluidStackList();//network.fluidInventory.toList();
 
         int qtyPerCraft = qtyPerCraft(requested);
         int qty = ((quantity - 1) / qtyPerCraft) + 1;
@@ -196,8 +197,8 @@ public class CraftingCalculator {
         for (ItemStack input : inputs) {
             ingredientNumber++;
 
-            ItemStack fromSelf = results.get(input.itemID, input.getMetadata());
-            ItemStack fromNetwork = source.get(input.itemID, input.getMetadata());
+            ItemStack fromSelf = results.get(input.itemID, input.getMetadata(), input.getData());
+            ItemStack fromNetwork = source.get(input.itemID, input.getMetadata(), input.getData());
 
             int remaining = input.stackSize * qty;
 
@@ -211,11 +212,11 @@ public class CraftingCalculator {
 
                     node.getRequirements().addItemRequirement(ingredientNumber, input, toTake, input.stackSize);
 
-                    results.remove(fromSelf.itemID, fromSelf.getMetadata(), toTake, false, true);
+                    results.remove(fromSelf.itemID, fromSelf.getMetadata(), toTake, fromSelf.getData(), false, true);
 
                     remaining -= toTake;
 
-                    fromSelf = results.get(input.itemID, input.getMetadata());
+                    fromSelf = results.get(input.itemID, input.getMetadata(), input.getData());
                 }
 
                 if (fromNetwork != null && remaining > 0) {
@@ -227,11 +228,11 @@ public class CraftingCalculator {
 
                     node.getRequirements().addItemRequirement(ingredientNumber, input, toTake, input.stackSize);
 
-                    source.remove(fromNetwork.itemID, fromNetwork.getMetadata(), toTake, false, true);
+                    source.remove(fromNetwork.itemID, fromNetwork.getMetadata(),  toTake, fromNetwork.getData(), false, true);
 
                     remaining -= toTake;
 
-                    fromNetwork = source.get(input.itemID, input.getMetadata());
+                    fromNetwork = source.get(input.itemID, input.getMetadata(), input.getData());
 
                     copy = input.copy();
                     copy.stackSize = toTake;
@@ -246,12 +247,12 @@ public class CraftingCalculator {
 
                         calculateInternal(subQty, source, fluidSource, results, fluidResults, subRecipe, false);
 
-                        fromSelf = results.get(input.itemID, input.getMetadata());
+                        fromSelf = results.get(input.itemID, input.getMetadata(),input.getData());
                         if (fromSelf == null) {
                             throw new CraftingCalculationException(CalculationResultType.ERROR, "Recursive calculation didn't yield anything!");
                         }
 
-                        fromNetwork = source.get(input.itemID, input.getMetadata());
+                        fromNetwork = source.get(input.itemID, input.getMetadata(),input.getData());
 
                         if (subRecipe.getType() == CraftableType.PROCESS) {
                             craftingPreviewInfo.getToProcess().add(fromSelf.copy());

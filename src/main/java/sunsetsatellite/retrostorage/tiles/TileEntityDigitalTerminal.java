@@ -8,11 +8,6 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice {
     public TileEntityDigitalTerminal() {}
 
     public void tick() {
-        if(network != null && network.inventory != null) {
-            this.pages = ((network.inventory.getLastSlot()+1)/36)+1;
-        } else {
-            pages = 0;
-        }
         super.tick();
     }
 
@@ -24,6 +19,6 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice {
         return super.canInteractWith(entityplayer);
     }
 
-    public int page = 1;
-    public int pages = 1;
+    public int page = 0;
+    public int pages = 0;
 }

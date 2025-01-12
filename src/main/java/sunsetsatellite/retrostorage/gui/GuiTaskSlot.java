@@ -3,7 +3,6 @@ package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.tessellator.Tessellator;
-import sunsetsatellite.retrostorage.tiles.TileEntityNetworkDevice;
 import sunsetsatellite.retrostorage.util.IProcessor;
 import sunsetsatellite.retrostorage.util.ProcessingState;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
@@ -76,7 +75,7 @@ public class GuiTaskSlot extends GuiSlot {
                 } else {
                     drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize * node.getTotalQuantity() + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
                     drawString(String.format(" %d/%d (%d%%) | %s", pNode.getFinishedQuantity(), pNode.getTotalQuantity(), pNode.getCompletionPercentage(), pNode.getState()), x, y += 10, 0xFFFFFF);
-                    drawString(" Processor: " + (processor == null ? "None" : ((TileEntityNetworkDevice) processor).toStringFormatted().replace("TileEntity", "")), x, y += 10, 0x808080);
+                    drawString(" Processor: " + (processor == null ? "None" : processor.toString().replace("TileEntity", "")), x, y += 10, 0x808080);
                 }
             } else {
                 drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, 0xFFFFFF);

@@ -35,9 +35,12 @@ public class ItemFluidStorageDisc extends Item implements ICustomDescription {
     private int maxItemCapacity;
 
     @Override
-    public String getDescription(ItemStack itemStack) {
-        return TextFormatting.MAGENTA + "" + itemStack.getData().getCompound("Disc").getValues().size() + " entries out of " + maxStackCapacity;
+    public String getPersistentDescription(ItemStack stack) {
+        return TextFormatting.MAGENTA + "" + stack.getData().getCompound("Disc").getValues().size() + " entries out of " + maxStackCapacity;
     }
 
-
+    @Override
+    public String getDescription(ItemStack stack) {
+        return "";
+    }
 }
