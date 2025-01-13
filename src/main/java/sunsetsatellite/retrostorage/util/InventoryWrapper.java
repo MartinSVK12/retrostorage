@@ -38,6 +38,7 @@ public class InventoryWrapper implements IItemStackList {
                 int remaining = Math.min(n,invStack.getMaxStackSize(connected) - invStack.stackSize);
                 n -= remaining;
                 invStack.stackSize += remaining;
+                if(n <= 0) break;
             }
         }
 

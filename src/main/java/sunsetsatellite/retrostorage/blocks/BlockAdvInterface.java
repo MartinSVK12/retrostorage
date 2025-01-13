@@ -8,39 +8,42 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
-import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
+import sunsetsatellite.retrostorage.gui.GuiAdvInterface;
+import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.tiles.TileEntityAdvInterface;
 
-public class BlockExporter extends BlockNetworkDevice {
+public class BlockAdvInterface extends BlockNetworkDevice {
 
-    public BlockExporter(String key, int id, Material material) {
+    public BlockAdvInterface(String key, int id, Material material) {
         super(key, id, material);
-        setTicking(true);
-    }
-
-    @Override
-    protected TileEntity getNewBlockEntity() {
-        return new TileEntityExporter();
     }
 
     public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
         if (world.isClientSide) {
             return true;
         } else {
-            TileEntityExporter tile = (TileEntityExporter) world.getBlockTileEntity(i, j, k);
-            //System.out.println(TileEntityDigitalChest);
+            TileEntityAdvInterface tile = (TileEntityAdvInterface) world.getBlockTileEntity(i, j, k);
+            /*if(entityplayer.isSneaking()){
+                if(tile.getStackInSlot(0) != null && tile.getStackInSlot(0).getItem() instanceof ItemRecipeDisc){
+                    IRecipe recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).getData().getCompound("recipe"));
+                    if(recipe != null){
+                        tile.task = new RecipeTask(recipe,null,null);
+                    }
+                }
+                return true;
+            }*/
             if (tile != null) {
-                Catalyst.displayGui(entityplayer, tile, "Item Exporter");
+                ((IOpenGUI) entityplayer).displayGUI(new GuiAdvInterface(entityplayer.inventory, tile));
             }
             return true;
         }
     }
 
     public void onBlockRemoved(World world, int x, int y, int z, int data) {
-        TileEntityExporter tileEntityExporter = (TileEntityExporter) world.getBlockTileEntity(x, y, z);
+        TileEntityAdvInterface TileEntityAdvInterface = (TileEntityAdvInterface) world.getBlockTileEntity(x, y, z);
         label0:
-        for (int l = 0; l < tileEntityExporter.getSizeInventory(); l++) {
-            ItemStack itemstack = tileEntityExporter.getStackInSlot(l);
+        for (int l = 0; l < TileEntityAdvInterface.getSizeInventory(); l++) {
+            ItemStack itemstack = TileEntityAdvInterface.getStackInSlot(l);
             if (itemstack == null) {
                 continue;
             }
@@ -68,16 +71,7 @@ public class BlockExporter extends BlockNetworkDevice {
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, int blockId) {
-        super.onNeighborBlockChange(world, x, y, z, blockId);
-        TileEntityExporter tile = (TileEntityExporter) world.getBlockTileEntity(x, y, z);
-        if(tile != null) {
-            if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
-                tile.enabled = false;
-            } else if (!world.isBlockIndirectlyGettingPowered(x, y, z)) {
-                tile.enabled = true;
-            }
-        }
+    protected TileEntity getNewBlockEntity() {
+        return new TileEntityAdvInterface();
     }
-
 }

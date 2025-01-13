@@ -1,21 +1,30 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
+import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.Vec3i;
+import sunsetsatellite.catalyst.core.util.mixin.interfaces.ITileEntityInit;
 import sunsetsatellite.catalyst.core.util.network.Network;
 import sunsetsatellite.catalyst.core.util.network.NetworkComponentTile;
+import sunsetsatellite.catalyst.core.util.network.NetworkManager;
 import sunsetsatellite.catalyst.core.util.network.NetworkType;
 import sunsetsatellite.retrostorage.util.INetworkController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class TileEntityNetworkDevice extends TileEntity implements NetworkComponentTile {
+public abstract class TileEntityNetworkDevice extends TileEntity implements NetworkComponentTile, ITileEntityInit {
 
     public Network network;
+
+    @Override
+    public void init(Block block) {
+        networkChanged(NetworkManager.getNet(worldObj,x,y,z));
+        setInitialized();
+    }
 
     @Override
     public NetworkType getType() {

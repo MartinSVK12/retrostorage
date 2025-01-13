@@ -68,15 +68,15 @@ public class CraftingProcess {
     }
 
     public List<ItemStack> getItemOutputs(){
-        return steps.stream().filter((S)->S.output && S.type == StackType.ITEM).map((S)->S.stack).collect(Collectors.toList());
+        return steps.stream().filter((S)->S.output && S.type == StackType.ITEM).map((S)->S.stack.copy()).collect(Collectors.toList());
     }
 
     public List<FluidStack> getFluidOutputs(){
-        return steps.stream().filter((S)->S.output && S.type == StackType.FLUID).map((S)->S.fluidStack).collect(Collectors.toList());
+        return steps.stream().filter((S)->S.output && S.type == StackType.FLUID).map((S)->S.fluidStack.copy()).collect(Collectors.toList());
     }
 
     public List<VariantStack> getAllOutputs(){
-        return steps.stream().filter((S)->S.output).map((S)->S.type == StackType.ITEM ? new VariantStack(S.stack) : new VariantStack(S.fluidStack)).collect(Collectors.toList());
+        return steps.stream().filter((S)->S.output).map((S)->S.type == StackType.ITEM ? new VariantStack(S.stack.copy()) : new VariantStack(S.fluidStack.copy())).collect(Collectors.toList());
     }
 
     @Override

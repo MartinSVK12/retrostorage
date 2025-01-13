@@ -154,7 +154,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                     InventoryWrapper wrapper = new InventoryWrapper((IInventory) tile);
                     if(slot == -1){
                         Arrays.stream(contents).filter(Objects::nonNull).forEach((S)->{
-                            Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, S.getMaxStackSize(wrapper.connected)));
+                            Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, Math.min(S.stackSize,S.getMaxStackSize(wrapper.connected))));
                             AtomicReference<Optional<ItemStack>> leftovers = new AtomicReference<>(Optional.empty());
                             stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(S2))));
                             leftovers.get().ifPresent(controller::addItemToNetwork);
@@ -163,7 +163,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                         ItemStack invStack = wrapper.get(slot);
                         if(invStack == null){
                             Arrays.stream(contents).filter(Objects::nonNull).findAny().ifPresent((S)->{
-                                Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, S.getMaxStackSize(wrapper.connected)));
+                                Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, Math.min(S.stackSize,S.getMaxStackSize(wrapper.connected))));
                                 AtomicReference<Optional<ItemStack>> leftovers = new AtomicReference<>(Optional.empty());
                                 stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(slot,S2))));
                                 leftovers.get().ifPresent(controller::addItemToNetwork);
@@ -174,111 +174,6 @@ public class TileEntityExporter extends TileEntityNetworkDevice
 
             }
         }
-        /*if (network != null && network.drive != null && enabled) {
-            for (TileEntity tile : connectedTiles.values()) {
-                if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
-                    IInventory inv = (IInventory) tile;
-                    if (slot == -1) {
-                        int availableSlot = -1;
-                        for (int i = 0; i < inv.getSizeInventory(); i++) {
-                            ItemStack stack = inv.getStackInSlot(i);
-                            if (stack == null) {
-                                availableSlot = i;
-                                break;
-                            }
-                        }
-
-                        int networkSlot = -1;
-                        if (isWhitelist) {
-                            for (ItemStack stack : contents) {
-                                if (stack != null) {
-                                    networkSlot = network.inventory.find(stack.itemID, stack.getMetadata());
-                                    if (networkSlot != -1) {
-                                        break;
-                                    }
-                                }
-                            }
-                        } else if (isEmpty()) {
-                            networkSlot = network.inventory.getLastSlot();
-                        } else {
-                            networkSlot = network.inventory.getLastSlot();
-                            ItemStack networkStack = network.inventory.get(networkSlot);
-                            for (ItemStack stack : contents) {
-                                if (stack != null) {
-                                    if (networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata()) {
-                                        int i = networkSlot;
-                                        while (i > 1 && (networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata())) {
-                                            i--;
-                                            networkStack = getStackInSlot(i);
-                                        }
-                                        if (networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata()) {
-                                            networkSlot = -1;
-                                        } else {
-                                            networkSlot = i;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (networkSlot != -1) {
-                            ItemStack stack = network.inventory.remove(networkSlot, false, false);
-                            if (stack != null && availableSlot != -1) {
-                                inv.setInventorySlotContents(availableSlot, stack);
-                                DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-                            }
-                        }
-                    } else {
-                        if (slot >= inv.getSizeInventory()) {
-                            return;
-                        }
-                        int availableSlot = -1;
-                        if (inv.getStackInSlot(slot) == null) {
-                            availableSlot = slot;
-                        }
-
-                        int networkSlot = -1;
-                        if (isWhitelist) {
-                            for (ItemStack stack : contents) {
-                                if (stack != null) {
-                                    networkSlot = network.inventory.find(stack.itemID, stack.getMetadata());
-                                    if (networkSlot != -1) {
-                                        break;
-                                    }
-                                }
-                            }
-                        } else if (isEmpty()) {
-                            networkSlot = network.inventory.getLastSlot();
-                        } else {
-                            networkSlot = network.inventory.getLastSlot();
-                            ItemStack networkStack = network.inventory.get(networkSlot);
-                            for (ItemStack stack : contents) {
-                                if (stack != null) {
-                                    if (networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata()) {
-                                        int i = networkSlot;
-                                        while (i > 1 && (networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata())) {
-                                            i--;
-                                            networkStack = getStackInSlot(i);
-                                        }
-                                        if (networkStack == null || networkStack.itemID == stack.itemID && networkStack.getMetadata() == stack.getMetadata()) {
-                                            networkSlot = -1;
-                                        } else {
-                                            networkSlot = i;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (networkSlot != -1) {
-                            ItemStack stack = network.inventory.remove(networkSlot, false, false);
-                            if (stack != null && availableSlot != -1) {
-                                inv.setInventorySlotContents(availableSlot, stack);
-                                DiscManipulator.saveDisc(network.drive.virtualDisc, network.inventory);
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
     }
 
     private ItemStack[] contents;

@@ -8,39 +8,73 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import net.minecraft.core.world.WorldSource;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
+import sunsetsatellite.retrostorage.tiles.TileEntityRedstoneEmitter;
 
-public class BlockExporter extends BlockNetworkDevice {
-
-    public BlockExporter(String key, int id, Material material) {
+public class BlockRedstoneEmitter extends BlockNetworkDevice {
+    public BlockRedstoneEmitter(String key, int id, Material material) {
         super(key, id, material);
-        setTicking(true);
-    }
-
-    @Override
-    protected TileEntity getNewBlockEntity() {
-        return new TileEntityExporter();
     }
 
     public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
         if (world.isClientSide) {
             return true;
         } else {
-            TileEntityExporter tile = (TileEntityExporter) world.getBlockTileEntity(i, j, k);
-            //System.out.println(TileEntityDigitalChest);
+            TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter) world.getBlockTileEntity(i, j, k);
             if (tile != null) {
-                Catalyst.displayGui(entityplayer, tile, "Item Exporter");
+                Catalyst.displayGui(entityplayer, tile, "Redstone Emitter");
             }
             return true;
         }
     }
 
+    @Override
+    public boolean canProvidePower() {
+        return true;
+    }
+
+    @Override
+    public boolean isSolidRender() {
+        return false;
+    }
+
+    @Override
+    public boolean renderAsNormalBlock() {
+        return false;
+    }
+
+    @Override
+    public boolean isPoweringTo(WorldSource worldSource, int x, int y, int z, int side) {
+        TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter) worldSource.getBlockTileEntity(x, y, z);
+        return tile != null && tile.isActive;
+    }
+
+    @Override
+    public boolean isIndirectlyPoweringTo(World world, int x, int y, int z, int side) {
+        TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter) world.getBlockTileEntity(x, y, z);
+        return tile != null && tile.isActive;
+    }
+
+    /*@Override
+    public int getBlockTexture(WorldSource blockAccess, int x, int y, int z, Side side) {
+        TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter)blockAccess.getBlockTileEntity(x, y, z);
+        if(tile != null && tile.isActive){
+            return Block.texCoordToIndex(RetroStorage.emitterOnTex[0],RetroStorage.emitterOnTex[1]);
+        }
+        return super.getBlockTexture(blockAccess, x, y, z, side);
+    }*/
+
+    @Override
+    protected TileEntity getNewBlockEntity() {
+        return new TileEntityRedstoneEmitter();
+    }
+
     public void onBlockRemoved(World world, int x, int y, int z, int data) {
-        TileEntityExporter tileEntityExporter = (TileEntityExporter) world.getBlockTileEntity(x, y, z);
+        TileEntityRedstoneEmitter tileEntityImporter = (TileEntityRedstoneEmitter) world.getBlockTileEntity(x, y, z);
         label0:
-        for (int l = 0; l < tileEntityExporter.getSizeInventory(); l++) {
-            ItemStack itemstack = tileEntityExporter.getStackInSlot(l);
+        for (int l = 0; l < tileEntityImporter.getSizeInventory(); l++) {
+            ItemStack itemstack = tileEntityImporter.getStackInSlot(l);
             if (itemstack == null) {
                 continue;
             }
@@ -66,18 +100,4 @@ public class BlockExporter extends BlockNetworkDevice {
         }
         super.onBlockRemoved(world, x, y, z, data);
     }
-
-    @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, int blockId) {
-        super.onNeighborBlockChange(world, x, y, z, blockId);
-        TileEntityExporter tile = (TileEntityExporter) world.getBlockTileEntity(x, y, z);
-        if(tile != null) {
-            if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
-                tile.enabled = false;
-            } else if (!world.isBlockIndirectlyGettingPowered(x, y, z)) {
-                tile.enabled = true;
-            }
-        }
-    }
-
 }

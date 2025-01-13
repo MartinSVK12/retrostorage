@@ -20,13 +20,13 @@ public interface INetworkController {
     void processCraftingTasks();
 
     @UnmodifiableView
-    List<INetworkItemStorage> getAttachedStorage();
+    Set<INetworkItemStorage> getAttachedStorage();
 
     @UnmodifiableView
-    List<ICoprocessor> getCoprocessors();
+    Set<ICoprocessor> getCoprocessors();
 
     @UnmodifiableView
-    List<IProcessor> getProcessors();
+    Set<IProcessor> getProcessors();
 
     @UnmodifiableView List<NetworkCraftable> getCraftables();
 

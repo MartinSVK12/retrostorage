@@ -75,48 +75,48 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     }
 
     @Override
-    public @UnmodifiableView List<INetworkItemStorage> getAttachedStorage() {
-        if(network == null) return new ArrayList<>();
-        ArrayList<INetworkItemStorage> list = new ArrayList<>();
+    public @UnmodifiableView Set<INetworkItemStorage> getAttachedStorage() {
+        if(network == null) return new HashSet<>();
+        HashSet<INetworkItemStorage> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
             TileEntity tileEntity = dir.getTileEntity(worldObj, this);
             if(tileEntity instanceof IConduitTile) {
                 if (((IConduitTile) tileEntity).getConduitCapability() == ConduitCapability.RES_NETWORK) {
-                    list.addAll(network.search(((IConduitTile) tileEntity).getPosition(), INetworkItemStorage.class));
+                    set.addAll(network.search(((IConduitTile) tileEntity).getPosition(), INetworkItemStorage.class));
                 }
             }
         }
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableSet(set);
     }
 
     @Override
-    public @UnmodifiableView List<ICoprocessor> getCoprocessors() {
-        if(network == null) return new ArrayList<>();
-        ArrayList<ICoprocessor> list = new ArrayList<>();
+    public @UnmodifiableView Set<ICoprocessor> getCoprocessors() {
+        if(network == null) return new HashSet<>();
+        HashSet<ICoprocessor> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
             TileEntity tileEntity = dir.getTileEntity(worldObj, this);
             if(tileEntity instanceof IConduitTile) {
                 if (((IConduitTile) tileEntity).getConduitCapability() == ConduitCapability.RES_NETWORK) {
-                    list.addAll(network.search(((IConduitTile) tileEntity).getPosition(), ICoprocessor.class));
+                    set.addAll(network.search(((IConduitTile) tileEntity).getPosition(), ICoprocessor.class));
                 }
             }
         }
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableSet(set);
     }
 
     @Override
-    public @UnmodifiableView List<IProcessor> getProcessors() {
-        if(network == null) return new ArrayList<>();
-        ArrayList<IProcessor> list = new ArrayList<>();
+    public @UnmodifiableView Set<IProcessor> getProcessors() {
+        if(network == null) return new HashSet<>();
+        HashSet<IProcessor> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
             TileEntity tileEntity = dir.getTileEntity(worldObj, this);
             if(tileEntity instanceof IConduitTile) {
                 if (((IConduitTile) tileEntity).getConduitCapability() == ConduitCapability.RES_NETWORK) {
-                    list.addAll(network.search(((IConduitTile) tileEntity).getPosition(), IProcessor.class));
+                    set.addAll(network.search(((IConduitTile) tileEntity).getPosition(), IProcessor.class));
                 }
             }
         }
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableSet(set);
     }
 
     @Override

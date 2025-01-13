@@ -20,6 +20,9 @@
     ],
     "recipesReady": [
       "sunsetsatellite.retrostorage.RetroStorage"
+    ],
+    "btwaila": [
+      "sunsetsatellite.retrostorage.api.impl.btwaila.BTWailaReSPlugin"
     ]
   },
   "mixins": [

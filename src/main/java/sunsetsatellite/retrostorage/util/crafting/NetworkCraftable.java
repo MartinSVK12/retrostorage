@@ -44,7 +44,7 @@ public class NetworkCraftable {
             case RECIPE: {
                 if (recipe != null) {
                     ArrayList<VariantStack> list = new ArrayList<>();
-                    list.add(new VariantStack(recipe.getOutput()));
+                    list.add(new VariantStack(recipe.getOutput().copy()));
                     return list;
                 }
                 return null;

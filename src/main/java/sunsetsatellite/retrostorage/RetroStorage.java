@@ -38,6 +38,7 @@ import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.multipart.block.model.BlockModelMultipart;
 import sunsetsatellite.catalyst.multipart.block.model.MultipartBlockModelBuilder;
 import sunsetsatellite.retrostorage.blocks.*;
+import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
 import sunsetsatellite.retrostorage.blocks.states.NetworkCableStateInterpreter;
 import sunsetsatellite.retrostorage.containers.*;
 import sunsetsatellite.retrostorage.gui.*;
@@ -291,20 +292,20 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             .setNorthTexture("retrostorage:block/process_programmer_front")
             .setBlockModel(BlockModelHorizontalRotation::new)
             .build(new BlockProcessProgrammer("processProgrammer", config.getInt("BlockIDs.processProgrammer"), Material.stone));
-    /*public static final Block advInterface = new BlockBuilder(MOD_ID)
+    public static final Block advInterface = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
             .setTextures("retrostorage:block/adv_interface_side")
             .build(new BlockAdvInterface("advInterface", config.getInt("BlockIDs.advInterface"), Material.stone));
-    public static final Block wirelessLink = new BlockBuilder(MOD_ID)
+    /*public static final Block wirelessLink = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
             .setTextures("retrostorage:block/wireless_link")
-            .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));
+            .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));*/
     public static final Block redstoneEmitter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -312,7 +313,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             .setLuminance(1)
             .setBlockModel(BlockModelRedstoneEmitter::new)
             .setTextures("retrostorage:block/redstone_emitter_off")
-            .build(new BlockRedstoneEmitter("redstoneEmitter", config.getInt("BlockIDs.redstoneEmitter"), Material.stone));*/
+            .build(new BlockRedstoneEmitter("redstoneEmitter", config.getInt("BlockIDs.redstoneEmitter"), Material.stone));
     public static final Block craftingCoprocessor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -327,7 +328,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             .setResistance(5)
             .setLuminance(1)
             .setTextures("retrostorage:block/external_storage_bus")
-            .build(new BlockExternalStorageBus("externalStorageBus", config.getInt("BlockIDs.storageBus"), Material.stone));
+            .build(new BlockStorageBus("externalStorageBus", config.getInt("BlockIDs.storageBus"), Material.stone));
 
     public static final Block energyAcceptor = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
@@ -361,7 +362,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityDiscDrive.class, "Disc Drive");
 //        EntityHelper.createTileEntity(TileEntityFluidDiscDrive.class, "Fluid Disc Drive");
         EntityHelper.createTileEntity(TileEntityNetworkCable.class, "Network Cable");
-       EntityHelper.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
+        EntityHelper.createTileEntity(TileEntityRecipeEncoder.class, "Recipe Encoder");
         EntityHelper.createTileEntity(TileEntityAssembler.class, "Assembler");
         EntityHelper.createTileEntity(TileEntityRequestTerminal.class, "Request Terminal");
         EntityHelper.createTileEntity(TileEntityImporter.class, "Item Importer");
@@ -369,12 +370,12 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityExporter.class, "Item Exporter");
 //        EntityHelper.createTileEntity(TileEntityFluidExporter.class, "Fluid Exporter");
         EntityHelper.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
-//        EntityHelper.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
+        EntityHelper.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
 //        EntityHelper.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
         EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
-//        EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
+        EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
         EntityHelper.createTileEntity(TileEntityCoprocessor.class, "Crafting Coprocessor");
-        EntityHelper.createTileEntity(TileEntityExternalStorageBus.class, "External Storage Bus");
+        EntityHelper.createTileEntity(TileEntityStorageBus.class, "External Storage Bus");
 
 
         Catalyst.GUIS.register("Digital Terminal", new MpGuiEntry(TileEntityDigitalTerminal.class, GuiDigitalTerminal.class, ContainerDigitalTerminal.class));
@@ -390,9 +391,10 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         Catalyst.GUIS.register("Item Exporter", new MpGuiEntry(TileEntityExporter.class, GuiExporter.class, ContainerExporter.class));
 //        Catalyst.GUIS.register("Fluid Exporter", new MpGuiEntry(TileEntityFluidExporter.class, GuiFluidExporter.class, ContainerFluidExporter.class));
         Catalyst.GUIS.register("Process Programmer", new MpGuiEntry(TileEntityProcessProgrammer.class, GuiProcessProgrammer.class, ContainerProcessProgrammer.class));
-//        Catalyst.GUIS.register("Adv. Interface", new MpGuiEntry(TileEntityAdvInterface.class, GuiAdvInterface.class, ContainerAdvInterface.class));
+        Catalyst.GUIS.register("Adv. Interface", new MpGuiEntry(TileEntityAdvInterface.class, GuiAdvInterface.class, ContainerAdvInterface.class));
         Catalyst.GUIS.register("Energy Acceptor", new MpGuiEntry(TileEntityEnergyAcceptor.class, GuiEnergyAcceptor.class, ContainerEnergyAcceptor.class));
-//        Catalyst.GUIS.register("Redstone Emitter", new MpGuiEntry(TileEntityRedstoneEmitter.class, GuiRedstoneEmitter.class, ContainerRedstoneEmitter.class));
+        Catalyst.GUIS.register("Redstone Emitter", new MpGuiEntry(TileEntityRedstoneEmitter.class, GuiRedstoneEmitter.class, ContainerRedstoneEmitter.class));
+        Catalyst.GUIS.register("Storage Bus", new MpGuiEntry(TileEntityStorageBus.class, GuiStorageBus.class, ContainerStorageBus.class));
         LOGGER.info("RetroStorage initialized.");
     }
 
@@ -724,7 +726,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('9', Block.workbench)
                 .create("process_programmer", new ItemStack(processProgrammer, 1));
 
-        /*RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
                 .addInput('1', Block.obsidian)
                 .addInput('2', advRecipeDisc)
                 .addInput('3', Block.obsidian)
@@ -736,7 +738,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('9', Block.obsidian)
                 .create("adv_interface", new ItemStack(advInterface, 1));
 
-        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+        /*RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
                 .addInput('2', chipWireless)
                 .addInput('4', networkCable)
                 .addInput('5', machineCasing)
@@ -749,14 +751,14 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('R', redstoneCore)
                 .create("energy_acceptor", new ItemStack(energyAcceptor, 1));
 
-        /*RecipeBuilder.Shaped(MOD_ID, "MTM", "CRD", "MEM")
+        RecipeBuilder.Shaped(MOD_ID, "MTM", "CRD", "MEM")
                 .addInput('M', machineCasing)
                 .addInput('T', Block.torchRedstoneActive)
                 .addInput('C', networkCable)
                 .addInput('R', redstoneCore)
                 .addInput('D', chipDigitizer)
                 .addInput('E', Item.repeater)
-                .create("redstone_emitter", new ItemStack(redstoneEmitter, 1));*/
+                .create("redstone_emitter", new ItemStack(redstoneEmitter, 1));
 
         RecipeBuilder.Shaped(MOD_ID, " M ", "RCR", " M ")
                 .addInput('M', advMachineCasing)
@@ -963,11 +965,11 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             ArrayList<ItemStack> inputs = new ArrayList<>();
             if (recipe instanceof RecipeEntryCraftingShapeless) {
                 RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
-                inputs = r.getInput().stream().map((S) -> S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
+                inputs = r.getInput().stream().map((S) -> S == null ? null : S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
             }
             if (recipe instanceof RecipeEntryCraftingShaped) {
                 RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
-                inputs = Arrays.stream(r.getInput()).map((S) -> S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
+                inputs = Arrays.stream(r.getInput()).map((S) -> S == null ? null : S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
             }
             inputs.removeIf(Objects::isNull);
             for (ItemStack input : inputs) {

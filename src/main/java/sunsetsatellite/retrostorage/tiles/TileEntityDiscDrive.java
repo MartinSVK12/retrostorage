@@ -30,6 +30,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     private int maxStacks = 0;
     private int maxItems = 0;
     public int maxDiscs = 16;
+    private int priority = 0;
 
     public TileEntityDiscDrive() {
         contents = new ItemStack[3];
@@ -169,7 +170,12 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
 
     @Override
     public int getPriority() {
-        return 0;
+        return priority;
+    }
+
+    @Override
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     /*@Override

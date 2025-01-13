@@ -9,6 +9,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityImporter;
 
 public class BlockImporter extends BlockNetworkDevice {
@@ -65,5 +66,18 @@ public class BlockImporter extends BlockNetworkDevice {
             } while (true);
         }
         super.onBlockRemoved(world, x, y, z, data);
+    }
+
+    @Override
+    public void onNeighborBlockChange(World world, int x, int y, int z, int blockId) {
+        super.onNeighborBlockChange(world, x, y, z, blockId);
+        TileEntityExporter tile = (TileEntityExporter) world.getBlockTileEntity(x, y, z);
+        if(tile != null) {
+            if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
+                tile.enabled = false;
+            } else if (!world.isBlockIndirectlyGettingPowered(x, y, z)) {
+                tile.enabled = true;
+            }
+        }
     }
 }

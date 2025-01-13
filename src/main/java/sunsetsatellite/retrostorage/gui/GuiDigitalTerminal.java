@@ -165,7 +165,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
                             if(id >= stacks.size()) break;
                             ItemStack stack = stacks.get(id);
                             if(stack == null) break;
-                            int amount = stack.getItem().getItemStackLimit() / 2;
+                            int amount = Math.min(stack.stackSize / 2, stack.getItem().getItemStackLimit() / 2);
                             inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
                         }
                     }

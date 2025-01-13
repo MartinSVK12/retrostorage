@@ -13,9 +13,10 @@ import sunsetsatellite.retrostorage.util.ItemStackList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityExternalStorageBus extends TileEntityNetworkDevice implements INetworkItemStorage {
+public class TileEntityStorageBus extends TileEntityNetworkDevice implements INetworkItemStorage {
 
     public InventoryWrapper wrapper = new InventoryWrapper(null);
+    private int priority = 0;
 
     @Override
     public void tick() {
@@ -25,7 +26,12 @@ public class TileEntityExternalStorageBus extends TileEntityNetworkDevice implem
 
     @Override
     public int getPriority() {
-        return 0;
+        return priority;
+    }
+
+    @Override
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     @Override
