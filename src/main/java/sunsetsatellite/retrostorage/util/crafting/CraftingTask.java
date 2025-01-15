@@ -60,8 +60,12 @@ public class CraftingTask {
 
         //task finished
         if (nodes.isEmpty()) {
-            network.addItemsToNetwork(internalStorage.getStacks());
-            network.addFluidsToNetwork(internalFluidStorage.getStacks());
+            List<ItemStack> leftovers = network.addItemsToNetwork(internalStorage.getStacks());
+            List<FluidStack> fluidLeftovers = network.addFluidsToNetwork(internalFluidStorage.getStacks());
+            internalStorage.clear();
+            internalStorage.addAll(leftovers);
+            internalFluidStorage.clear();
+            internalFluidStorage.addAll(fluidLeftovers);
             return internalStorage.isEmpty() && internalFluidStorage.isEmpty();
         } else { //task not finished
             if (!initialRequirements.isEmpty()) {
@@ -161,8 +165,12 @@ public class CraftingTask {
     }
 
     public void onCancelled() {
-        network.addItemsToNetwork(internalStorage.getStacks());
-        network.addFluidsToNetwork(internalFluidStorage.getStacks());
+        List<ItemStack> leftovers = network.addItemsToNetwork(internalStorage.getStacks());
+        List<FluidStack> fluidLeftovers = network.addFluidsToNetwork(internalFluidStorage.getStacks());
+        internalStorage.clear();
+        internalStorage.addAll(leftovers);
+        internalFluidStorage.clear();
+        internalFluidStorage.addAll(fluidLeftovers);
         if (processor != null) {
             processor.setFocus(null, null);
         }

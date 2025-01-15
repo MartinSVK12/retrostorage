@@ -79,7 +79,6 @@ public interface INetworkController {
 
     ItemStack removeItemFromNetwork(int id, int meta, CompoundTag data, long amount);
 
-    //TODO: re-add fluid support!!
     FluidStack addFluidToNetwork(FluidStack stack);
 
     @UnmodifiableView

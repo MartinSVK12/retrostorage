@@ -23,6 +23,8 @@ import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//TODO: energy usage
+//TODO: load data from old drives
 public class TileEntityDigitalController extends TileEntityNetworkDevice implements INetworkController {
 
     public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
@@ -348,7 +350,6 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         return stack.stackSize == 0 ? null : stack;
     }
 
-    //TODO: re-add fluid support!!
     @Override
     public FluidStack addFluidToNetwork(FluidStack stack) {
         List<INetworkFluidStorage> storages = new ArrayList<>(getAttachedFluidStorage());
