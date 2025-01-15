@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: energy usage
-//TODO: load data from old drives
 public class TileEntityDigitalController extends TileEntityNetworkDevice implements INetworkController {
 
     public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
@@ -53,6 +52,10 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public void clearRequestQueue() {
         requestQueue.clear();
+        for (CraftingTask task : currentTasks) {
+            task.onCancelled();
+        }
+        currentTasks.clear();
     }
 
     @Override

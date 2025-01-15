@@ -123,6 +123,12 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         }
         maxStacks = compoundTag.getInteger("MaxStacks");
         maxItems = compoundTag.getInteger("MaxItems");
+
+        //backwards compatibility
+        if (!discsUsed.isEmpty() && compoundTag.containsKey("Disc")) {
+            CompoundTag tag = compoundTag.getCompound("Disc");
+            discsUsed.get(0).getData().putCompound("Disc",tag);
+        }
     }
 
     public void writeToNBT(CompoundTag compoundTag) {
