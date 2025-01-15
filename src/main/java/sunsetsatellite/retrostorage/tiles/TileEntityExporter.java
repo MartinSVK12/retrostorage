@@ -10,7 +10,7 @@ import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.INetworkController;
-import sunsetsatellite.retrostorage.util.InventoryWrapper;
+import sunsetsatellite.catalyst.core.util.InventoryWrapper;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;

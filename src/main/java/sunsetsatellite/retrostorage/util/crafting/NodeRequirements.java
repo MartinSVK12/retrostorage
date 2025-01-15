@@ -3,7 +3,7 @@ package sunsetsatellite.retrostorage.util.crafting;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import javax.annotation.Nullable;
 import java.util.*;

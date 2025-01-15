@@ -5,7 +5,7 @@ import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.IProcessor;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.List;
 

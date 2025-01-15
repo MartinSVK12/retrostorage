@@ -1,6 +1,8 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.*;
@@ -83,7 +85,7 @@ public class CraftingCalculator {
             throw new CraftingCalculationException(CalculationResultType.RECURSIVE, recipe);
         }
 
-        ArrayList<ItemStack> inputs = RetroStorage.condenseItemList(RetroStorage.getRecipeItems(recipe));
+        ArrayList<ItemStack> inputs = Catalyst.condenseItemList(RetroStorage.getRecipeItems(recipe));
         ArrayList<FluidStack> fluidInputs = RetroStorage.condenseFluidList(RetroStorage.getRecipeFluids(recipe));
 
         Node node = nodes.createOrAddToExistingNode(recipe, root, qty);

@@ -3,12 +3,16 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.DoubleTag;
+import net.minecraft.core.block.Block;
+import net.minecraft.core.block.BlockFluid;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.ConduitCapability;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.IConduitTile;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.*;
@@ -83,6 +87,21 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
             if(tileEntity instanceof IConduitTile) {
                 if (((IConduitTile) tileEntity).getConduitCapability() == ConduitCapability.RES_NETWORK) {
                     set.addAll(network.search(((IConduitTile) tileEntity).getPosition(), INetworkItemStorage.class));
+                }
+            }
+        }
+        return Collections.unmodifiableSet(set);
+    }
+
+    @Override
+    public @UnmodifiableView Set<INetworkFluidStorage> getAttachedFluidStorage() {
+        if(network == null) return new HashSet<>();
+        HashSet<INetworkFluidStorage> set = new HashSet<>();
+        for (Direction dir : Direction.values()) {
+            TileEntity tileEntity = dir.getTileEntity(worldObj, this);
+            if(tileEntity instanceof IConduitTile) {
+                if (((IConduitTile) tileEntity).getConduitCapability() == ConduitCapability.RES_NETWORK) {
+                    set.addAll(network.search(((IConduitTile) tileEntity).getPosition(), INetworkFluidStorage.class));
                 }
             }
         }
@@ -175,13 +194,18 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     }
 
     @Override
+    public @UnmodifiableView List<FluidStack> getAllFluids() {
+        return getAllFluids(RetroStorage::sortByIdFluid);
+    }
+
+    @Override
     public @UnmodifiableView List<ItemStack> getAllItems(Comparator<? super ItemStack> sortingFunction) {
         if(network == null) return new ArrayList<>();
         ArrayList<ItemStack> list = new ArrayList<>();
         for (INetworkItemStorage storage : getAttachedStorage()) {
             list.addAll(storage.getStacks());
         }
-        List<ItemStack> sorted = RetroStorage.condenseItemList(list).stream().sorted(sortingFunction).collect(Collectors.toList());
+        List<ItemStack> sorted = Catalyst.condenseItemList(list).stream().sorted(sortingFunction).collect(Collectors.toList());
         return Collections.unmodifiableList(sorted);
     }
 
@@ -190,6 +214,27 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         if(network == null) return new HashMap<>();
         HashMap<INetworkItemStorage,@UnmodifiableView List<ItemStack>> map = new HashMap<>();
         for (INetworkItemStorage storage : getAttachedStorage()) {
+            map.put(storage, storage.getStacks());
+        }
+        return Collections.unmodifiableMap(map);
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> getAllFluids(Comparator<? super FluidStack> sortingFunction) {
+        if(network == null) return new ArrayList<>();
+        ArrayList<FluidStack> list = new ArrayList<>();
+        for (INetworkFluidStorage storage : getAttachedFluidStorage()) {
+            list.addAll(storage.getStacks());
+        }
+        List<FluidStack> sorted = RetroStorage.condenseFluidList(list).stream().sorted(sortingFunction).collect(Collectors.toList());
+        return Collections.unmodifiableList(sorted);
+    }
+
+    @Override
+    public @UnmodifiableView Map<INetworkFluidStorage,@UnmodifiableView List<FluidStack>> getFluidMap(){
+        if(network == null) return new HashMap<>();
+        HashMap<INetworkFluidStorage,@UnmodifiableView List<FluidStack>> map = new HashMap<>();
+        for (INetworkFluidStorage storage : getAttachedFluidStorage()) {
             map.put(storage, storage.getStacks());
         }
         return Collections.unmodifiableMap(map);
@@ -235,6 +280,29 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     }
 
     @Override
+    public long getFluidCapacity() {
+        return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getMaxFluidAmount).sum();
+    }
+
+
+    @Override
+    public long getFluidStackCapacity() {
+        return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getMaxFluidStackSize).sum();
+    }
+
+
+    @Override
+    public long getFluidStackAmount() {
+        return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getFluidStackAmount).sum();
+    }
+
+
+    @Override
+    public long getFluidAmount() {
+        return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getFluidAmount).sum();
+    }
+
+    @Override
     public ItemStack addItemToNetwork(ItemStack stack) {
 
         List<INetworkItemStorage> storages = new ArrayList<>(getAttachedStorage());
@@ -254,7 +322,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         for (ItemStack stack : stacks) {
             leftovers.add(addItemToNetwork(stack));
         }
-        return Collections.unmodifiableList(RetroStorage.condenseItemList(leftovers));
+        return Collections.unmodifiableList(Catalyst.condenseItemList(leftovers));
     }
 
     @Override
@@ -283,17 +351,47 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     //TODO: re-add fluid support!!
     @Override
     public FluidStack addFluidToNetwork(FluidStack stack) {
+        List<INetworkFluidStorage> storages = new ArrayList<>(getAttachedFluidStorage());
+        storages.sort(Comparator.comparingInt(INetworkFluidStorage::getPriority));
+
+        for (INetworkFluidStorage nas : storages) {
+            if(stack == null) return null;
+            stack = nas.add(stack);
+        }
+
         return stack;
     }
 
     @Override
     public @UnmodifiableView List<FluidStack> addFluidsToNetwork(List<FluidStack> stacks) {
-        return Collections.emptyList();
+        ArrayList<FluidStack> leftovers = new ArrayList<>();
+        for (FluidStack stack : stacks) {
+            leftovers.add(addFluidToNetwork(stack));
+        }
+        return Collections.unmodifiableList(RetroStorage.condenseFluidList(leftovers));
     }
 
     @Override
     public FluidStack removeFluidFromNetwork(int id, long amount) {
-        return null;
+        if(id == 0) return null;
+
+        FluidStack stack = new FluidStack((BlockFluid) Block.getBlock(id),0);
+
+        long remaining = amount;
+
+        List<INetworkFluidStorage> storages = new ArrayList<>(getAttachedFluidStorage());
+        storages.sort(Comparator.comparingInt(INetworkFluidStorage::getPriority));
+
+        for (INetworkFluidStorage nas : storages) {
+            FluidStack removed = nas.removeById(id, (int) remaining, false);
+            if(removed != null) {
+                stack.amount += removed.amount;
+                remaining -= removed.amount;
+                if(stack.amount >= amount) break;
+            }
+        }
+
+        return stack.amount == 0 ? null : stack;
     }
 
     @Override
@@ -314,7 +412,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
             ItemStack addLeftover = where.add(removed);
             leftovers.add(addLeftover);
         }
-        return Collections.unmodifiableList(RetroStorage.condenseItemList(leftovers));
+        return Collections.unmodifiableList(Catalyst.condenseItemList(leftovers));
     }
 
     @Override
@@ -346,87 +444,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public long countFluids(int id) {
-        return 0;
+        List<FluidStack> fluids = getAllFluids();
+        return fluids.stream().filter(S -> S.liquid.id == id).mapToLong(S -> S.amount).sum();
     }
-
-    /*public boolean contains(int id, int meta) {
-        List<ItemStack> stacks = getAllItems();
-        return stacks.stream().anyMatch(stack -> stack.itemID == id && stack.getMetadata() == id);
-    }
-
-
-    public boolean containsAtLeast(int id, int meta, long amount) {
-        List<ItemStack> stacks = getAllItems();
-        return stacks.stream().anyMatch((stack) -> stack.itemID == id && stack.getMetadata() == id && stack.stackSize >= amount);
-    }
-
-
-    public boolean containsAtLeast(List<ItemStack> comparedTo) {
-        List<ItemStack> networkItems = getAllItems();
-        return networkItems.stream().filter(Objects::nonNull)
-                .anyMatch((networkStack)->comparedTo.stream().filter(Objects::nonNull)
-                        .anyMatch((comparedToStack) -> networkStack.isItemEqual(comparedToStack) && networkStack.stackSize >= comparedToStack.stackSize));
-    }
-
-
-    public boolean containsAtLeast(ItemStackList stacks) {
-        return containsAtLeast(stacks.getStacks());
-    }
-
-    public ArrayList<ItemStack> returnMissing(ArrayList<ItemStack> stacks) {
-        ArrayList<ItemStack> missing = new ArrayList<>();
-        for (ItemStack stack : stacks) {
-            long c = count(stack.itemID, stack.getMetadata());
-            if (c <= 0) {
-                missing.add(stack.copy());
-            } else if (c != stack.stackSize) {
-                ItemStack copy = stack.copy();
-                copy.stackSize -= (int) c;
-                missing.add(stack.copy());
-            }
-        }
-        return missing;
-    }
-
-    public int find(int id, int meta) {
-        List<ItemStack> stacks = getAllItems();
-        for (int i = 0; i < stacks.size(); i++) {
-            if(stacks.get(i).itemID == id && stacks.get(i).getMetadata() == meta) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public ItemStack get(int index) {
-        List<ItemStack> stacks = getAllItems();
-        if (index < 0 || index >= stacks.size()) {
-            return null;
-        }
-        return stacks.get(index);
-    }
-
-    public ItemStack get(int id, int meta) {
-        return get(find(id, meta));
-    }
-
-    public ItemStack getLast() {
-        List<ItemStack> stacks = getAllItems();
-        return stacks.get(stacks.size() - 1);
-    }
-
-    public void inventoryChanged() {
-
-    }
-
-    public List<ItemStack> getStacks() {
-        return getAllItems();
-    }
-
-    public boolean isEmpty() {
-        List<ItemStack> stacks = getAllItems();
-        return stacks.isEmpty();
-    }*/
-
-
 }

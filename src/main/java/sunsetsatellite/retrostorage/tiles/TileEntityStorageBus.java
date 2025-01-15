@@ -5,10 +5,10 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.UnmodifiableView;
-import sunsetsatellite.retrostorage.util.IItemStackList;
+import sunsetsatellite.catalyst.core.util.IItemStackList;
 import sunsetsatellite.retrostorage.util.INetworkItemStorage;
-import sunsetsatellite.retrostorage.util.InventoryWrapper;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.InventoryWrapper;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.ArrayList;
 import java.util.List;

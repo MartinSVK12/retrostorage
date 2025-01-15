@@ -4,7 +4,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.collection.Pair;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class CraftingPreviewInfo {
     private List<Pair<ItemStack, String>> listCache = new ArrayList<>();
 
     public int size() {
-        return (int) (missing.getStackAmount() + missingFluids.sizeStacks() + toTake.getStackAmount() + toTakeFluids.sizeStacks() + toCraft.size() + toCraftFluids.size() + toProcess.size() + toProcessFluids.size());
+        return (int) (missing.getStackAmount() + missingFluids.getFluidStackAmount() + toTake.getStackAmount() + toTakeFluids.getFluidStackAmount() + toCraft.size() + toCraftFluids.size() + toProcess.size() + toProcessFluids.size());
     }
 
     public List<Pair<ItemStack, String>> toList() {
@@ -72,7 +72,7 @@ public class CraftingPreviewInfo {
             list.add(Pair.of(missing.get(i), "missing"));
         }
 
-        for (int i = 0; i < missingFluids.sizeStacks(); i++) {
+        for (int i = 0; i < missingFluids.getFluidStackAmount(); i++) {
             list.add(Pair.of(missingFluids.get(i).toItemStack(), "missingFluids"));
         }
 
@@ -92,7 +92,7 @@ public class CraftingPreviewInfo {
         for (FluidStack stack : toProcessFluids) {
             list.add(Pair.of(stack.toItemStack(), "toProcessFluids"));
         }
-        for (int i = 0; i < toTakeFluids.sizeStacks(); i++) {
+        for (int i = 0; i < toTakeFluids.getFluidStackAmount(); i++) {
             list.add(Pair.of(toTakeFluids.get(i).toItemStack(), "toTakeFluids"));
         }
 

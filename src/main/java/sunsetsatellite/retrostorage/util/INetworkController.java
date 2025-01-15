@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.util;
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
@@ -21,6 +22,8 @@ public interface INetworkController {
 
     @UnmodifiableView
     Set<INetworkItemStorage> getAttachedStorage();
+
+    @UnmodifiableView Set<INetworkFluidStorage> getAttachedFluidStorage();
 
     @UnmodifiableView
     Set<ICoprocessor> getCoprocessors();
@@ -41,11 +44,17 @@ public interface INetworkController {
     @UnmodifiableView
     List<ItemStack> getAllItems();
 
+    @UnmodifiableView List<FluidStack> getAllFluids();
+
     @UnmodifiableView
     List<ItemStack> getAllItems(Comparator<? super ItemStack> sortingFunction);
 
     @UnmodifiableView
     Map<INetworkItemStorage, @UnmodifiableView List<ItemStack>> getItemMap();
+
+    @UnmodifiableView List<FluidStack> getAllFluids(Comparator<? super FluidStack> sortingFunction);
+
+    @UnmodifiableView Map<INetworkFluidStorage,@UnmodifiableView List<FluidStack>> getFluidMap();
 
     long getItemCapacity();
 
@@ -54,6 +63,14 @@ public interface INetworkController {
     long getStackAmount();
 
     long getAmount();
+
+    long getFluidCapacity();
+
+    long getFluidStackCapacity();
+
+    long getFluidStackAmount();
+
+    long getFluidAmount();
 
     ItemStack addItemToNetwork(ItemStack stack);
 

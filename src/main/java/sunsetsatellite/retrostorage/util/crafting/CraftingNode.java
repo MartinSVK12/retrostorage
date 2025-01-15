@@ -4,7 +4,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.List;
 

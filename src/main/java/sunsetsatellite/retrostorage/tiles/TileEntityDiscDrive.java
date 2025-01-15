@@ -10,13 +10,13 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.UnmodifiableView;
-import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.UnlimitedItemStack;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.IItemStackList;
+import sunsetsatellite.catalyst.core.util.IItemStackList;
 import sunsetsatellite.retrostorage.util.INetworkItemStorage;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -303,7 +303,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
             newStacks.add(add(stack));
         }
 
-        return Collections.unmodifiableList(RetroStorage.condenseItemList(newStacks));
+        return Collections.unmodifiableList(Catalyst.condenseItemList(newStacks));
     }
 
     /*@Override
@@ -434,7 +434,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
             ItemStack addLeftover = where.add(removed);
             leftovers.add(addLeftover);
         }
-        return Collections.unmodifiableList(RetroStorage.condenseItemList(leftovers));
+        return Collections.unmodifiableList(Catalyst.condenseItemList(leftovers));
     }
 
 
@@ -640,7 +640,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     }
     @Override
     public @UnmodifiableView List<ItemStack> getStacks() {
-        return Collections.unmodifiableList(RetroStorage.condenseItemList(DiscManipulator.viewDiscs(discsUsed)));
+        return Collections.unmodifiableList(Catalyst.condenseItemList(DiscManipulator.viewDiscs(discsUsed)));
     }
 
     @Override

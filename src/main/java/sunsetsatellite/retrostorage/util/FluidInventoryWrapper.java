@@ -1,92 +1,52 @@
 package sunsetsatellite.retrostorage.util;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidType;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.*;
 
-public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
-    protected final ArrayList<FluidStack> contents;
-    private final int maxFluidAmount;
-    private final int maxFluidStackSize;
+public class FluidInventoryWrapper implements IFluidStackList{
 
-    public FluidStackList(ArrayList<FluidStack> contents) {
-        this.contents = contents;
-        this.maxFluidAmount = Integer.MAX_VALUE;
-        this.maxFluidStackSize = Integer.MAX_VALUE;
-    }
+    public IFluidInventory connected;
 
-    public FluidStackList() {
-        this.contents = new ArrayList<>();
-        maxFluidAmount = Integer.MAX_VALUE;
-        maxFluidStackSize = Integer.MAX_VALUE;
-    }
-
-    public FluidStackList(int maxFluidAmount, int maxFluidStackSize) {
-        this.contents = new ArrayList<>();
-        this.maxFluidAmount = maxFluidAmount;
-        this.maxFluidStackSize = maxFluidStackSize;
+    public FluidInventoryWrapper(IFluidInventory inventory) {
+        connected = inventory;
     }
 
     @Override
     public FluidStack add(FluidStack stack) {
-        if (stack == null) {
+        if(stack == null || connected == null) return stack;
+
+        int n = stack.amount;
+
+        for (int i = 0; i < connected.getFluidInventorySize(); i++) {
+            FluidStack invStack = connected.getFluidInSlot(i);
+            if(invStack == null) {
+                int amount = Math.min(stack.amount, connected.getFluidCapacityForSlot(i));
+                n -= amount;
+                connected.setFluidInSlot(i, stack.splitStack(amount));
+                if(n <= 0) break;
+            } else if(invStack.isFluidEqual(stack)) {
+                int remaining = Math.min(n,connected.getFluidCapacityForSlot(i) - invStack.amount);
+                n -= remaining;
+                invStack.amount += remaining;
+                if(n <= 0) break;
+            }
+        }
+
+        if(n <= 0){
             return null;
         }
-        int index = find(stack.liquid.id);
-        if (index != -1) {
-            if (getFluidAmount() + stack.amount <= getMaxFluidAmount()) {
-                FluidStack invStack = contents.get(index);
-                invStack.amount += stack.amount;
-                inventoryChanged();
-                return null;
-            } else {
-                int remainder = (getFluidAmount() + stack.amount) - getMaxFluidAmount();
-                FluidStack split = stack.splitStack(remainder);
-                FluidStack invStack = contents.get(index);
-                invStack.amount += stack.amount;
-                inventoryChanged();
-                return split;
-            }
-        } else {
-            if (getFluidAmount() + stack.amount <= getMaxFluidAmount() && getFluidStackAmount() + 1 <= getMaxFluidStackSize()) {
-                contents.add(stack);
-                inventoryChanged();
-                return null;
-            } else if (getFluidAmount() + stack.amount > getMaxFluidAmount()) {
-                int remainder = (getFluidAmount() + stack.amount) - getMaxFluidAmount();
-                FluidStack split = stack.splitStack(remainder);
-                contents.add(stack);
-                inventoryChanged();
-                return split;
-            }
-        }
-        return stack;
+
+        return new FluidStack(stack.liquid,n);
     }
 
     @Override
     public FluidStack add(int index, FluidStack stack) {
-        if(index >= contents.size()) {
-            return stack;
-        }
-        FluidStack invStack = contents.get(index);
-        if (invStack == null){
-            contents.add(index, stack);
-            inventoryChanged();
-            return null;
-        } else if(invStack.isFluidEqual(stack)) {
-            if (getFluidAmount() + stack.amount > getMaxFluidAmount()) {
-                long remainder = (getFluidAmount() + stack.amount) - getMaxFluidAmount();
-                FluidStack split = stack.splitStack((int) remainder);
-                invStack.amount += stack.amount;
-                inventoryChanged();
-                return split.amount <= 0 ? null : split;
-            }
-        }
-        return stack;
+        return connected.insertFluid(index, stack);
     }
 
     @Override
@@ -107,27 +67,33 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public int getMaxFluidAmount() {
-        return maxFluidAmount;
+        int n = 0;
+        for (int i = 0; i < connected.getFluidInventorySize(); i++) {
+            n += connected.getFluidCapacityForSlot(i);
+        }
+        return n;
     }
 
     @Override
     public int getMaxFluidStackSize() {
-        return maxFluidStackSize;
+        return connected.getFluidInventorySize();
     }
 
     @Override
     public int getFluidStackAmount() {
+        List<FluidStack> contents = getStacks();
         return contents.size();
     }
 
     @Override
     public int getFluidAmount() {
+        List<FluidStack> contents = getStacks();
         return contents.stream().mapToInt((C) -> C.amount).sum();
     }
 
-    //if strict is true, method returns null if amount is more than actually present
     @Override
     public FluidStack remove(int slot, int amount, boolean strict) {
+        List<FluidStack> contents = RetroStorage.collectFluidStacks(connected);
         if (slot >= contents.size()) {
             return null;
         }
@@ -139,7 +105,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
             amount = Math.min(amount, stack.amount);
             FluidStack splitStack = stack.splitStack(amount);
             if (stack.amount <= 0) {
-                contents.remove(slot);
+                connected.setFluidInSlot(0,null);
             }
             inventoryChanged();
             return splitStack;
@@ -158,12 +124,24 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public FluidStack remove(int slot, boolean strict) {
+        List<FluidStack> contents = RetroStorage.collectFluidStacks(connected);
         if (slot >= contents.size()) {
             return null;
         }
         FluidStack stack = contents.get(slot);
         if (stack == null) return null;
         return remove(slot, Integer.MAX_VALUE, strict);
+    }
+
+    @Override
+    public boolean removeAll(List<FluidStack> stacks, boolean strict) {
+        for (FluidStack stack : stacks) {
+            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
+            if (removed == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -188,21 +166,10 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     }
 
     @Override
-    public boolean removeAll(List<FluidStack> stacks, boolean strict) {
-        for (FluidStack stack : stacks) {
-            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
-            if (removed == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
     public List<FluidStack> exportAll(List<FluidStack> stacks, boolean strict) {
         ArrayList<FluidStack> list = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
+            FluidStack removed = remove(stack.liquid.id,stack.amount,strict);
             if (removed != null) {
                 list.add(removed);
             }
@@ -212,11 +179,13 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public boolean contains(int id) {
+        List<FluidStack> contents = getStacks();
         return contents.stream().anyMatch((S) -> S.liquid.id == id);
     }
 
     @Override
     public boolean containsAtLeast(int id, int amount) {
+        List<FluidStack> contents = getStacks();
         return contents.stream().anyMatch((S) -> S.liquid.id == id && S.amount >= amount);
     }
 
@@ -261,6 +230,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public int count(int id) {
+        List<FluidStack> contents = getStacks();
         return contents.stream().mapToInt((S) -> {
             if (S.liquid.id == id) {
                 return S.amount;
@@ -271,6 +241,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public int find(int id) {
+        List<FluidStack> contents = getStacks();
         for (int i = 0; i < contents.size(); i++) {
             FluidStack content = contents.get(i);
             if (content.liquid.id == id) {
@@ -282,6 +253,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public FluidStack get(int index) {
+        List<FluidStack> contents = getStacks();
         if (index < 0 || index >= contents.size()) {
             return null;
         }
@@ -295,50 +267,42 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public FluidStack getLast() {
-        return contents.get(contents.size() - 1);
+        return getStacks().get(getStacks().size() - 1);
     }
 
     @Override
     public int getLastSlot() {
-        return contents.size() - 1;
+        return getStacks().size() - 1;
     }
 
     @Override
     public void inventoryChanged() {
+
     }
 
+    /**
+     * Unsupported in this class, will always throw {@link UnsupportedOperationException}!
+     */
     @Override
     public void clear() {
-        contents.clear();
-        inventoryChanged();
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * Unsupported in this class, will always throw {@link UnsupportedOperationException}!
+     */
     @Override
     public IFluidStackList copy() {
-        FluidStackList inv = new FluidStackList(maxFluidAmount,maxFluidStackSize);
-        inv.contents.stream().map(FluidStack::copy).forEach(inv.contents::add);
-        return inv;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public @UnmodifiableView List<FluidStack> getStacks() {
-        return Collections.unmodifiableList(contents);
+        return RetroStorage.collectAndCondenseFluidStacks(connected);
     }
 
     @Override
     public boolean isEmpty() {
-        return contents.isEmpty();
-    }
-
-    @Override
-    public String toString() {
-        return contents.toString();
-    }
-
-    @NotNull
-    @Override
-    public Iterator<FluidStack> iterator() {
-        return contents.iterator();
+        return getStacks().isEmpty();
     }
 }
-

@@ -33,6 +33,9 @@ public class GuiDigitalController extends GuiScreen {
                     String.format("%d storage devices connected.", tile.getAttachedStorage().size()
                     ), 2, i += 10, 0xFFFFFFFF);
             fontRenderer.drawString(
+                    String.format("%d fluid storage devices connected.", tile.getAttachedFluidStorage().size()
+                    ), 2, i += 10, 0xFFFFFFFF);
+            fontRenderer.drawString(
                     String.format("%d processors connected.", tile.getProcessors().size()
                     ), 2, i += 10, 0xFFFFFFFF);
             fontRenderer.drawString(

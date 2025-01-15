@@ -4,4 +4,6 @@ public interface INetworkFluidStorage extends IFluidStackList {
 
     int getPriority();
 
+    void setPriority(int priority);
+
 }

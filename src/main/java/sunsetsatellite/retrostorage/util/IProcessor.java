@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.util;
 
 import net.minecraft.core.player.inventory.IInventory;
+import sunsetsatellite.catalyst.core.util.ItemStackList;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
