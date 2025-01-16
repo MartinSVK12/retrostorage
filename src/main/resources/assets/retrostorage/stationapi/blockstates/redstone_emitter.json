@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrostorage:block/redstone_emitter"
+    },
+    "facing=east": {
+      "model": "retrostorage:block/redstone_emitter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrostorage:block/redstone_emitter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrostorage:block/redstone_emitter",
+      "y": 270
+    }
+  }
+}

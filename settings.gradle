@@ -12,3 +12,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+include(":me")
+
+project(":me").projectDir = file("${rootProject.projectDir}/../MachineEssentials")

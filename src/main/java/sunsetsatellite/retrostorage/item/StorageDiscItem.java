@@ -1,5 +1,6 @@
 package sunsetsatellite.retrostorage.item;
 
+
 import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.client.item.CustomTooltipProvider;
 import net.modificationstation.stationapi.api.template.item.TemplateItem;
@@ -7,11 +8,13 @@ import net.modificationstation.stationapi.api.util.Formatting;
 import net.modificationstation.stationapi.api.util.Identifier;
 
 public class StorageDiscItem extends TemplateItem implements CustomTooltipProvider {
-    public final int capacity;
+    public final int stackCapacity;
+    public final int itemCapacity;
 
-    public StorageDiscItem(Identifier identifier, int capacity) {
+    public StorageDiscItem(Identifier identifier, int stackCapacity, int itemCapacity) {
         super(identifier);
-        this.capacity = capacity;
+        this.stackCapacity = stackCapacity;
+        this.itemCapacity = itemCapacity;
     }
 
     @Override
@@ -22,6 +25,10 @@ public class StorageDiscItem extends TemplateItem implements CustomTooltipProvid
     }
 
     public int getMaxStackCapacity() {
-        return capacity;
+        return stackCapacity;
+    }
+
+    public int getMaxItemCapacity() {
+        return itemCapacity;
     }
 }

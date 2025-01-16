@@ -1,22 +1,22 @@
 package sunsetsatellite.retrostorage.mixin;
 
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import sunsetsatellite.retrostorage.util.SlotViewOnly;
 
 import java.util.List;
 
 @Mixin(value = ScreenHandler.class)
 public class ScreenHandlerMixin {
 
-    @Shadow public List<?> slots;
+    @Shadow
+    public List<?> slots;
 
     @Inject(
             method = "onSlotClick",
@@ -24,9 +24,9 @@ public class ScreenHandlerMixin {
             cancellable = true
     )
     public void onSlotClick(int slotId, int button, boolean shift, PlayerEntity player, CallbackInfoReturnable<ItemStack> cir) {
-        Slot slot = (Slot)this.slots.get(slotId);
+        /*Slot slot = (Slot)this.slots.get(slotId);
         if (slot instanceof SlotViewOnly) {
             cir.setReturnValue(null);
-        }
+        }*/
     }
 }

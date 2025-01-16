@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrostorage:block/recipe_encoder"
+    },
+    "facing=east": {
+      "model": "retrostorage:block/recipe_encoder",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrostorage:block/recipe_encoder",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrostorage:block/recipe_encoder",
+      "y": 270
+    }
+  }
+}

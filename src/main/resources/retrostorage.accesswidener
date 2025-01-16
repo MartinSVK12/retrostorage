@@ -1,0 +1,7 @@
+accessWidener v2 named
+
+accessible field net/minecraft/recipe/ShapelessRecipe input Ljava/util/List;
+accessible field net/minecraft/recipe/ShapedRecipe input [Lnet/minecraft/item/ItemStack;
+accessible method net/minecraft/client/gui/screen/ingame/HandledScreen getSlotAt (II)Lnet/minecraft/screen/slot/Slot;
+accessible field net/minecraft/client/Minecraft INSTANCE Lnet/minecraft/client/Minecraft;
+accessible field net/minecraft/nbt/NbtCompound entries Ljava/util/Map;

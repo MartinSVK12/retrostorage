@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrostorage:block/exporter"
+    },
+    "facing=east": {
+      "model": "retrostorage:block/exporter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrostorage:block/exporter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrostorage:block/exporter",
+      "y": 270
+    }
+  }
+}

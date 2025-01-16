@@ -1,5 +1,9 @@
+//file:noinspection GroovyAssignabilityCheck
+//file:noinspection GroovyUnusedAssignment
+//file:noinspection ForeignDelegate
 plugins {
-	id 'babric-loom' version '1.4.2'
+	id 'fabric-loom' version '1.8.10'
+	id 'babric-loom-extension' version '1.8.9'
 	id 'maven-publish'
 }
 
@@ -11,46 +15,46 @@ version = project.mod_version
 group = project.maven_group
 
 loom {
-	mixin {
-		useLegacyMixinAp = true
-	}
-	gluedMinecraftJar()
-	customMinecraftManifest.set("https://babric.github.io/manifest-polyfill/${minecraft_version}.json")
-	intermediaryUrl.set("https://maven.glass-launcher.net/babric/babric/intermediary/%1\$s/intermediary-%1\$s-v2.jar")
+	accessWidenerPath = file("src/main/resources/retrostorage.accesswidener")
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
-
 	// Used for the fabric toolchain in this project.
 	maven {
 		name = 'Babric'
 		url = 'https://maven.glass-launcher.net/babric'
 	}
+
 	// Used for mappings.
 	maven {
 		name = 'Glass Releases'
 		url = 'https://maven.glass-launcher.net/releases'
 	}
+
 	// Used for StationAPI and HowManyItems.
 	maven {
 		name = 'Glass Snapshots'
 		url = 'https://maven.glass-launcher.net/snapshots'
 	}
+
+	// NyaRepo
+	maven {
+		name = "nyarepo"
+		url = "https://maven.fildand.cz/releases"
+	}
+
 	// Used for a StationAPI dependency.
 	maven {
 		name = 'Froge'
 		url 'https://maven.minecraftforge.net/'
 	}
+
 	// Used for projects that do not have a maven repository, but do have a GitHub repository with working build scripts.
 	maven {
 		name = 'Jitpack'
 		url = 'https://jitpack.io'
 	}
+
 	// Used for another StationAPI dependency
 	exclusiveContent {
 		forRepository {
@@ -63,32 +67,44 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+
 	mavenCentral()
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	//mappings "com.github.paulevsGitch:BIN-Mappings-BH:f98cdc5"
 	mappings "net.glasslauncher:biny:${project.yarn_mappings}:v2"
-	modImplementation "babric:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
-	implementation "blue.endless:jankson:1.2.1"
+	implementation "me.carleslc:Simple-Yaml:1.8.4"
 
 	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
 
 	// Optional, but convenient mods for mod creators and users alike.
-	modImplementation("com.github.calmilamsy:ModMenu:${project.modmenu_version}") {
+	modImplementation("net.glasslauncher.mods:ModMenu:${project.modmenu_version}") {
 		transitive false
 	}
+
+	modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
+		transitive false
+	}
+
 	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
 		transitive false
 	}
-	modImplementation("net.glasslauncher:HowManyItems-Fabric-Unofficial:${project.howmanyitems_version}") {
+
+	modImplementation("net.glasslauncher.mods:AlwaysMoreItems:${project.alwaysmoreitems_version}") {
 		transitive false
 	}
+
+	modImplementation("com.github.matthewperiut:retrocommands:${project.retrocommands_version}") {
+		transitive false
+	}
+
+	implementation(project(path: ":me", configuration: "namedElements"))
 }
 
 processResources {
@@ -100,37 +116,15 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	// Loom also requires J17.
 	it.options.release = 17
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 }
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+		rename { "${it}_${project.archivesBaseName}" }
 	}
 }

@@ -19,12 +19,12 @@
   "entrypoints": {
     "stationapi:event_bus": [
       "sunsetsatellite.retrostorage.RetroStorage",
-      "sunsetsatellite.retrostorage.event.ModBlocks",
-      "sunsetsatellite.retrostorage.event.ModItems",
-      "sunsetsatellite.retrostorage.event.ModRecipes",
-      "sunsetsatellite.retrostorage.event.ModTextures",
-      "sunsetsatellite.retrostorage.event.ModBlockEntities",
-      "sunsetsatellite.retrostorage.event.ModGuis"
+      "sunsetsatellite.retrostorage.event.ReSBlocks",
+      "sunsetsatellite.retrostorage.event.ReSItems",
+      "sunsetsatellite.retrostorage.event.ReSRecipes",
+      "sunsetsatellite.retrostorage.event.ReSTextures",
+      "sunsetsatellite.retrostorage.event.ReSBlockEntities",
+      "sunsetsatellite.retrostorage.event.ReSScreens"
     ],
     "stationapi:event_bus_client": [
 
