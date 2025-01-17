@@ -16,10 +16,10 @@ public class CraftingPreviewInfo {
     private final ItemStackList toTake = new ItemStackList();
     private final FluidStackList toTakeFluids = new FluidStackList();
 
-    private final List<ItemStack> toCraft = new ArrayList<>();
-    private final List<FluidStack> toCraftFluids = new ArrayList<>();
-    private final List<ItemStack> toProcess = new ArrayList<>();
-    private final List<FluidStack> toProcessFluids = new ArrayList<>();
+    private final ItemStackList toCraft = new ItemStackList();
+    private final FluidStackList toCraftFluids = new FluidStackList();
+    private final ItemStackList toProcess = new ItemStackList();
+    private final FluidStackList toProcessFluids = new FluidStackList();
 
     public ItemStackList getMissing() {
         return missing;
@@ -33,11 +33,11 @@ public class CraftingPreviewInfo {
         return toTake;
     }
 
-    public List<ItemStack> getToCraft() {
+    public ItemStackList getToCraft() {
         return toCraft;
     }
 
-    public List<ItemStack> getToProcess() {
+    public ItemStackList getToProcess() {
         return toProcess;
     }
 
@@ -49,18 +49,18 @@ public class CraftingPreviewInfo {
         return toTakeFluids;
     }
 
-    public List<FluidStack> getToCraftFluids() {
+    public FluidStackList getToCraftFluids() {
         return toCraftFluids;
     }
 
-    public List<FluidStack> getToProcessFluids() {
+    public FluidStackList getToProcessFluids() {
         return toProcessFluids;
     }
 
     private List<Pair<ItemStack, String>> listCache = new ArrayList<>();
 
     public int size() {
-        return (int) (missing.getStackAmount() + missingFluids.getFluidStackAmount() + toTake.getStackAmount() + toTakeFluids.getFluidStackAmount() + toCraft.size() + toCraftFluids.size() + toProcess.size() + toProcessFluids.size());
+        return (int) (missing.getStackAmount() + missingFluids.getFluidStackAmount() + toTake.getStackAmount() + toTakeFluids.getFluidStackAmount() + toCraft.getStackAmount() + toCraftFluids.getFluidStackAmount() + toProcess.getStackAmount() + toProcessFluids.getFluidStackAmount());
     }
 
     public List<Pair<ItemStack, String>> toList() {

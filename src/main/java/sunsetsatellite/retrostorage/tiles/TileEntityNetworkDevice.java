@@ -52,7 +52,13 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
     }
 
     public INetworkController getController() {
-        return network != null ? network.findFirst(getPosition(),INetworkController.class) : null;
+        if(network != null) {
+            INetworkController controller = network.findFirst(getPosition(), INetworkController.class);
+            if(controller != null) {
+                return controller.isActive() ? controller : null;
+            }
+        }
+        return null;
     }
 
     public HashMap<Direction, TileEntity> getConnectedTileEntity(ArrayList<Class<?>> allowedTileList) {

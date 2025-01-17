@@ -205,6 +205,7 @@ public class GuiRequestTerminal extends GuiContainer implements IExtendedScreenD
                 if (F1.getType() == GuiTextField.class) {
                     try {
                         GuiTextField field = ((GuiTextField) F1.get(null));
+                        if(field == null) throw new IllegalAccessException();
                         String text = field.getText();
                         query = SearchQuery.resolve(text);
                     } catch (IllegalAccessException ignored) {

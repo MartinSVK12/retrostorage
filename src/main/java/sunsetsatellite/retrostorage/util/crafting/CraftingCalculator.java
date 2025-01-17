@@ -48,7 +48,7 @@ public class CraftingCalculator {
         ItemStackList results = new ItemStackList();
         FluidStackList fluidResults = new FluidStackList();
         ItemStackList source = new ItemStackList(network.getAllItems());
-        FluidStackList fluidSource = new FluidStackList();//network.fluidInventory.toList();
+        FluidStackList fluidSource = new FluidStackList(network.getAllFluids());
 
         int qtyPerCraft = qtyPerCraft(requested);
         int qty = ((quantity - 1) / qtyPerCraft) + 1;

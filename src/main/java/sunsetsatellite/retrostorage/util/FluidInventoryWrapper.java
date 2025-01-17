@@ -67,6 +67,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
 
     @Override
     public int getMaxFluidAmount() {
+        if(connected == null) return 0;
         int n = 0;
         for (int i = 0; i < connected.getFluidInventorySize(); i++) {
             n += connected.getFluidCapacityForSlot(i);
@@ -76,6 +77,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
 
     @Override
     public int getMaxFluidStackSize() {
+        if(connected == null) return 0;
         return connected.getFluidInventorySize();
     }
 

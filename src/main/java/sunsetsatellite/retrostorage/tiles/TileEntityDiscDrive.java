@@ -184,40 +184,6 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         this.priority = priority;
     }
 
-    /*@Override
-    public boolean add(ItemStack stack) {
-        ArrayList<ItemStack> list = new ArrayList<>(getStacks());
-        if (stack == null || DiscManipulator.canSaveAllToDiscs(discsUsed,list)) {
-            return false;
-        }
-        stack = stack.copy();
-        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
-        if (index != -1) {
-            ItemStack invStack = list.get(index);
-            if (!invStack.getData().equals(stack.getData())) {
-                index = -1;
-            }
-        }
-        if (index != -1) {
-            if (getAmount() + stack.stackSize <= getItemCapacity()) {
-                ItemStack invStack = list.get(index);
-                invStack.stackSize += stack.stackSize;
-                DiscManipulator.saveToDiscs(discsUsed,list);
-                inventoryChanged();
-                return true;
-            }
-        } else {
-            if (getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity()) {
-                ((UnlimitedItemStack) (Object) stack).setUnlimited(true);
-                list.add(stack);
-                DiscManipulator.saveToDiscs(discsUsed,list);
-                inventoryChanged();
-                return true;
-            }
-        }
-        return false;
-    }*/
-
     @Override
     public ItemStack add(ItemStack stack) {
         ArrayList<ItemStack> list = new ArrayList<>(getStacks());
@@ -311,61 +277,6 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
 
         return Collections.unmodifiableList(Catalyst.condenseItemList(newStacks));
     }
-
-    /*@Override
-    public boolean addAll(ItemStackList stacks) {
-        boolean allSuccessful = true;
-        ArrayList<ItemStack> toRemove = new ArrayList<>();
-        for (ItemStack stack : stacks) {
-            boolean success = add(stack);
-            if (!success) {
-                allSuccessful = false;
-                continue;
-            }
-            toRemove.add(stack);
-        }
-        for (ItemStack stack : toRemove) {
-            ItemStack removed = stacks.remove(stack.itemID, stack.getMetadata(), false, true);
-            if (removed == null) {
-                allSuccessful = false;
-            }
-        }
-        return allSuccessful;
-    }
-
-    @Override
-    public boolean addAll(List<ItemStack> stacks) {
-        boolean allSuccessful = true;
-        ArrayList<ItemStack> toRemove = new ArrayList<>();
-        for (ItemStack stack : stacks) {
-            boolean success = add(stack);
-            if (!success) {
-                allSuccessful = false;
-            }
-            toRemove.add(stack);
-        }
-        for (ItemStack stack : toRemove) {
-            stacks.remove(stack);
-        }
-        return allSuccessful;
-    }
-
-    @Override
-    public boolean canAdd(ItemStack stack) {
-        List<ItemStack> list = getStacks();
-        int index = find(stack.itemID, stack.getMetadata(), stack.getData());
-        if (index != -1) {
-            ItemStack invStack = list.get(index);
-            if (!invStack.getData().equals(stack.getData())) {
-                index = -1;
-            }
-        }
-        if (index != -1) {
-            return getAmount() + stack.stackSize <= getItemCapacity();
-        } else {
-            return getAmount() + stack.stackSize <= getItemCapacity() && getStackAmount() + 1 <= getStackCapacity();
-        }
-    }*/
 
     @Override
     public long getItemCapacity() {
@@ -595,7 +506,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         List<ItemStack> list = getStacks();
         for (int i = 0; i < list.size(); i++) {
             ItemStack content = list.get(i);
-            if (content.getMetadata() == meta && content.itemID == id) {
+            if ((content.getMetadata() == meta || meta == -1) && content.itemID == id) {
                 if(content.getData().equals(data) || data == null) {
                     return i;
                 }

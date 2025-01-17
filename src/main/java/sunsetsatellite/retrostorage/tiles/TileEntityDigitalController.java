@@ -23,20 +23,47 @@ import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: energy usage
 public class TileEntityDigitalController extends TileEntityNetworkDevice implements INetworkController {
 
     public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
     public ArrayList<CraftingTask> currentTasks = new ArrayList<>();
 
+    public TileEntityEnergyAcceptor externalEnergy;
+
+    public double energy = 0;
+    public boolean active = false;
+
     public TileEntityDigitalController() {
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     @Override
     public void tick() {
         super.tick();
         externalEnergy = getConnectedTileEntity(TileEntityEnergyAcceptor.class);
-        processCraftingTasks();
+        if (externalEnergy != null) {
+            int draw = getEnergyConsumption();
+            if(externalEnergy.getEnergy() >= draw){
+                externalEnergy.internalRemoveEnergy(draw);
+                active = true;
+            } else {
+                active = false;
+            }
+        } else {
+            active = false;
+        }
+        if(active){
+            processCraftingTasks();
+        }
+    }
+
+    @Override
+    public int getEnergyConsumption() {
+        return getAttachedFluidStorage().size() + getAttachedStorage().size() + getProcessors().size() + getCoprocessors().size();
     }
 
     @Override
@@ -255,11 +282,6 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         DoubleTag nbt = new DoubleTag(energy);
         CompoundTag.put("Energy", nbt);
     }
-
-    public double energy = 0;
-
-    public TileEntityEnergyAcceptor externalEnergy;
-
 
     @Override
     public long getItemCapacity() {

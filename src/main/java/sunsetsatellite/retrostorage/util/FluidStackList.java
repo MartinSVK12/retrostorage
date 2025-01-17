@@ -13,8 +13,8 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     private final int maxFluidAmount;
     private final int maxFluidStackSize;
 
-    public FluidStackList(ArrayList<FluidStack> contents) {
-        this.contents = contents;
+    public FluidStackList(List<FluidStack> contents) {
+        this.contents = new ArrayList<>(contents);
         this.maxFluidAmount = Integer.MAX_VALUE;
         this.maxFluidStackSize = Integer.MAX_VALUE;
     }
@@ -171,7 +171,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
         ArrayList<FluidStack> leftovers = new ArrayList<>();
 
         for (FluidStack stack : what) {
-            FluidStack removed = remove(stack.liquid.id,stack.amount,strict);
+            FluidStack removed = removeById(stack.liquid.id,stack.amount,strict);
             if (removed == null) {
                 leftovers.add(stack);
                 continue;

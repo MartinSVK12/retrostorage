@@ -12,6 +12,10 @@ import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 import java.util.*;
 
 public interface INetworkController {
+    boolean isActive();
+
+    int getEnergyConsumption();
+
     ArrayDeque<CraftingTask> getRequestQueue();
 
     ArrayList<CraftingTask> getCurrentTasks();

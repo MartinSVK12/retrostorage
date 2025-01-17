@@ -61,6 +61,9 @@ public class GuiRecipeItemSlot extends GuiSlot {
             } else if (parent.calculationResult.getType() == CalculationResultType.NO_RECIPE) {
                 this.parent.drawString(this.parent.fontRenderer, "Can't craft!", j + 2, k + 2, 0xFFFF0000);
                 this.parent.drawString(this.parent.fontRenderer, "Uncraftable item.", j + 2, k + 12, 0xFFFF8080);
+            } else if(parent.calculationResult.getType() == CalculationResultType.ERROR) {
+                this.parent.drawString(this.parent.fontRenderer, "Error occurred!", j + 2, k + 2, 0xFFFF0000);
+                this.parent.drawString(this.parent.fontRenderer, "Request cannot be fulfilled.", j + 2, k + 2, 0xFFFF8080);
             } else {
                 List<Pair<ItemStack, String>> list = parent.calculationResult.getCraftingPreviewInfo().toList();
                 Pair<ItemStack, String> pair = list.get(i);

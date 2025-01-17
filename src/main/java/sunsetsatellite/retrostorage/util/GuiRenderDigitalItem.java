@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL12.*;
 
 public class GuiRenderDigitalItem extends Gui {
 
-    Minecraft mc;
+    public Minecraft mc;
 
     public GuiRenderDigitalItem(Minecraft mc) {
         this.mc = mc;
