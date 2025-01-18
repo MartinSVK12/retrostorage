@@ -50,7 +50,7 @@ public class CraftingCalculator {
         ItemStackList source = new ItemStackList(network.getAllItems());
         FluidStackList fluidSource = new FluidStackList(network.getAllFluids());
 
-        int qtyPerCraft = qtyPerCraft(requested);
+        int qtyPerCraft = qtyPerCraft(requested,recipe);
         int qty = ((quantity - 1) / qtyPerCraft) + 1;
 
         try {
@@ -77,9 +77,9 @@ public class CraftingCalculator {
     }
 
     private void calculateInternal(int qty, ItemStackList source, FluidStackList fluidSource, ItemStackList results, FluidStackList fluidResults, NetworkCraftable recipe, boolean root) throws CraftingCalculationException {
-        if (System.currentTimeMillis() - calculationStarted > 5000) {
+        /*if (System.currentTimeMillis() - calculationStarted > 5000) {
             throw new CraftingCalculationException(CalculationResultType.TOO_COMPLEX);
-        }
+        }*/
 
         if (!recipesUsed.add(recipe)) {
             throw new CraftingCalculationException(CalculationResultType.RECURSIVE, recipe);
@@ -165,7 +165,7 @@ public class CraftingCalculator {
                 if (remaining > 0) {
                     NetworkCraftable subRecipe = RetroStorage.findRecipeByOutputUsingList(new VariantStack(input), knownRecipes);
                     if (subRecipe != null) {
-                        int qtyPerCraft = qtyPerCraft(new VariantStack(input));
+                        int qtyPerCraft = qtyPerCraft(new VariantStack(input),subRecipe);
                         int subQty = ((remaining - 1) / qtyPerCraft) + 1;
 
                         calculateInternal(subQty, source, fluidSource, results, fluidResults, subRecipe, false);
@@ -202,7 +202,7 @@ public class CraftingCalculator {
             ItemStack fromSelf = results.get(input.itemID, input.getMetadata(), input.getData());
             ItemStack fromNetwork = source.get(input.itemID, input.getMetadata(), input.getData());
 
-            int remaining = input.stackSize * qty;
+            int remaining = (input.stackSize * qty);
 
             if (remaining < 0) { // int overflow
                 throw new CraftingCalculationException(CalculationResultType.TOO_COMPLEX);
@@ -244,7 +244,7 @@ public class CraftingCalculator {
                 if (remaining > 0) {
                     NetworkCraftable subRecipe = RetroStorage.findRecipeByOutputUsingList(new VariantStack(input), knownRecipes);
                     if (subRecipe != null) {
-                        int qtyPerCraft = qtyPerCraft(new VariantStack(input));
+                        int qtyPerCraft = qtyPerCraft(new VariantStack(input),subRecipe);
                         int subQty = ((remaining - 1) / qtyPerCraft) + 1;
 
                         calculateInternal(subQty, source, fluidSource, results, fluidResults, subRecipe, false);
@@ -273,11 +273,13 @@ public class CraftingCalculator {
 
     }
 
-    private int qtyPerCraft(VariantStack stack) {
+    private int qtyPerCraft(VariantStack stack, NetworkCraftable craftable) {
         if(stack.getType() == StackType.ITEM){
-            return stack.getItem().stackSize;
+            ItemStack item = stack.getItem();
+            return craftable.getOutput().stream().filter(VS->VS.getType() == StackType.ITEM).map(VariantStack::getItem).filter(S->S.isItemEqual(item)).mapToInt(S->S.stackSize).sum();
         } else {
-            return stack.getFluid().amount;
+            FluidStack fluid = stack.getFluid();
+            return craftable.getOutput().stream().filter(VS->VS.getType() == StackType.FLUID).map(VariantStack::getFluid).filter(S->S.isFluidEqual(fluid)).mapToInt(S->S.amount).sum();
         }
     }
 }
