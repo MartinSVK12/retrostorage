@@ -10,6 +10,7 @@ import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,9 +157,16 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                 if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
                     IInventory inv = (IInventory) tile;
                     if(slot == -1){
+                        here:
                         for (int i = 0; i < inv.getSizeInventory(); i++) {
                             ItemStack stack = inv.getStackInSlot(i);
                             if(matchesFilter(stack)){
+                                for (CraftingTask currentTask : controller.getCurrentTasks()) {
+                                    ItemStack leftovers = currentTask.insertFromProcess(stack);
+                                    if(leftovers == stack) continue;
+                                    inv.setInventorySlotContents(i, leftovers);
+                                    break here;
+                                }
                                 ItemStack leftovers = controller.addItemToNetwork(stack);
                                 inv.setInventorySlotContents(i, leftovers);
                                 break;
@@ -170,6 +178,12 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                         }
                         ItemStack stack = inv.getStackInSlot(slot);
                         if(matchesFilter(stack)){
+                            for (CraftingTask currentTask : controller.getCurrentTasks()) {
+                                ItemStack leftovers = currentTask.insertFromProcess(stack);
+                                if(leftovers == stack) continue;
+                                inv.setInventorySlotContents(slot, leftovers);
+                                return;
+                            }
                             ItemStack leftovers = controller.addItemToNetwork(stack);
                             inv.setInventorySlotContents(slot, leftovers);
                         }

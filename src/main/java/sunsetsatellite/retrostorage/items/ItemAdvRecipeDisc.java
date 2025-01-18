@@ -3,12 +3,18 @@ package sunsetsatellite.retrostorage.items;
 
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Global;
+import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.TextFormatting;
+import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.gui.GuiCraftingProcess;
+import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 
 import java.util.ArrayList;
 
@@ -21,6 +27,14 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
     @Override
     public String getDescription(ItemStack stack) {
         return "";
+    }
+
+    @Override
+    public ItemStack onUseItem(ItemStack itemstack, World world, EntityPlayer entityplayer) {
+        if(!Global.isServer){
+            Minecraft.getMinecraft(this).displayGuiScreen(new GuiCraftingProcess(new CraftingProcess(itemstack.getData().getCompound("disc"))));
+        }
+        return super.onUseItem(itemstack, world, entityplayer);
     }
 
     @Override

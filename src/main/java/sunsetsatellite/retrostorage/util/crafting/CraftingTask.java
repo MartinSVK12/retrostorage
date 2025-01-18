@@ -96,7 +96,7 @@ public class CraftingTask {
         }
     }
 
-    public int insertFromProcess(ItemStack stack) {
+    public ItemStack insertFromProcess(ItemStack stack) {
         int size = stack.stackSize;
         for (Node node : this.nodes.all()) {
             if (node instanceof ProcessNode) {
@@ -117,20 +117,20 @@ public class CraftingTask {
                     } else {
                         ItemStack remainder = network.addItemToNetwork(stack);
 
-                        internalStorage.add(remainder);
+                        stack = internalStorage.add(remainder);
                     }
 
-                    if (size == 0) {
-                        return 0;
+                    if(stack == null || stack.stackSize <= 0){
+                        return null;
                     }
                 }
             }
         }
 
-        return size;
+        return stack;
     }
 
-    public int insertFromProcess(FluidStack stack) {
+    public FluidStack insertFromProcess(FluidStack stack) {
         int size = stack.amount;
         for (Node node : this.nodes.all()) {
             if (node instanceof ProcessNode) {
@@ -151,17 +151,17 @@ public class CraftingTask {
                     } else {
                         FluidStack remainder = network.addFluidToNetwork(stack);
 
-                        internalFluidStorage.add(remainder);
+                        stack = internalFluidStorage.add(remainder);
                     }
 
-                    if (size == 0) {
-                        return 0;
+                    if (stack == null || stack.amount <= 0) {
+                        return null;
                     }
                 }
             }
         }
 
-        return size;
+        return stack;
     }
 
     public void onCancelled() {
