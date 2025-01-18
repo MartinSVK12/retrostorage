@@ -108,7 +108,7 @@ public class CraftingTask {
                         needed = size;
                     }
 
-                    processing.markReceived(stack);
+                    processing.markReceived(stack.copy());
 
                     size -= needed;
 

@@ -82,6 +82,9 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         for (CraftingTask task : currentTasks) {
             task.onCancelled();
         }
+        for (IProcessor processor : getProcessors()) {
+            processor.setFocus(null,null);
+        }
         currentTasks.clear();
     }
 
