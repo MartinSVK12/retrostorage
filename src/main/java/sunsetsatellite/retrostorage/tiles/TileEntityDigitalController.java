@@ -54,7 +54,13 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
                 active = false;
             }
         } else {
-            active = false;
+            int draw = getEnergyConsumption();
+            if(energy >= draw){
+                energy -= draw;
+                active = true;
+            } else {
+                active = false;
+            }
         }
         if(active){
             processCraftingTasks();

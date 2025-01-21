@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.gui;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.core.player.inventory.InventoryPlayer;
+import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 
 public class GuiDigitalController extends GuiScreen {
@@ -19,10 +20,16 @@ public class GuiDigitalController extends GuiScreen {
         fontRenderer.drawString("Digital Controller", 2, i, 0xFFFFFFFF);
         fontRenderer.drawString("Press ESC to exit.", 2, i += 10, 0xFFFFFFFF);
         if (tile.network != null) {
-            if (tile.externalEnergy != null) {
-                fontRenderer.drawString("External energy source connected.", 2, i += 10, 0xFFFFFFFF);
+            if(tile.active){
+                if (tile.externalEnergy != null) {
+                    fontRenderer.drawString("External energy source connected.", 2, i += 10, 0xFFFFFFFF);
+                    fontRenderer.drawString(String.format("Using %d E/t.",tile.getEnergyConsumption()), 2, i += 10, 0xFFFFFFFF);
+                } else {
+                    fontRenderer.drawString(String.format("Network energy: %d", Math.round(tile.energy)), 2, i += 10, 0xFFFFFFFF);
+                    fontRenderer.drawString(String.format("Using %d E/t (%s remain.)",tile.getEnergyConsumption(), NumberUtil.formatTime((float)tile.energy/(tile.getEnergyConsumption()*20))), 2, i += 10, 0xFFFFFFFF);
+                }
             } else {
-                fontRenderer.drawString(String.format("Network energy: %d", Math.round(tile.energy)), 2, i += 10, 0xFFFFFFFF);
+                fontRenderer.drawString("Network out of energy!", 2, i += 10, 0xFFFFFFFF);
             }
             i += 10;
             fontRenderer.drawString(
