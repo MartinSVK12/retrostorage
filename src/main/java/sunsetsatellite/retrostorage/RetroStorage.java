@@ -226,7 +226,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
     public static final Item mobileTerminal = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/mobileterminal").build(new ItemMobileTerminal("mobileTerminal", config.getInt("ItemIDs.mobileTerminal"))).setMaxStackSize(1);
     public static final Item mobileFluidTerminal = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/mobilefluidterminal").build(new ItemMobileTerminal("mobileFluidTerminal", config.getInt("ItemIDs.mobileFluidTerminal"))).setMaxStackSize(1);
     public static final Item mobileRequestTerminal = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/mobilerequestterminal").build(new ItemMobileTerminal("mobileRequestTerminal", config.getInt("ItemIDs.mobileRequestTerminal"))).setMaxStackSize(1);
-//    public static final Item linkingCard = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/linkingcard").build(new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard"))).setMaxStackSize(1);
+    public static final Item linkingCard = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/linkingcard").build(new ItemLinkingCard("linkingCard", config.getInt("ItemIDs.linkingCard"))).setMaxStackSize(1);
     public static final Item blankCard = new ItemBuilder(MOD_ID).setItemModel((item) -> new ItemModelStandard(item, MOD_ID)).setIcon("retrostorage:item/blankcard").build(new Item("blankCard", config.getInt("ItemIDs.blankCard")));
 
     public static final Block digitalController = new BlockBuilder(MOD_ID)
@@ -374,13 +374,13 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             .setLuminance(1)
             .setTextures("retrostorage:block/adv_interface_side")
             .build(new BlockAdvInterface("advInterface", config.getInt("BlockIDs.advInterface"), Material.stone));
-    /*public static final Block wirelessLink = new BlockBuilder(MOD_ID)
+    public static final Block wirelessLink = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
             .setResistance(5)
             .setLuminance(1)
             .setTextures("retrostorage:block/wireless_link")
-            .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));*/
+            .build(new BlockWirelessLink("wirelessLink", config.getInt("BlockIDs.wirelessLink"), Material.stone));
     public static final Block redstoneEmitter = new BlockBuilder(MOD_ID)
             .setBlockSound(BlockSounds.STONE)
             .setHardness(1)
@@ -455,7 +455,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityFluidExporter.class, "Fluid Exporter");
         EntityHelper.createTileEntity(TileEntityProcessProgrammer.class, "Process Programmer");
         EntityHelper.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
-//        EntityHelper.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
+        EntityHelper.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
         EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
         EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
         EntityHelper.createTileEntity(TileEntityCoprocessor.class, "Crafting Coprocessor");

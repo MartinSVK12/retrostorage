@@ -71,7 +71,7 @@ tile.retrostorage.processProgrammer.desc=Used to program process tasks onto an <
 tile.retrostorage.advInterface.name=Adv. Interface
 tile.retrostorage.advInterface.desc=Executes tasks from <Adv. Recipe Discs> on demand.
 tile.retrostorage.wirelessLink.name=Wireless Link
-tile.retrostorage.wirelessLink.desc=A pair of these can allow you to connect remote parts of a network together wirelessly.
+tile.retrostorage.wirelessLink.desc=This machine is currently non-functional, sorry.
 tile.retrostorage.energyAcceptor.name=Energy Acceptor
 tile.retrostorage.energyAcceptor.desc=External energy source for <Digital Controller>.
 tile.retrostorage.craftingCoprocessor.name=Crafting Coprocessor
@@ -134,7 +134,7 @@ item.retrostorage.mobileFluidTerminal.desc=Remote access to a placed <Digital Fl
 item.retrostorage.mobileRequestTerminal.name=Mobile Request Terminal
 item.retrostorage.mobileRequestTerminal.desc=Remote access to a placed <Request Terminal>. Chunk with the bound block needs to be loaded.
 item.retrostorage.linkingCard.name=Linking Card
-item.retrostorage.linkingCard.desc=Use this to pair 2 <Wireless Links> together.
+item.retrostorage.linkingCard.desc=This item doesn't do anything for now.
 item.retrostorage.blankCard.name=Blank Card
 item.retrostorage.blankCard.desc=Template for <Cards>.
 
