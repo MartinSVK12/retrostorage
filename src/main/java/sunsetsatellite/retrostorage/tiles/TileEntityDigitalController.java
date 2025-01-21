@@ -342,7 +342,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     public ItemStack addItemToNetwork(ItemStack stack) {
 
         List<INetworkItemStorage> storages = new ArrayList<>(getAttachedStorage());
-        storages.sort(Comparator.comparingInt(INetworkItemStorage::getPriority));
+        storages.sort(Collections.reverseOrder(Comparator.comparing(INetworkItemStorage::getPriority)));
 
         for (INetworkItemStorage nas : storages) {
             if(stack == null) return null;
@@ -370,7 +370,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         long remaining = amount;
 
         List<INetworkItemStorage> storages = new ArrayList<>(getAttachedStorage());
-        storages.sort(Comparator.comparingInt(INetworkItemStorage::getPriority));
+        storages.sort(Collections.reverseOrder(Comparator.comparing(INetworkItemStorage::getPriority)));
 
         for (INetworkItemStorage nas : storages) {
             ItemStack removed = nas.remove(id, meta, remaining, data, false, true);
@@ -387,7 +387,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public FluidStack addFluidToNetwork(FluidStack stack) {
         List<INetworkFluidStorage> storages = new ArrayList<>(getAttachedFluidStorage());
-        storages.sort(Comparator.comparingInt(INetworkFluidStorage::getPriority));
+        storages.sort(Collections.reverseOrder(Comparator.comparing(INetworkFluidStorage::getPriority)));
 
         for (INetworkFluidStorage nas : storages) {
             if(stack == null) return null;
@@ -415,7 +415,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         long remaining = amount;
 
         List<INetworkFluidStorage> storages = new ArrayList<>(getAttachedFluidStorage());
-        storages.sort(Comparator.comparingInt(INetworkFluidStorage::getPriority));
+        storages.sort(Collections.reverseOrder(Comparator.comparing(INetworkFluidStorage::getPriority)));
 
         for (INetworkFluidStorage nas : storages) {
             FluidStack removed = nas.removeById(id, (int) remaining, false);
