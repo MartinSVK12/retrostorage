@@ -19,3 +19,13 @@ pluginManagement {
         }
     }
 }
+
+include(":catalyst")
+include(":catalyst:energy")
+include(":catalyst:fluids")
+include(":catalyst:multipart")
+
+project(":catalyst").projectDir = file("${rootProject.projectDir}/../catalyst")
+project(":catalyst:energy").projectDir = file("${project(":catalyst").projectDir}/energy")
+project(":catalyst:fluids").projectDir = file("${project(":catalyst").projectDir}/fluids")
+project(":catalyst:multipart").projectDir = file("${project(":catalyst").projectDir}/multipart")
