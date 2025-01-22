@@ -111,8 +111,8 @@ repositories {
 		metadataSources { artifact() }
 	}
 	maven {
-		name = 'SignalumMaven'
-		url = 'https://maven.thesignalumproject.net/releases'
+		name = 'Signalum Maven Releases'
+		url = 'https://maven.thesignalumproject.net/releases/'
 	}
 }
 
