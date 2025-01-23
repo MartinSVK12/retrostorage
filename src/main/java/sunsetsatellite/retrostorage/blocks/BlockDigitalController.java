@@ -22,6 +22,7 @@ public class BlockDigitalController extends BlockNetworkDevice {
         return new TileEntityDigitalController();
     }
 
+
     @Override
     public boolean onBlockRightClicked(World world, int i, int j, int k, EntityPlayer entityplayer, Side side, double xHit, double yHit) {
         if (super.onBlockRightClicked(world, i, j, k, entityplayer, side, xHit, yHit)) {

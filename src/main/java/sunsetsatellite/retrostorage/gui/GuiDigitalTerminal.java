@@ -10,6 +10,7 @@ import net.minecraft.core.player.inventory.InventoryPlayer;
 import net.minecraft.core.player.inventory.slot.Slot;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.Vec2i;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenDraw {
 
     public final TileEntityDigitalTerminal tile;
+    public GuiTextField recipeNameField;
+
     public final GuiRenderDigitalItem renderDigitalItem = new GuiRenderDigitalItem(Minecraft.getMinecraft(this));
     public final GuiTooltip tooltip = new GuiTooltip(Minecraft.getMinecraft(this));
     public final ArrayList<Vec2i> slots = new ArrayList<>();
@@ -32,33 +35,93 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
 
     public GuiDigitalTerminal(InventoryPlayer inventoryplayer, TileEntityDigitalTerminal tile) {
         super(new ContainerDigitalTerminal(inventoryplayer, tile));
-        ySize = 220;
+        ySize = 250;
         this.tile = tile;
         this.inventoryPlayer = inventoryplayer;
 
-        for (int i = 0; i < 4; i++) {
+
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
                 slots.add(new Vec2i(x,y));
             }
         }
+    }
 
+    private void handlePageScroll(boolean scrollUp) {
+        if (tile.network != null) {
+            INetworkController controller = tile.getController();
+            if (controller != null) {
+                if (scrollUp) {
+
+                    if (tile.page > 0) {
+                        tile.page--;
+                    } else {
+                        tile.page = tile.pages;
+                    }
+                } else {
+                    // Scrolling down
+                    if (tile.page < tile.pages) {
+                        tile.page++;
+                    } else {
+                        tile.page = 0;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    @Override
+    public void tick() {
+        int scrollDelta = Mouse.getDWheel();
+        if (scrollDelta != 0) {
+            handlePageScroll(scrollDelta > 0);
+        }
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        fontRenderer.drawString("Digital Terminal", 50, 6, 0x404040);
-        fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
+        fontRenderer.drawString("Digital Terminal", 7, 6, 0x404040);
+        fontRenderer.drawString("Inventory", 8, (ySize - 105) + 2, 0x404040);
+        int Page = tile.page + 1;
+        int Pages = tile.pages + 1;
         if(tile.page > tile.pages) tile.page = 0;
-        fontRenderer.drawString("Page: " + tile.page + "/" + tile.pages, 63, 93, 0x404040);
+        INetworkController controller = tile.getController();
+
+        String pageString = "";
+        if (controller != null) {
+            if (controller.isActive()) {
+                pageString = "Page: " + Page + "/" + Pages;
+                fontRenderer.drawString(pageString, 63, 75, 0x404040);
+            } else {
+                pageString = "Out of energy!" + Page + "/" + Pages;
+                fontRenderer.drawString(pageString, 63, 75, 0x404040);
+            }
+        } else {
+            pageString = "Network out of energy!";
+            fontRenderer.drawString(pageString, 7, 75, 0xFF4040);
+        }
+
+
+
         if(tile.network != null) {
-            INetworkController controller = tile.getController();
             if (controller != null) {
                 int color = 0xFFFFFF;
                 if (controller.getAmount() >= controller.getItemCapacity() * 0.9) {
                     color = 0xFF4040;
                 }
-                fontRenderer.drawCenteredString(controller.getStackAmount() + "/" + controller.getStackCapacity(), 90, 112, color);
+
+                String stackMessage;
+
+                if (controller.getStackCapacity() == 0) {
+                    stackMessage = "NO DISCS";
+                } else {
+                    stackMessage = controller.getStackAmount() + "/" + controller.getStackCapacity();
+                }
+
+                fontRenderer.drawCenteredString(stackMessage, 145, 6, color);
             }
         }
     }
@@ -74,38 +137,59 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
 
     public void init() {
         super.init();
-        controlList.add(new GuiButton(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
-        controlList.add(new GuiButton(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
-        //controlList.add(new GuiButton(2, Math.round((float) width / 2 - 40), Math.round((float) height / 2 - 5), 20, 20, "A:"));
-        //controlList.get(2).enabled = false;
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
-        int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/digital_terminal.png");
+        int i = mc.renderEngine.getTexture("/assets/retrostorage/textures/gui/terminal.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+        if (recipeNameField != null) {
+            recipeNameField.drawTextBox();
+        } else {
+            System.out.println("null recipeNameField");
+        }
     }
 
+
+
     protected void buttonPressed(GuiButton guibutton) {
-        if (!guibutton.enabled) {
-            return;
-        }
-        if (guibutton.id == 0) {
-            if(tile.page == tile.pages) tile.page = 0;
-            else tile.page = Math.min(tile.pages, tile.page + 1);
-        }
-        if (guibutton.id == 1) {
-            if (tile.page == 0) tile.page = tile.pages;
-            else tile.page = Math.max(0, tile.page - 1);
+
+    }
+
+
+
+    @Override
+    public void keyTyped(char c, int i, int mouseX, int mouseY) {
+        if (recipeNameField != null) {
+            System.out.println(recipeNameField.getText());
+            if (recipeNameField.isFocused) {
+                Keyboard.enableRepeatEvents(true);
+                if (c == Keyboard.KEY_ESCAPE) {
+                    Keyboard.enableRepeatEvents(false);
+                    recipeNameField.setFocused(false);
+
+
+                } else recipeNameField.textboxKeyTyped(c, i);
+
+            } else {
+                super.keyTyped(c, i, mouseX, mouseY);
+            }
+        } else {
+            super.keyTyped(c, i, mouseX, mouseY);
         }
     }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+
+
+
         super.mouseClicked(mouseX, mouseY, mouseButton);
+        int scrollDelta = Mouse.getEventDWheel();
+        System.out.println(scrollDelta);
 
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
@@ -127,7 +211,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
 
             for (int i = 0; i < slots.size(); i++) {
                 Vec2i slot = slots.get(i);
-                int id = i + (tile.page * 36);
+                int id = i + (tile.page * 27);
                 List<ItemStack> stacks = getFilteredStacks();
                 if(mouseHoveringOverSlot(slot,mouseX,mouseY)){
                     //left click
@@ -186,11 +270,11 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
             INetworkController controller = tile.getController();
             if(controller != null) {
                 List<ItemStack> stacks = getFilteredStacks();
-                this.tile.pages = (int) (double) (stacks.size() / 36);
+                this.tile.pages = (int) (double) (stacks.size() / 27);
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 27);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id);
                     if(stack == null) continue;
@@ -199,7 +283,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 27);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id);
                     if(stack == null) continue;
@@ -223,10 +307,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
     }
 
     public @UnmodifiableView List<ItemStack> getFilteredStacks() {
-
         SearchQuery query = SearchQuery.resolve("");
-
-        //miniscule amounts of reflection
         try {
             Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
             for (Field F1 : tmbRenderer.getDeclaredFields()) {

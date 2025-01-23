@@ -421,6 +421,13 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
             .setLuminance(1)
             .setTextures("retrostorage:block/energy_acceptor")
             .build(new BlockEnergyAcceptor("energyAcceptor", config.getInt("BlockIDs.energyAcceptor"), Material.stone));
+    public static final Block creativeEnergyAcceptor = new BlockBuilder(MOD_ID)
+            .setBlockSound(BlockSounds.STONE)
+            .setHardness(1)
+            .setResistance(5)
+            .setLuminance(1)
+            .setTextures("retrostorage:block/creative_energy_acceptor")
+            .build(new BlockCreativeEnergyAcceptor("creativeEnergyAcceptor", config.getInt("BlockIDs.creativeEnergyAcceptor"), Material.stone));
 
     public RetroStorage() {
 
@@ -457,6 +464,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityAdvInterface.class, "Adv. Interface");
         EntityHelper.createTileEntity(TileEntityWirelessLink.class, "Wireless Link");
         EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, "Energy Acceptor");
+        EntityHelper.createTileEntity(TileEntityCreativeEnergyAcceptor.class, "Creative Energy Acceptor");
         EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class, "Redstone Emitter");
         EntityHelper.createTileEntity(TileEntityCoprocessor.class, "Crafting Coprocessor");
         EntityHelper.createTileEntity(TileEntityStorageBus.class, "Storage Bus");
@@ -478,6 +486,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         Catalyst.GUIS.register("Process Programmer", new MpGuiEntry(TileEntityProcessProgrammer.class, GuiProcessProgrammer.class, ContainerProcessProgrammer.class));
         Catalyst.GUIS.register("Adv. Interface", new MpGuiEntry(TileEntityAdvInterface.class, GuiAdvInterface.class, ContainerAdvInterface.class));
         Catalyst.GUIS.register("Energy Acceptor", new MpGuiEntry(TileEntityEnergyAcceptor.class, GuiEnergyAcceptor.class, ContainerEnergyAcceptor.class));
+        Catalyst.GUIS.register("Creative Energy Acceptor", new MpGuiEntry(TileEntityCreativeEnergyAcceptor.class, GuiCreativeEnergyAcceptor.class, ContainerCreativeEnergyAcceptor.class));
         Catalyst.GUIS.register("Redstone Emitter", new MpGuiEntry(TileEntityRedstoneEmitter.class, GuiRedstoneEmitter.class, ContainerRedstoneEmitter.class));
         Catalyst.GUIS.register("Storage Bus", new MpGuiEntry(TileEntityStorageBus.class, GuiStorageBus.class, ContainerStorageBus.class));
         Catalyst.GUIS.register("Fluid Storage Bus", new MpGuiEntry(TileEntityFluidStorageBus.class, GuiFluidStorageBus.class, ContainerFluidStorageBus.class));
@@ -1136,11 +1145,19 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         return stacks;
     }
 
-    public static int sortById(ItemStack E1, ItemStack E2) {
-        if (E1.itemID == E2.itemID) {
-            return Integer.compare(E1.getMetadata(), E2.getMetadata());
+    public static int sortById(ItemStack item1, ItemStack item2) {
+        if (item1.itemID == item2.itemID) {
+            return Integer.compare(item1.getMetadata(), item2.getMetadata());
         } else {
-            return Integer.compare(E1.itemID, E2.itemID);
+            return Integer.compare(item1.itemID, item2.itemID);
+        }
+    }
+
+    public static int sortByStack(ItemStack item1, ItemStack item2) {
+        if (item1.stackSize == item2.stackSize) {
+            return Integer.compare(item1.getMetadata(), item2.getMetadata());
+        } else {
+            return Integer.compare(item1.stackSize, item2.stackSize);
         }
     }
 

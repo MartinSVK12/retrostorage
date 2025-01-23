@@ -28,12 +28,16 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     public ArrayDeque<CraftingTask> requestQueue = new ArrayDeque<>();
     public ArrayList<CraftingTask> currentTasks = new ArrayList<>();
 
-    public TileEntityEnergyAcceptor externalEnergy;
+    public TileEntityEnergyAcceptor energyacceptor;
+    public TileEntityCreativeEnergyAcceptor creativeenergy;
 
     public double energy = 0;
-    public boolean active = false;
+    public boolean active = true;
+
+    public boolean creative;
 
     public TileEntityDigitalController() {
+
     }
 
     @Override
@@ -44,27 +48,45 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public void tick() {
         super.tick();
-        externalEnergy = getConnectedTileEntity(TileEntityEnergyAcceptor.class);
-        if (externalEnergy != null) {
-            int draw = getEnergyConsumption();
-            if(externalEnergy.getEnergy() >= draw){
-                externalEnergy.internalRemoveEnergy(draw);
-                active = true;
-            } else {
-                active = false;
-            }
-        } else {
-            int draw = getEnergyConsumption();
-            if(energy >= draw){
-                energy -= draw;
-                active = true;
-            } else {
-                active = false;
+        energyacceptor = getConnectedTileEntity(TileEntityEnergyAcceptor.class);
+        creativeenergy = getConnectedTileEntity(TileEntityCreativeEnergyAcceptor.class);
+
+        for (Direction dir : Direction.values()) {
+            TileEntity tileEntity = dir.getTileEntity(worldObj, this);
+            if (tileEntity != null) {
+                if (tileEntity == creativeenergy) {
+                    creative = true;
+                    this.active = true;
+                    energy = getEnergyConsumption();
+                    break;
+                };
+                if (tileEntity == energyacceptor)
+                    {
+                        int draw = getEnergyConsumption();
+                        if(energyacceptor.getEnergy() >= draw){
+                            energyacceptor.internalRemoveEnergy(draw);
+                            active = true;
+                        } else {
+                            active = false;
+                        }
+                    } else {
+                        int draw = getEnergyConsumption();
+                        if(energy >= draw){
+                            energy -= draw;
+                            active = true;
+                        } else {
+                            active = false;
+                        }
+                    }
+                    if(active){
+                        processCraftingTasks();
+                    }
             }
         }
-        if(active){
-            processCraftingTasks();
-        }
+
+
+
+
     }
 
     @Override
@@ -133,6 +155,8 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         }
         return Collections.unmodifiableSet(set);
     }
+
+
 
     @Override
     public @UnmodifiableView Set<INetworkFluidStorage> getAttachedFluidStorage() {
@@ -231,7 +255,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<ItemStack> getAllItems() {
-        return getAllItems(RetroStorage::sortById);
+        return getAllItems(RetroStorage::sortByStack);
     }
 
     @Override
@@ -246,8 +270,11 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         for (INetworkItemStorage storage : getAttachedStorage()) {
             list.addAll(storage.getStacks());
         }
-        List<ItemStack> sorted = Catalyst.condenseItemList(list).stream().sorted(sortingFunction).collect(Collectors.toList());
-        return Collections.unmodifiableList(sorted);
+        List<ItemStack> idSorted = Catalyst.condenseItemList(list).stream().sorted(RetroStorage::sortById).collect(Collectors.toList());
+        List<ItemStack> stackSorted = idSorted.stream().sorted(RetroStorage::sortByStack).collect(Collectors.toList());
+
+        Collections.reverse(stackSorted);
+        return Collections.unmodifiableList(stackSorted);
     }
 
     @Override
@@ -474,6 +501,8 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long countItems(int id, int meta, CompoundTag data) {
         List<ItemStack> stacks = getAllItems();
+        int stacksize = stacks.get(1).stackSize;
+        System.out.println(stacksize);
         return stacks.stream().filter((S)->S.itemID == id && (S.getMetadata() == meta || meta == -1) && (data == null || S.getData().equals(data))).mapToInt((S)->S.stackSize).sum();
     }
 

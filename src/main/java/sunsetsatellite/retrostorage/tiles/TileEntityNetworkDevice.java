@@ -75,7 +75,6 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
     }
 
     public <T> T getConnectedTileEntity(Class<T> allowedTile) {
-
         for (Direction dir : Direction.values()) {
             TileEntity tile = dir.getTileEntity(worldObj, this);
             if (tile != null) {

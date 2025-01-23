@@ -21,7 +21,7 @@ public class GuiDigitalController extends GuiScreen {
         fontRenderer.drawString("Press ESC to exit.", 2, i += 10, 0xFFFFFFFF);
         if (tile.network != null) {
             if(tile.active){
-                if (tile.externalEnergy != null) {
+                if (tile.energyacceptor != null || tile.creativeenergy != null) {
                     fontRenderer.drawString("External energy source connected.", 2, i += 10, 0xFFFFFFFF);
                     fontRenderer.drawString(String.format("Using %d E/t.",tile.getEnergyConsumption()), 2, i += 10, 0xFFFFFFFF);
                 } else {

@@ -16,7 +16,7 @@ import java.util.List;
 public class TileEntityStorageBus extends TileEntityNetworkDevice implements INetworkItemStorage {
 
     public InventoryWrapper wrapper = new InventoryWrapper(null);
-    private int priority = 0;
+    private int priority = 1;
 
     @Override
     public void tick() {

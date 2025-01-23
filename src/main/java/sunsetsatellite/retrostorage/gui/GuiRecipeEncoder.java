@@ -53,7 +53,7 @@ public class GuiRecipeEncoder extends GuiContainer {
     public void init() {
         super.init();
         if (player.getGamemode() == Gamemode.creative) {
-            recipeNameField = new GuiTextField(this, fontRenderer, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 160, 20, "", "Recipe name...");
+            recipeNameField = new GuiTextField(this, fontRenderer, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 80, 10, "", "Recipe name...");
         }
         controlList.add(new GuiButton(0, Math.round(width / 2 + 15), Math.round(height / 2 - 25), 60, 20, "Encode"));
     }
@@ -115,7 +115,7 @@ public class GuiRecipeEncoder extends GuiContainer {
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
         if (recipeNameField != null) {
-            recipeNameField.drawTextBox();
+//            recipeNameField.drawTextBox();
         }
     }
 

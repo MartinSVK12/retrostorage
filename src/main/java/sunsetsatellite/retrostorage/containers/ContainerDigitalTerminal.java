@@ -3,11 +3,11 @@ package sunsetsatellite.retrostorage.containers;
 
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.Container;
 import net.minecraft.core.player.inventory.IInventory;
 import net.minecraft.core.player.inventory.slot.Slot;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
-
 import java.util.List;
 
 public class ContainerDigitalTerminal extends Container {
@@ -16,14 +16,24 @@ public class ContainerDigitalTerminal extends Container {
         this.tile = tile;
 
         for (int k = 0; k < 9; k++) {
-            addSlot(new Slot(iinventory, k, 8 + k * 18, 198));
+            addSlot(new Slot(iinventory, k, 8 + k * 18, 217));
         }
 
         for (int j = 0; j < 3; j++) {
             for (int i1 = 0; i1 < 9; i1++) {
-                addSlot(new Slot(iinventory, i1 + j * 9 + 9, 8 + i1 * 18, 140 + j * 18));
+                addSlot(new Slot(iinventory, i1 + j * 9 + 9, 8 + i1 * 18, 159 + j * 18));
             }
         }
+
+
+        // crafting
+        for (int l = 0; l < 3; l++) {
+            for (int k1 = 0; k1 < 3; k1++) {
+                addSlot(new Slot(tile, k1 + l, 37 + k1 * 18, 87 + l * 18));
+            }
+
+        }
+
     }
 
     @Override
