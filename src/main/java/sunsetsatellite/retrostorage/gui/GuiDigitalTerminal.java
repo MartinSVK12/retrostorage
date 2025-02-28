@@ -2,7 +2,10 @@ package sunsetsatellite.retrostorage.gui;
 
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
@@ -10,6 +13,7 @@ import net.minecraft.core.player.inventory.InventoryPlayer;
 import net.minecraft.core.player.inventory.slot.Slot;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.Vec2i;
 import sunsetsatellite.retrostorage.containers.ContainerDigitalTerminal;
@@ -29,6 +33,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
     public final GuiTooltip tooltip = new GuiTooltip(Minecraft.getMinecraft(this));
     public final ArrayList<Vec2i> slots = new ArrayList<>();
     public final InventoryPlayer inventoryPlayer;
+    public boolean searching = false;
 
     public GuiDigitalTerminal(InventoryPlayer inventoryplayer, TileEntityDigitalTerminal tile) {
         super(new ContainerDigitalTerminal(inventoryplayer, tile));
@@ -46,11 +51,42 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
 
     }
 
+    @Override
+    public void tick() {
+        int scrollDelta = Mouse.getDWheel();
+        if (scrollDelta != 0) {
+            handlePageScroll(scrollDelta > 0);
+        }
+    }
+
+    private void handlePageScroll(boolean scrollUp) {
+        if (tile.network != null) {
+            INetworkController controller = tile.getController();
+            if (controller != null) {
+                if (scrollUp) {
+                    if (tile.page > 0) {
+                        tile.page--;
+                    } else {
+                        tile.page = tile.pages;
+                    }
+                } else {
+                    // Scrolling down
+                    if (tile.page < tile.pages) {
+                        tile.page++;
+                    } else {
+                        tile.page = 0;
+                    }
+                }
+            }
+        }
+    }
+
+
     protected void drawGuiContainerForegroundLayer() {
         fontRenderer.drawString("Digital Terminal", 50, 6, 0x404040);
         fontRenderer.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
         if(tile.page > tile.pages) tile.page = 0;
-        fontRenderer.drawString("Page: " + tile.page + "/" + tile.pages, 63, 93, 0x404040);
+        fontRenderer.drawString("Page: " + tile.page + "/" + tile.pages + (searching ? " (Searching)" : ""), 63 - (searching ? 30 : 0), 93, 0x404040);
         if(tile.network != null) {
             INetworkController controller = tile.getController();
             if (controller != null) {
@@ -233,8 +269,10 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
                 if (F1.getType() == GuiTextField.class) {
                     try {
                         GuiTextField field = ((GuiTextField) F1.get(null));
-                        String text = field.getText();
-                        query = SearchQuery.resolve(text);
+                        if(field != null) {
+                            String text = field.getText();
+                            query = SearchQuery.resolve(text);
+                        }
                     } catch (IllegalAccessException ignored) {
                         //failed to access text field
                     }
@@ -245,6 +283,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
             //tmb not installed, ignore
         }
 
+        searching = false;
         INetworkController controller = tile.getController();
         if(controller != null) {
             List<ItemStack> stacks = controller.getAllItems();
@@ -252,6 +291,7 @@ public class GuiDigitalTerminal extends GuiContainer implements IExtendedScreenD
                 String s = query.query.getRight();
                 if(!Objects.equals(s, "")){
                     stacks = stacks.stream().filter(S -> S.getDisplayName().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
+                    searching = true;
                 }
             }
             return stacks;
