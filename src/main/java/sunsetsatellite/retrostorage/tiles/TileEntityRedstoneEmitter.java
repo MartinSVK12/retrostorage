@@ -4,11 +4,15 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.IInventory;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.util.VariantStack;
+import sunsetsatellite.retrostorage.util.crafting.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,17 +69,16 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
             }
         });
         if (connectedTile != null && network != null && isActive) {
-            //TODO:
-            /*if (connectedTile instanceof TileEntityAssembler) {
+            if (connectedTile instanceof TileEntityAssembler) {
                 ItemStack stack = ((TileEntityAssembler) connectedTile).getStackInSlot(asmSlot);
                 if (stack != null) {
                     if (stack.getItem() == RetroStorage.recipeDisc) {
                         RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                         if (recipe != null) {
-                            CraftingCalculator calc = new CraftingCalculator(network, 1, new VariantStack(recipe.getOutput()), new NetworkCraftable(recipe), network.knownCraftables);
+                            CraftingCalculator calc = new CraftingCalculator(getController(),1, new VariantStack(recipe.getOutput()), new NetworkCraftable(recipe), getController().getCraftables());
                             CalculationResult result = calc.calculate();
                             if (result.getType() == CalculationResultType.OK) {
-                                network.requestCrafting(result.getTask());
+                                getController().requestCrafting(result.getTask());
                             }
                         }
                     }
@@ -88,17 +91,16 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                             if (stack.getData().containsKey("disc") && stack.getData().getCompound("disc").containsKey("processName")) {
                                 CraftingProcess process = new CraftingProcess(stack.getData().getCompound("disc"));
                                 NetworkCraftable craftable = new NetworkCraftable(process);
-                                CraftingCalculator calc = new CraftingCalculator(network, 1, craftable.getOutput().get(0), craftable, network.knownCraftables);
+                                CraftingCalculator calc = new CraftingCalculator(getController(), 1, craftable.getOutput().get(0), craftable, getController().getCraftables());
                                 CalculationResult result = calc.calculate();
                                 if (result.getType() == CalculationResultType.OK) {
-                                    network.requestCrafting(result.getTask());
+                                    getController().requestCrafting(result.getTask());
                                 }
                             }
                         }
                     }
                 }
-            }*/
-
+            }
         }
     }
 

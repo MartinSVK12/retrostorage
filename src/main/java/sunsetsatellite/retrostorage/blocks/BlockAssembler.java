@@ -27,16 +27,6 @@ public class BlockAssembler extends BlockNetworkDevice {
             return true;
         } else {
             TileEntityAssembler tile = (TileEntityAssembler) world.getBlockTileEntity(i, j, k);
-            /*if(entityplayer.isSneaking()){
-                if(tile.getStackInSlot(0) != null && tile.getStackInSlot(0).getItem() instanceof ItemRecipeDisc){
-                    RecipeEntryCrafting<?,?> recipe = RetroStorage.findRecipeFromNBT(tile.getStackInSlot(0).getData().getCompound("recipe"));
-                    if(recipe != null){
-                        //TODO:
-                        //tile.task = new CraftingTask(recipe,null,null);
-                    }
-                }
-                return true;
-            }*/
             if (tile != null) {
                 Catalyst.displayGui(entityplayer, tile, "Assembler");
             }
