@@ -46,7 +46,8 @@ public class ScreenStorageBus extends ScreenContainerAbstract implements IExtend
         buttons.add(new ButtonElement(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "+"));
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
         if (!guibutton.enabled) {
             return;
         }

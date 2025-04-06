@@ -66,7 +66,8 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
         processName.drawTextBox();
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
         if (!guibutton.enabled) {
             return;
         }

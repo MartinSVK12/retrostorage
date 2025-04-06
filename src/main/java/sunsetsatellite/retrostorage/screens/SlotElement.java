@@ -104,7 +104,7 @@ public abstract class SlotElement {
 
     }
 
-    public void buttonPressed(ButtonElement guibutton) {
+    public void buttonClicked(ButtonElement guibutton) {
         if (guibutton.enabled) {
             if (guibutton.id == this.scrollUpButtonID) {
                 this.amountScrolled -= (float) (this.posZ * 2 / 3);

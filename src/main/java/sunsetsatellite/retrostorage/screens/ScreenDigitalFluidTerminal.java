@@ -8,6 +8,7 @@ import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.block.Block;
+import net.minecraft.core.block.Blocks;
 import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemBucket;
@@ -133,7 +134,8 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
         if (!guibutton.enabled) {
             return;
         }
@@ -159,6 +161,54 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
         INetworkController controller = tile.getController();
         if(controller != null){
+            for (int i = 0; i < slots.size(); i++) {
+                Vec2i slot = slots.get(i);
+                int id = i + (tile.page * 36);
+                List<ItemStack> stacks = getFilteredStacks();
+                if (mouseHoveringOverSlot(slot, mouseX, mouseY)) {
+                    //left click
+                    if (mouseButton == 0) {
+                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
+                        if(heldItemStack != null) {
+                            if (id >= stacks.size()) break;
+                            ItemStack stack = stacks.get(id);
+                            if (stack == null) break;
+                            Block<?> blockFluid = Blocks.blocksList[stack.itemID];
+                            if(blockFluid == null) break;
+                            if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
+                                IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
+                                if(item instanceof ItemBucketEmpty && stack.stackSize < 1000) break;
+                                if (item.canFill(heldItemStack)) {
+                                    int amount = item.getRemainingCapacity(heldItemStack);
+                                    FluidStack fluidStack = controller.removeFluidFromNetwork(blockFluid.id(), amount);
+                                    item.fill(fluidStack,heldItemStack);
+                                    if(fluidStack.amount <= 0) fluidStack = null;
+                                    if(fluidStack != null){
+                                        controller.addFluidToNetwork(fluidStack);
+                                    }
+                                }
+                            }
+                        }
+                    } else if (mouseButton == 1) { //right click
+                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
+                        if(heldItemStack != null) {
+                            if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
+                                IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
+                                if (item.canDrain(heldItemStack)) {
+                                    int amount = item.getCurrentFluid(heldItemStack).amount;
+                                    if (amount > 0) {
+                                        FluidStack drained = item.drain(heldItemStack, amount);
+                                        if (drained != null) {
+                                            Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
+                                            fluidStack.ifPresent((S) -> item.fill(S, heldItemStack));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             //TODO: reimplement player fluid i/o
         }
     }
@@ -170,22 +220,6 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
             Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
             fluidStack.ifPresent((S)->item.fill(S,heldItemStack));
             return true;
-        }
-        return false;
-    }
-
-    private boolean drainBucket(INetworkController controller) {
-        if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucket) {
-            ItemBucket bucket = (ItemBucket) inventoryPlayer.getHeldItemStack().getItem();
-            List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithFilledContainer(bucket);
-            if (!fluids.isEmpty()) {
-                BlockFluid fluid = fluids.get(0);
-                if (controller.getFluidAmount() + 1000 <= controller.getFluidCapacity()) {
-                    controller.addFluidToNetwork(new FluidStack(fluid, 1000));
-                    inventoryPlayer.setHeldItemStack(new ItemStack(bucket.getContainerItem(), 1));
-                    return true;
-                }
-            }
         }
         return false;
     }*/

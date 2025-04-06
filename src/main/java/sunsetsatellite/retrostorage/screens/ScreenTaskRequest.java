@@ -60,7 +60,8 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
         buttons.add(new ButtonElement(2, Math.round(width / 2f - 30), Math.round(height / 2f - 64), 60, 20, "Request"));
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
 
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);

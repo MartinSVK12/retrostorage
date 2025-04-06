@@ -60,7 +60,8 @@ public class ScreenRecipeEncoder extends ScreenContainerAbstract {
         buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 15), Math.round((float) height / 2 - 25), 60, 20, "Encode"));
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
         if (!guibutton.enabled) {
             return;
         }

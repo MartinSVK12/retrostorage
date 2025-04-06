@@ -36,7 +36,8 @@ public class ScreenCraftingProcess extends Screen {
         I18n stringtranslate = I18n.getInstance();
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
         if (guibutton.enabled) {
 
         }

@@ -39,7 +39,8 @@ public class ScreenImporter extends ScreenContainerAbstract {
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
     }
 
-    protected void buttonPressed(ButtonElement guibutton) {
+    @Override
+    protected void buttonClicked(ButtonElement guibutton) {
         if (!guibutton.enabled) {
             return;
         }
