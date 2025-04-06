@@ -2,8 +2,8 @@ package sunsetsatellite.retrostorage.util;
 
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.catalyst.fluids.util.FluidType;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.*;
@@ -41,7 +41,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
             return null;
         }
 
-        return new FluidStack(stack.liquid,n);
+        return new FluidStack(stack.fluid,n);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
     @Override
     public boolean removeAll(List<FluidStack> stacks, boolean strict) {
         for (FluidStack stack : stacks) {
-            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
+            FluidStack removed = removeById(stack.fluid.getFirstId(), stack.amount, strict);
             if (removed == null) {
                 return false;
             }
@@ -151,7 +151,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
         ArrayList<FluidStack> leftovers = new ArrayList<>();
 
         for (FluidStack stack : what) {
-            FluidStack removed = remove(stack.liquid.id,stack.amount,strict);
+            FluidStack removed = remove(stack.fluid.getFirstId(),stack.amount,strict);
             if (removed == null) {
                 leftovers.add(stack);
                 continue;
@@ -171,7 +171,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
     public List<FluidStack> exportAll(List<FluidStack> stacks, boolean strict) {
         ArrayList<FluidStack> list = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            FluidStack removed = remove(stack.liquid.id,stack.amount,strict);
+            FluidStack removed = remove(stack.fluid.getFirstId(),stack.amount,strict);
             if (removed != null) {
                 list.add(removed);
             }
@@ -182,19 +182,19 @@ public class FluidInventoryWrapper implements IFluidStackList{
     @Override
     public boolean contains(int id) {
         List<FluidStack> contents = getStacks();
-        return contents.stream().anyMatch((S) -> S.liquid.id == id);
+        return contents.stream().anyMatch((S) -> S.fluid.getFirstId() == id);
     }
 
     @Override
     public boolean containsAtLeast(int id, int amount) {
         List<FluidStack> contents = getStacks();
-        return contents.stream().anyMatch((S) -> S.liquid.id == id && S.amount >= amount);
+        return contents.stream().anyMatch((S) -> S.fluid.getFirstId() == id && S.amount >= amount);
     }
 
     @Override
     public boolean containsAtLeast(List<FluidStack> stacks) {
         for (FluidStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.liquid.id, stack.amount);
+            boolean contains = containsAtLeast(stack.fluid.getFirstId(), stack.amount);
             if (!contains) return false;
         }
         return true;
@@ -203,7 +203,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
     @Override
     public boolean containsAtLeast(FluidStackList stacks) {
         for (FluidStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.liquid.id, stack.amount);
+            boolean contains = containsAtLeast(stack.fluid.getFirstId(), stack.amount);
             if (!contains) return false;
         }
         return true;
@@ -213,7 +213,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
     public ArrayList<FluidStack> returnMissing(ArrayList<FluidStack> stacks) {
         ArrayList<FluidStack> missing = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            int c = count(stack.liquid.id);
+            int c = count(stack.fluid.getFirstId());
             if (c <= 0) {
                 missing.add(stack.copy());
             } else if (c != stack.amount) {
@@ -226,7 +226,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
     }
 
     @Override
-    public Set<FluidType> getDisallowedFluids() {
+    public Set<Fluid> getDisallowedFluids() {
         return new HashSet<>();
     }
 
@@ -234,7 +234,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
     public int count(int id) {
         List<FluidStack> contents = getStacks();
         return contents.stream().mapToInt((S) -> {
-            if (S.liquid.id == id) {
+            if (S.fluid.getFirstId() == id) {
                 return S.amount;
             }
             return 0;
@@ -246,7 +246,7 @@ public class FluidInventoryWrapper implements IFluidStackList{
         List<FluidStack> contents = getStacks();
         for (int i = 0; i < contents.size(); i++) {
             FluidStack content = contents.get(i);
-            if (content.liquid.id == id) {
+            if (content.fluid.getFirstId() == id) {
                 return i;
             }
         }

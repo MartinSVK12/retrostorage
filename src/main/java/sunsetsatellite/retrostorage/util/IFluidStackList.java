@@ -1,8 +1,8 @@
 package sunsetsatellite.retrostorage.util;
 
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.catalyst.fluids.util.FluidType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +134,7 @@ public interface IFluidStackList {
     /**
      * @return Returns a set of fluids this list will not accept.
      */
-    Set<FluidType> getDisallowedFluids();
+    Set<Fluid> getDisallowedFluids();
 
     /**
      * @param id The fluid ID to search for

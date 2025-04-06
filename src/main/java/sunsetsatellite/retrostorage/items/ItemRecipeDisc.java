@@ -9,8 +9,8 @@ import sunsetsatellite.retrostorage.RetroStorage;
 
 public class ItemRecipeDisc extends Item implements ICustomDescription {
 
-    public ItemRecipeDisc(String name, int id) {
-        super(name, id);
+    public ItemRecipeDisc(String translationKey, String namespaceId, int id) {
+        super(translationKey, namespaceId, id);
     }
 
     @Override

@@ -1,14 +1,14 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.UnmodifiableView;
-import sunsetsatellite.catalyst.core.util.IItemStackList;
+import sunsetsatellite.catalyst.core.util.io.IItemStackList;
+import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.retrostorage.util.INetworkItemStorage;
-import sunsetsatellite.catalyst.core.util.InventoryWrapper;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class TileEntityStorageBus extends TileEntityNetworkDevice implements INe
     @Override
     public void tick() {
         super.tick();
-        wrapper.connected = getConnectedTileEntity(IInventory.class);
+        wrapper.connected = getConnectedTileEntity(Container.class);
     }
 
     @Override

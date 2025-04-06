@@ -1,15 +1,16 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.retrostorage.ReSItems;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.VariantStack;
 import sunsetsatellite.retrostorage.util.crafting.*;
@@ -17,7 +18,7 @@ import sunsetsatellite.retrostorage.util.crafting.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implements IInventory {
+public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implements Container {
 
     private ItemStack[] contents;
     public boolean isActive = false;
@@ -31,27 +32,30 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         contents = new ItemStack[1];
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return contents.length;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (contents[i] != null) {
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
             if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
@@ -70,9 +74,9 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         });
         if (connectedTile != null && network != null && isActive) {
             if (connectedTile instanceof TileEntityAssembler) {
-                ItemStack stack = ((TileEntityAssembler) connectedTile).getStackInSlot(asmSlot);
+                ItemStack stack = ((TileEntityAssembler) connectedTile).getItem(asmSlot);
                 if (stack != null) {
-                    if (stack.getItem() == RetroStorage.recipeDisc) {
+                    if (stack.getItem() == ReSItems.recipeDisc) {
                         RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                         if (recipe != null) {
                             CraftingCalculator calc = new CraftingCalculator(getController(),1, new VariantStack(recipe.getOutput()), new NetworkCraftable(recipe), getController().getCraftables());
@@ -85,9 +89,9 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                 }
             } else if (connectedTile instanceof TileEntityAdvInterface) {
                 if (!((TileEntityAdvInterface) connectedTile).isInUse()) {
-                    ItemStack stack = ((TileEntityAdvInterface) connectedTile).getStackInSlot(asmSlot);
+                    ItemStack stack = ((TileEntityAdvInterface) connectedTile).getItem(asmSlot);
                     if (stack != null) {
-                        if (stack.getItem() == RetroStorage.advRecipeDisc) {
+                        if (stack.getItem() == ReSItems.advRecipeDisc) {
                             if (stack.getData().containsKey("disc") && stack.getData().getCompound("disc").containsKey("processName")) {
                                 CraftingProcess process = new CraftingProcess(stack.getData().getCompound("disc"));
                                 NetworkCraftable craftable = new NetworkCraftable(process);
@@ -106,14 +110,15 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
 
     @Override
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
         worldObj.markBlocksDirty(x, y, z, x, y, z);
         worldObj.notifyBlocksOfNeighborChange(x, y, z, isActive ? 15 : 0);
         if (getController() != null) {
-            if (getStackInSlot(0) != null) {
-                int id = getStackInSlot(0).itemID;
-                int dmg = getStackInSlot(0).getMaxDamage();
-                CompoundTag tag = getStackInSlot(0).getData();
+            if (getItem(0) != null) {
+                int id = getItem(0).itemID;
+                int dmg = getItem(0).getMaxDamage();
+                CompoundTag tag = getItem(0).getData();
                 long count = 0;
                 if (useMeta) {
                     count = getController().countItems(id, dmg, tag);
@@ -149,41 +154,26 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         super.tick();
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    @Override
+    public void setItem(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
 
-    }
-
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer entityPlayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
-            return false;
-        }
-        return entityPlayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+    public String getNameTranslationKey() {
+        return "container.retrostorage.redstoneEmitter";
     }
 
     @Override
-    public void sortInventory() {
-
-    }
-
-    public String getInvName() {
-        return "Redstone Emitter";
-    }
-
-
     public void readFromNBT(CompoundTag nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         ListTag nbttaglist = nbttagcompound.getList("Items");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         isActive = nbttagcompound.getBoolean("isActive");
         mode = nbttagcompound.getInteger("mode");
         amount = nbttagcompound.getInteger("checkAmount");
@@ -199,7 +189,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         super.readFromNBT(nbttagcompound);
     }
 
-
+    @Override
     public void writeToNBT(CompoundTag nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         ListTag nbttaglist = new ListTag();
@@ -219,8 +209,14 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         nbttagcompound.putInt("asmSlot", asmSlot);
     }
 
-    public int getInventoryStackLimit() {
+    @Override
+    public int getMaxStackSize() {
         return 64;
+    }
+
+    @Override
+    public void sortContainer() {
+
     }
 
     public TileEntity connectedTile;

@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -123,7 +123,7 @@ public class NodeRequirements {
 
                     if (needed < toUse.amount) {
                         if (!simulate) {
-                            fluidRequirements.get(i).removeById(toUse.liquid.id, needed, false);
+                            fluidRequirements.get(i).removeById(toUse.fluid.getFirstId(), needed, false);
                         }
 
                         FluidStack copy = toUse.copy();

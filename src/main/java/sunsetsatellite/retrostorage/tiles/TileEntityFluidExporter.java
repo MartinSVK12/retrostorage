@@ -1,17 +1,15 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
-import net.minecraft.core.block.BlockFluid;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-import sunsetsatellite.catalyst.CatalystFluids;
 import sunsetsatellite.catalyst.core.util.Connection;
 import sunsetsatellite.catalyst.core.util.Direction;
-import sunsetsatellite.catalyst.core.util.IFluidIO;
 import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.io.IFluidIO;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.catalyst.fluids.util.FluidType;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.FluidInventoryWrapper;
 import sunsetsatellite.retrostorage.util.INetworkController;
@@ -53,7 +51,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
         @Override
         public FluidStack getFluidInSlot(int slot) {
             if (this.fluidContents.length == 0) return null;
-            if (this.fluidContents[slot] == null || this.fluidContents[slot].getLiquid() == null || this.fluidContents[slot].amount == 0) {
+            if (this.fluidContents[slot] == null || this.fluidContents[slot].fluid == null || this.fluidContents[slot].amount == 0) {
                 this.fluidContents[slot] = null;
             }
             return fluidContents[slot];
@@ -65,11 +63,11 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
         }
 
         @Override
-        public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
+        public ArrayList<Fluid> getAllowedFluidsForSlot(int slot) {
+            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
             allFluids.removeIf((B)->{
-                for (FluidType disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
-                    return disallowedFluid.fluids.contains(B);
+                for (Fluid disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
+                    return disallowedFluid == B;
                 }
                 return false;
             });
@@ -78,19 +76,19 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
 
         @Override
         public void setFluidInSlot(int slot, FluidStack fluid) {
-            if (fluid == null || fluid.amount == 0 || fluid.liquid == null) {
+            if (fluid == null || fluid.amount == 0 || fluid.fluid == null) {
                 this.fluidContents[slot] = null;
                 this.onFluidInventoryChanged();
                 return;
             }
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
+            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
             allFluids.removeIf((F)->{
-                for (FluidType disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
-                    return disallowedFluid.fluids.contains(F);
+                for (Fluid disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
+                    return disallowedFluid == F;
                 }
                 return false;
             });
-            if (allFluids.contains(fluid.liquid)) {
+            if (allFluids.contains(fluid.fluid)) {
                 this.fluidContents[slot] = fluid;
                 this.onFluidInventoryChanged();
             }
@@ -120,6 +118,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
 
     @Override
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
         ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(IFluidInventory.class);
@@ -136,7 +135,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
                     FluidInventoryWrapper wrapper = new FluidInventoryWrapper((IFluidInventory) tile);
                     if(slot == -1){
                         Arrays.stream(filter.fluidContents).filter(Objects::nonNull).forEach((S)->{
-                            Optional<FluidStack> stack = Optional.ofNullable(controller.removeFluidFromNetwork(S.liquid.id, transferSpeed));
+                            Optional<FluidStack> stack = Optional.ofNullable(controller.removeFluidFromNetwork(S.fluid.getFirstId(), transferSpeed));
                             AtomicReference<Optional<FluidStack>> leftovers = new AtomicReference<>(Optional.empty());
                             stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(S2))));
                             leftovers.get().ifPresent(controller::addFluidToNetwork);
@@ -145,7 +144,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
                         FluidStack invStack = wrapper.get(slot);
                         if(invStack == null){
                             Arrays.stream(filter.fluidContents).filter(Objects::nonNull).findAny().ifPresent((S)->{
-                                Optional<FluidStack> stack = Optional.ofNullable(controller.removeFluidFromNetwork(S.liquid.id, transferSpeed));
+                                Optional<FluidStack> stack = Optional.ofNullable(controller.removeFluidFromNetwork(S.fluid.getFirstId(), transferSpeed));
                                 AtomicReference<Optional<FluidStack>> leftovers = new AtomicReference<>(Optional.empty());
                                 stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(slot,S2))));
                                 leftovers.get().ifPresent(controller::addFluidToNetwork);
@@ -211,12 +210,27 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     }
 
     @Override
+    public void setActiveFluidSlotForSide(Direction dir, int slot) {
+        
+    }
+
+    @Override
     public Connection getFluidIOForSide(Direction dir) {
         return Connection.NONE;
     }
 
     @Override
     public void setFluidIOForSide(Direction dir, Connection con) {
+    }
+
+    @Override
+    public void cycleFluidIOForSide(Direction dir) {
+
+    }
+
+    @Override
+    public void cycleActiveFluidSlotForSide(Direction dir, boolean backwards) {
+
     }
 
     @Override
@@ -235,7 +249,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
     }
 
     @Override
-    public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
+    public ArrayList<Fluid> getAllowedFluidsForSlot(int slot) {
         return new ArrayList<>();
     }
 

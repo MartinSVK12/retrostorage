@@ -1,31 +1,34 @@
 package sunsetsatellite.retrostorage.items;
 
 
-import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.gui.GuiDigitalTerminal;
-import sunsetsatellite.retrostorage.interfaces.mixins.IOpenGUI;
+import sunsetsatellite.retrostorage.ReSItems;
+import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
+import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
+
+import static sunsetsatellite.retrostorage.RetroStorage.key;
 
 public class ItemMobileTerminal extends Item implements ICustomDescription {
 
-    public ItemMobileTerminal(String name, int id) {
-        super(name, id);
+    public ItemMobileTerminal(String translationKey, String namespaceId, int id) {
+        super(translationKey, namespaceId, id);
     }
 
     @Override
-    public boolean onUseItemOnBlock(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
-        TileEntity tile = world.getBlockTileEntity(blockX, blockY, blockZ);
+    public boolean onUseItemOnBlock(ItemStack itemstack, Player entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+        TileEntity tile = world.getTileEntity(blockX, blockY, blockZ);
         if (tile != null) {
-            if ((tile.getClass() == TileEntityDigitalTerminal.class && this == RetroStorage.mobileTerminal)){ //|| (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal) || (tile.getClass() == TileEntityDigitalFluidTerminal.class && this == RetroStorage.mobileFluidTerminal)) {
+            if ((tile.getClass() == TileEntityDigitalTerminal.class && this == ReSItems.mobileTerminal)){ //|| (tile.getClass() == TileEntityRequestTerminal.class && this == RetroStorage.mobileRequestTerminal) || (tile.getClass() == TileEntityDigitalFluidTerminal.class && this == RetroStorage.mobileFluidTerminal)) {
                 CompoundTag positionNBT = (new CompoundTag());
                 positionNBT.putInt("x", blockX);
                 positionNBT.putInt("y", blockY);
@@ -40,26 +43,25 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
             }
         }
         return true;
-        //return super.onUseItemOnBlock(itemstack, entityplayer, world, i, j, k, l, heightPlaced);
     }
 
     @Override
-    public ItemStack onUseItem(ItemStack itemstack, World world, EntityPlayer entityplayer) {
+    public ItemStack onUseItem(ItemStack itemstack, World world, Player entityplayer) {
         CompoundTag positionNBT = itemstack.getData().getCompound("position");
-        TileEntity tile = world.getBlockTileEntity(positionNBT.getInteger("x"), positionNBT.getInteger("y"), positionNBT.getInteger("z"));
-        if (itemstack.getItem() == RetroStorage.mobileTerminal) {
+        TileEntity tile = world.getTileEntity(positionNBT.getInteger("x"), positionNBT.getInteger("y"), positionNBT.getInteger("z"));
+        if (itemstack.getItem().equals(ReSItems.mobileTerminal)) {
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalTerminal(entityplayer.inventory, (TileEntityDigitalTerminal) tile));
+                Catalyst.displayGui(entityplayer, tile, key("gui/digital_terminal"));
             }
-        } /*else if (itemstack.getItem() == RetroStorage.mobileRequestTerminal) {
+        }else if (itemstack.getItem().equals(ReSItems.mobileFluidTerminal)) {
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiRequestTerminal(entityplayer.inventory, (TileEntityRequestTerminal) tile));
+                Catalyst.displayGui(entityplayer, tile, key("gui/digital_fluid_terminal"));
             }
-        } else if (itemstack.getItem() == RetroStorage.mobileFluidTerminal) {
+        } else if (itemstack.getItem().equals(ReSItems.mobileRequestTerminal)) {
             if (tile != null) {
-                ((IOpenGUI) entityplayer).displayGUI(new GuiDigitalFluidTerminal(entityplayer.inventory, (TileEntityDigitalFluidTerminal) tile));
+                Catalyst.displayGui(entityplayer, tile, key("gui/request_terminal"));
             }
-        }*/
+        }
 
         return super.onUseItem(itemstack, world, entityplayer);
     }

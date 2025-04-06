@@ -1,10 +1,10 @@
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
-        gradlePluginPortal()
         maven {
             name = 'Jitpack'
             url = 'https://jitpack.io'
@@ -14,22 +14,34 @@ pluginManagement {
             url = 'https://maven.glass-launcher.net/babric'
         }
         maven {
-            name = 'Quilt'
-            url = 'https://maven.quiltmc.org/repository/release'
+            name = 'SignalumMavenInfrastructure'
+            url = 'https://maven.thesignalumproject.net/infrastructure'
         }
     }
 }
 
-include(":catalyst")
-include(":catalyst:energy")
-include(":catalyst:fluids")
-include(":catalyst:multipart")
-include(":btwaila")
-include(":tmb")
+// catalyst
+include(":core")
+include(":fluids")
+include(":multiblocks")
+include(":energy")
+include(":multipart")
+// catalyst
 
-project(":catalyst").projectDir = file("${rootProject.projectDir}/../catalyst")
-project(":catalyst:energy").projectDir = file("${project(":catalyst").projectDir}/energy")
-project(":catalyst:fluids").projectDir = file("${project(":catalyst").projectDir}/fluids")
-project(":catalyst:multipart").projectDir = file("${project(":catalyst").projectDir}/multipart")
-project(":btwaila").projectDir = file("${rootProject.projectDir}/../BTWaila")
-project(":tmb").projectDir = file("${rootProject.projectDir}/../TMB")
+include(":tmb")
+include(":btwaila")
+include(":dragonfly")
+include(":vq")
+
+// catalyst
+project(":core").projectDir = file("${rootProject.projectDir}/../catalyst/core")
+project(":fluids").projectDir = file("${rootProject.projectDir}/../catalyst/fluids")
+project(":multiblocks").projectDir = file("${rootProject.projectDir}/../catalyst/multiblocks")
+project(":energy").projectDir = file("${rootProject.projectDir}/../catalyst/energy")
+project(":multipart").projectDir = file("${rootProject.projectDir}/../catalyst/multipart")
+// catalyst
+
+project(":tmb").projectDir = file("${rootProject.projectDir}/../tmb")
+project(":btwaila").projectDir = file("${rootProject.projectDir}/../btwaila")
+project(":dragonfly").projectDir = file("${rootProject.projectDir}/../dragonfly")
+project(":vq").projectDir = file("${rootProject.projectDir}/../vintage-questing")

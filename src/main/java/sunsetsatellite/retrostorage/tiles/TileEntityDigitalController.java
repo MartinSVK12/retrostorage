@@ -1,19 +1,22 @@
 package sunsetsatellite.retrostorage.tiles;
 
-
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.DoubleTag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.DoubleTag;
 import net.minecraft.core.block.Block;
-import net.minecraft.core.block.BlockFluid;
+import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.net.packet.Packet;
+import net.minecraft.core.net.packet.PacketTileEntityData;
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.catalyst.core.util.ConduitCapability;
 import sunsetsatellite.catalyst.core.util.Direction;
-import sunsetsatellite.catalyst.core.util.IConduitTile;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.conduit.ConduitCapability;
+import sunsetsatellite.catalyst.core.util.conduit.IConduitTile;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import sunsetsatellite.catalyst.fluids.util.Fluids;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.*;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
@@ -43,6 +46,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         super.tick();
         externalEnergy = getConnectedTileEntity(TileEntityEnergyAcceptor.class);
         if (externalEnergy != null) {
@@ -70,6 +74,11 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public int getEnergyConsumption() {
         return getAttachedFluidStorage().size() + getAttachedStorage().size() + getProcessors().size() + getCoprocessors().size();
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        return new PacketTileEntityData(this);
     }
 
     @Override
@@ -284,12 +293,14 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         energy = CompoundTag.getDouble("Energy");
+        active = CompoundTag.getBoolean("Active");
     }
 
-    public void writeToNBT(CompoundTag CompoundTag) {
-        super.writeToNBT(CompoundTag);
+    public void writeToNBT(CompoundTag tag) {
+        super.writeToNBT(tag);
         DoubleTag nbt = new DoubleTag(energy);
-        CompoundTag.put("Energy", nbt);
+        tag.put("Energy", nbt);
+        tag.putBoolean("Active", active);
     }
 
     @Override
@@ -410,7 +421,8 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     public FluidStack removeFluidFromNetwork(int id, long amount) {
         if(id == 0) return null;
 
-        FluidStack stack = new FluidStack((BlockFluid) Block.getBlock(id),0);
+
+        FluidStack stack = new FluidStack(Fluids.getFluid(id),0);
 
         long remaining = amount;
 
@@ -460,7 +472,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         ArrayList<FluidStack> leftovers = new ArrayList<>();
 
         for (FluidStack stack : what) {
-            FluidStack removed = removeFluidFromNetwork(stack.liquid.id,stack.amount);
+            FluidStack removed = removeFluidFromNetwork(stack.fluid.getFirstId(),stack.amount);
             if (removed == null) {
                 leftovers.add(stack);
                 continue;
@@ -480,6 +492,6 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long countFluids(int id) {
         List<FluidStack> fluids = getAllFluids();
-        return fluids.stream().filter(S -> S.liquid.id == id).mapToLong(S -> S.amount).sum();
+        return fluids.stream().filter(S -> S.fluid.getFirstId() == id).mapToLong(S -> S.amount).sum();
     }
 }

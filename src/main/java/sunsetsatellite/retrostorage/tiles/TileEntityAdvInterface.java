@@ -1,14 +1,16 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.EntityItem;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
+import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.Direction;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
@@ -24,11 +26,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TileEntityAdvInterface extends TileEntityNetworkDevice
-        implements IInventory, IProcessor {
+        implements Container, IProcessor {
 
     private ItemStack[] contents;
     public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
-    public IInventory workingTile;
+    public Container workingTile;
     public IFluidInventory workingFluidTile;
     public ProcessNode workingNode;
     public CraftingTask workingTask;
@@ -37,63 +39,69 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         contents = new ItemStack[10];
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return contents.length;
     }
 
     public boolean isEmpty() {
-        for (int i = 0; i < getSizeInventory() - 1; i++) {
-            if (getStackInSlot(i) != null) {
+        for (int i = 0; i < getContainerSize() - 1; i++) {
+            if (getItem(i) != null) {
                 return false;
             }
         }
         return true;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (contents[i] != null) {
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
             if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    public void setItem(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
 
     }
 
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
+    @Override
+    public String getNameTranslationKey() {
+        return "container.retrostorage.advInterface";
     }
 
-    public String getInvName() {
-        return "Adv. Item Interface";
+    @Override
+    public void setChanged() {
+        super.setChanged();
     }
 
+    @Override
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
@@ -103,6 +111,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         }
     }
 
+    @Override
     public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
@@ -117,7 +126,8 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         CompoundTag.put("Items", listTag);
     }
 
-    public int getInventoryStackLimit() {
+    @Override
+    public int getMaxStackSize() {
         return 64;
     }
 
@@ -133,20 +143,21 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         if (network != null && getController() != null) {
             ArrayList<Class<?>> tiles = new ArrayList<>();
-            tiles.add(IInventory.class);
+            tiles.add(Container.class);
             tiles.add(IFluidInventory.class);
             connectedTiles = getConnectedTileEntity(tiles);
             int i = 0;
             for (TileEntity tile : connectedTiles.values()) {
-                if (tile instanceof IInventory && !(tile instanceof TileEntityAdvInterface)) {
-                    workingTile = (IInventory) tile;
+                if (tile instanceof Container && !(tile instanceof TileEntityAdvInterface)) {
+                    workingTile = (Container) tile;
                 }
                 if (tile instanceof IFluidInventory && !(tile instanceof TileEntityAdvInterface)) {
                     workingFluidTile = (IFluidInventory) tile;
                 }
-                if ((tile instanceof IInventory || tile instanceof IFluidInventory) && !(tile instanceof TileEntityAdvInterface)) {
+                if ((tile instanceof Container || tile instanceof IFluidInventory) && !(tile instanceof TileEntityAdvInterface)) {
                     break;
                 }
 
@@ -159,12 +170,12 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
             if (isInUse() && (workingTile != null || workingFluidTile != null)) {
                 for (CraftingProcess.Step step : workingNode.getProcess().steps) {
                     if (step.output && step.type == StackType.ITEM && workingTile != null) {
-                        ItemStack slotStack = workingTile.getStackInSlot(step.slot);
+                        ItemStack slotStack = workingTile.getItem(step.slot);
                         ItemStack stepStack = step.stack;
                         if (slotStack == null) {
                             continue;
                         }
-                        workingTile.setInventorySlotContents(step.slot, null);
+                        workingTile.setItem(step.slot, null);
                         workingTask.insertFromProcess(slotStack);
                     } else if ((step.output && step.type == StackType.FLUID && workingFluidTile != null)) {
                         FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
@@ -196,15 +207,15 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return processes;
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 
@@ -228,7 +239,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public IInventory getConnectedTile() {
+    public Container getConnectedTile() {
         return workingTile;
     }
 
@@ -248,7 +259,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         if (!canInsertItems(items)) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.ITEM) {
-                ItemStack slotStack = workingTile.getStackInSlot(step.slot);
+                ItemStack slotStack = workingTile.getItem(step.slot);
                 ItemStack stepStack = step.stack;
                 if(stepStack == null) continue;
                 ItemStack removed = items.remove(stepStack.itemID, stepStack.getMetadata(), stepStack.stackSize, stepStack.getData(), false, false);
@@ -256,9 +267,9 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                     return false;
                 }
                 if (slotStack == null) {
-                    workingTile.setInventorySlotContents(step.slot, removed);
+                    workingTile.setItem(step.slot, removed);
                 } else {
-                    workingTile.getStackInSlot(step.slot).stackSize += removed.stackSize;
+                    workingTile.getItem(step.slot).stackSize += removed.stackSize;
                 }
             }
         }
@@ -271,7 +282,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         if (!isInUse() || workingTile == null) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.ITEM) {
-                ItemStack slotStack = workingTile.getStackInSlot(step.slot);
+                ItemStack slotStack = workingTile.getItem(step.slot);
                 ItemStack stepStack = step.stack;
                 if (slotStack != null) {
                     if(stepStack == null) continue;
@@ -308,7 +319,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
                 FluidStack stepStack = step.fluidStack;
                 if(stepStack == null) continue;
-                FluidStack removed = items.removeById(stepStack.liquid.id, stepStack.amount, false);
+                FluidStack removed = items.removeById(stepStack.fluid.getFirstId(), stepStack.amount, false);
                 if (removed == null) {
                     return false;
                 }
@@ -337,16 +348,16 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                         can = false;
                         break;
                     } else {
-                        FluidStack testStack = items.get(stepStack.liquid.id);
+                        FluidStack testStack = items.get(stepStack.fluid.getFirstId());
                         if (testStack == null) {
                             can = false;
                             break;
                         }
-                        if (testStack.liquid.id < stepStack.liquid.id) {
+                        if (testStack.fluid.getFirstId() < stepStack.fluid.getFirstId()) {
                             can = false;
                             break;
                         }
-                        if (slotStack.liquid.id + stepStack.liquid.id > workingFluidTile.getFluidCapacityForSlot(step.slot)) {
+                        if (slotStack.fluid.getFirstId() + stepStack.fluid.getFirstId() > workingFluidTile.getFluidCapacityForSlot(step.slot)) {
                             can = false;
                             break;
                         }

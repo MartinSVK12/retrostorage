@@ -1,15 +1,14 @@
 package sunsetsatellite.retrostorage.tiles;
 
-
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.IntTag;
-import com.mojang.nbt.ListTag;
-import net.minecraft.core.entity.player.EntityPlayer;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.IntTag;
+import com.mojang.nbt.tags.ListTag;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.catalyst.fluids.util.FluidType;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemFluidStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
@@ -20,7 +19,7 @@ import sunsetsatellite.retrostorage.util.INetworkFluidStorage;
 import java.util.*;
 
 public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
-        implements IInventory, INetworkFluidStorage {
+        implements Container, INetworkFluidStorage {
 
     private ItemStack[] discStorage;
     public ArrayList<ItemStack> discsUsed = new ArrayList<>();
@@ -33,27 +32,30 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         discStorage = new ItemStack[3];
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return discStorage.length;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return discStorage[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (discStorage[i] != null) {
             if (discStorage[i].stackSize <= j) {
                 ItemStack itemstack = discStorage[i];
                 discStorage[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = discStorage[i].splitStack(j);
             if (discStorage[i].stackSize == 0) {
                 discStorage[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
@@ -61,14 +63,15 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     }
 
     public void tick() {
-        if (getStackInSlot(0) != null && discsUsed.size() < maxDiscs) {
-            if (getStackInSlot(0).getItem() instanceof ItemFluidStorageDisc) {
-                ItemFluidStorageDisc item = (ItemFluidStorageDisc) getStackInSlot(0).getItem();
+        if (worldObj != null && worldObj.isClientSide) return;
+        if (getItem(0) != null && discsUsed.size() < maxDiscs) {
+            if (getItem(0).getItem() instanceof ItemFluidStorageDisc) {
+                ItemFluidStorageDisc item = (ItemFluidStorageDisc) getItem(0).getItem();
                 maxStacks += item.getMaxStackCapacity();
                 maxItems += item.getMaxItemCapacity();
-                ItemStack stack = getStackInSlot(0);
+                ItemStack stack = getItem(0);
                 discsUsed.add(stack.copy());
-                setInventorySlotContents(0, null);
+                setItem(0, null);
             }
         }
     }
@@ -80,31 +83,35 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
             maxStacks -= Math.min(maxStacks, ((ItemFluidStorageDisc) disc.getItem()).getMaxStackCapacity());
             maxItems -= Math.min(maxItems, ((ItemFluidStorageDisc) disc.getItem()).getMaxItemCapacity());
             disc.stackSize = 1;
-            setInventorySlotContents(1, disc);
+            setItem(1, disc);
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    @Override
+    public void setItem(int i, ItemStack itemstack) {
         discStorage[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
 
     }
 
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
+    @Override
+    public String getNameTranslationKey() {
+        return "container.retrostorage.fluidDiscDirve";
     }
 
-    public String getInvName() {
-        return "Fluid Disc Drive";
+    @Override
+    public void setChanged() {
+        super.setChanged();
     }
 
+    @Override
     public void readFromNBT(CompoundTag compoundTag) {
         super.readFromNBT(compoundTag);
         ListTag listTag = compoundTag.getList("Items");
-        discStorage = new ItemStack[getSizeInventory()];
+        discStorage = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag compoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = compoundTag1.getByte("Slot") & 0xff;
@@ -128,6 +135,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         }
     }
 
+    @Override
     public void writeToNBT(CompoundTag compoundTag) {
         super.writeToNBT(compoundTag);
         ListTag listTag = new ListTag();
@@ -155,19 +163,21 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         compoundTag.put("MaxItems", new IntTag(maxItems));
     }
 
-    public int getInventoryStackLimit() {
+    @Override
+    public int getMaxStackSize() {
         return 64;
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    @Override
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 
@@ -187,7 +197,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         if (stack == null) {
             return null;
         }
-        int index = find(stack.liquid.id);
+        int index = find(stack.fluid.getFirstId());
         if (index != -1) {
             if ((getFluidAmount() + stack.amount > 0) && getFluidAmount() + stack.amount <= getMaxFluidAmount()) {
                 FluidStack invStack = contents.get(index);
@@ -330,7 +340,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     @Override
     public boolean removeAll(List<FluidStack> stacks, boolean strict) {
         for (FluidStack stack : stacks) {
-            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
+            FluidStack removed = removeById(stack.fluid.getFirstId(), stack.amount, strict);
             if (removed == null) {
                 return false;
             }
@@ -343,7 +353,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         ArrayList<FluidStack> leftovers = new ArrayList<>();
 
         for (FluidStack stack : what) {
-            FluidStack removed = remove(stack.liquid.id,stack.amount,strict);
+            FluidStack removed = remove(stack.fluid.getFirstId(),stack.amount,strict);
             if (removed == null) {
                 leftovers.add(stack);
                 continue;
@@ -363,7 +373,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     public List<FluidStack> exportAll(List<FluidStack> stacks, boolean strict) {
         ArrayList<FluidStack> list = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            FluidStack removed = remove(stack.liquid.id,stack.amount,strict);
+            FluidStack removed = remove(stack.fluid.getFirstId(),stack.amount,strict);
             if (removed != null) {
                 list.add(removed);
             }
@@ -374,19 +384,19 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     @Override
     public boolean contains(int id) {
         List<FluidStack> contents = getStacks();
-        return contents.stream().anyMatch((S) -> S.liquid.id == id);
+        return contents.stream().anyMatch((S) -> S.fluid.getFirstId() == id);
     }
 
     @Override
     public boolean containsAtLeast(int id, int amount) {
         List<FluidStack> contents = getStacks();
-        return contents.stream().anyMatch((S) -> S.liquid.id == id && S.amount >= amount);
+        return contents.stream().anyMatch((S) -> S.fluid.getFirstId() == id && S.amount >= amount);
     }
 
     @Override
     public boolean containsAtLeast(List<FluidStack> stacks) {
         for (FluidStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.liquid.id, stack.amount);
+            boolean contains = containsAtLeast(stack.fluid.getFirstId(), stack.amount);
             if (!contains) return false;
         }
         return true;
@@ -395,7 +405,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     @Override
     public boolean containsAtLeast(FluidStackList stacks) {
         for (FluidStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.liquid.id, stack.amount);
+            boolean contains = containsAtLeast(stack.fluid.getFirstId(), stack.amount);
             if (!contains) return false;
         }
         return true;
@@ -405,7 +415,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     public ArrayList<FluidStack> returnMissing(ArrayList<FluidStack> stacks) {
         ArrayList<FluidStack> missing = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            int c = count(stack.liquid.id);
+            int c = count(stack.fluid.getFirstId());
             if (c <= 0) {
                 missing.add(stack.copy());
             } else if (c != stack.amount) {
@@ -418,7 +428,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     }
 
     @Override
-    public Set<FluidType> getDisallowedFluids() {
+    public Set<Fluid> getDisallowedFluids() {
         return RetroStorage.DISALLOWED_FLUIDS;
     }
 
@@ -426,7 +436,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     public int count(int id) {
         List<FluidStack> contents = getStacks();
         return contents.stream().mapToInt((S) -> {
-            if (S.liquid.id == id) {
+            if (S.fluid.getFirstId() == id) {
                 return S.amount;
             }
             return 0;
@@ -438,7 +448,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         List<FluidStack> contents = getStacks();
         for (int i = 0; i < contents.size(); i++) {
             FluidStack content = contents.get(i);
-            if (content.liquid.id == id) {
+            if (content.fluid.getFirstId() == id) {
                 return i;
             }
         }

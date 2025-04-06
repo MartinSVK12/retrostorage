@@ -3,14 +3,17 @@ package sunsetsatellite.retrostorage.tiles;
 
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.EntityItem;
+import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.Direction;
-import sunsetsatellite.catalyst.core.util.Vec3i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.ITileEntityInit;
 import sunsetsatellite.catalyst.core.util.network.Network;
 import sunsetsatellite.catalyst.core.util.network.NetworkComponentTile;
 import sunsetsatellite.catalyst.core.util.network.NetworkManager;
 import sunsetsatellite.catalyst.core.util.network.NetworkType;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.util.INetworkController;
 
 import java.util.ArrayList;
@@ -21,7 +24,7 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
     public Network network;
 
     @Override
-    public void init(Block block) {
+    public void init(Block<?> block) {
         networkChanged(NetworkManager.getNet(worldObj,x,y,z));
         setInitialized();
     }
@@ -93,10 +96,12 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
         return this.getClass().getSimpleName() + " " + getPosition();
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
+
+
 }

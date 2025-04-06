@@ -1,7 +1,7 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.Tag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.StackType;

@@ -1,11 +1,13 @@
 package sunsetsatellite.retrostorage.items;
 
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.Tag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.Tag;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Global;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
@@ -13,15 +15,17 @@ import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.gui.GuiCraftingProcess;
+import sunsetsatellite.retrostorage.screens.ScreenCraftingProcess;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
+import turniplabs.halplibe.helper.EnvironmentHelper;
 
 import java.util.ArrayList;
 
 public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
 
-    public ItemAdvRecipeDisc(String name, int id) {
-        super(name, id);
+
+    public ItemAdvRecipeDisc(String translationKey, String namespaceId, int id) {
+        super(translationKey, namespaceId, id);
     }
 
     @Override
@@ -30,9 +34,10 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
     }
 
     @Override
-    public ItemStack onUseItem(ItemStack itemstack, World world, EntityPlayer entityplayer) {
-        if(!Global.isServer){
-            Minecraft.getMinecraft(this).displayGuiScreen(new GuiCraftingProcess(new CraftingProcess(itemstack.getData().getCompound("disc"))));
+    @Environment(EnvType.CLIENT)
+    public ItemStack onUseItem(ItemStack itemstack, World world, Player entityplayer) {
+        if(!EnvironmentHelper.isServerEnvironment()){
+            Minecraft.getMinecraft().displayScreen(new ScreenCraftingProcess(new CraftingProcess(itemstack.getData().getCompound("disc"))));
         }
         return super.onUseItem(itemstack, world, entityplayer);
     }

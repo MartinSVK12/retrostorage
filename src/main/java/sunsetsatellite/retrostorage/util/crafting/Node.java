@@ -1,8 +1,8 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 public abstract class Node {
     protected final boolean root;

@@ -1,11 +1,11 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.IProcessor;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.List;
 

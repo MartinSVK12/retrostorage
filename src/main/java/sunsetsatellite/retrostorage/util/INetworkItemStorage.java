@@ -1,6 +1,6 @@
 package sunsetsatellite.retrostorage.util;
 
-import sunsetsatellite.catalyst.core.util.IItemStackList;
+import sunsetsatellite.catalyst.core.util.io.IItemStackList;
 
 public interface INetworkItemStorage extends IItemStackList {
 

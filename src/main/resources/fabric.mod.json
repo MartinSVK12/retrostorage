@@ -26,18 +26,40 @@
     ],
     "btwaila": [
       "sunsetsatellite.retrostorage.api.impl.btwaila.BTWailaReSPlugin"
+    ],
+    "afterBlockInit": [
+      "sunsetsatellite.retrostorage.ReSBlocks"
+    ],
+    "afterItemInit": [
+      "sunsetsatellite.retrostorage.ReSItems"
+    ],
+    "client": [
+      "sunsetsatellite.retrostorage.RetroStorageClient"
+    ],
+    "beforeClientStart": [
+      "sunsetsatellite.retrostorage.RetroStorageClient"
+    ],
+    "afterClientStart": [
+      "sunsetsatellite.retrostorage.RetroStorageClient"
+    ],
+    "server": [
+      "sunsetsatellite.retrostorage.RetroStorageServer"
+    ],
+    "initModels": [
+      "sunsetsatellite.retrostorage.ReSModels"
     ]
   },
   "mixins": [
     "retrostorage.mixins.json"
   ],
   "depends": {
+    "minecraft": "~7.3",
     "fabricloader": ">=0.15.5",
-    "halplibe": ">=4.1.3",
-    "catalyst-core": ">=1.10.0",
-    "catalyst-energy": ">=2.0.1",
-    "catalyst-fluids": ">=1.4.1",
-    "catalyst-multipart": ">=1.0.3"
+    "catalyst-core": ">=2.0.0-alpha.1",
+    "catalyst-fluids": ">=2.0.0-alpha.1",
+    "catalyst-energy": ">=2.0.2-alpha.1",
+    "catalyst-multipart": ">=2.0.0-alpha.1",
+    "halplibe": ">=5.2.0"
   },
   "suggests": {
   }

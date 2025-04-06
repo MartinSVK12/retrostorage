@@ -1,7 +1,7 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.*;
 
@@ -143,7 +143,7 @@ public class ProcessNode extends Node {
     }
 
     public int getNeeded(FluidStack stack) {
-        return singleFluidsToReceive.count(stack.liquid.id) * totalQuantity - fluidsReceived.count(stack.liquid.id);
+        return singleFluidsToReceive.count(stack.fluid.getFirstId()) * totalQuantity - fluidsReceived.count(stack.fluid.getFirstId());
     }
 
     public void markReceived(ItemStack stack) {
@@ -179,8 +179,8 @@ public class ProcessNode extends Node {
         }
 
         for (FluidStack stack : singleFluidsToReceive) {
-            if (fluidsReceived.getById(stack.liquid.id) != null) {
-                int ratioReceived = fluidsReceived.count(stack.liquid.id) / stack.amount;
+            if (fluidsReceived.getById(stack.fluid.getFirstId()) != null) {
+                int ratioReceived = fluidsReceived.count(stack.fluid.getFirstId()) / stack.amount;
                 if (tempQuantityFinished > ratioReceived) {
                     tempQuantityFinished = ratioReceived;
                 }

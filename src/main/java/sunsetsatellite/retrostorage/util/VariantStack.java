@@ -40,7 +40,7 @@ public class VariantStack {
             case ITEM:
                 return Objects.requireNonNull(itemStack);
             case FLUID:
-                return new ItemStack(Objects.requireNonNull(fluidStack).liquid,fluidStack.amount);
+                return new ItemStack(Objects.requireNonNull(fluidStack).fluid.blocks.get(0),fluidStack.amount);
         }
         return null;
     }

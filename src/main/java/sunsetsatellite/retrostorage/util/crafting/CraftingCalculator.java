@@ -2,7 +2,7 @@ package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.*;
@@ -120,8 +120,8 @@ public class CraftingCalculator {
         for (FluidStack input : inputs) {
             ingredientNumber++;
 
-            FluidStack fromSelf = fluidResults.getById(input.liquid.id);
-            FluidStack fromNetwork = fluidSource.getById(input.liquid.id);
+            FluidStack fromSelf = fluidResults.getById(input.fluid.getFirstId());
+            FluidStack fromNetwork = fluidSource.getById(input.fluid.getFirstId());
 
             int remaining = input.amount * qty;
 
@@ -135,11 +135,11 @@ public class CraftingCalculator {
 
                     node.getRequirements().addFluidRequirement(ingredientNumber, input, toTake, input.amount);
 
-                    fluidResults.removeById(fromSelf.liquid.id, toTake, false);
+                    fluidResults.removeById(fromSelf.fluid.getFirstId(), toTake, false);
 
                     remaining -= toTake;
 
-                    fromSelf = fluidResults.getById(input.liquid.id);
+                    fromSelf = fluidResults.getById(input.fluid.getFirstId());
                 }
 
                 if (fromNetwork != null && remaining > 0) {
@@ -151,11 +151,11 @@ public class CraftingCalculator {
 
                     node.getRequirements().addFluidRequirement(ingredientNumber, input, toTake, input.amount);
 
-                    fluidSource.removeById(fromNetwork.liquid.id, toTake, false);
+                    fluidSource.removeById(fromNetwork.fluid.getFirstId(), toTake, false);
 
                     remaining -= toTake;
 
-                    fromNetwork = fluidSource.getById(input.liquid.id);
+                    fromNetwork = fluidSource.getById(input.fluid.getFirstId());
 
                     copy = input.copy();
                     copy.amount = toTake;
@@ -170,12 +170,12 @@ public class CraftingCalculator {
 
                         calculateInternal(subQty, source, fluidSource, results, fluidResults, subRecipe, false);
 
-                        fromSelf = fluidResults.getById(input.liquid.id);
+                        fromSelf = fluidResults.getById(input.fluid.getFirstId());
                         if (fromSelf == null) {
                             throw new CraftingCalculationException(CalculationResultType.ERROR, "Recursive fluid calculation didn't yield anything!");
                         }
 
-                        fromNetwork = fluidSource.getById(input.liquid.id);
+                        fromNetwork = fluidSource.getById(input.fluid.getFirstId());
 
                         if (subRecipe.getType() == CraftableType.PROCESS) {
                             craftingPreviewInfo.getToProcessFluids().add(fromSelf.copy());

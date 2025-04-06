@@ -2,8 +2,8 @@ package sunsetsatellite.retrostorage.tiles;
 
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.catalyst.fluids.util.FluidType;
 import sunsetsatellite.retrostorage.util.FluidInventoryWrapper;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.IFluidStackList;
@@ -135,7 +135,7 @@ public class TileEntityFluidStorageBus extends TileEntityNetworkDevice implement
     }
 
     @Override
-    public Set<FluidType> getDisallowedFluids() {
+    public Set<Fluid> getDisallowedFluids() {
         return wrapper.getDisallowedFluids();
     }
 

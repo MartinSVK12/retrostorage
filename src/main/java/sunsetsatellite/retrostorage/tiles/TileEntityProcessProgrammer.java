@@ -1,15 +1,14 @@
 package sunsetsatellite.retrostorage.tiles;
 
-
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
-import net.minecraft.core.block.BlockFluid;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.CatalystFluids;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
@@ -20,7 +19,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class TileEntityProcessProgrammer extends TileEntity
-        implements IInventory {
+        implements Container {
 
     public TileEntityProcessProgrammer() {
         contents = new ItemStack[3];
@@ -58,7 +57,7 @@ public class TileEntityProcessProgrammer extends TileEntity
         @Override
         public FluidStack getFluidInSlot(int slot) {
             if (this.fluidContents.length == 0) return null;
-            if (this.fluidContents[slot] == null || this.fluidContents[slot].getLiquid() == null || this.fluidContents[slot].amount == 0) {
+            if (this.fluidContents[slot] == null || this.fluidContents[slot].fluid == null || this.fluidContents[slot].amount == 0) {
                 this.fluidContents[slot] = null;
             }
             return fluidContents[slot];
@@ -70,22 +69,22 @@ public class TileEntityProcessProgrammer extends TileEntity
         }
 
         @Override
-        public ArrayList<BlockFluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
+        public ArrayList<Fluid> getAllowedFluidsForSlot(int slot) {
+            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             return allFluids;
         }
 
         @Override
         public void setFluidInSlot(int slot, FluidStack fluid) {
-            if (fluid == null || fluid.amount == 0 || fluid.liquid == null) {
+            if (fluid == null || fluid.amount == 0 || fluid.fluid == null) {
                 this.fluidContents[slot] = null;
                 this.onFluidInventoryChanged();
                 return;
             }
-            ArrayList<BlockFluid> allFluids = (ArrayList<BlockFluid>) CatalystFluids.CONTAINERS.getAllFluids();
+            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
-            if (allFluids.contains(fluid.liquid)) {
+            if (allFluids.contains(fluid.fluid)) {
                 this.fluidContents[slot] = fluid;
                 this.onFluidInventoryChanged();
             }
@@ -113,13 +112,14 @@ public class TileEntityProcessProgrammer extends TileEntity
         }
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return contents.length;
     }
 
     public boolean isEmpty() {
-        for (int i = 0; i < getSizeInventory() - 1; i++) {
-            if (getStackInSlot(i) != null) {
+        for (int i = 0; i < getContainerSize() - 1; i++) {
+            if (getItem(i) != null) {
                 return false;
             } else {
                 continue;
@@ -128,49 +128,55 @@ public class TileEntityProcessProgrammer extends TileEntity
         return true;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (contents[i] != null) {
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
             if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    @Override
+    public void setItem(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
     }
 
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
+    @Override
+    public String getNameTranslationKey() {
+        return "container.retrostorage.processProgrammer";
     }
 
-    public String getInvName() {
-        return "Process Programmer";
+    @Override
+    public void setChanged() {
+        super.setChanged();
     }
 
+    @Override
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
@@ -180,6 +186,7 @@ public class TileEntityProcessProgrammer extends TileEntity
         }
     }
 
+    @Override
     public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
@@ -195,19 +202,17 @@ public class TileEntityProcessProgrammer extends TileEntity
         CompoundTag.put("Items", listTag);
     }
 
-    public int getInventoryStackLimit() {
+    @Override
+    public int getMaxStackSize() {
         return 64;
-    }
-
-    public void tick() {
     }
 
     public void setTask(String selected) {
         if (Objects.equals(selected, "item")) {
-            if (getStackInSlot(0) != null) {
+            if (getItem(0) != null) {
                 HashMap<String, Object> task = new HashMap<>();
                 task.put("slot", currentSlot);
-                task.put("stack", getStackInSlot(0).copy());
+                task.put("stack", getItem(0).copy());
                 task.put("isOutput", isCurrentOutput);
                 task.put("type", "item");
                 tasks.put(currentTask, task);
@@ -231,8 +236,8 @@ public class TileEntityProcessProgrammer extends TileEntity
     }
 
     public void clearDisc() {
-        if (getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc) {
-            ItemStack disc = getStackInSlot(1);
+        if (getItem(1) != null && getItem(1).getItem() instanceof ItemAdvRecipeDisc) {
+            ItemStack disc = getItem(1);
             disc.getData().putCompound("disc", new CompoundTag());
             disc.getData().putString("name", "");
             disc.getData().putBoolean("overrideName", false);
@@ -241,7 +246,7 @@ public class TileEntityProcessProgrammer extends TileEntity
     }
 
     public void saveProcess() {
-        if (getStackInSlot(1) != null && getStackInSlot(1).getItem() instanceof ItemAdvRecipeDisc) {
+        if (getItem(1) != null && getItem(1).getItem() instanceof ItemAdvRecipeDisc) {
             CompoundTag data = new CompoundTag();
             CompoundTag taskData = new CompoundTag();
             tasks.forEach((K, V) -> {
@@ -259,23 +264,24 @@ public class TileEntityProcessProgrammer extends TileEntity
                 task.putCompound("stack", stack);
                 taskData.putCompound("task" + K, task);
             });
-            getStackInSlot(1).getData().putString("name", "Adv. Recipe Disc: " + currentProcessName);
-            getStackInSlot(1).getData().putBoolean("overrideName", true);
+            getItem(1).getData().putString("name", "Adv. Recipe Disc: " + currentProcessName);
+            getItem(1).getData().putBoolean("overrideName", true);
             data.putCompound("tasks", taskData);
             data.putString("processName", currentProcessName);
-            getStackInSlot(1).getData().putCompound("disc", data);
+            getItem(1).getData().putCompound("disc", data);
         }
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    @Override
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 

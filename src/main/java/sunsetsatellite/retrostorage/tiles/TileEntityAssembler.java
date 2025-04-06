@@ -1,16 +1,19 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.EntityItem;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
+import net.minecraft.core.world.World;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.retrostorage.ReSItems;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.IProcessor;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
@@ -20,32 +23,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TileEntityAssembler extends TileEntityNetworkDevice
-        implements IInventory, IProcessor {
+        implements Container, IProcessor {
     public TileEntityAssembler() {
         contents = new ItemStack[9];
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return contents.length;
     }
 
     public boolean isEmpty() {
-        for (int i = 0; i < getSizeInventory() - 1; i++) {
-            if (getStackInSlot(i) != null) {
+        for (int i = 0; i < getContainerSize() - 1; i++) {
+            if (getItem(i) != null) {
                 return false;
             }
         }
         return true;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (contents[i] != null) {
             /*if (network != null) {
-                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getStackInSlot(i).getData().getCompound("recipe"));
+                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getItem(i).getData().getCompound("recipe"));
                 if (recipe != null) {
                     network.knownCraftables.remove(new NetworkCraftable(recipe));
                 }
@@ -53,24 +59,25 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
             if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    @Override
+    public void setItem(int i, ItemStack itemstack) {
         /*if (network != null) {
             if (itemstack == null) {
-                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getStackInSlot(i).getData().getCompound("recipe"));
+                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getItem(i).getData().getCompound("recipe"));
                 if (recipe != null) {
                     network.knownCraftables.remove(new NetworkCraftable(recipe));
                 }
@@ -82,25 +89,32 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
             }
         }*/
         contents[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
 
     }
 
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
+    @Override
+    public String getNameTranslationKey() {
+        return "container.retrostorage.assembler";
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
     }
 
     public String getInvName() {
         return "Assembler";
     }
 
+    @Override
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
@@ -111,6 +125,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     }
 
+    @Override
     public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
@@ -126,19 +141,21 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         CompoundTag.put("Items", listTag);
     }
 
-    public int getInventoryStackLimit() {
+    @Override
+    public int getMaxStackSize() {
         return 64;
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    @Override
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 
@@ -152,7 +169,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     public ArrayList<RecipeEntryCrafting<?, ItemStack>> getRecipes() {
         ArrayList<RecipeEntryCrafting<?, ItemStack>> recipes = new ArrayList<>();
         for (ItemStack stack : contents) {
-            if (stack != null && stack.getItem() == RetroStorage.recipeDisc) {
+            if (stack != null && stack.getItem() == ReSItems.recipeDisc) {
                 RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getData().getCompound("recipe"));
                 if (recipe != null) {
                     recipes.add(recipe);
@@ -178,7 +195,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     @Override
-    public IInventory getConnectedTile() {
+    public Container getConnectedTile() {
         return null;
     }
 
@@ -214,5 +231,4 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     private ItemStack[] contents;
    // public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
-
 }

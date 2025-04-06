@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.util;
 
-import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.UnmodifiableView;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;

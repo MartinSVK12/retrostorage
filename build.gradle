@@ -1,22 +1,30 @@
-buildscript {
-	dependencies {
-		classpath 'org.kohsuke:github-api:1.135'
-	}
+plugins {
+	id 'fabric-loom' version '1.7.bta'
+	id 'java'
 }
 
-plugins {
-	id 'babric-loom' version '1.4.+'
-	id 'java'
-	id "com.modrinth.minotaur" version "2.+"
+import org.gradle.internal.os.OperatingSystem
+
+project.ext.lwjglVersion = "3.3.3"
+
+switch (OperatingSystem.current()) {
+	case OperatingSystem.LINUX:
+		project.ext.lwjglNatives = "natives-linux"
+		break
+	case OperatingSystem.WINDOWS:
+		project.ext.lwjglNatives = "natives-windows"
+		break
+	case OperatingSystem.MAC_OS:
+		project.ext.lwjglNatives = "natives-macos"
 }
+
 group = project.mod_group
 archivesBaseName = project.mod_name
 version = project.mod_version
 
 loom {
-	gluedMinecraftJar()
 	noIntermediateMappings()
-	customMinecraftManifest.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
+	customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/v${project.bta_version}/manifest.json")
 }
 
 repositories {
@@ -30,6 +38,14 @@ repositories {
 		name = 'Fabric'
 		url = 'https://maven.fabricmc.net/'
 	}
+	maven {
+		name = 'SignalumMavenInfrastructure'
+		url = 'https://maven.thesignalumproject.net/infrastructure'
+	}
+	maven {
+		name = 'SignalumMavenReleases'
+		url = 'https://maven.thesignalumproject.net/releases'
+	}
 	ivy {
 		url = "https://github.com/Better-than-Adventure"
 		patternLayout {
@@ -39,25 +55,17 @@ repositories {
 		metadataSources { artifact() }
 	}
 	ivy {
-		url = "https://github.com/Turnip-Labs"
+		url = "https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/"
 		patternLayout {
-			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
+			artifact "/v[revision]/client.jar"
 			m2compatible = true
 		}
 		metadataSources { artifact() }
 	}
 	ivy {
-		url = "https://github.com/Turnip-Labs"
+		url = "https://downloads.betterthanadventure.net/bta-server/${project.bta_channel}/"
 		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/Turnip-Labs"
-		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-bta-[revision].jar"
+			artifact "/v[revision]/server.jar"
 			m2compatible = true
 		}
 		metadataSources { artifact() }
@@ -70,90 +78,61 @@ repositories {
 		}
 		metadataSources { artifact() }
 	}
-	ivy {
-		url = "https://github.com/MartinSVK12"
-		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/ToufouMaster"
-		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/MartinSVK12"
-		patternLayout {
-			artifact "[organisation]/releases/download/[revision]-BTA/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/UselessSolutions"
-		patternLayout {
-			artifact "[organisation]/releases/download/r[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/UselessSolutions"
-		patternLayout {
-			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	maven {
-		name = 'Signalum Maven Releases'
-		url = 'https://maven.thesignalumproject.net/releases/'
-	}
+
 }
 
 dependencies {
-	minecraft "bta-download-repo:bta:${project.bta_version}"
+	minecraft "::${project.bta_version}"
 	mappings loom.layered() {}
 
 	modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45" // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
-	modImplementation "fabric-loader:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Helper library
 	// If you do not need Halplibe you can comment this line out or delete this line
-	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
+	modImplementation("turniplabs:halplibe:${project.halplibe_version}")
 
-	modImplementation "ModMenu:ModMenu:2.0.6"
-	if(findProject(":catalyst") != null){
-		implementation project(path: ':catalyst', configuration: "namedElements")
-		implementation project(path: ':catalyst:energy', configuration: "namedElements")
-		implementation project(path: ':catalyst:fluids', configuration: "namedElements")
-		implementation project(path: ':catalyst:multipart', configuration: "namedElements")
-	} else {
-		modImplementation "sunsetsatellite:catalyst-core:${project.catalyst_core_version}"
-		modImplementation "sunsetsatellite:catalyst-energy:${project.catalyst_energy_version}"
-		modImplementation "sunsetsatellite:catalyst-fluids:${project.catalyst_fluids_version}"
-		modImplementation "sunsetsatellite:catalyst-multipart:${project.catalyst_multipart_version}"
-	}
-	modImplementation "BTWaila:btwaila:${project.btwaila_version}"
-	modImplementation "DragonFly:dragonfly:${project.dragonfly_version}"
+	modImplementation("turniplabs:modmenu-bta:${project.mod_menu_version}")
 
+	// Catalyst
+	implementation(project(path: ":core", configuration: "namedElements"))
+	implementation(project(path: ":energy", configuration: "namedElements"))
+	implementation(project(path: ":fluids", configuration: "namedElements"))
+	implementation(project(path: ":multiblocks", configuration: "namedElements"))
+	implementation(project(path: ":multipart", configuration: "namedElements"))
+
+	implementation(project(path: ":tmb", configuration: "namedElements"))
+	implementation(project(path: ":btwaila", configuration: "namedElements"))
+	implementation(project(path: ":dragonfly", configuration: "namedElements"))
+	implementation(project(path: ":vq", configuration: "namedElements"))
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"
-	implementation("org.apache.commons:commons-lang3:3.12.0")
 
 	implementation 'com.google.guava:guava:33.0.0-jre'
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-
 	var log4jVersion = "2.20.0"
 	implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}")
+
+	include(implementation("org.apache.commons:commons-lang3:3.12.0"))
+
+	modImplementation("com.github.Better-than-Adventure:legacy-lwjgl3:1.0.5")
+	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+	implementation "org.lwjgl:lwjgl:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-assimp:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-openal:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
 }
 
 java {
@@ -172,63 +151,15 @@ jar {
 	}
 }
 
+configurations.configureEach {
+	// Removes LWJGL2 dependencies
+	exclude group: "org.lwjgl.lwjgl"
+}
+
 processResources {
 	inputs.property "version", version
 
 	filesMatching("fabric.mod.json") {
 		expand "version": version
 	}
-}
-
-remapJar {
-	archiveVersion.set(archiveVersion.get()+"-${bta_version}")
-}
-
-modrinth {
-	token = modrinthToken
-	projectId = "retrostorage" // This can be the project ID or the slug. Either will work!
-	versionNumber = project.mod_version // You don't need to set this manually. Will fail if Modrinth has this version already
-	versionType = "release" // This is the default -- can also be `beta` or `alpha`
-	uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-	gameVersions = ["b1.7.3"] // Must be an array, even with only one version
-	loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
-	changelog = Files.readString(java.nio.file.Path.of("${project.projectDir}/CHANGELOG.md"))
-	dependencies { // A special DSL for creating dependencies
-		// scope.type
-		// The scope can be `required`, `optional`, `incompatible`, or `embedded`
-		// The type can either be `project` or `version`
-		//required.project "fabric-api" // Creates a new required dependency on Fabric API
-		//optional.version "sodium", "mc1.19.3-0.4.8" // Creates a new optional dependency on this specific version of Sodium
-		required.project "halplibe"
-		required.project "catalyst"
-		required.project "dragonfly-model-library"
-	}
-}
-
-import org.kohsuke.github.GHReleaseBuilder
-import org.kohsuke.github.GitHub
-
-import java.nio.file.Files
-
-tasks.register('github') {
-	doLast {
-		def github = GitHub.connectUsingOAuth(githubToken as String)
-		def repository = github.getRepository("MartinSVK12/retrostorage")
-
-		def releaseBuilder = new GHReleaseBuilder(repository, "${version}bta" as String)
-		releaseBuilder.name("${version} - BTA")
-		releaseBuilder.body(Files.readString(java.nio.file.Path.of("${project.projectDir}/CHANGELOG.md")))
-		releaseBuilder.commitish("bta")
-
-		def release = releaseBuilder.create()
-		release.uploadAsset(project.file(remapJar.getArchiveFile().get().getAsFile()),"application/java-archive")
-		release.uploadAsset(project.file(remapSourcesJar.getArchiveFile().get().getAsFile()),"application/java-archive")
-	}
-}
-
-tasks.register('deploy'){
-	description "Publish mod to modrinth and github."
-	group "publishing"
-	dependsOn 'modrinth'
-	dependsOn 'github'
 }

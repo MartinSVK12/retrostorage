@@ -1,8 +1,7 @@
 package sunsetsatellite.retrostorage.util;
 
-
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.Tag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.Catalyst;
@@ -85,7 +84,7 @@ public class DiscManipulator {
             if (V instanceof CompoundTag) {
                 String K = ((Tag<?>) V).getTagName();
                 FluidStack fluidStack = new FluidStack((CompoundTag) V);
-                if (fluidStack.getLiquid() != null) {
+                if (fluidStack.fluid != null) {
                     inv.add(fluidStack);
                 }
             }
@@ -123,7 +122,7 @@ public class DiscManipulator {
         values.forEach((V) -> {
             if (V instanceof CompoundTag) {
                 FluidStack fluidStack = new FluidStack((CompoundTag) V);
-                if (fluidStack.getLiquid() != null) {
+                if (fluidStack.fluid != null) {
                     result.add(fluidStack);
                 }
             }
@@ -161,7 +160,7 @@ public class DiscManipulator {
     }
 
     public static boolean canSaveAllToFluidDiscs(List<ItemStack> discs, List<FluidStack> list) {
-        int itemAmount = list.stream().filter(Objects::nonNull).filter((S) -> S.getLiquid() != null).mapToInt((S) -> S.amount).sum();
+        int itemAmount = list.stream().filter(Objects::nonNull).filter((S) -> S.fluid != null).mapToInt((S) -> S.amount).sum();
         int stackAmount = RetroStorage.condenseFluidList(list).size();
 
         int maxItemCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof ItemFluidStorageDisc).mapToInt(item -> ((ItemFluidStorageDisc) item).getMaxItemCapacity()).sum();

@@ -1,7 +1,7 @@
 package sunsetsatellite.retrostorage.util;
 
-import net.minecraft.core.player.inventory.IInventory;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
+import net.minecraft.core.player.inventory.container.Container;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
@@ -15,7 +15,7 @@ public interface IProcessor {
 
     void setFocus(ProcessNode node, CraftingTask task);
 
-    IInventory getConnectedTile();
+    Container getConnectedTile();
 
     ProcessNode getWorkingNode();
 

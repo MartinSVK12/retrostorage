@@ -1,14 +1,13 @@
 package sunsetsatellite.retrostorage.tiles;
 
-
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
-import net.minecraft.core.entity.player.EntityPlayer;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.energy.simple.impl.TileEntityEnergyDevice;
 
-public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements IInventory {
+public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements Container {
 
     public ItemStack[] contents;
 
@@ -22,20 +21,24 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
 
     @Override
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         super.tick();
     }
 
-    public int getSizeInventory()
+    @Override
+    public int getContainerSize()
     {
         return contents.length;
     }
 
-    public ItemStack getStackInSlot(int i)
+    @Override
+    public ItemStack getItem(int i)
     {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j)
+    @Override
+    public ItemStack removeItem(int i, int j)
     {
         if(contents[i] != null)
         {
@@ -43,7 +46,7 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
             {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
@@ -51,7 +54,7 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
             {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else
         {
@@ -59,32 +62,34 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
         }
     }
 
-
-    public void setInventorySlotContents(int i, ItemStack itemstack)
+    @Override
+    public void setItem(int i, ItemStack itemstack)
     {
         contents[i] = itemstack;
-        if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
+        if(itemstack != null && itemstack.stackSize > getMaxStackSize())
         {
-            itemstack.stackSize = getInventoryStackLimit();
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
 
     }
 
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
+    @Override
+    public String getNameTranslationKey() {
+        return "container.retrostorage.energyAcceptor";
     }
 
-    public String getInvName()
-    {
-        return "Energy Acceptor";
+    @Override
+    public void setChanged() {
+        super.setChanged();
     }
 
+    @Override
     public void readFromNBT(CompoundTag tag)
     {
         super.readFromNBT(tag);
         ListTag ListTag = tag.getList("Items");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         for(int i = 0; i < ListTag.tagCount(); i++)
         {
             CompoundTag CompoundTag1 = (CompoundTag)ListTag.tagAt(i);
@@ -96,6 +101,7 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
         }
     }
 
+    @Override
     public void writeToNBT(CompoundTag tag)
     {
         super.writeToNBT(tag);
@@ -114,14 +120,16 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
         tag.put("Items", ListTag);
     }
 
-    public int getInventoryStackLimit()
+    @Override
+    public int getMaxStackSize()
     {
         return 64;
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer)
+    @Override
+    public boolean stillValid(Player entityplayer)
     {
-        if(worldObj.getBlockTileEntity(x, y, z) != this)
+        if(worldObj.getTileEntity(x, y, z) != this)
         {
             return false;
         }
@@ -129,7 +137,7 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 }

@@ -1,6 +1,8 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.entity.player.Player;
+import sunsetsatellite.retrostorage.ReSItems;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 public class TileEntityDigitalFluidTerminal extends TileEntityNetworkDevice {
@@ -8,15 +10,16 @@ public class TileEntityDigitalFluidTerminal extends TileEntityNetworkDevice {
     public TileEntityDigitalFluidTerminal() {}
 
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         super.tick();
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == RetroStorage.mobileTerminal){
+    public boolean stillValid(Player entityplayer) {
+        if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == ReSItems.mobileTerminal){
             return true;
         }
-        return super.canInteractWith(entityplayer);
+        return super.stillValid(entityplayer);
     }
 
     public int page = 0;

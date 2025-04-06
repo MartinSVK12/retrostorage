@@ -1,17 +1,17 @@
 package sunsetsatellite.retrostorage.tiles;
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.Tag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.net.packet.Packet;
-import net.minecraft.core.net.packet.Packet140TileEntityData;
+import net.minecraft.core.net.packet.PacketTileEntityData;
 import sunsetsatellite.catalyst.Catalyst;
-import sunsetsatellite.catalyst.core.util.ConduitCapability;
 import sunsetsatellite.catalyst.core.util.Direction;
-import sunsetsatellite.catalyst.core.util.IConduitTile;
-import sunsetsatellite.catalyst.core.util.Vec3i;
+import sunsetsatellite.catalyst.core.util.conduit.ConduitCapability;
+import sunsetsatellite.catalyst.core.util.conduit.IConduitTile;
 import sunsetsatellite.catalyst.core.util.network.Network;
 import sunsetsatellite.catalyst.core.util.network.NetworkType;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.multipart.api.ISupportsMultiparts;
 import sunsetsatellite.catalyst.multipart.api.Multipart;
 
@@ -52,7 +52,7 @@ public class TileEntityNetworkCable extends TileEntity implements ISupportsMulti
 
     @Override
     public Packet getDescriptionPacket() {
-        return new Packet140TileEntityData(this);
+        return new PacketTileEntityData(this);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TileEntityNetworkCable extends TileEntity implements ISupportsMulti
 
     @Override
     public void networkChanged(Network network) {
-        this.network = (Network) network;
+        this.network = network;
     }
 
     @Override

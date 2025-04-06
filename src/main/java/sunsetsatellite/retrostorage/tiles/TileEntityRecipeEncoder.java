@@ -1,13 +1,14 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
+
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
@@ -15,18 +16,19 @@ import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import java.util.ArrayList;
 
 public class TileEntityRecipeEncoder extends TileEntity
-        implements IInventory {
+        implements Container {
     public TileEntityRecipeEncoder() {
         contents = new ItemStack[10];
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return contents.length;
     }
 
     public boolean isEmpty() {
-        for (int i = 0; i < getSizeInventory() - 1; i++) {
-            if (getStackInSlot(i) != null) {
+        for (int i = 0; i < getContainerSize() - 1; i++) {
+            if (getItem(i) != null) {
                 return false;
             } else {
                 continue;
@@ -35,54 +37,60 @@ public class TileEntityRecipeEncoder extends TileEntity
         return true;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (contents[i] != null) {
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
             if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    @Override
+    public void setItem(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
-    }
-
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
-    }
-
-    public String getInvName() {
-        return "Recipe Encoder";
+        setChanged();
     }
 
     @Override
-    public int getInventoryStackLimit() {
+    public String getNameTranslationKey() {
+        return "container.retrostorage.recipeEncoder";
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+    }
+
+    @Override
+    public int getMaxStackSize() {
         return 64;
     }
 
+    @Override
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
@@ -92,6 +100,7 @@ public class TileEntityRecipeEncoder extends TileEntity
         }
     }
 
+    @Override
     public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
@@ -107,27 +116,28 @@ public class TileEntityRecipeEncoder extends TileEntity
         CompoundTag.put("Items", listTag);
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    @Override
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 
     private ItemStack[] contents;
 
     public void encodeDisc() {
-        ItemStack recipeDisc = getStackInSlot(9);
+        ItemStack recipeDisc = getItem(9);
         if (recipeDisc != null) {
             if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
                 ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
                 for (int i = 0; i < 9; i++) {
-                    ItemStack item = getStackInSlot(i);
+                    ItemStack item = getItem(i);
                     if (item != null) {
                         item = item.copy();
                         item.stackSize = 1;
@@ -143,7 +153,7 @@ public class TileEntityRecipeEncoder extends TileEntity
     }
 
     public void encodeDisc(RecipeEntryCrafting<?, ItemStack> recipe) {
-        ItemStack recipeDisc = getStackInSlot(9);
+        ItemStack recipeDisc = getItem(9);
         if (recipeDisc != null) {
             if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
                 CompoundTag nbt = RetroStorage.itemsArrayToNBT(RetroStorage.getRecipeItems(new NetworkCraftable(recipe)));

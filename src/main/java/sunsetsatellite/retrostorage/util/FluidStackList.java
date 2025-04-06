@@ -2,8 +2,8 @@ package sunsetsatellite.retrostorage.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.catalyst.fluids.util.FluidType;
 import sunsetsatellite.retrostorage.RetroStorage;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
         if (stack == null) {
             return null;
         }
-        int index = find(stack.liquid.id);
+        int index = find(stack.fluid.getFirstId());
         if (index != -1) {
             if (getFluidAmount() + stack.amount <= getMaxFluidAmount()) {
                 FluidStack invStack = contents.get(index);
@@ -171,7 +171,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
         ArrayList<FluidStack> leftovers = new ArrayList<>();
 
         for (FluidStack stack : what) {
-            FluidStack removed = removeById(stack.liquid.id,stack.amount,strict);
+            FluidStack removed = removeById(stack.fluid.getFirstId(),stack.amount,strict);
             if (removed == null) {
                 leftovers.add(stack);
                 continue;
@@ -190,7 +190,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     @Override
     public boolean removeAll(List<FluidStack> stacks, boolean strict) {
         for (FluidStack stack : stacks) {
-            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
+            FluidStack removed = removeById(stack.fluid.getFirstId(), stack.amount, strict);
             if (removed == null) {
                 return false;
             }
@@ -202,7 +202,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     public List<FluidStack> exportAll(List<FluidStack> stacks, boolean strict) {
         ArrayList<FluidStack> list = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            FluidStack removed = removeById(stack.liquid.id, stack.amount, strict);
+            FluidStack removed = removeById(stack.fluid.getFirstId(), stack.amount, strict);
             if (removed != null) {
                 list.add(removed);
             }
@@ -212,18 +212,18 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
 
     @Override
     public boolean contains(int id) {
-        return contents.stream().anyMatch((S) -> S.liquid.id == id);
+        return contents.stream().anyMatch((S) -> S.fluid.getFirstId() == id);
     }
 
     @Override
     public boolean containsAtLeast(int id, int amount) {
-        return contents.stream().anyMatch((S) -> S.liquid.id == id && S.amount >= amount);
+        return contents.stream().anyMatch((S) -> S.fluid.getFirstId() == id && S.amount >= amount);
     }
 
     @Override
     public boolean containsAtLeast(List<FluidStack> stacks) {
         for (FluidStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.liquid.id, stack.amount);
+            boolean contains = containsAtLeast(stack.fluid.getFirstId(), stack.amount);
             if (!contains) return false;
         }
         return true;
@@ -232,7 +232,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     @Override
     public boolean containsAtLeast(FluidStackList stacks) {
         for (FluidStack stack : stacks) {
-            boolean contains = containsAtLeast(stack.liquid.id, stack.amount);
+            boolean contains = containsAtLeast(stack.fluid.getFirstId(), stack.amount);
             if (!contains) return false;
         }
         return true;
@@ -242,7 +242,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     public ArrayList<FluidStack> returnMissing(ArrayList<FluidStack> stacks) {
         ArrayList<FluidStack> missing = new ArrayList<>();
         for (FluidStack stack : stacks) {
-            int c = count(stack.liquid.id);
+            int c = count(stack.fluid.getFirstId());
             if (c <= 0) {
                 missing.add(stack.copy());
             } else if (c != stack.amount) {
@@ -255,14 +255,14 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     }
 
     @Override
-    public Set<FluidType> getDisallowedFluids() {
+    public Set<Fluid> getDisallowedFluids() {
         return new HashSet<>();
     }
 
     @Override
     public int count(int id) {
         return contents.stream().mapToInt((S) -> {
-            if (S.liquid.id == id) {
+            if (S.fluid.getFirstId() == id) {
                 return S.amount;
             }
             return 0;
@@ -273,7 +273,7 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     public int find(int id) {
         for (int i = 0; i < contents.size(); i++) {
             FluidStack content = contents.get(i);
-            if (content.liquid.id == id) {
+            if (content.fluid.getFirstId() == id) {
                 return i;
             }
         }

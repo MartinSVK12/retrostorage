@@ -6,15 +6,13 @@
 package sunsetsatellite.retrostorage.util;
 
 
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.Container;
-import net.minecraft.core.player.inventory.InventoryCrafting;
+import net.minecraft.core.player.inventory.container.ContainerCrafting;
 
-public class InventoryAutocrafting extends InventoryCrafting {
+public class InventoryAutocrafting extends ContainerCrafting {
     private final ItemStack[] stackList;
     private final int field_21104_b;
-    private Container eventHandler;
 
     public InventoryAutocrafting(int i, int j) {
         super(null, i, j);
@@ -24,20 +22,20 @@ public class InventoryAutocrafting extends InventoryCrafting {
     }
 
     @Override
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return this.stackList.length;
     }
 
     @Override
-    public ItemStack getStackInSlot(int i) {
-        return i >= this.getSizeInventory() ? null : this.stackList[i];
+    public ItemStack getItem(int i) {
+        return i >= this.getContainerSize() ? null : this.stackList[i];
     }
 
     @Override
     public ItemStack getItemStackAt(int i, int j) {
         if (i >= 0 && i < this.field_21104_b) {
             int k = i + j * this.field_21104_b;
-            return this.getStackInSlot(k);
+            return this.getItem(k);
         } else {
             return null;
         }
@@ -47,17 +45,12 @@ public class InventoryAutocrafting extends InventoryCrafting {
     public void setSlotContentsAt(int i, int j, ItemStack itemStack) {
         if (i >= 0 && i < this.field_21104_b) {
             int k = i + j * this.field_21104_b;
-            this.setInventorySlotContents(k, itemStack);
+            this.setItem(k, itemStack);
         }
     }
 
     @Override
-    public String getInvName() {
-        return "Autocrafting";
-    }
-
-    @Override
-    public ItemStack decrStackSize(int i, int j) {
+    public ItemStack removeItem(int i, int j) {
         if (this.stackList[i] != null) {
             ItemStack itemstack1;
             if (this.stackList[i].stackSize <= j) {
@@ -80,21 +73,16 @@ public class InventoryAutocrafting extends InventoryCrafting {
     }
 
     @Override
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    public void setItem(int i, ItemStack itemstack) {
         this.stackList[i] = itemstack;
     }
 
     @Override
-    public int getInventoryStackLimit() {
-        return 64;
+    public void setChanged() {
     }
 
     @Override
-    public void onInventoryChanged() {
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer entityplayer) {
+    public boolean stillValid(Player entityplayer) {
         return true;
     }
 }

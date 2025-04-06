@@ -2,9 +2,9 @@ package sunsetsatellite.retrostorage.util.crafting;
 
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.collection.Pair;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.catalyst.core.util.ItemStackList;
 
 import java.util.ArrayList;
 import java.util.List;

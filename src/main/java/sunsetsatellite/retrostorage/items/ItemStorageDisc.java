@@ -1,19 +1,19 @@
 package sunsetsatellite.retrostorage.items;
 
-
-import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 
 public class ItemStorageDisc extends Item implements ICustomDescription {
-
-    public ItemStorageDisc(String name, int id, int maxStackCapacity, int maxItemCapacity) {
-        super(name, id);
+    public ItemStorageDisc(String translationKey, String namespaceId, int id, int maxStackCapacity, int maxItemCapacity) {
+        super(translationKey, namespaceId, id);
         this.maxStackCapacity = maxStackCapacity;
         this.maxItemCapacity = maxItemCapacity;
+        setMaxStackSize(1);
     }
+
 
     public int getMaxStackCapacity() {
         return maxStackCapacity;

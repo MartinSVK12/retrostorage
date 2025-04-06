@@ -7,11 +7,11 @@ import net.minecraft.core.net.command.TextFormatting;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 
 public class ItemFluidStorageDisc extends Item implements ICustomDescription {
-
-    public ItemFluidStorageDisc(String name, int id, int maxStackCapacity, int maxItemCapacity) {
-        super(name, id);
+    public ItemFluidStorageDisc(String translationKey, String namespaceId, int id, int maxStackCapacity, int maxItemCapacity) {
+        super(translationKey, namespaceId, id);
         this.maxStackCapacity = maxStackCapacity;
         this.maxItemCapacity = maxItemCapacity;
+        setMaxStackSize(1);
     }
 
     public int getMaxStackCapacity() {

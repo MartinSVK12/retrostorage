@@ -1,12 +1,12 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.ListTag;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.IInventory;
+import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.INetworkController;
@@ -16,55 +16,63 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TileEntityImporter extends TileEntityNetworkDevice
-        implements IInventory {
+        implements Container {
     public TileEntityImporter() {
         contents = new ItemStack[9];
         this.workTimer = new TickTimer(this, this::work, 10, true);
     }
 
-    public int getSizeInventory() {
+    @Override
+    public int getContainerSize() {
         return contents.length;
     }
 
     public boolean isEmpty() {
-        for (int i = 0; i < getSizeInventory() - 1; i++) {
-            if (getStackInSlot(i) != null) {
+        for (int i = 0; i < getContainerSize() - 1; i++) {
+            if (getItem(i) != null) {
                 return false;
             }
         }
         return true;
     }
 
-    public ItemStack getStackInSlot(int i) {
+    @Override
+    public ItemStack getItem(int i) {
         return contents[i];
     }
 
-    public ItemStack decrStackSize(int i, int j) {
+    @Override
+    public ItemStack removeItem(int i, int j) {
         if (contents[i] != null) {
             if (contents[i].stackSize <= j) {
                 ItemStack itemstack = contents[i];
                 contents[i] = null;
-                onInventoryChanged();
+                setChanged();
                 return itemstack;
             }
             ItemStack itemstack1 = contents[i].splitStack(j);
             if (contents[i].stackSize == 0) {
                 contents[i] = null;
             }
-            onInventoryChanged();
+            setChanged();
             return itemstack1;
         } else {
             return null;
         }
     }
 
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    public void setItem(int i, ItemStack itemstack) {
         contents[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+        if (itemstack != null && itemstack.stackSize > getMaxStackSize()) {
+            itemstack.stackSize = getMaxStackSize();
         }
-        onInventoryChanged();
+        setChanged();
 
+    }
+
+    @Override
+    public String getNameTranslationKey() {
+        return "container.retrostorage.itemImporter";
     }
 
     public int getInventorySlotContainItem(int itemID, int itemDamage) {
@@ -77,21 +85,19 @@ public class TileEntityImporter extends TileEntityNetworkDevice
         return -1;
     }
 
-    public void onInventoryChanged() {
-        super.onInventoryChanged();
+    @Override
+    public void setChanged() {
+        super.setChanged();
     }
 
-    public String getInvName() {
-        return "Importer";
-    }
-
+    @Override
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
         isWhitelist = CompoundTag.getBoolean("isWhitelist");
         enabled = CompoundTag.getBoolean("enabled");
         slot = CompoundTag.getInteger("workSlot");
-        contents = new ItemStack[getSizeInventory()];
+        contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
             int j = CompoundTag1.getByte("Slot") & 0xff;
@@ -102,6 +108,7 @@ public class TileEntityImporter extends TileEntityNetworkDevice
 
     }
 
+    @Override
     public void writeToNBT(CompoundTag CompoundTag) {
         super.writeToNBT(CompoundTag);
         ListTag listTag = new ListTag();
@@ -121,27 +128,30 @@ public class TileEntityImporter extends TileEntityNetworkDevice
 
     }
 
-    public int getInventoryStackLimit() {
+    @Override
+    public int getMaxStackSize() {
         return 64;
     }
 
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        if (worldObj.getBlockTileEntity(x, y, z) != this) {
+    @Override
+    public boolean stillValid(Player entityplayer) {
+        if (worldObj.getTileEntity(x, y, z) != this) {
             return false;
         }
         return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortInventory() {
+    public void sortContainer() {
 
     }
 
     @Override
     public void tick() {
+        if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
         ArrayList<Class<?>> tiles = new ArrayList<>();
-        tiles.add(IInventory.class);
+        tiles.add(Container.class);
         connectedTiles = getConnectedTileEntity(tiles);
     }
 
@@ -155,37 +165,37 @@ public class TileEntityImporter extends TileEntityNetworkDevice
         if(controller != null && enabled){
             for (TileEntity tile : connectedTiles.values()) {
                 if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
-                    IInventory inv = (IInventory) tile;
+                    Container inv = (Container) tile;
                     if(slot == -1){
                         here:
-                        for (int i = 0; i < inv.getSizeInventory(); i++) {
-                            ItemStack stack = inv.getStackInSlot(i);
+                        for (int i = 0; i < inv.getContainerSize(); i++) {
+                            ItemStack stack = inv.getItem(i);
                             if(matchesFilter(stack)){
                                 for (CraftingTask currentTask : controller.getCurrentTasks()) {
                                     ItemStack leftovers = currentTask.insertFromProcess(stack);
                                     if(leftovers == stack) continue;
-                                    inv.setInventorySlotContents(i, leftovers);
+                                    inv.setItem(i, leftovers);
                                     break here;
                                 }
                                 ItemStack leftovers = controller.addItemToNetwork(stack);
-                                inv.setInventorySlotContents(i, leftovers);
+                                inv.setItem(i, leftovers);
                                 break;
                             }
                         }
                     } else {
-                        if (slot >= inv.getSizeInventory()) {
+                        if (slot >= inv.getContainerSize()) {
                             return;
                         }
-                        ItemStack stack = inv.getStackInSlot(slot);
+                        ItemStack stack = inv.getItem(slot);
                         if(matchesFilter(stack)){
                             for (CraftingTask currentTask : controller.getCurrentTasks()) {
                                 ItemStack leftovers = currentTask.insertFromProcess(stack);
                                 if(leftovers == stack) continue;
-                                inv.setInventorySlotContents(slot, leftovers);
+                                inv.setItem(slot, leftovers);
                                 return;
                             }
                             ItemStack leftovers = controller.addItemToNetwork(stack);
-                            inv.setInventorySlotContents(slot, leftovers);
+                            inv.setItem(slot, leftovers);
                         }
                     }
                 }
