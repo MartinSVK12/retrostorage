@@ -161,6 +161,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
+        super.tick();
         /*ArrayList<Class<?>> tiles = new ArrayList<>();
         tiles.add(TileEntityChest.class);
         connectedTiles = getConnectedTileEntity(tiles);*/

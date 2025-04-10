@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import sunsetsatellite.retrostorage.mp.PacketTerminalContents;
+import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
 import sunsetsatellite.retrostorage.util.StackType;
@@ -34,7 +36,9 @@ import sunsetsatellite.retrostorage.util.crafting.CraftableType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.EntityHelper;
+import turniplabs.halplibe.helper.NetworkHelper;
 import turniplabs.halplibe.helper.RecipeBuilder;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
@@ -80,6 +84,9 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityCoprocessor.class,id("crafting_coprocessor"));
         EntityHelper.createTileEntity(TileEntityStorageBus.class,id("storage_bus"));
         EntityHelper.createTileEntity(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
+
+        NetworkHandler.registerNetworkMessage(PacketTerminalInteraction::new);
+        NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
 
         LOGGER.info("RetroStorage initialized.");
     }

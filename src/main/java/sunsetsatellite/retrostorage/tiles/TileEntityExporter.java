@@ -149,6 +149,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
+        super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
         ArrayList<Class<?>> tiles = new ArrayList<>();

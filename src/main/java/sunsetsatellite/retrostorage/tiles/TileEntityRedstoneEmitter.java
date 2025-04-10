@@ -110,6 +110,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
 
     @Override
     public void tick() {
+        super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
         worldObj.markBlocksDirty(x, y, z, x, y, z);

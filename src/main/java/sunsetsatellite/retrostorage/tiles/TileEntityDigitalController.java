@@ -46,8 +46,8 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public void tick() {
-        if (worldObj != null && worldObj.isClientSide) return;
         super.tick();
+        if (worldObj != null && worldObj.isClientSide) return;
         externalEnergy = getConnectedTileEntity(TileEntityEnergyAcceptor.class);
         if (externalEnergy != null) {
             int draw = getEnergyConsumption();

@@ -63,6 +63,7 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     }
 
     public void tick() {
+        super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         if (getItem(0) != null && discsUsed.size() < maxDiscs) {
             if (getItem(0).getItem() instanceof ItemFluidStorageDisc) {

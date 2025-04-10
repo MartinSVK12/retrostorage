@@ -16,6 +16,7 @@ public class ScreenDigitalController extends Screen {
     @Override
     public void render(int x, int y, float renderPartialTicks) {
         super.render(x, y, renderPartialTicks);
+        renderBackground();
         int i = 64;
         font.drawString("Digital Controller", 2, i, 0xFFFFFFFF);
         font.drawString("Press ESC to exit.", 2, i += 10, 0xFFFFFFFF);
@@ -48,37 +49,6 @@ public class ScreenDigitalController extends Screen {
             font.drawString(
                     String.format("%d co-processors connected.", tile.getCoprocessors().size()
                     ), 2, i += 10, 0xFFFFFFFF);
-            /*if (tile.externalEnergy == null) {
-                if (tile.active && tile.energy > 0) {
-                    int cableSize = tile.network.searchAll(TileEntityNetworkCable.class).size();
-                    font.drawString(String.format("Usage: %d (%ds left)", (tile.network.devicesSize() - cableSize) + 1, Math.round(
-                            (tile.energy / ((tile.network.devicesSize() - cableSize) + 1)) / 20
-                    )), 2, i, 0xFFFFFFFF);
-                }
-            } else {
-                if (tile.active && tile.energy > 0) {
-                    int cableSize = tile.network.searchAll(TileEntityNetworkCable.class).size();
-                    font.drawString(String.format("Usage: %d (%ds left)", (tile.network.devicesSize() - cableSize) + 1, Math.round(
-                            ((float) tile.externalEnergy.getEnergy() / ((tile.network.devicesSize() - cableSize) + 1)) / 20
-                    )), 2, i, 0xFFFFFFFF);
-                }
-            }
-
-
-            i += 10;
-            if (tile.network.drive != null) {
-                font.drawString(String.format("Drive detected: %s", tile.network.drive.toStringFormatted()), 2, i, 0xFFFFFFFF);
-            }
-            i += 10;
-            if (tile.network.fluidDrive != null) {
-                font.drawString(String.format("Fluid drive detected: %s", tile.network.fluidDrive.toStringFormatted()), 2, i, 0xFFFFFFFF);
-            }
-            font.drawString(String.format("Assemblers: %d", tile.network.getAssemblers().size()), 2, i += 10, 0xFFFFFFFF);
-            font.drawString(String.format("Interfaces: %d", tile.network.getAdvInterfaces().size()), 2, i += 10, 0xFFFFFFFF);
-            font.drawString(String.format("Coprocessors: %d", tile.network.getCoprocessors().size()), 2, i += 10, 0xFFFFFFFF);
-            font.drawString(String.format("Available craftables: %d", tile.network.knownCraftables.size()), 2, i += 10, 0xFFFFFFFF);
-            font.drawString(String.format("Current active tasks: %d / %d", tile.network.currentTasks.size(), tile.network.getCoprocessors().size() + 1), 2, i += 10, 0xFFFFFFFF);
-            font.drawString(String.format("Request queue size: %d", tile.network.requestQueue.size()), 2, i += 10, 0xFFFFFFFF);*/
         }
     }
 

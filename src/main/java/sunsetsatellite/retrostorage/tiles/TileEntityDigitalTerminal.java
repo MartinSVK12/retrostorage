@@ -9,7 +9,6 @@ public class TileEntityDigitalTerminal extends TileEntityNetworkDevice {
     public TileEntityDigitalTerminal() {}
 
     public void tick() {
-        if (worldObj != null && worldObj.isClientSide) return;
         super.tick();
     }
 

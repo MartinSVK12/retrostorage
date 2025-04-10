@@ -209,22 +209,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
                     }
                 }
             }
-            //TODO: reimplement player fluid i/o
         }
-    }
-
-    /*private boolean drainFluidContainer(INetworkController controller, ItemStack heldItemStack, IItemFluidContainer item) {
-        if(item.canDrain(inventoryPlayer.getHeldItemStack())){
-            int amountInItem = item.getCapacity(heldItemStack) - item.getRemainingCapacity(heldItemStack);
-            FluidStack drained = item.drain(heldItemStack, amountInItem);
-            Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
-            fluidStack.ifPresent((S)->item.fill(S,heldItemStack));
-            return true;
-        }
-        return false;
-    }*/
-
-    public void onClosed() {
     }
 
     @Override

@@ -20,9 +20,12 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
+import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.util.INetworkController;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -36,6 +39,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
     public final ArrayList<Vec2i> slots = new ArrayList<>();
     public final ContainerInventory inventoryPlayer;
     public boolean searching = false;
+    public String searchQuery = "";
 
     public ScreenDigitalTerminal(ContainerInventory inventoryplayer, TileEntityDigitalTerminal tile) {
         super(new MenuDigitalTerminal(inventoryplayer, tile));
@@ -50,7 +54,6 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
                 slots.add(new Vec2i(x,y));
             }
         }
-
     }
 
     @Override
@@ -110,6 +113,16 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         return x >= slot.x - 1 && x < slot.x + 16 + 1 && y >= slot.y - 1 && y < slot.y + 16 + 1;
     }
 
+    public int getVirtualSlotAtPosition(int x, int y){
+        for (int i = 0; i < slots.size(); i++) {
+            Vec2i slot = slots.get(i);
+            if (mouseHoveringOverSlot(slot, x, y)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void init() {
         super.init();
         buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
@@ -152,69 +165,15 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         boolean space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean mod = shift || control || alt || space;
 
-        INetworkController controller = tile.getController();
-        if(controller != null){
-            Slot invSlot = getSlotAtPosition(mouseX, mouseY);
-            if(invSlot != null) {
-                //left shift click to network
-                if(mouseButton == 0 && shift){
-                    ItemStack stack = invSlot.getItemStack();
-                    invSlot.set(controller.addItemToNetwork(stack));
-                    return;
-                }
-            }
+        Slot invSlot = getSlotAtPosition(mouseX, mouseY);
+        int slotId = -1;
+        int vSlotId = getVirtualSlotAtPosition(mouseX, mouseY);
+        if(invSlot != null) slotId = invSlot.index;
 
-            for (int i = 0; i < slots.size(); i++) {
-                Vec2i slot = slots.get(i);
-                int id = i + (tile.page * 36);
-                List<ItemStack> stacks = getFilteredStacks();
-                if(mouseHoveringOverSlot(slot,mouseX,mouseY)){
-                    //left click
-                    if(mouseButton == 0){
-                        //left shift click from network
-                        if(shift){
-                            if(id >= stacks.size()) break;
-                            ItemStack stack = stacks.get(id);
-                            if(stack == null) break;
-                            int amount = stack.getItem().getItemStackLimit(stack);
-                            inventoryPlayer.insertItem(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount),false);
-                            break;
-                        }
-                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
-                        if(heldItemStack != null){
-                            inventoryPlayer.setHeldItemStack(controller.addItemToNetwork(heldItemStack));
-                        } else {
-                            if(id >= stacks.size()) break;
-                            ItemStack stack = stacks.get(id);
-                            if(stack == null) break;
-                            int amount = stack.getItem().getItemStackLimit(stack);
-                            inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
-                        }
-                    }
-                    //right click
-                    if(mouseButton == 1){
-                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
-                        if(heldItemStack != null){
-                            Optional<ItemStack> leftovers = Optional.ofNullable(controller.addItemToNetwork(heldItemStack.splitStack(1)));
-                            if(heldItemStack.stackSize <= 0) {
-                                inventoryPlayer.setHeldItemStack(leftovers.orElse(null));
-                            }
-                            leftovers.ifPresent((S)->heldItemStack.stackSize += S.stackSize);
-                        } else {
-                            if(id >= stacks.size()) break;
-                            ItemStack stack = stacks.get(id);
-                            if(stack == null) break;
-                            int amount = Math.min(stack.stackSize / 2, stack.getItem().getItemStackLimit(stack) / 2);
-                            inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
-                        }
-                    }
-                }
-            }
-        }
+        NetworkHandler.sendToServer(new PacketTerminalInteraction(searchQuery,slotId,vSlotId,mouseButton,shift));
     }
 
-    public void onClosed() {
-    }
+
 
     @Override
     public void drawAfterSlotAndButtonRendering(int mouseX, int mouseY, float partialTick) {
@@ -260,6 +219,10 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
 
     public @UnmodifiableView List<ItemStack> getFilteredStacks() {
 
+        if(EnvironmentHelper.isClientWorld()){
+            return ((MenuDigitalTerminal) inventorySlots).networkStacks;
+        }
+
         SearchQuery query = SearchQuery.resolve("");
 
         //miniscule amounts of reflection
@@ -284,12 +247,14 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         }
 
         searching = false;
+        searchQuery = "";
         INetworkController controller = tile.getController();
         if(controller != null) {
             List<ItemStack> stacks = controller.getAllItems();
             if(query.mode == SearchQuery.SearchMode.ALL && query.query.getLeft() == SearchQuery.QueryType.NAME && query.scope.getLeft() == SearchQuery.SearchScope.NONE){
                 String s = query.query.getRight();
                 if(!Objects.equals(s, "")){
+                    searchQuery = s;
                     stacks = stacks.stream().filter(S -> S.getDisplayName().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
                     searching = true;
                 }

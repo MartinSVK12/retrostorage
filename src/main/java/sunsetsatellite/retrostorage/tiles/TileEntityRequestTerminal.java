@@ -9,6 +9,7 @@ public class TileEntityRequestTerminal extends TileEntityNetworkDevice {
     }
 
     public void tick() {
+        super.tick();
         /*if (network != null && network.drive != null) {
             this.pages = ((network.getAvailableRecipes().size() + network.getAvailableProcesses().size()) / 36) + 1;
         } else {

@@ -30,6 +30,13 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
     }
 
     @Override
+    public void tick() {
+        networkChanged(NetworkManager.getNet(worldObj,x,y,z));
+        if (worldObj != null && worldObj.isClientSide) return;
+        super.tick();
+    }
+
+    @Override
     public NetworkType getType() {
         return NetworkType.RES_NETWORK;
     }

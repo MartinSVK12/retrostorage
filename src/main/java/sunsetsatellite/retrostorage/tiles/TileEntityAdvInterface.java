@@ -143,6 +143,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     @Override
     public void tick() {
+        super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         if (network != null && getController() != null) {
             ArrayList<Class<?>> tiles = new ArrayList<>();
