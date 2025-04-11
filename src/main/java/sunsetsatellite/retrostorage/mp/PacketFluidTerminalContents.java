@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.mp;
 import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import turniplabs.halplibe.helper.network.NetworkMessage;
@@ -11,15 +12,15 @@ import turniplabs.halplibe.helper.network.UniversalPacket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketTerminalContents implements NetworkMessage {
+public class PacketFluidTerminalContents implements NetworkMessage {
 
     public List<ItemStack> stacks = new ArrayList<>();
 
-    public PacketTerminalContents(List<ItemStack> stacks){
+    public PacketFluidTerminalContents(List<ItemStack> stacks){
         this.stacks = stacks;
     }
 
-    public PacketTerminalContents() {}
+    public PacketFluidTerminalContents() {}
 
     @Override
     public void encodeToUniversalPacket(@NotNull UniversalPacket packet) {
@@ -43,8 +44,8 @@ public class PacketTerminalContents implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalTerminal){
-            ((MenuDigitalTerminal) context.player.craftingInventory).networkStacks = stacks;
+        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalFluidTerminal){
+            ((MenuDigitalFluidTerminal) context.player.craftingInventory).networkStacks = stacks;
         }
     }
 }

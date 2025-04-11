@@ -14,7 +14,7 @@ import java.util.*;
 public interface INetworkController {
     boolean isActive();
 
-    int getEnergyConsumption();
+    long getEnergyConsumption();
 
     ArrayDeque<CraftingTask> getRequestQueue();
 

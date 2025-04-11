@@ -53,6 +53,10 @@ public class MenuDigitalTerminal extends MenuAbstract {
                 virtualSlots.add(new Vec2i(x,y));
             }
         }
+
+        if(EnvironmentHelper.isServerEnvironment()){
+            NetworkHandler.sendToPlayer(inventoryPlayer.player,new PacketTerminalContents(networkStacks));
+        }
     }
 
     @Override
@@ -65,15 +69,8 @@ public class MenuDigitalTerminal extends MenuAbstract {
         return null;
     }
 
-    @Override
-    public void broadcastChanges() {
-        super.broadcastChanges();
-        if(EnvironmentHelper.isServerEnvironment()){
-            NetworkHandler.sendToPlayer(inventoryPlayer.player,new PacketTerminalContents(networkStacks));
-        }
-    }
-
     public void handleTerminalInteraction(String searchQuery, int slotId, int vSlotId, int mouseButton, boolean shift) {
+        broadcastChanges();
         INetworkController controller = tile.getController();
         if(controller != null){
             Slot invSlot = null;
@@ -93,7 +90,7 @@ public class MenuDigitalTerminal extends MenuAbstract {
                 return;
             }
             int id = vSlotId + (tile.page * 36);
-            networkStacks = getFilteredStacks(searchQuery, controller);
+            getFilteredStacks(searchQuery);
             //left click
             if(mouseButton == 0){
                 //left shift click from network
@@ -139,15 +136,14 @@ public class MenuDigitalTerminal extends MenuAbstract {
                 }
             }
         }
-        broadcastChanges();
     }
 
-    private static List<ItemStack> getFilteredStacks(String searchQuery, INetworkController controller) {
-        List<ItemStack> stacks = controller.getAllItems();
+    public void getFilteredStacks(String searchQuery) {
+        List<ItemStack> stacks = tile.getController().getAllItems();
         if(!Objects.equals(searchQuery, "")){
             stacks = stacks.stream().filter(S -> S.getDisplayName().toLowerCase().contains(searchQuery.toLowerCase())).collect(Collectors.toList());
         }
-        return stacks;
+        networkStacks = stacks;
     }
 
     public boolean stillValid(Player entityplayer) {

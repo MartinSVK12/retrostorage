@@ -18,10 +18,12 @@ import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.Fluids;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.mp.PacketRequestControllerUpdate;
 import sunsetsatellite.retrostorage.util.*;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,7 +52,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         if (worldObj != null && worldObj.isClientSide) return;
         externalEnergy = getConnectedTileEntity(TileEntityEnergyAcceptor.class);
         if (externalEnergy != null) {
-            int draw = getEnergyConsumption();
+            long draw = getEnergyConsumption();
             if(externalEnergy.getEnergy() >= draw){
                 externalEnergy.internalRemoveEnergy(draw);
                 active = true;
@@ -58,7 +60,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
                 active = false;
             }
         } else {
-            int draw = getEnergyConsumption();
+            long draw = getEnergyConsumption();
             if(energy >= draw){
                 energy -= draw;
                 active = true;
@@ -71,8 +73,14 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         }
     }
 
+    public long energyConsumptionCache = 0;
+
     @Override
-    public int getEnergyConsumption() {
+    public long getEnergyConsumption() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return energyConsumptionCache;
+        }
         return getAttachedFluidStorage().size() + getAttachedStorage().size() + getProcessors().size() + getCoprocessors().size();
     }
 
@@ -83,16 +91,19 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public ArrayDeque<CraftingTask> getRequestQueue() {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayDeque<>();
         return requestQueue;
     }
 
     @Override
     public ArrayList<CraftingTask> getCurrentTasks() {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
         return currentTasks;
     }
 
     @Override
     public void clearRequestQueue() {
+        if (worldObj != null && worldObj.isClientSide) return;
         requestQueue.clear();
         for (CraftingTask task : currentTasks) {
             task.onCancelled();
@@ -105,6 +116,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public void processCraftingTasks(){
+        if (worldObj != null && worldObj.isClientSide) return;
         if (currentTasks.size() < getCoprocessors().size() + 1) {
             for (CraftingTask task : requestQueue) {
                 if (!task.isStarted()) {
@@ -130,6 +142,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView Set<INetworkItemStorage> getAttachedStorage() {
+        if (worldObj != null && worldObj.isClientSide) return new HashSet<>();
         if(network == null) return new HashSet<>();
         HashSet<INetworkItemStorage> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
@@ -145,6 +158,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView Set<INetworkFluidStorage> getAttachedFluidStorage() {
+        if (worldObj != null && worldObj.isClientSide) return new HashSet<>();
         if(network == null) return new HashSet<>();
         HashSet<INetworkFluidStorage> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
@@ -160,6 +174,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView Set<ICoprocessor> getCoprocessors() {
+        if (worldObj != null && worldObj.isClientSide) return new HashSet<>();
         if(network == null) return new HashSet<>();
         HashSet<ICoprocessor> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
@@ -175,6 +190,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView Set<IProcessor> getProcessors() {
+        if (worldObj != null && worldObj.isClientSide) return new HashSet<>();
         if(network == null) return new HashSet<>();
         HashSet<IProcessor> set = new HashSet<>();
         for (Direction dir : Direction.values()) {
@@ -190,6 +206,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<NetworkCraftable> getCraftables() {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
         if(network == null) return new ArrayList<>();
         ArrayList<NetworkCraftable> list = new ArrayList<>();
         for (IProcessor processor : getProcessors()) {
@@ -200,6 +217,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView Map<IProcessor, @UnmodifiableView List<NetworkCraftable>> getCraftablesMap() {
+        if (worldObj != null && worldObj.isClientSide) return new HashMap<>();
         if(network == null) return new HashMap<>();
         HashMap<IProcessor, @UnmodifiableView List<NetworkCraftable>> map = new HashMap<>();
         for (IProcessor processor : getProcessors()) {
@@ -210,6 +228,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public void requestCrafting(CraftingTask task) {
+        if (worldObj != null && worldObj.isClientSide) return;
         if (task != null) {
             RetroStorage.LOGGER.debug("Requesting: " + task.getCraftable().getOutput());
             requestQueue.add(task);
@@ -218,6 +237,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public IProcessor findProcessor(NetworkCraftable craftable) {
+        if (worldObj != null && worldObj.isClientSide) return null;
         ArrayList<IProcessor> instances = new ArrayList<>(getProcessors());
 
         for (IProcessor processor : instances) {
@@ -230,6 +250,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public IProcessor findProcessorWithNode(ProcessNode node) {
+        if (worldObj != null && worldObj.isClientSide) return null;
         for (IProcessor processor : getProcessors()) {
             if(processor.getWorkingNode() == node){
                 return processor;
@@ -240,16 +261,19 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<ItemStack> getAllItems() {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
         return getAllItems(RetroStorage::sortById);
     }
 
     @Override
     public @UnmodifiableView List<FluidStack> getAllFluids() {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
         return getAllFluids(RetroStorage::sortByIdFluid);
     }
 
     @Override
     public @UnmodifiableView List<ItemStack> getAllItems(Comparator<? super ItemStack> sortingFunction) {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
         if(network == null) return new ArrayList<>();
         ArrayList<ItemStack> list = new ArrayList<>();
         for (INetworkItemStorage storage : getAttachedStorage()) {
@@ -261,6 +285,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView Map<INetworkItemStorage,@UnmodifiableView List<ItemStack>> getItemMap(){
+        if (worldObj != null && worldObj.isClientSide) return new HashMap<>();
         if(network == null) return new HashMap<>();
         HashMap<INetworkItemStorage,@UnmodifiableView List<ItemStack>> map = new HashMap<>();
         for (INetworkItemStorage storage : getAttachedStorage()) {
@@ -271,6 +296,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<FluidStack> getAllFluids(Comparator<? super FluidStack> sortingFunction) {
+        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
         if(network == null) return new ArrayList<>();
         ArrayList<FluidStack> list = new ArrayList<>();
         for (INetworkFluidStorage storage : getAttachedFluidStorage()) {
@@ -303,54 +329,96 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         tag.putBoolean("Active", active);
     }
 
+    public long itemCapacityCache = 0;
+    public long itemStackCapacityCache = 0;
+    public long itemAmountCache = 0;
+    public long itemStackAmountCache = 0;
+    public long fluidCapacityCache = 0;
+    public long fluidStackCapacityCache = 0;
+    public long fluidAmountCache = 0;
+    public long fluidStackAmountCache = 0;
+
     @Override
     public long getItemCapacity() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return itemCapacityCache;
+        }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getItemCapacity).sum();
     }
 
 
     @Override
     public long getStackCapacity() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return itemStackCapacityCache;
+        }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getStackCapacity).sum();
     }
 
 
     @Override
     public long getStackAmount() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return itemStackAmountCache;
+        }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getStackAmount).sum();
     }
 
 
     @Override
     public long getAmount() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return itemAmountCache;
+        }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getAmount).sum();
     }
 
     @Override
     public long getFluidCapacity() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return fluidCapacityCache;
+        }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getMaxFluidAmount).sum();
     }
 
 
     @Override
     public long getFluidStackCapacity() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return fluidStackCapacityCache;
+        }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getMaxFluidStackSize).sum();
     }
 
 
     @Override
     public long getFluidStackAmount() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return fluidStackAmountCache;
+        }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getFluidStackAmount).sum();
     }
 
 
     @Override
     public long getFluidAmount() {
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            return fluidAmountCache;
+        }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getFluidAmount).sum();
     }
 
     @Override
     public ItemStack addItemToNetwork(ItemStack stack) {
+        if (worldObj != null && worldObj.isClientSide) return stack;
 
         List<INetworkItemStorage> storages = new ArrayList<>(getAttachedStorage());
         storages.sort(Collections.reverseOrder(Comparator.comparing(INetworkItemStorage::getPriority)));
@@ -365,6 +433,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<ItemStack> addItemsToNetwork(List<ItemStack> stacks) {
+        if (worldObj != null && worldObj.isClientSide) return stacks;
         ArrayList<ItemStack> leftovers = new ArrayList<>();
         for (ItemStack stack : stacks) {
             leftovers.add(addItemToNetwork(stack));
@@ -375,6 +444,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public ItemStack removeItemFromNetwork(int id, int meta, CompoundTag data, long amount) {
         if(id == 0) return null;
+        if (worldObj != null && worldObj.isClientSide) return null;
 
         ItemStack stack = new ItemStack(id,0,meta,data);
 
@@ -397,6 +467,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public FluidStack addFluidToNetwork(FluidStack stack) {
+        if (worldObj != null && worldObj.isClientSide) return stack;
         List<INetworkFluidStorage> storages = new ArrayList<>(getAttachedFluidStorage());
         storages.sort(Collections.reverseOrder(Comparator.comparing(INetworkFluidStorage::getPriority)));
 
@@ -410,6 +481,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<FluidStack> addFluidsToNetwork(List<FluidStack> stacks) {
+        if (worldObj != null && worldObj.isClientSide) return stacks;
         ArrayList<FluidStack> leftovers = new ArrayList<>();
         for (FluidStack stack : stacks) {
             leftovers.add(addFluidToNetwork(stack));
@@ -420,7 +492,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public FluidStack removeFluidFromNetwork(int id, long amount) {
         if(id == 0) return null;
-
+        if (worldObj != null && worldObj.isClientSide) return null;
 
         FluidStack stack = new FluidStack(Fluids.getFluid(id),0);
 
@@ -448,6 +520,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<ItemStack> moveItems(List<ItemStack> what, ItemStackList where) {
+        if (worldObj != null && worldObj.isClientSide) return what;
         ArrayList<ItemStack> leftovers = new ArrayList<>();
 
         for (ItemStack stack : what) {
@@ -469,6 +542,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<FluidStack> moveFluids(List<FluidStack> what, FluidStackList where) {
+        if (worldObj != null && worldObj.isClientSide) return what;
         ArrayList<FluidStack> leftovers = new ArrayList<>();
 
         for (FluidStack stack : what) {
@@ -485,12 +559,14 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public long countItems(int id, int meta, CompoundTag data) {
+        if (worldObj != null && worldObj.isClientSide) return 0;
         List<ItemStack> stacks = getAllItems();
         return stacks.stream().filter((S)->S.itemID == id && (S.getMetadata() == meta || meta == -1) && (data == null || S.getData().equals(data))).mapToInt((S)->S.stackSize).sum();
     }
 
     @Override
     public long countFluids(int id) {
+        if (worldObj != null && worldObj.isClientSide) return 0;
         List<FluidStack> fluids = getAllFluids();
         return fluids.stream().filter(S -> S.fluid.getFirstId() == id).mapToLong(S -> S.amount).sum();
     }

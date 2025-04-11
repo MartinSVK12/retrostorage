@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.mp.PacketTerminalContents;
-import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.*;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
 import sunsetsatellite.retrostorage.util.StackType;
@@ -87,6 +86,12 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
 
         NetworkHandler.registerNetworkMessage(PacketTerminalInteraction::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
+        NetworkHandler.registerNetworkMessage(PacketTerminalRequestContents::new);
+        NetworkHandler.registerNetworkMessage(PacketRequestControllerUpdate::new);
+        NetworkHandler.registerNetworkMessage(PacketControllerUpdate::new);
+        NetworkHandler.registerNetworkMessage(PacketFluidTerminalContents::new);
+        NetworkHandler.registerNetworkMessage(PacketFluidTerminalRequestContents::new);
+        NetworkHandler.registerNetworkMessage(PacketFluidTerminalInteraction::new);
 
         LOGGER.info("RetroStorage initialized.");
     }

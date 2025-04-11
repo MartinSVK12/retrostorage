@@ -21,11 +21,13 @@ import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
 import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.PacketTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
+import turniplabs.halplibe.helper.network.NetworkMessage;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -40,6 +42,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
     public final ContainerInventory inventoryPlayer;
     public boolean searching = false;
     public String searchQuery = "";
+    public int lastVirtualSlotClicked = -1;
 
     public ScreenDigitalTerminal(ContainerInventory inventoryplayer, TileEntityDigitalTerminal tile) {
         super(new MenuDigitalTerminal(inventoryplayer, tile));
@@ -62,6 +65,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         if (scrollDelta != 0) {
             handlePageScroll(scrollDelta > 0);
         }
+        NetworkHandler.sendToServer(new PacketTerminalRequestContents(searchQuery));
     }
 
     private void handlePageScroll(boolean scrollUp) {
@@ -157,8 +161,6 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
         boolean alt = Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
@@ -171,6 +173,10 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         if(invSlot != null) slotId = invSlot.index;
 
         NetworkHandler.sendToServer(new PacketTerminalInteraction(searchQuery,slotId,vSlotId,mouseButton,shift));
+
+        lastVirtualSlotClicked = vSlotId;
+
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
 

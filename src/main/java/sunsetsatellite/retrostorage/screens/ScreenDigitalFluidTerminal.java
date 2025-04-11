@@ -16,6 +16,7 @@ import net.minecraft.core.item.ItemBucketEmpty;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
+import net.minecraft.core.player.inventory.slot.Slot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
@@ -28,9 +29,16 @@ import sunsetsatellite.catalyst.fluids.api.IItemFluidContainer;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
+import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
+import sunsetsatellite.retrostorage.mp.PacketFluidTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.PacketFluidTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.PacketTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.util.INetworkController;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -44,6 +52,8 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
     public final ArrayList<Vec2i> slots = new ArrayList<>();
     public final ContainerInventory inventoryPlayer;
     public boolean searching = false;
+    public String searchQuery = "";
+    public int lastVirtualSlotClicked = -1;
 
     public ScreenDigitalFluidTerminal(ContainerInventory inventoryplayer, TileEntityDigitalFluidTerminal tile) {
         super(new MenuDigitalFluidTerminal(inventoryplayer, tile));
@@ -67,6 +77,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         if (scrollDelta != 0) {
             handlePageScroll(scrollDelta > 0);
         }
+        NetworkHandler.sendToServer(new PacketFluidTerminalRequestContents(searchQuery));
     }
 
     private void handlePageScroll(boolean scrollUp) {
@@ -151,65 +162,22 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
         boolean alt = Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
         boolean space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean mod = shift || control || alt || space;
 
-        INetworkController controller = tile.getController();
-        if(controller != null){
-            for (int i = 0; i < slots.size(); i++) {
-                Vec2i slot = slots.get(i);
-                int id = i + (tile.page * 36);
-                List<ItemStack> stacks = getFilteredStacks();
-                if (mouseHoveringOverSlot(slot, mouseX, mouseY)) {
-                    //left click
-                    if (mouseButton == 0) {
-                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
-                        if(heldItemStack != null) {
-                            if (id >= stacks.size()) break;
-                            ItemStack stack = stacks.get(id);
-                            if (stack == null) break;
-                            Block<?> blockFluid = Blocks.blocksList[stack.itemID];
-                            if(blockFluid == null) break;
-                            if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
-                                IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                                if(item instanceof ItemBucketEmpty && stack.stackSize < 1000) break;
-                                if (item.canFill(heldItemStack)) {
-                                    int amount = item.getRemainingCapacity(heldItemStack);
-                                    FluidStack fluidStack = controller.removeFluidFromNetwork(blockFluid.id(), amount);
-                                    item.fill(fluidStack,heldItemStack);
-                                    if(fluidStack.amount <= 0) fluidStack = null;
-                                    if(fluidStack != null){
-                                        controller.addFluidToNetwork(fluidStack);
-                                    }
-                                }
-                            }
-                        }
-                    } else if (mouseButton == 1) { //right click
-                        ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
-                        if(heldItemStack != null) {
-                            if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
-                                IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                                if (item.canDrain(heldItemStack)) {
-                                    int amount = item.getCurrentFluid(heldItemStack).amount;
-                                    if (amount > 0) {
-                                        FluidStack drained = item.drain(heldItemStack, amount);
-                                        if (drained != null) {
-                                            Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
-                                            fluidStack.ifPresent((S) -> item.fill(S, heldItemStack));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        Slot invSlot = getSlotAtPosition(mouseX, mouseY);
+        int slotId = -1;
+        int vSlotId = getVirtualSlotAtPosition(mouseX, mouseY);
+        if(invSlot != null) slotId = invSlot.index;
+
+        NetworkHandler.sendToServer(new PacketFluidTerminalInteraction(searchQuery,slotId,vSlotId,mouseButton,shift));
+
+        lastVirtualSlotClicked = vSlotId;
+
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -259,6 +227,10 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
     public @UnmodifiableView List<ItemStack> getFilteredStacks() {
 
+        if(EnvironmentHelper.isClientWorld()){
+            return ((MenuDigitalFluidTerminal) inventorySlots).networkStacks;
+        }
+
         SearchQuery query = SearchQuery.resolve("");
 
         //miniscule amounts of reflection
@@ -283,12 +255,14 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         }
 
         searching = false;
+        searchQuery = "";
         INetworkController controller = tile.getController();
         if(controller != null) {
             List<ItemStack> stacks = controller.getAllFluids().stream().map(FluidStack::toItemStack).collect(Collectors.toList());
             if(query.mode == SearchQuery.SearchMode.ALL && query.query.getLeft() == SearchQuery.QueryType.NAME && query.scope.getLeft() == SearchQuery.SearchScope.NONE){
                 String s = query.query.getRight();
                 if(!Objects.equals(s, "")){
+                    searchQuery = s;
                     stacks = stacks.stream().filter(S -> S.getDisplayName().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
                     searching = true;
                 }
@@ -296,5 +270,15 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
             return stacks;
         }
         return Collections.emptyList();
+    }
+
+    public int getVirtualSlotAtPosition(int x, int y){
+        for (int i = 0; i < slots.size(); i++) {
+            Vec2i slot = slots.get(i);
+            if (mouseHoveringOverSlot(slot, x, y)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
