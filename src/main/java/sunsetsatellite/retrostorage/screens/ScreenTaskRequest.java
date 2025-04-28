@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
-import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.menus.MenuTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
@@ -22,19 +21,23 @@ import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingCalculator;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ScreenTaskRequest extends ScreenContainerAbstract {
-    protected String screenTitle = "Scroll Container";
+    protected String screenTitle = "Task Request";
     private RecipeItemSlotElement slotContainer;
     public CalculationResult calculationResult;
     public final INetworkController network;
     public ItemStack requestedItem;
     public ItemStack lastRequestedItem;
     public NetworkCraftable requestedCraftable;
+    public List<NetworkCraftable> availableCraftables = new ArrayList<>();
     public int requestAmount = 1;
     public TileEntityRequestTerminal tile;
     public DigitalItemElement guiRenderItem = new DigitalItemElement(Minecraft.getMinecraft());
 
-    public ScreenTaskRequest(TileEntityRequestTerminal tile, ItemStack request, NetworkCraftable craftable) {
+    public ScreenTaskRequest(TileEntityRequestTerminal tile, ItemStack request, NetworkCraftable craftable, List<NetworkCraftable> craftables) {
         super(new MenuTaskRequest(null,tile));
         xSize = 256;
         ySize = 256;
@@ -42,10 +45,10 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
         this.tile = tile;
         this.network = tile.getController();
         this.requestedCraftable = craftable;
+        this.availableCraftables = craftables;
     }
 
     public void init() {
-        this.screenTitle = "Task Request";
         this.slotContainer = new RecipeItemSlotElement(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
 
         this.slotContainer.registerScrollButtons(this.buttons, 4, 5);
@@ -98,7 +101,7 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
                 recalculate();
             }
             if (guibutton.id == 2) {
-                if (requestedCraftable == null || !network.getCraftables().contains(requestedCraftable)) return;
+                if (requestedCraftable == null || !availableCraftables.contains(requestedCraftable)) return;
                 if (calculationResult.getType() == CalculationResultType.OK) {
                     network.requestCrafting(calculationResult.getTask());
                     mc.displayScreen(new ScreenRequestQueue(network, null));
@@ -108,8 +111,8 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
     }
 
     private void recalculate() {
-        if (requestedCraftable == null || !network.getCraftables().contains(requestedCraftable)) return;
-        CraftingCalculator calc = new CraftingCalculator(network, requestAmount, new VariantStack(requestedItem), requestedCraftable, network.getCraftables());
+        if (requestedCraftable == null || !availableCraftables.contains(requestedCraftable)) return;
+        CraftingCalculator calc = new CraftingCalculator(network, requestAmount, new VariantStack(requestedItem), requestedCraftable, availableCraftables);
         calculationResult = calc.calculate();
         lastRequestedItem = requestedItem;
     }

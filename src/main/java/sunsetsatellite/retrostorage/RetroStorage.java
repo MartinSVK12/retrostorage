@@ -84,14 +84,26 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityStorageBus.class,id("storage_bus"));
         EntityHelper.createTileEntity(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
 
-        NetworkHandler.registerNetworkMessage(PacketTerminalInteraction::new);
-        NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalRequestContents::new);
+        NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
+        NetworkHandler.registerNetworkMessage(PacketTerminalInteraction::new);
+
+        NetworkHandler.registerNetworkMessage(PacketFluidTerminalRequestContents::new);
+        NetworkHandler.registerNetworkMessage(PacketFluidTerminalContents::new);
+        NetworkHandler.registerNetworkMessage(PacketFluidTerminalInteraction::new);
+
+        NetworkHandler.registerNetworkMessage(PacketRequestTerminalRequestContents::new);
+        NetworkHandler.registerNetworkMessage(PacketRequestTerminalContents::new);
+
         NetworkHandler.registerNetworkMessage(PacketRequestControllerUpdate::new);
         NetworkHandler.registerNetworkMessage(PacketControllerUpdate::new);
-        NetworkHandler.registerNetworkMessage(PacketFluidTerminalContents::new);
-        NetworkHandler.registerNetworkMessage(PacketFluidTerminalRequestContents::new);
-        NetworkHandler.registerNetworkMessage(PacketFluidTerminalInteraction::new);
+
+        NetworkHandler.registerNetworkMessage(PacketRequestControllerContentsUpdate::new);
+        NetworkHandler.registerNetworkMessage(PacketControllerContentsUpdate::new);
+
+        NetworkHandler.registerNetworkMessage(PacketRequestCrafting::new);
+        NetworkHandler.registerNetworkMessage(PacketRequestControllerCraftingQueue::new);
+        NetworkHandler.registerNetworkMessage(PacketControllerCraftingQueue::new);
 
         LOGGER.info("RetroStorage initialized.");
     }

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
@@ -43,6 +44,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
     public boolean searching = false;
     public String searchQuery = "";
     public int lastVirtualSlotClicked = -1;
+    public TickTimer requestTimer = new TickTimer(this, ()-> NetworkHandler.sendToServer(new PacketTerminalRequestContents(searchQuery)), 10, true);
 
     public ScreenDigitalTerminal(ContainerInventory inventoryplayer, TileEntityDigitalTerminal tile) {
         super(new MenuDigitalTerminal(inventoryplayer, tile));
@@ -65,7 +67,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         if (scrollDelta != 0) {
             handlePageScroll(scrollDelta > 0);
         }
-        NetworkHandler.sendToServer(new PacketTerminalRequestContents(searchQuery));
+        requestTimer.tick();
     }
 
     private void handlePageScroll(boolean scrollUp) {

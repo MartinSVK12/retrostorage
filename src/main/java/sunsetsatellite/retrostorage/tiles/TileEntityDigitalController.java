@@ -18,7 +18,10 @@ import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.Fluids;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.mp.PacketRequestControllerContentsUpdate;
+import sunsetsatellite.retrostorage.mp.PacketRequestControllerCraftingQueue;
 import sunsetsatellite.retrostorage.mp.PacketRequestControllerUpdate;
+import sunsetsatellite.retrostorage.mp.PacketRequestCrafting;
 import sunsetsatellite.retrostorage.util.*;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
@@ -89,15 +92,24 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         return new PacketTileEntityData(this);
     }
 
+    public ArrayDeque<CraftingTask> requestQueueCache = new ArrayDeque<>();
+    public ArrayList<CraftingTask> currentTasksCache = new ArrayList<>();
+
     @Override
     public ArrayDeque<CraftingTask> getRequestQueue() {
-        if (worldObj != null && worldObj.isClientSide) return new ArrayDeque<>();
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerCraftingQueue(x,y,z));
+            return requestQueueCache;
+        }
         return requestQueue;
     }
 
     @Override
     public ArrayList<CraftingTask> getCurrentTasks() {
-        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
+        if (worldObj != null && worldObj.isClientSide) {
+
+            return currentTasksCache;
+        }
         return currentTasks;
     }
 
@@ -228,9 +240,12 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public void requestCrafting(CraftingTask task) {
-        if (worldObj != null && worldObj.isClientSide) return;
         if (task != null) {
             RetroStorage.LOGGER.debug("Requesting: " + task.getCraftable().getOutput());
+            if (worldObj != null && worldObj.isClientSide) {
+                NetworkHandler.sendToServer(new PacketRequestCrafting(x,y,z, task));
+                return;
+            }
             requestQueue.add(task);
         }
     }
@@ -261,13 +276,19 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
 
     @Override
     public @UnmodifiableView List<ItemStack> getAllItems() {
-        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerContentsUpdate(x,y,z));
+            return itemCache;
+        }
         return getAllItems(RetroStorage::sortById);
     }
 
     @Override
     public @UnmodifiableView List<FluidStack> getAllFluids() {
-        if (worldObj != null && worldObj.isClientSide) return new ArrayList<>();
+        if (worldObj != null && worldObj.isClientSide) {
+            NetworkHandler.sendToServer(new PacketRequestControllerContentsUpdate(x,y,z));
+            return fluidCache;
+        }
         return getAllFluids(RetroStorage::sortByIdFluid);
     }
 
@@ -337,6 +358,8 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     public long fluidStackCapacityCache = 0;
     public long fluidAmountCache = 0;
     public long fluidStackAmountCache = 0;
+    public @UnmodifiableView List<ItemStack> itemCache = Collections.unmodifiableList(new ArrayList<>());
+    public @UnmodifiableView List<FluidStack> fluidCache = Collections.unmodifiableList(new ArrayList<>());
 
     @Override
     public long getItemCapacity() {

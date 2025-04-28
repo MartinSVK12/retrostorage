@@ -24,6 +24,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.CatalystFluids;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.fluids.api.IItemFluidContainer;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
@@ -54,6 +55,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
     public boolean searching = false;
     public String searchQuery = "";
     public int lastVirtualSlotClicked = -1;
+    public TickTimer requestTimer = new TickTimer(this, ()-> NetworkHandler.sendToServer(new PacketFluidTerminalRequestContents(searchQuery)), 10, true);
 
     public ScreenDigitalFluidTerminal(ContainerInventory inventoryplayer, TileEntityDigitalFluidTerminal tile) {
         super(new MenuDigitalFluidTerminal(inventoryplayer, tile));
@@ -77,7 +79,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         if (scrollDelta != 0) {
             handlePageScroll(scrollDelta > 0);
         }
-        NetworkHandler.sendToServer(new PacketFluidTerminalRequestContents(searchQuery));
+        requestTimer.tick();
     }
 
     private void handlePageScroll(boolean scrollUp) {

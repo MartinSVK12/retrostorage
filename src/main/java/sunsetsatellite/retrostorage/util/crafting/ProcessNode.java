@@ -1,5 +1,6 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
@@ -25,6 +26,61 @@ public class ProcessNode extends Node {
         this.process = pattern.getProcess();
 
         init();
+    }
+
+    public ProcessNode(CompoundTag tag){
+        readFromNbt(tag);
+        this.process = pattern.getProcess();
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        super.writeToNbt(tag);
+        tag.putString("Type", "ProcessNode");
+        tag.putInt("State", state.ordinal());
+        tag.putInt("QuantityFinished", quantityFinished);
+        CompoundTag itemsReceivedTag = new CompoundTag();
+        itemsReceived.writeToNbt(itemsReceivedTag);
+        tag.put("ItemsReceived", itemsReceivedTag);
+
+        CompoundTag fluidsReceivedTag = new CompoundTag();
+        fluidsReceived.writeToNbt(fluidsReceivedTag);
+        tag.put("FluidsReceived", fluidsReceivedTag);
+
+        CompoundTag singleItemsToReceiveTag = new CompoundTag();
+        singleItemsToReceive.writeToNbt(singleItemsToReceiveTag);
+        tag.put("SingleItemsToReceive", singleItemsToReceiveTag);
+
+        CompoundTag singleFluidsToReceiveTag = new CompoundTag();
+        singleFluidsToReceive.writeToNbt(singleFluidsToReceiveTag);
+        tag.put("SingleFluidsToReceive", singleFluidsToReceiveTag);
+
+        if (singleItemsToRequire != null) {
+            CompoundTag singleItemsToRequireTag = new CompoundTag();
+            singleItemsToRequire.writeToNbt(singleItemsToRequireTag);
+            tag.put("SingleItemsToRequire", singleItemsToRequireTag);
+        }
+
+        if (singleFluidsToRequire != null) {
+            CompoundTag singleFluidsToRequireTag = new CompoundTag();
+            singleFluidsToRequire.writeToNbt(singleFluidsToRequireTag);
+            tag.put("SingleFluidsToRequire", singleFluidsToRequireTag);
+        }
+    }
+
+    @Override
+    public void readFromNbt(CompoundTag tag) {
+        super.readFromNbt(tag);
+        state = ProcessingState.values()[tag.getInteger("State")];
+        quantityFinished = tag.getInteger("QuantityFinished");
+        itemsReceived.readFromNbt(tag.getCompound("ItemsReceived"));
+        fluidsReceived.readFromNbt(tag.getCompound("FluidsReceived"));
+        singleItemsToReceive.readFromNbt(tag.getCompound("SingleItemsToReceive"));
+        singleFluidsToReceive.readFromNbt(tag.getCompound("SingleFluidsToReceive"));
+        if(singleItemsToRequire == null) singleItemsToRequire = new ItemStackList();
+        singleItemsToRequire.readFromNbt(tag.getCompound("SingleItemsToRequire"));
+        if(singleFluidsToRequire == null) singleFluidsToRequire = new FluidStackList();
+        singleFluidsToRequire.readFromNbt(tag.getCompound("SingleFluidsToRequire"));
     }
 
     private void init() {

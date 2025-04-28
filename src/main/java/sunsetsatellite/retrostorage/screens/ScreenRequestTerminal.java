@@ -18,14 +18,18 @@ import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuRequestTerminal;
+import sunsetsatellite.retrostorage.mp.PacketFluidTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.PacketRequestTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,6 +46,8 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
     public TileEntityRequestTerminal tile;
     public Player player;
     public boolean searching = false;
+    public String searchQuery = "";
+    public TickTimer requestTimer = new TickTimer(this, ()-> NetworkHandler.sendToServer(new PacketRequestTerminalRequestContents(searchQuery)), 10, true);
 
     public ScreenRequestTerminal(ContainerInventory invPlayer, TileEntityRequestTerminal tile) {
         super(new MenuRequestTerminal(invPlayer, tile));
@@ -65,6 +71,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
         if (scrollDelta != 0) {
             handlePageScroll(scrollDelta > 0);
         }
+        requestTimer.tick();
     }
 
     private void handlePageScroll(boolean scrollUp) {
@@ -178,7 +185,8 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
                         ItemStack stack = stacks.get(id).getLeft();
                         NetworkCraftable craftable = stacks.get(id).getRight();
                         if (stack == null) break;
-                        mc.displayScreen(new ScreenTaskRequest(tile, stack, craftable));
+                        List<NetworkCraftable> craftables = stacks.stream().map(Pair::getRight).collect(Collectors.toList());
+                        mc.displayScreen(new ScreenTaskRequest(tile, stack, craftable, craftables));
                     }
                 }
             }
@@ -232,6 +240,10 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
 
     public @UnmodifiableView List<Pair<ItemStack,NetworkCraftable>> getFilteredStacks() {
 
+        if(EnvironmentHelper.isClientWorld()){
+            return ((MenuRequestTerminal) inventorySlots).networkCraftables;
+        }
+
         SearchQuery query = SearchQuery.resolve("");
 
         //miniscule amounts of reflection
@@ -256,6 +268,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
         }
 
         searching = false;
+        searchQuery = "";
         INetworkController controller = tile.getController();
         if(controller != null) {
             List<NetworkCraftable> craftables = controller.getCraftables();
@@ -267,6 +280,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
             if(query.mode == SearchQuery.SearchMode.ALL && query.query.getLeft() == SearchQuery.QueryType.NAME && query.scope.getLeft() == SearchQuery.SearchScope.NONE){
                 String s = query.query.getRight();
                 if(!Objects.equals(s, "")){
+                    searchQuery = s;
                     stacks = stacks.stream().filter(P -> P.getLeft().getDisplayName().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
                     searching = true;
                 }

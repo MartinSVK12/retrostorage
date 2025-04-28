@@ -7,7 +7,7 @@ import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.lang.I18n;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
@@ -19,6 +19,7 @@ public class ScreenRequestQueue extends Screen {
     public ArrayList<CraftingTask> list = new ArrayList<>();
     public INetworkController network;
     public ScreenRequestTerminal parent;
+    public TickTimer refreshQueueTimer = new TickTimer(this, this::refreshList, 20, true);
 
     public ScreenRequestQueue(INetworkController network, ScreenRequestTerminal parent) {
         super(null);
@@ -65,6 +66,13 @@ public class ScreenRequestQueue extends Screen {
         this.drawStringCentered(this.font, this.screenTitle, this.width / 2, 20, 16777215);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(140, this.height - 175, this.width * 2, this.height + 351); //TODO: fix this breaking at lower resolutions than 1080p
+        refreshQueueTimer.tick();
+        this.slotContainer.drawScreen(mx, my, partialTick);
+
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+    }
+
+    private void refreshList() {
         this.list.clear();
         if (network != null) {
             list.addAll(network.getRequestQueue());
@@ -72,9 +80,6 @@ public class ScreenRequestQueue extends Screen {
                 slotContainer.posZ = (36 * (task.nodes.all().size() + 2));
             }
         }
-        this.slotContainer.drawScreen(mx, my, partialTick);
-
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     public Font getFont(){

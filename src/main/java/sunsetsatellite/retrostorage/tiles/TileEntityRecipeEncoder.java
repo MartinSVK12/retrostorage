@@ -9,6 +9,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
@@ -16,7 +17,7 @@ import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import java.util.ArrayList;
 
 public class TileEntityRecipeEncoder extends TileEntity
-        implements Container {
+        implements Container, IScreenActionListener {
     public TileEntityRecipeEncoder() {
         contents = new ItemStack[10];
     }
@@ -159,6 +160,13 @@ public class TileEntityRecipeEncoder extends TileEntity
                 CompoundTag nbt = RetroStorage.itemsArrayToNBT(RetroStorage.getRecipeItems(new NetworkCraftable(recipe)));
                 recipeDisc.getData().putCompound("recipe", nbt);
             }
+        }
+    }
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if(id == 0){
+            encodeDisc();
         }
     }
 }

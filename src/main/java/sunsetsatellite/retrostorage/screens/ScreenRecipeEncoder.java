@@ -20,9 +20,13 @@ import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.menus.MenuRecipeEncoder;
 import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.Objects;
 
@@ -79,6 +83,9 @@ public class ScreenRecipeEncoder extends ScreenContainerAbstract {
                 }
             } else {
                 tile.encodeDisc();
+            }
+            if(EnvironmentHelper.isClientWorld()){
+                NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,new Vec3i(tile.x, tile.y, tile.z), tile.getClass()));
             }
         }
         //System.out.println(tile.page);

@@ -1,5 +1,8 @@
 package sunsetsatellite.retrostorage.util;
 
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.Tag;
+import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
@@ -339,6 +342,29 @@ public class FluidStackList implements IFluidStackList, Iterable<FluidStack> {
     @Override
     public Iterator<FluidStack> iterator() {
         return contents.iterator();
+    }
+
+    public void writeToNbt(CompoundTag tag){
+        for (int i = 0; i < contents.size(); i++) {
+            FluidStack fluid = contents.get(i);
+            CompoundTag fluidNBT = new CompoundTag();
+            if (fluid != null) {
+                fluid.writeToNBT(fluidNBT);
+                tag.putCompound(String.valueOf(i), fluidNBT);
+            } else {
+                tag.getValue().remove(String.valueOf(i));
+            }
+        }
+    }
+
+    public void readFromNbt(CompoundTag tag){
+        for (Tag<?> value : tag.getValues()) {
+            CompoundTag fluidNBT = (CompoundTag) value;
+            FluidStack stack = new FluidStack(fluidNBT);
+            if(stack.amount > 0){
+                contents.add(stack);
+            }
+        }
     }
 }
 

@@ -136,13 +136,22 @@ public class DiscManipulator {
             ItemStack item = stacks.get(i);
             CompoundTag itemNBT = new CompoundTag();
             if (item != null) {
+                item.writeToNBT(itemNBT);
                 itemNBT.putInt("Count", item.stackSize);
-                itemNBT.putShort("id", (short) item.itemID);
-                itemNBT.putShort("Damage", (short) item.getMetadata());
-                itemNBT.putByte("Expanded", (byte) 1);
-                itemNBT.putInt("Version", 19133);
-                itemNBT.putCompound("Data", item.getData());
                 tag.putCompound(String.valueOf(i), itemNBT);
+            } else {
+                tag.getValue().remove(String.valueOf(i));
+            }
+        }
+    }
+
+    public static void serializeFluidStacks(CompoundTag tag, List<FluidStack> stacks) {
+        for (int i = 0; i < stacks.size(); i++) {
+            FluidStack fluid = stacks.get(i);
+            CompoundTag fluidNbt = new CompoundTag();
+            if (fluid != null) {
+                fluid.writeToNBT(fluidNbt);
+                tag.putCompound(String.valueOf(i), fluidNbt);
             } else {
                 tag.getValue().remove(String.valueOf(i));
             }
@@ -192,12 +201,8 @@ public class DiscManipulator {
                 itemAmount += stack.stackSize;
                 stackAmount += 1;
                 CompoundTag itemNBT = new CompoundTag();
+                stack.writeToNBT(itemNBT);
                 itemNBT.putInt("Count", stack.stackSize);
-                itemNBT.putShort("id", (short) stack.itemID);
-                itemNBT.putShort("Damage", (short) stack.getMetadata());
-                itemNBT.putByte("Expanded", (byte) 1);
-                itemNBT.putInt("Version", 19133);
-                itemNBT.putCompound("Data", stack.getData());
                 tag.putCompound(String.valueOf(i), itemNBT);
                 i++;
                 iter.remove();

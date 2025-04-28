@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.Tag;
+
+import java.util.*;
 
 public class NodeList {
     private final LinkedHashMap<NetworkCraftable, Node> nodes = new LinkedHashMap<>();
@@ -15,6 +15,12 @@ public class NodeList {
         }
         nodesToRemove.clear();
     }
+
+    public NodeList(CompoundTag tag){
+        readFromNbt(tag);
+    }
+
+    public NodeList() {}
 
     public boolean isEmpty() {
         return nodes.isEmpty();
@@ -43,4 +49,29 @@ public class NodeList {
         nodes.put(pattern, node);
     }
 
+    public void writeToNbt(CompoundTag tag){
+        int i = 0;
+        for (Map.Entry<NetworkCraftable, Node> entry : nodes.entrySet()) {
+            CompoundTag entryTag = new CompoundTag();
+            CompoundTag craftableTag = new CompoundTag();
+            entry.getKey().writeToNBT(craftableTag);
+            entryTag.put("Craftable", craftableTag);
+            CompoundTag nodeTag = new CompoundTag();
+            entry.getValue().writeToNbt(nodeTag);
+            entryTag.put("Node", nodeTag);
+            tag.put(String.valueOf(i), entryTag);
+            i++;
+        }
+    }
+
+    public void readFromNbt(CompoundTag tag){
+        for (Tag<?> value : tag.getValues()) {
+            CompoundTag entryTag = (CompoundTag) value;
+            CompoundTag craftableTag = entryTag.getCompound("Craftable");
+            CompoundTag nodeTag = entryTag.getCompound("Node");
+            NetworkCraftable craftable = new NetworkCraftable(craftableTag);
+            Node node = Node.loadNode(nodeTag);
+            nodes.put(craftable, node);
+        }
+    }
 }

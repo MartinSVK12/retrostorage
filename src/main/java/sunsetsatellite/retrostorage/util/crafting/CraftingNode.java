@@ -1,5 +1,6 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
@@ -13,6 +14,11 @@ public class CraftingNode extends Node {
 
     public CraftingNode(boolean root, NetworkCraftable pattern) {
         super(root, pattern);
+        this.recipe = pattern.getRecipe();
+    }
+
+    public CraftingNode(CompoundTag tag){
+        readFromNbt(tag);
         this.recipe = pattern.getRecipe();
     }
 
@@ -50,6 +56,17 @@ public class CraftingNode extends Node {
                 craftingTask.onAllDone(this);
             }
         }
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        super.writeToNbt(tag);
+        tag.putString("Type", "CraftingNode");
+    }
+
+    @Override
+    public void readFromNbt(CompoundTag tag) {
+        super.readFromNbt(tag);
     }
 
     public RecipeEntryCrafting<?, ItemStack> getRecipe() {

@@ -1,7 +1,11 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
+import com.mojang.nbt.tags.CompoundTag;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.network.NetworkComponentTile;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
@@ -12,9 +16,9 @@ import java.util.List;
 public class CraftingTask {
     public IProcessor processor;
     public final INetworkController network;
-    private final int quantity;
-    public final NodeList nodes;
-    private final NetworkCraftable craftable;
+    private int quantity;
+    public NodeList nodes;
+    private NetworkCraftable craftable;
     private int totalSteps;
     private int currentStep;
     private long startTime = -1;
@@ -23,8 +27,8 @@ public class CraftingTask {
 
     private final ItemStackList internalStorage = new ItemStackList();
     private final FluidStackList internalFluidStorage = new FluidStackList();
-    private final ItemStackList initialRequirements;
-    private final FluidStackList initialFluidRequirements;
+    private ItemStackList initialRequirements;
+    private FluidStackList initialFluidRequirements;
 
     public CraftingTask(INetworkController network, int quantity, NodeList nodes, NetworkCraftable craftable, ItemStackList initialRequirements, FluidStackList initialFluidRequirements) {
         this.network = network;
@@ -33,6 +37,11 @@ public class CraftingTask {
         this.craftable = craftable;
         this.initialRequirements = initialRequirements;
         this.initialFluidRequirements = initialFluidRequirements;
+    }
+
+    public CraftingTask(INetworkController network, CompoundTag tag) {
+        this.network = network;
+        readFromNbt(tag);
     }
 
     public void start() {
@@ -207,4 +216,72 @@ public class CraftingTask {
     public boolean isStarted() {
         return started;
     }
+
+    public void writeToNbt(CompoundTag tag){
+        if(processor != null){
+            if(processor instanceof NetworkComponentTile){
+                Vec3i position = ((NetworkComponentTile) processor).getPosition();
+                CompoundTag pos = new CompoundTag();
+                position.writeToNBT(pos);
+                tag.put("Processor", pos);
+            }
+        }
+        tag.putInt("Quantity", quantity);
+        tag.putInt("TotalSteps", totalSteps);
+        tag.putInt("CurrentStep", currentStep);
+        tag.putLong("StartTime",startTime);
+        tag.putInt("Ticks", ticks);
+        tag.putBoolean("Started",started);
+        CompoundTag craftableTag = new CompoundTag();
+        craftable.writeToNBT(craftableTag);
+        tag.putCompound("Craftable", craftableTag);
+        CompoundTag internalStorageTag = new CompoundTag();
+        CompoundTag internalFluidStorageTag = new CompoundTag();
+        CompoundTag initialRequirementsTag = new CompoundTag();
+        CompoundTag initialFluidRequirementsTag = new CompoundTag();
+        internalStorage.writeToNbt(internalStorageTag);
+        internalFluidStorage.writeToNbt(internalFluidStorageTag);
+        initialRequirements.writeToNbt(initialRequirementsTag);
+        initialFluidRequirements.writeToNbt(initialFluidRequirementsTag);
+        tag.putCompound("InternalStorage", internalStorageTag);
+        tag.putCompound("InternalFluidStorage", internalFluidStorageTag);
+        tag.putCompound("Requirements", initialRequirementsTag);
+        tag.putCompound("FluidRequirements", initialFluidRequirementsTag);
+        CompoundTag nodeListTag = new CompoundTag();
+        nodes.writeToNbt(nodeListTag);
+        tag.putCompound("NodeList", nodeListTag);
+    }
+
+    public void readFromNbt(CompoundTag tag){
+        if(tag.containsKey("Processor")){
+            Vec3i pos = new Vec3i(tag.getCompound("Processor"));
+            if(network instanceof TileEntity && ((TileEntity) network).worldObj != null){
+                processor = (IProcessor) ((TileEntity) network).worldObj.getTileEntity(pos.x,pos.y,pos.z);
+            }
+        }
+        quantity = tag.getInteger("Quantity");
+        totalSteps = tag.getInteger("TotalSteps");
+        currentStep = tag.getInteger("CurrentStep");
+        startTime = tag.getLong("StartTime");
+        ticks = tag.getInteger("Ticks");
+        started = tag.getBoolean("Started");
+        craftable = new NetworkCraftable(tag.getCompound("Craftable"));
+        CompoundTag internalStorageTag = tag.getCompound("InternalStorage");
+        CompoundTag internalFluidStorageTag = tag.getCompound("InternalFluidStorage");
+        CompoundTag initialRequirementsTag = tag.getCompound("Requirements");
+        CompoundTag initialFluidRequirementsTag = tag.getCompound("FluidRequirements");
+        internalStorage.readFromNbt(internalStorageTag);
+        internalFluidStorage.readFromNbt(internalFluidStorageTag);
+        if(initialRequirements == null){
+            initialRequirements = new ItemStackList();
+        }
+        if(initialFluidRequirements == null){
+            initialFluidRequirements = new FluidStackList();
+        }
+        initialRequirements.readFromNbt(initialRequirementsTag);
+        initialFluidRequirements.readFromNbt(initialFluidRequirementsTag);
+        CompoundTag nodeListTag = tag.getCompound("NodeList");
+        nodes = new NodeList(nodeListTag);
+    }
+
 }

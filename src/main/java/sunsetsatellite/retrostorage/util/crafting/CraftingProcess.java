@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.util.crafting;
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.item.ItemStack;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.util.StackType;
 import sunsetsatellite.retrostorage.util.VariantStack;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class CraftingProcess {
 
-    public final String name;
-    public final List<Step> steps;
+    public String name;
+    public List<Step> steps;
 
     public CraftingProcess(String name, List<Step> steps) {
         this.name = name;
@@ -24,6 +25,21 @@ public class CraftingProcess {
     }
 
     public CraftingProcess(CompoundTag tag) {
+        readFromNBT(tag);
+    }
+
+    public void writeToNBT(CompoundTag tag) {
+        tag.putString("processName", name);
+        CompoundTag stepsTag = new CompoundTag();
+        for (Step step : steps) {
+            CompoundTag stepTag = new CompoundTag();
+            step.writeToNBT(stepTag);
+            stepsTag.put("task"+step.id, stepTag);
+        }
+        tag.put("tasks", stepsTag);
+    }
+
+    public void readFromNBT(CompoundTag tag) {
         this.name = tag.getString("processName");
         CompoundTag tasks = tag.getCompound("tasks");
         List<Step> unsortedSteps = new ArrayList<>();
@@ -41,12 +57,12 @@ public class CraftingProcess {
     }
 
     public static final class Step {
-        public final StackType type;
-        public final int slot;
-        public final int id;
-        public final boolean output;
-        public final ItemStack stack;
-        public final FluidStack fluidStack;
+        public StackType type;
+        public int slot;
+        public int id;
+        public boolean output;
+        public ItemStack stack;
+        public FluidStack fluidStack;
 
         public Step(int slot, int id, boolean output, ItemStack stack) {
             this.type = StackType.ITEM;
@@ -64,6 +80,35 @@ public class CraftingProcess {
             this.output = output;
             this.fluidStack = stack;
             this.stack = null;
+        }
+
+        public void writeToNBT(CompoundTag tag) {
+            tag.putString("type", type.name().toLowerCase());
+            tag.putInt("slot", slot);
+            tag.putInt("id", id);
+            tag.putBoolean("isOutput",output);
+            CompoundTag stackTag = new CompoundTag();
+            if(stack != null){
+                stack.writeToNBT(stackTag);
+                tag.put("stack",stackTag);
+
+            }
+            if(fluidStack != null){
+                fluidStack.writeToNBT(stackTag);
+                tag.put("stack",stackTag);
+            }
+        }
+
+        public void readFromNBT(CompoundTag tag) {
+            type = tag.getString("type").equals("item") ? StackType.ITEM : StackType.FLUID;
+            slot = tag.getInteger("slot");
+            id = tag.getInteger("id");
+            output = tag.getBoolean("isOutput");
+            if(type == StackType.ITEM) {
+                stack = ItemStack.readItemStackFromNbt(tag.getCompound("stack"));
+            } else {
+                fluidStack = new FluidStack(tag.getCompound("stack"));
+            }
         }
     }
 
