@@ -1,3 +1,5 @@
+# b1.7.3 and r1.2.5 versions of this mod are unmaintained, and as such no support will be given for those.
+
 # RetroStorage 
 Digital storage system mod for Minecraft r1.2.5. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
