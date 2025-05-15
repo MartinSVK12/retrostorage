@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.ItemElement;
 import net.minecraft.client.gui.TooltipElement;
+import net.minecraft.client.option.enums.DescriptionPromptEnum;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.block.color.BlockColorDispatcher;
 import net.minecraft.client.render.block.model.BlockModel;
@@ -96,7 +97,7 @@ public class ScreenFluidFake extends ScreenFluid {
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         if (inventoryplayer.getHeldItemStack() == null && slot != null && slot.hasItem()) {
-            showDescription = Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157) || this.mc.gameSettings.alwaysShowDescriptions.value;
+            showDescription = Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157) || this.mc.gameSettings.itemDescriptions.value == DescriptionPromptEnum.ALWAYS_SHOW;
             String str = this.guiTooltip.getTooltipText(slot.getItemStack(), showDescription, slot);
             if (!str.isEmpty()) {
                 this.guiTooltip.render(str, mouseX, mouseY, 8, -8);

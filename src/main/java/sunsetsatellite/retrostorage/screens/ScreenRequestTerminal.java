@@ -6,6 +6,7 @@ import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TextFieldElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.option.enums.DescriptionPromptEnum;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.entity.player.Player;
@@ -223,7 +224,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
                     if (inventoryPlayer.getHeldItemStack() == null && mouseHoveringOverSlot(slot,mouseX,mouseY))
                     {
                         GL11.glTranslatef(-centerX, -centerY, 0.0F);
-                        boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || mc.gameSettings.alwaysShowDescriptions.value;
+                        boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || mc.gameSettings.itemDescriptions.value == DescriptionPromptEnum.ALWAYS_SHOW;
                         String str = tooltip.getTooltipText(stack, showDescription, null);
                         if(!str.isEmpty())
                         {

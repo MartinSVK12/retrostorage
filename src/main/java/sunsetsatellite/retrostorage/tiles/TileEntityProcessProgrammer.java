@@ -6,7 +6,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
-import sunsetsatellite.catalyst.CatalystFluids;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
@@ -19,13 +19,53 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class TileEntityProcessProgrammer extends TileEntity
-        implements Container {
+        implements Container, IScreenActionListener {
 
     public TileEntityProcessProgrammer() {
         contents = new ItemStack[3];
     }
 
     public final Filter filter = new Filter();
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 6) {
+            isCurrentOutput = !isCurrentOutput;
+        }
+        switch (id) {
+            case 0:
+                saveProcess();
+                break;
+            case 1:
+                clearDisc();
+                isCurrentOutput = false;
+                currentSlot = 0;
+                currentTask = 0;
+                currentProcessName = "New Process";
+                break;
+            case 2:
+                currentTask++;
+                break;
+            case 3:
+                if (currentTask > 0) currentTask--;
+                break;
+            case 4:
+                currentSlot++;
+                break;
+            case 5:
+                if (currentSlot > 0) currentSlot--;
+                break;
+            case 7:
+                setTask(selectedType);
+                break;
+            case 8:
+                selectedType = "item";
+                break;
+            case 9:
+                selectedType = "fluid";
+                break;
+        }
+    }
 
     public static class Filter implements IFluidInventory {
         public FluidStack[] fluidContents = new FluidStack[1];
@@ -173,9 +213,10 @@ public class TileEntityProcessProgrammer extends TileEntity
     }
 
     @Override
-    public void readFromNBT(CompoundTag CompoundTag) {
-        super.readFromNBT(CompoundTag);
-        ListTag listTag = CompoundTag.getList("Items");
+    public void readFromNBT(CompoundTag tag) {
+        super.readFromNBT(tag);
+        currentProcessName = tag.getString("ProcessName");
+        ListTag listTag = tag.getList("Items");
         contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
@@ -187,8 +228,8 @@ public class TileEntityProcessProgrammer extends TileEntity
     }
 
     @Override
-    public void writeToNBT(CompoundTag CompoundTag) {
-        super.writeToNBT(CompoundTag);
+    public void writeToNBT(CompoundTag tag) {
+        super.writeToNBT(tag);
         ListTag listTag = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -198,8 +239,8 @@ public class TileEntityProcessProgrammer extends TileEntity
                 listTag.addTag(CompoundTag1);
             }
         }
-
-        CompoundTag.put("Items", listTag);
+        tag.putString("ProcessName", currentProcessName);
+        tag.put("Items", listTag);
     }
 
     @Override
@@ -289,6 +330,7 @@ public class TileEntityProcessProgrammer extends TileEntity
     public int currentSlot = 0;
     public boolean isCurrentOutput = false;
     public String currentProcessName = "";
+    public String selectedType;
     public HashMap<Integer, HashMap<String, Object>> tasks = new HashMap<Integer, HashMap<String, Object>>();
     private ItemStack[] contents;
 

@@ -10,9 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
 import sunsetsatellite.retrostorage.menus.MenuProcessProgrammer;
 import sunsetsatellite.retrostorage.tiles.TileEntityProcessProgrammer;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.Objects;
 
@@ -113,6 +117,9 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
                 guibutton.enabled = false;
                 buttons.get(8).enabled = true;
                 break;
+        }
+        if(EnvironmentHelper.isClientWorld()){
+            NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,new Vec3i(tile.x, tile.y, tile.z), tile.getClass()));
         }
 
     }
