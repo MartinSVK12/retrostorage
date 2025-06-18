@@ -5,6 +5,7 @@ import com.mojang.nbt.tags.CompoundTag;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
+import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeGroup;
 import net.minecraft.core.data.registry.recipe.RecipeNamespace;
@@ -104,6 +105,8 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         NetworkHandler.registerNetworkMessage(PacketRequestCrafting::new);
         NetworkHandler.registerNetworkMessage(PacketRequestControllerCraftingQueue::new);
         NetworkHandler.registerNetworkMessage(PacketControllerCraftingQueue::new);
+
+        BlockTags.TAG_LIST.add(NETWORK_CABLES_CONNECT);
 
         LOGGER.info("RetroStorage initialized.");
     }
