@@ -94,6 +94,7 @@ dependencies {
 
 	modImplementation("turniplabs:modmenu-bta:${project.mod_menu_version}")
 
+	// Local dependencies
 	// Catalyst
 	implementation(project(path: ":core", configuration: "namedElements"))
 	implementation(project(path: ":energy", configuration: "namedElements"))
@@ -105,6 +106,18 @@ dependencies {
 	implementation(project(path: ":btwaila", configuration: "namedElements"))
 	implementation(project(path: ":dragonfly", configuration: "namedElements"))
 	implementation(project(path: ":vq", configuration: "namedElements"))
+
+	// Remote dependencies
+	//modImplementation("sunsetsatellite:catalyst-core:2.0.3")
+	//modImplementation("sunsetsatellite:catalyst-energy:2.0.4")
+	//modImplementation("sunsetsatellite:catalyst-fluids:2.1.1")
+	//modImplementation("sunsetsatellite:catalyst-multiblocks:2.0.0")
+	//modImplementation("sunsetsatellite:catalyst-multipart:2.0.0")
+
+	//modImplementation("turing:tmb:1.1.1-7.3_01")
+	//modImplementation("useless:btwaila:1.2.1-7.3_01")
+	//modImplementation("sunsetsatellite:vintage-questing:2.0.0-alpha.1")
+	//modImplementation("useless:dragonfly:1.7.0-alpha.3")
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"
