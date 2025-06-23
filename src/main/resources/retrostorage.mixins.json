@@ -8,7 +8,6 @@
   ],
   "client": [
     "ItemDragHandlerMixin",
-    "ScreenContainerAbstract",
     "TooltipElementMixin"
   ],
   "injectors": {

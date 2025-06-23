@@ -20,7 +20,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
-import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
+import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
 import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
 import sunsetsatellite.retrostorage.mp.PacketTerminalRequestContents;
@@ -29,7 +29,6 @@ import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
-import turniplabs.halplibe.helper.network.NetworkMessage;
 
 import java.lang.reflect.Field;
 import java.util.*;

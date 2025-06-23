@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
-import sunsetsatellite.retrostorage.interfaces.mixins.IExtendedScreenDraw;
+import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuFluidStorageBus;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidStorageBus;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
