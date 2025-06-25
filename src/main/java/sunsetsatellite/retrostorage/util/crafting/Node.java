@@ -85,7 +85,7 @@ public abstract class Node {
         this.totalQuantity = tag.getInteger("TotalQuantity");
         this.root = tag.getBoolean("Root");
 
-        CompoundTag requirementsTag = new CompoundTag();
+        CompoundTag requirementsTag = tag.getCompound("Requirements");
         this.requirements = new NodeRequirements(requirementsTag);
     }
 }

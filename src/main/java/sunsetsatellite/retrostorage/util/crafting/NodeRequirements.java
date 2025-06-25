@@ -49,13 +49,13 @@ public class NodeRequirements {
 
         CompoundTag itemsNeededPerCraftTag = new CompoundTag();
         for (Map.Entry<Integer, Integer> entry : itemsNeededPerCraft.entrySet()) {
-            tag.putInt(String.valueOf(entry.getKey()), entry.getValue());
+            itemsNeededPerCraftTag.putInt(String.valueOf(entry.getKey()), entry.getValue());
         }
         tag.put("ItemsNeededPerCraft", itemsNeededPerCraftTag);
 
         CompoundTag fluidsNeededPerCraftTag = new CompoundTag();
         for (Map.Entry<Integer, Integer> entry : fluidsNeededPerCraft.entrySet()) {
-            tag.putInt(String.valueOf(entry.getKey()), entry.getValue());
+            itemsNeededPerCraftTag.putInt(String.valueOf(entry.getKey()), entry.getValue());
         }
         tag.put("FluidsNeededPerCraft", fluidsNeededPerCraftTag);
     }
@@ -84,13 +84,13 @@ public class NodeRequirements {
 
         for (Map.Entry<String, Tag<?>> entry : itemsNeededPerCraftTag.getValue().entrySet()) {
             int key = Integer.parseInt(entry.getKey());
-            int value = ((IntTag) entry).getValue();
+            int value = ((IntTag) entry.getValue()).getValue();
             itemsNeededPerCraft.put(key, value);
         }
 
         for (Map.Entry<String, Tag<?>> entry : fluidsNeededPerCraftTag.getValue().entrySet()) {
             int key = Integer.parseInt(entry.getKey());
-            int value = ((IntTag) entry).getValue();
+            int value = ((IntTag) entry.getValue()).getValue();
             fluidsNeededPerCraft.put(key, value);
         }
     }
