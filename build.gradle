@@ -96,16 +96,16 @@ dependencies {
 
 	// Local dependencies
 	// Catalyst
-	implementation(project(path: ":core", configuration: "namedElements"))
-	implementation(project(path: ":energy", configuration: "namedElements"))
-	implementation(project(path: ":fluids", configuration: "namedElements"))
-	implementation(project(path: ":multiblocks", configuration: "namedElements"))
-	implementation(project(path: ":multipart", configuration: "namedElements"))
+	implementation(project(path: ":catalyst-core", configuration: "namedElements"))
+	implementation(project(path: ":catalyst-energy", configuration: "namedElements"))
+	implementation(project(path: ":catalyst-fluids", configuration: "namedElements"))
+	implementation(project(path: ":catalyst-multiblocks", configuration: "namedElements"))
+	implementation(project(path: ":catalyst-multipart", configuration: "namedElements"))
 
 	implementation(project(path: ":tmb", configuration: "namedElements"))
 	implementation(project(path: ":btwaila", configuration: "namedElements"))
 	implementation(project(path: ":dragonfly", configuration: "namedElements"))
-	implementation(project(path: ":vq", configuration: "namedElements"))
+	implementation(project(path: ":vintage-questing", configuration: "namedElements"))
 
 	// Remote dependencies
 	//modImplementation("sunsetsatellite:catalyst-core:2.0.3")

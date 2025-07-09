@@ -23,27 +23,27 @@ pluginManagement {
 // remove what is below, if you are not using local dependencies
 
 // catalyst
-include(":core")
-include(":fluids")
-include(":multiblocks")
-include(":energy")
-include(":multipart")
+include(":catalyst-core")
+include(":catalyst-fluids")
+include(":catalyst-multiblocks")
+include(":catalyst-energy")
+include(":catalyst-multipart")
 // catalyst
 
 include(":tmb")
 include(":btwaila")
 include(":dragonfly")
-include(":vq")
+include(":vintage-questing")
 
 // catalyst
-project(":core").projectDir = file("${rootProject.projectDir}/../catalyst/core")
-project(":fluids").projectDir = file("${rootProject.projectDir}/../catalyst/fluids")
-project(":multiblocks").projectDir = file("${rootProject.projectDir}/../catalyst/multiblocks")
-project(":energy").projectDir = file("${rootProject.projectDir}/../catalyst/energy")
-project(":multipart").projectDir = file("${rootProject.projectDir}/../catalyst/multipart")
+project(":catalyst-core").projectDir = file("${rootProject.projectDir}/../catalyst/core")
+project(":catalyst-fluids").projectDir = file("${rootProject.projectDir}/../catalyst/fluids")
+project(":catalyst-multiblocks").projectDir = file("${rootProject.projectDir}/../catalyst/multiblocks")
+project(":catalyst-energy").projectDir = file("${rootProject.projectDir}/../catalyst/energy")
+project(":catalyst-multipart").projectDir = file("${rootProject.projectDir}/../catalyst/multipart")
 // catalyst
 
 project(":tmb").projectDir = file("${rootProject.projectDir}/../tmb")
 project(":btwaila").projectDir = file("${rootProject.projectDir}/../btwaila")
 project(":dragonfly").projectDir = file("${rootProject.projectDir}/../dragonfly")
-project(":vq").projectDir = file("${rootProject.projectDir}/../vintage-questing")
+project(":vintage-questing").projectDir = file("${rootProject.projectDir}/../vintage-questing")
