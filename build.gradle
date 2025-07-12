@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.10.0-bta'
 	id 'java'
+	id 'maven-publish'
 }
 
 import org.gradle.internal.os.OperatingSystem
@@ -174,5 +175,45 @@ processResources {
 
 	filesMatching("fabric.mod.json") {
 		expand "version": version
+	}
+}
+
+publishing {
+	if(checkVersion(project.mod_group,project.mod_name,project.mod_version)) {
+		repositories {
+			maven {
+				name = "signalumMaven"
+				url = "https://maven.thesignalumproject.net/releases"
+				credentials(PasswordCredentials)
+				authentication {
+					basic(BasicAuthentication)
+				}
+			}
+		}
+
+		publications {
+			maven(MavenPublication) {
+				groupId = project.mod_group
+				artifactId = project.mod_name
+				version = project.mod_version
+				from components.java
+				println("Version ${project.mod_version} of ${project.mod_group}.${project.mod_name} ready for release!")
+			}
+		}
+	}
+}
+
+static boolean checkVersion(String group, String name, String version) {
+	try {
+		def xml = new URL("https://maven.thesignalumproject.net/releases/${group}/${name}/maven-metadata.xml").text
+		def metadata = new XmlSlurper().parseText(xml)
+		def versions = metadata.versioning.versions.version*.text();
+		if (versions.contains(version)) {
+			System.err.println("Version ${version} of ${group}.${name} already exists!")
+			return false
+		}
+		return true
+	} catch (FileNotFoundException ignored){
+		return true
 	}
 }
