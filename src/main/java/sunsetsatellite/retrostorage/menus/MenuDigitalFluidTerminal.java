@@ -93,7 +93,9 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
                             if(fluidStack != null){
                                 controller.addFluidToNetwork(fluidStack);
                             }
-                            ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                            if(EnvironmentHelper.isServerEnvironment()) {
+                                ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                            }
                         }
                     }
                 }
@@ -110,7 +112,9 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
                                     Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
                                     fluidStack.ifPresent((S) -> item.fill(S, heldItemStack));
                                 }
-                                ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                                if (EnvironmentHelper.isServerEnvironment()) {
+                                    ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                                }
                             }
                         }
                     }
