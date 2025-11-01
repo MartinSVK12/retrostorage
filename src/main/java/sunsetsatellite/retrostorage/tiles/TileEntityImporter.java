@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 public class TileEntityImporter extends TileEntityNetworkDevice
         implements Container {
+
     public TileEntityImporter() {
         contents = new ItemStack[9];
         this.workTimer = new TickTimer(this, this::work, 10, true);
@@ -176,11 +177,11 @@ public class TileEntityImporter extends TileEntityNetworkDevice
                                     ItemStack leftovers = currentTask.insertFromProcess(stack);
                                     if(leftovers == stack) continue;
                                     inv.setItem(i, leftovers);
-                                    break here;
+                                    //break here;
                                 }
                                 ItemStack leftovers = controller.addItemToNetwork(stack);
                                 inv.setItem(i, leftovers);
-                                break;
+                                //break;
                             }
                         }
                     } else {

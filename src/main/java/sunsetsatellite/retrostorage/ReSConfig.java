@@ -51,6 +51,8 @@ public class ReSConfig {
             int maxItems = ((Toml) rawConfig.get(".ItemIDs")).getOrderedKeys().size();
             int newNextBlockId = blockIdStart + maxBlocks;
             int newNextItemId = itemIdStart + maxItems;
+            RetroStorage.LOGGER.info("Using {} block IDs and {} item IDs.", maxBlocks, maxItems);
+            RetroStorage.LOGGER.info("Next block ID will be {}, next item ID will be {}.", newNextBlockId, newNextItemId);
             boolean changed = false;
 
             for (Field F : blockFields) {

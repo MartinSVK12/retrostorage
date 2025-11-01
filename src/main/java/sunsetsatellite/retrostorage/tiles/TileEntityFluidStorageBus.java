@@ -4,9 +4,9 @@ import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.util.FluidInventoryWrapper;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.IFluidStackList;
+import sunsetsatellite.catalyst.fluids.util.FluidInventoryWrapper;
+import sunsetsatellite.catalyst.fluids.util.FluidStackList;
+import sunsetsatellite.catalyst.fluids.util.IFluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkFluidStorage;
 
 import java.util.ArrayList;

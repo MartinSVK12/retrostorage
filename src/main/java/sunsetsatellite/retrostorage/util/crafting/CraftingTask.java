@@ -7,7 +7,7 @@ import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.core.util.network.NetworkComponentTile;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.util.FluidStackList;
+import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
 import sunsetsatellite.retrostorage.util.IProcessor;
 

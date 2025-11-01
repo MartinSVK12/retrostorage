@@ -12,8 +12,8 @@ import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemFluidStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.IFluidStackList;
+import sunsetsatellite.catalyst.fluids.util.FluidStackList;
+import sunsetsatellite.catalyst.fluids.util.IFluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkFluidStorage;
 
 import java.util.*;

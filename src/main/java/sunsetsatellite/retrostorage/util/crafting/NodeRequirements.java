@@ -6,7 +6,7 @@ import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.util.FluidStackList;
+import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 
 import javax.annotation.Nullable;
 import java.util.*;

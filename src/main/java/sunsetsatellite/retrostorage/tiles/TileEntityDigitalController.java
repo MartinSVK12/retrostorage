@@ -2,8 +2,6 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.DoubleTag;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.packet.Packet;
@@ -14,8 +12,8 @@ import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.conduit.ConduitCapability;
 import sunsetsatellite.catalyst.core.util.conduit.IConduitTile;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
-import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
+import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.catalyst.fluids.util.Fluids;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.mp.PacketRequestControllerContentsUpdate;

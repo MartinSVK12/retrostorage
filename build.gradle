@@ -103,10 +103,15 @@ dependencies {
 	implementation(project(path: ":catalyst-multiblocks", configuration: "namedElements"))
 	implementation(project(path: ":catalyst-multipart", configuration: "namedElements"))
 
-	implementation(project(path: ":tmb", configuration: "namedElements"))
+/*	implementation(project(path: ":tmb", configuration: "namedElements"))
 	implementation(project(path: ":btwaila", configuration: "namedElements"))
 	implementation(project(path: ":dragonfly", configuration: "namedElements"))
-	implementation(project(path: ":vintage-questing", configuration: "namedElements"))
+	implementation(project(path: ":vintage-questing", configuration: "namedElements"))*/
+
+    modImplementation "sunsetsatellite:vintage-questing:2.0.0-alpha.4"
+    modImplementation "useless:dragonfly:1.7.0-alpha.5"
+    modImplementation "useless:btwaila:1.2.2-7.3_04"
+    modImplementation "turing:tmb:2.0.0"
 
 	// Remote dependencies
 	//modImplementation("sunsetsatellite:catalyst-core:2.0.3")

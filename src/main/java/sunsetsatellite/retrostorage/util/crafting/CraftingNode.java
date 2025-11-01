@@ -4,7 +4,7 @@ import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
-import sunsetsatellite.retrostorage.util.FluidStackList;
+import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.INetworkController;
 
 import java.util.List;
