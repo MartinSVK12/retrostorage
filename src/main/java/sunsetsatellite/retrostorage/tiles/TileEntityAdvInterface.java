@@ -144,25 +144,27 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     public void tick() {
         super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
-        if (network != null && getController() != null) {
+        if (worldObj != null && network != null && getController() != null) {
             ArrayList<Class<?>> tiles = new ArrayList<>();
             tiles.add(Container.class);
             tiles.add(IFluidInventory.class);
             connectedTiles = getConnectedTileEntity(tiles);
-            int i = 0;
-            for (TileEntity tile : connectedTiles.values()) {
-                if (tile instanceof Container && !(tile instanceof TileEntityAdvInterface)) {
-                    workingTile = (Container) tile;
-                }
-                if (tile instanceof IFluidInventory && !(tile instanceof TileEntityAdvInterface)) {
-                    workingFluidTile = (IFluidInventory) tile;
-                }
+            TileEntity tileEntity = Direction.getDirectionFromSide(getBlockMeta()).getTileEntity(worldObj, this);
+            int i = 1;
+            if (tileEntity instanceof Container && !(tileEntity instanceof TileEntityAdvInterface)) {
+                workingTile = (Container) tileEntity;
+            }
+            if (tileEntity instanceof IFluidInventory && !(tileEntity instanceof TileEntityAdvInterface)) {
+                workingFluidTile = (IFluidInventory) tileEntity;
+            }
+            /*for (TileEntity tile : connectedTiles.values()) {
+
                 if ((tile instanceof Container || tile instanceof IFluidInventory) && !(tile instanceof TileEntityAdvInterface)) {
                     break;
                 }
 
                 i++;
-            }
+            }*/
             if (i >= 6) {
                 workingTile = null;
             }
@@ -348,16 +350,16 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                         can = false;
                         break;
                     } else {
-                        FluidStack testStack = items.get(stepStack.fluid.getFirstId());
+                        FluidStack testStack = items.getById(stepStack.fluid.getFirstId());
                         if (testStack == null) {
                             can = false;
                             break;
                         }
-                        if (testStack.fluid.getFirstId() < stepStack.fluid.getFirstId()) {
+                        if (testStack.amount < stepStack.amount) {
                             can = false;
                             break;
                         }
-                        if (slotStack.fluid.getFirstId() + stepStack.fluid.getFirstId() > workingFluidTile.getFluidCapacityForSlot(step.slot)) {
+                        if (slotStack.amount + stepStack.amount > workingFluidTile.getFluidCapacityForSlot(step.slot)) {
                             can = false;
                             break;
                         }

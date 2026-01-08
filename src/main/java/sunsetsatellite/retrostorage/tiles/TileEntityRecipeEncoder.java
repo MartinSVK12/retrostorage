@@ -6,6 +6,8 @@ import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
+import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
@@ -15,6 +17,9 @@ import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TileEntityRecipeEncoder extends TileEntity
         implements Container, IScreenActionListener {
@@ -157,7 +162,44 @@ public class TileEntityRecipeEncoder extends TileEntity
         ItemStack recipeDisc = getItem(9);
         if (recipeDisc != null) {
             if (recipeDisc.getItem() instanceof ItemRecipeDisc) {
-                CompoundTag nbt = RetroStorage.itemsArrayToNBT(RetroStorage.getRecipeItems(new NetworkCraftable(recipe)));
+                List<ItemStack> inputs = new ArrayList<>(9);
+                if(recipe instanceof RecipeEntryCraftingShaped){
+                    RecipeEntryCraftingShaped shaped = (RecipeEntryCraftingShaped) recipe;
+                    List<ItemStack> stacks = Arrays.stream(shaped.getInput()).map(S -> {
+                        if (S == null) return null;
+                        return S.resolve().get(0);
+                    }).collect(Collectors.toList());
+                    stacks = new ArrayList<>(stacks);
+                    while (stacks.size() < 9){
+                        stacks.add(null);
+                    }
+                    int h = ((RecipeEntryCraftingShaped) recipe).recipeHeight;
+                    int w = ((RecipeEntryCraftingShaped) recipe).recipeWidth;
+
+                    ItemStack[] arrangedInputs = new ItemStack[9];
+                    for (int i = 0; i < 9; i++) {
+                        arrangedInputs[i] = null;
+                    }
+
+                    for (int row = 0; row < h; row++) {
+                        for (int col = 0; col < w; col++) {
+                            int sourceIndex = row * w + col;
+                            int targetIndex = row * 3 + col;
+                            if (sourceIndex < stacks.size()) {
+                                arrangedInputs[targetIndex] = stacks.get(sourceIndex);
+                            }
+                        }
+                    }
+
+                    inputs = new ArrayList<>(Arrays.asList(arrangedInputs));
+                } else if(recipe instanceof RecipeEntryCraftingShapeless){
+                    RecipeEntryCraftingShapeless shapeless = (RecipeEntryCraftingShapeless) recipe;
+                    inputs = shapeless.getInput().stream().map(S -> {
+                        if (S == null) return null;
+                        return S.resolve().get(0);
+                    }).collect(Collectors.toList());
+                }
+                CompoundTag nbt = RetroStorage.itemsArrayToNBT(inputs);
                 recipeDisc.getData().putCompound("recipe", nbt);
             }
         }

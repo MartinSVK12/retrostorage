@@ -107,4 +107,13 @@ public class NetworkCraftable {
                 break;
         }
     }
+
+    @Override
+    public String toString() {
+        if(recipe != null){
+            return "Crafting: " + recipe;
+        } else {
+            return "Process: " + process.name;
+        }
+    }
 }

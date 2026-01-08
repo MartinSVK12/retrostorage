@@ -16,9 +16,11 @@ import java.util.function.Supplier;
 
 public class BlockLogicAssembler extends BlockLogicNetworkDevice {
 
+    public boolean advanced = false;
 
-    public BlockLogicAssembler(Block<?> block, Supplier<TileEntity> tileEntitySupplier, String guiId) {
+    public BlockLogicAssembler(Block<?> block, Supplier<TileEntity> tileEntitySupplier, String guiId, boolean advanced) {
         super(block, tileEntitySupplier, guiId);
+        this.advanced = advanced;
     }
 
     public void onBlockRemoved(World world, int x, int y, int z, int data) {

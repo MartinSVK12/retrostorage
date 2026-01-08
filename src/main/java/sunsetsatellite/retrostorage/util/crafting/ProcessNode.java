@@ -143,7 +143,7 @@ public class ProcessNode extends Node {
 
             if (success) {
                 processor.setFocus(this, craftingTask);
-                allInserted = processor.canInsertItems(new ItemStackList(simulatedRequirementList)) && processor.canInsertFluids(new FluidStackList((ArrayList<FluidStack>) simulatedFluidRequirementList));
+                allInserted = processor.canInsertItems(new ItemStackList(simulatedRequirementList)) && processor.canInsertFluids(new FluidStackList(simulatedFluidRequirementList));
             } else {
                 return;
             }

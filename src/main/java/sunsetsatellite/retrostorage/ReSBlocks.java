@@ -37,6 +37,7 @@ public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
     public static Block<?> digitalFluidTerminal;
     public static Block<?> recipeEncoder;
     public static Block<?> assembler;
+    public static Block<?> advAssembler;
     public static Block<?> requestTerminal;
     public static Block<?> importer;
     public static Block<?> fluidImporter;
@@ -122,9 +123,15 @@ public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
         );
 
         assembler = customBlock(defaultBuilder(), "assembler", "assembler", "assembler", 2,
-                (block) -> new BlockLogicAssembler(block, TileEntityAssembler::new, "assembler"),
+                (block) -> new BlockLogicAssembler(block, TileEntityAssembler::new, "assembler",false),
                 new MachineTextures(false)
                         .withDefaultSideTextures("assembler_side")
+        );
+
+        advAssembler = customBlock(defaultBuilder(), "advAssembler", "adv_assembler", "advAssembler", 2,
+                (block) -> new BlockLogicAssembler(block, TileEntityAdvAssembler::new, "assembler",true),
+                new MachineTextures(true)
+                        .withDefaultSideTextures("adv_assembler_side")
         );
 
         requestTerminal = customBlock(defaultBuilder(), "requestTerminal", "request_terminal", "requestTerminal", 2,

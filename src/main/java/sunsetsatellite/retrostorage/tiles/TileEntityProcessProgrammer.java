@@ -13,10 +13,8 @@ import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TileEntityProcessProgrammer extends TileEntity
         implements Container, IScreenActionListener {
@@ -110,7 +108,7 @@ public class TileEntityProcessProgrammer extends TileEntity
 
         @Override
         public ArrayList<Fluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();
+            ArrayList<Fluid> allFluids = new ArrayList<>(Fluid.fluidMap.values());
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             return allFluids;
         }
@@ -122,7 +120,7 @@ public class TileEntityProcessProgrammer extends TileEntity
                 this.onFluidInventoryChanged();
                 return;
             }
-            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
+            ArrayList<Fluid> allFluids = new ArrayList<>(Fluid.fluidMap.values());
             allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
             if (allFluids.contains(fluid.fluid)) {
                 this.fluidContents[slot] = fluid;

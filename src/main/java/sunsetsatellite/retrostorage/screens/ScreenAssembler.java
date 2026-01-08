@@ -10,17 +10,23 @@ import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
 
 public class ScreenAssembler extends ScreenContainerAbstract {
 
-    public ScreenAssembler(ContainerInventory inventoryplayer, TileEntityAssembler TileEntityAssembler) {
-        super(new MenuAssembler(inventoryplayer, TileEntityAssembler));
+    public TileEntityAssembler tile;
+
+    public ScreenAssembler(ContainerInventory inventoryplayer, TileEntityAssembler tile) {
+        super(new MenuAssembler(inventoryplayer, tile));
+        this.tile = tile;
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Assembler", 64, 6, 0x404040);
+        font.drawString(tile.advanced ? "Adv. Assembler" : "Assembler", tile.advanced ? 54 : 64, 6, 0x404040);
         font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/disc_container.png");
+        if(tile.advanced){
+            i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/disc_container_extended.png");
+        }
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;

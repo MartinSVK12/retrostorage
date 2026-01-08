@@ -3,14 +3,17 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
+import net.minecraft.core.block.Block;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.mixin.interfaces.ITileEntityInit;
 import sunsetsatellite.retrostorage.ReSItems;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
+import sunsetsatellite.retrostorage.blocks.BlockLogicAssembler;
 import sunsetsatellite.retrostorage.util.IProcessor;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
@@ -21,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TileEntityAssembler extends TileEntityNetworkDevice
-        implements Container, IProcessor {
+        implements Container, IProcessor, ITileEntityInit {
     public TileEntityAssembler() {
         contents = new ItemStack[9];
     }
@@ -228,6 +231,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         return false;
     }
 
-    private ItemStack[] contents;
+    protected ItemStack[] contents;
+    public boolean advanced = false;
    // public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 }

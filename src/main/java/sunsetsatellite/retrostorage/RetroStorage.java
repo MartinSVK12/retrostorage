@@ -84,6 +84,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityCoprocessor.class,id("crafting_coprocessor"));
         EntityHelper.createTileEntity(TileEntityStorageBus.class,id("storage_bus"));
         EntityHelper.createTileEntity(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
+        EntityHelper.createTileEntity(TileEntityAdvAssembler.class,id("adv_assembler"));
 
         NetworkHandler.registerNetworkMessage(PacketTerminalRequestContents::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
@@ -234,7 +235,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .create("chip_die_rematerlializer", new ItemStack(chipDieRematerializer, 1));
 
         RecipeBuilder.Shaped(MOD_ID, "2", "5", "8")
-                .addInput('2', Items.BUCKET_LAVA)
+                .addInput('2', Items.COAL)
                 .addInput('5',siliconWafer)
                 .addInput('8', Items.DUST_REDSTONE)
                 .create("chip_die_dematerializer", new ItemStack(chipDieDematerializer, 1));
@@ -394,6 +395,12 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('8', chipCrafting)
                 .addInput('9', machineCasing)
                 .create("assembler", new ItemStack(assembler, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, " C ", "AMA", " C ")
+                .addInput('C', chipCrafting)
+                .addInput('A', assembler)
+                .addInput('M', advMachineCasing)
+                .create("adv_assembler", new ItemStack(advAssembler, 1));
 
         RecipeBuilder.Shaped(MOD_ID, " 1 ", "234", " 5 ")
                 .addInput('1', chipRematerializer)
@@ -731,7 +738,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         return new ArrayList<>();
     }
 
-    public static CompoundTag itemsArrayToNBT(ArrayList<ItemStack> list) {
+    public static CompoundTag itemsArrayToNBT(List<ItemStack> list) {
         CompoundTag recipeNBT = (new CompoundTag());
         for (int i = 0; i < list.size(); i++) {
             CompoundTag itemNBT = (new CompoundTag());

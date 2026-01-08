@@ -104,7 +104,7 @@ public class ReSItems extends DataInitializer implements ItemInitEntrypoint {
         ceramicPlate = simpleItem("ceramicPlate", "ceramic_plate", "ceramicPlate", "ceramic_plate");
         ceramicPlateUnfired = simpleItem("ceramicPlateUnfired", "ceramic_plate_unfired", "ceramicPlateUnfired", "ceramic_plate_unfired");
         chipDieWireless = simpleItem("chipDieWireless", "chip_die_wireless", "chipDieWireless", "wireless_die");
-        chipWireless = simpleItem("chipWireless", "chip_wireless", "chipWireless", "wireless_die");
+        chipWireless = simpleItem("chipWireless", "chip_wireless", "chipWireless", "wireless_chip");
         wirelessAntenna = simpleItem("wirelessAntenna", "wireless_antenna", "wirelessAntenna", "wireless_antenna");
         redstoneCore = simpleItem("redstoneCore", "redstone_core", "redstoneCore", "redstone_core");
         linkingCard = simpleItem("linkingCard", "linking_card", "linkingCard", "linking_card");
@@ -118,12 +118,12 @@ public class ReSItems extends DataInitializer implements ItemInitEntrypoint {
         storageDisc5 = customItem(()-> new ItemStorageDisc("storageDisc5",key("item/storage_disc_5"),item("storageDisc5"),1024,1024*64), "disc5");
         storageDisc6 = customItem(()-> new ItemStorageDisc("storageDisc6",key("item/storage_disc_6"),item("storageDisc6"),2048,2048*64), "disc6");
 
-        fluidStorageDisc1 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc1",key("item/fluid_storage_disc_1"),item("fluidStorageDisc1"),2,2000), "fluid_disc_1");
-        fluidStorageDisc2 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc2",key("item/fluid_storage_disc_2"),item("fluidStorageDisc2"),4,4000), "fluid_disc_2");
-        fluidStorageDisc3 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc3",key("item/fluid_storage_disc_3"),item("fluidStorageDisc3"),6,8000), "fluid_disc_3");
-        fluidStorageDisc4 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc4",key("item/fluid_storage_disc_4"),item("fluidStorageDisc4"),8,16000), "fluid_disc_4");
-        fluidStorageDisc5 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc5",key("item/fluid_storage_disc_5"),item("fluidStorageDisc5"),10,32000), "fluid_disc_5");
-        fluidStorageDisc6 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc6",key("item/fluid_storage_disc_6"),item("fluidStorageDisc6"),12,64000), "fluid_disc_6");
+        fluidStorageDisc1 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc1",key("item/fluid_storage_disc_1"),item("fluidStorageDisc1"),2,8000), "fluid_disc_1");
+        fluidStorageDisc2 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc2",key("item/fluid_storage_disc_2"),item("fluidStorageDisc2"),4,16000), "fluid_disc_2");
+        fluidStorageDisc3 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc3",key("item/fluid_storage_disc_3"),item("fluidStorageDisc3"),6,32000), "fluid_disc_3");
+        fluidStorageDisc4 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc4",key("item/fluid_storage_disc_4"),item("fluidStorageDisc4"),8,64000), "fluid_disc_4");
+        fluidStorageDisc5 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc5",key("item/fluid_storage_disc_5"),item("fluidStorageDisc5"),10,128000), "fluid_disc_5");
+        fluidStorageDisc6 = customItem(()-> new ItemFluidStorageDisc("fluidStorageDisc6",key("item/fluid_storage_disc_6"),item("fluidStorageDisc6"),12,256000), "fluid_disc_6");
 
         goldenDisc = customItem(()-> new ItemStorageDisc("goldenDisc",key("item/golden_disc"),item("goldenDisc"),8192, 8192 * 64), "golden_disc");
         azureDisc = customItem(()-> new ItemFluidStorageDisc("azureDisc",key("item/azure_disc"),item("azureDisc"),64, 1024000), "azure_disc");

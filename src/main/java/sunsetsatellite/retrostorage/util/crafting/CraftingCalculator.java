@@ -100,9 +100,13 @@ public class CraftingCalculator {
 
             for (VariantStack stack : recipe.getOutput()) {
                 if(stack.getType() == StackType.ITEM){
-                    results.add(stack.getItem());
+                    ItemStack item = stack.getItem();
+                    item.stackSize *= qty;
+                    results.add(item);
                 } else {
-                    fluidResults.add(stack.getFluid());
+                    FluidStack fluid = stack.getFluid();
+                    fluid.amount *= qty;
+                    fluidResults.add(fluid);
                 }
             }
 
