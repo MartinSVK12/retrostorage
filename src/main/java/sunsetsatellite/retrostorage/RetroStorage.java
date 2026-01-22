@@ -17,7 +17,6 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryFurnace;
 import net.minecraft.core.data.tag.Tag;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.Items;
-import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.player.inventory.container.ContainerCrafting;
 import net.minecraft.core.util.collection.NamespaceID;
 import net.minecraft.core.util.helper.DyeColor;
@@ -28,6 +27,15 @@ import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.mp.*;
+import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalContents;
+import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalContents;
+import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestCrafting;
+import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestTerminalContents;
+import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.InventoryAutocrafting;
 import sunsetsatellite.retrostorage.util.StackType;
@@ -36,13 +44,11 @@ import sunsetsatellite.retrostorage.util.crafting.CraftableType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.EntityHelper;
-import turniplabs.halplibe.helper.NetworkHelper;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -51,7 +57,6 @@ import static sunsetsatellite.retrostorage.ReSBlocks.*;
 import static sunsetsatellite.retrostorage.ReSConfig.config;
 import static sunsetsatellite.retrostorage.ReSItems.*;
 
-//TODO: textures are fucked up beyond belief for some reason
 public class RetroStorage implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
     public static final String MOD_ID = "retrostorage";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -89,6 +94,8 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         NetworkHandler.registerNetworkMessage(PacketTerminalRequestContents::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalInteraction::new);
+        NetworkHandler.registerNetworkMessage(PacketQuickRecipeEncode::new);
+        NetworkHandler.registerNetworkMessage(PacketClearRequestQueue::new);
 
         NetworkHandler.registerNetworkMessage(PacketFluidTerminalRequestContents::new);
         NetworkHandler.registerNetworkMessage(PacketFluidTerminalContents::new);

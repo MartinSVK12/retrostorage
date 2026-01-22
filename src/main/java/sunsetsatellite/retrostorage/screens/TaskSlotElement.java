@@ -3,7 +3,7 @@ package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.tessellator.Tessellator;
-import sunsetsatellite.retrostorage.util.IProcessor;
+import sunsetsatellite.retrostorage.api.IProcessor;
 import sunsetsatellite.retrostorage.util.ProcessingState;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.Node;
@@ -46,22 +46,22 @@ public class TaskSlotElement extends SlotElement {
     }
 
     @Override
-    protected void drawSlot(int i, int j, int k, int l, Tessellator tessellator) {
-        CraftingTask task = this.parent.list.get(i);
+    protected void drawSlot(int index, int i, int k, int l, Tessellator tessellator) {
+        CraftingTask task = this.parent.list.get(index);
         int color = 0xFFFFFF;
         if (task.isStarted()) {
             color = 0x00FF00;
             int size = task.nodes.all().size();
-            drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), j + 2, k + 1, color);
-            drawString(String.format("%d s | %d%%", (System.currentTimeMillis() - task.getStartTime()) / 1000, task.getCompletionPercentage()), j + 2, k + 12, 0xFFFFFF);
-            drawString(String.format("%d subtask%s remain%s.", size, size > 1 ? "s" : "", size <= 1 ? "s" : ""), j + 2, k + 12 + 10, 0x808080);
+            drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), i + 2, k + 1, color);
+            drawString(String.format("%d s | %d%%", (System.currentTimeMillis() - task.getStartTime()) / 1000, task.getCompletionPercentage()), i + 2, k + 12, 0xFFFFFF);
+            drawString(String.format("%d subtask%s remain%s.", size, size > 1 ? "s" : "", size <= 1 ? "s" : ""), i + 2, k + 12 + 10, 0x808080);
         } else {
-            drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), j + 2, k + 1, color);
-            drawString("Waiting..", j + 2, k + 12, 0x808080);
+            drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), i + 2, k + 1, color);
+            drawString("Waiting..", i + 2, k + 12, 0x808080);
         }
 
         int y = k + 12 + 20;
-        int x = j + 2;
+        int x = i + 2;
         for (Node node : task.nodes.all()) {
             if (node instanceof ProcessNode) {
                 ProcessNode pNode = (ProcessNode) node;

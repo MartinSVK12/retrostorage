@@ -24,11 +24,11 @@ import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.mp.PacketFluidTerminalInteraction;
-import sunsetsatellite.retrostorage.mp.PacketFluidTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
@@ -54,7 +54,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         this.tile = tile;
         this.inventoryPlayer = inventoryplayer;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
@@ -96,10 +96,14 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Digital Fluid Terminal", 40, 6, 0x404040);
+        font.drawString("Digital Fluid Terminal", 8, 6, 0x404040);
+        if(searching) font.drawCenteredString("<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
         font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
         if(tile.page > tile.pages) tile.page = 0;
-        font.drawString("Page: " + tile.page + "/" + tile.pages + (searching ? " (Searching)" : ""), 63 - (searching ? 30 : 0), 93, 0x404040);
+
+        String pageText = "Page: " + tile.page + "/" + tile.pages;
+        int pageTextWidth = font.getStringWidth(pageText);
+        font.drawString(pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
         if(tile.network != null) {
             INetworkController controller = tile.getController();
             if (controller != null) {
@@ -107,7 +111,9 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
                 if (controller.getFluidAmount() >= controller.getFluidCapacity() * 0.9) {
                     color = 0xFF4040;
                 }
-                font.drawCenteredString(NumberUtil.format(controller.getFluidStackAmount()) + "/" + NumberUtil.format(controller.getFluidStackCapacity()), 90, 112, color);
+                String s = NumberUtil.format(controller.getFluidStackAmount()) + "/" + NumberUtil.format(controller.getFluidStackCapacity()) + " ("+ NumberUtil.format(controller.getFluidAmount()) +"/"+ NumberUtil.format(controller.getFluidCapacity()) + ")";
+                int strWidth = font.getStringWidth(s);
+                font.drawStringWithShadow(s, xSize - 8 - strWidth, (ySize - 95) + 2, color);
             }
         }
     }
@@ -123,8 +129,10 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
     public void init() {
         super.init();
-        buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
-        buttons.add(new ButtonElement(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
+        int j = (width - xSize) / 2;
+        int k = (height - ySize) / 2;
+        buttons.add(new ButtonElement(0, j-27+6,k+27+8+29, 21, 21, "↓"));
+        buttons.add(new ButtonElement(1, j-27+6,k+27+8, 21, 21, "↑"));
         //buttons.add(new ButtonElement(2, Math.round((float) width / 2 - 40), Math.round((float) height / 2 - 5), 20, 20, "A:"));
         //buttons.get(2).enabled = false;
     }
@@ -136,6 +144,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+        drawTexturedModalRect(j-27, k+27, 177, 0, 27, 65);
     }
 
     @Override
@@ -166,7 +175,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
         int vSlotId = getVirtualSlotAtPosition(mouseX, mouseY);
         if(invSlot != null) slotId = invSlot.index;
 
-        NetworkHandler.sendToServer(new PacketFluidTerminalInteraction(searchQuery,slotId,vSlotId,mouseButton,shift));
+        NetworkHandler.sendToServer(new PacketFluidTerminalInteraction(searchQuery, slotId, vSlotId, tile.page, mouseButton, shift));
 
         lastVirtualSlotClicked = vSlotId;
 
@@ -182,11 +191,11 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
             INetworkController controller = tile.getController();
             if(controller != null) {
                 List<ItemStack> stacks = getFilteredStacks();
-                this.tile.pages = (int) (double) (stacks.size() / 36);
+                this.tile.pages = (int) (double) (stacks.size() / 54);
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 54);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id);
                     if(stack == null) continue;
@@ -195,7 +204,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 54);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id);
                     if(stack == null) continue;

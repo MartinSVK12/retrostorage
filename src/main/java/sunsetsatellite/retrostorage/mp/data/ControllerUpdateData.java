@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.data;
 
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import turniplabs.halplibe.helper.network.UniversalPacket;

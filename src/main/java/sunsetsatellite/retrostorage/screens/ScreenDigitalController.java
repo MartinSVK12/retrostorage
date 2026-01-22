@@ -47,7 +47,7 @@ public class ScreenDigitalController extends Screen {
                     String.format("%d processors connected.", tile.getProcessors().size()
                     ), 2, i += 10, 0xFFFFFFFF);
             font.drawString(
-                    String.format("%d co-processors connected.", tile.getCoprocessors().size()
+                    String.format("%d coprocessors connected.", tile.getCoprocessors().size()
                     ), 2, i += 10, 0xFFFFFFFF);
         }
     }

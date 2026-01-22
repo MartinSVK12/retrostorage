@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.item;
 
 import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;

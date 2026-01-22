@@ -1,7 +1,6 @@
 package sunsetsatellite.retrostorage.menus;
 
 import net.minecraft.core.InventoryAction;
-import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 
@@ -10,16 +9,14 @@ import net.minecraft.core.player.inventory.menu.MenuAbstract;
 import net.minecraft.core.player.inventory.slot.Slot;
 import net.minecraft.core.util.collection.Pair;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
-import sunsetsatellite.retrostorage.mp.PacketRequestTerminalContents;
-import sunsetsatellite.retrostorage.mp.PacketTerminalContents;
+import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestTerminalContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -45,7 +42,7 @@ public class MenuRequestTerminal extends MenuAbstract {
             }
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;

@@ -15,10 +15,9 @@ import net.minecraft.server.entity.player.PlayerServer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.fluids.api.IItemFluidContainer;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
-import sunsetsatellite.retrostorage.mp.PacketFluidTerminalContents;
-import sunsetsatellite.retrostorage.mp.PacketTerminalContents;
+import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
@@ -65,15 +64,15 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
         return null;
     }
 
-    public void handleTerminalInteraction(String searchQuery, int slotId, int vSlotId, int mouseButton, boolean shift) {
+    public void handleTerminalInteraction(String searchQuery, int slotId, int vSlotId, int page, int mouseButton, boolean shift) {
         INetworkController controller = tile.getController();
         if(controller != null){
             if(vSlotId == -1) {
                 return;
             }
-            int id = vSlotId + (tile.page * 36);
+            int id = vSlotId + (page * 54);
             getFilteredStacks(searchQuery);
-            //left click
+            //left click\
             if (mouseButton == 0) {
                 ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
                 if(heldItemStack != null) {

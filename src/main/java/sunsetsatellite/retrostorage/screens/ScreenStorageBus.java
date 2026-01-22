@@ -13,7 +13,7 @@ import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuStorageBus;
 import sunsetsatellite.retrostorage.tiles.TileEntityStorageBus;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 
 import java.util.ArrayList;
 

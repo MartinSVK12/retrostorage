@@ -3,7 +3,7 @@ package sunsetsatellite.retrostorage.util.crafting;
 import com.mojang.nbt.tags.CompoundTag;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 
 public abstract class Node {
     protected boolean root;

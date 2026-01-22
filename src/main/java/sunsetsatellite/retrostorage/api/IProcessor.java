@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage.util;
+package sunsetsatellite.retrostorage.api;
 
 import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;

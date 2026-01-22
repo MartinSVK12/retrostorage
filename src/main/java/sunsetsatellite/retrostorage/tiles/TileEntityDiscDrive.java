@@ -10,19 +10,20 @@ import net.minecraft.core.player.inventory.container.Container;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.core.util.io.IItemStackList;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.UnlimitedItemStack;
 import sunsetsatellite.retrostorage.items.ItemStorageDisc;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
-import sunsetsatellite.retrostorage.util.INetworkItemStorage;
+import sunsetsatellite.retrostorage.api.INetworkItemStorage;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class TileEntityDiscDrive extends TileEntityNetworkDevice
-        implements Container, INetworkItemStorage {
+        implements Container, INetworkItemStorage, IScreenActionListener {
 
     private ItemStack[] contents;
     public ArrayList<ItemStack> discsUsed = new ArrayList<>();
@@ -576,5 +577,14 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     @Override
     public boolean isEmpty() {
         return getStacks().isEmpty();
+    }
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if(id == 0) {
+            if(getItem(1) == null){
+                removeLastDisc();
+            }
+        }
     }
 }

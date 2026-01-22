@@ -1,10 +1,9 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.fluid;
 
 import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
-import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
 import sunsetsatellite.retrostorage.util.DiscManipulator;
 import turniplabs.halplibe.helper.network.NetworkMessage;
 import turniplabs.halplibe.helper.network.UniversalPacket;

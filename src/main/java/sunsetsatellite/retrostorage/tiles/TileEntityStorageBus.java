@@ -8,7 +8,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.core.util.io.IItemStackList;
 import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
-import sunsetsatellite.retrostorage.util.INetworkItemStorage;
+import sunsetsatellite.retrostorage.api.INetworkItemStorage;
 
 import java.util.ArrayList;
 import java.util.List;

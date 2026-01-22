@@ -11,9 +11,9 @@ import net.minecraft.core.player.inventory.menu.MenuAbstract;
 import net.minecraft.core.player.inventory.slot.Slot;
 import net.minecraft.server.entity.player.PlayerServer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
-import sunsetsatellite.retrostorage.mp.PacketTerminalContents;
+import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
@@ -46,7 +46,7 @@ public class MenuDigitalTerminal extends MenuAbstract {
             }
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
@@ -69,7 +69,7 @@ public class MenuDigitalTerminal extends MenuAbstract {
         return null;
     }
 
-    public void handleTerminalInteraction(String searchQuery, int slotId, int vSlotId, int mouseButton, boolean shift) {
+    public void handleTerminalInteraction(String searchQuery, int slotId, int vSlotId, int page, int mouseButton, boolean shift) {
         broadcastChanges();
         INetworkController controller = tile.getController();
         if(controller != null){
@@ -89,7 +89,7 @@ public class MenuDigitalTerminal extends MenuAbstract {
             if(vSlotId == -1) {
                 return;
             }
-            int id = vSlotId + (tile.page * 36);
+            int id = vSlotId + (page * 54);
             getFilteredStacks(searchQuery);
             //left click
             if(mouseButton == 0){
@@ -149,6 +149,7 @@ public class MenuDigitalTerminal extends MenuAbstract {
     }
 
     public void getFilteredStacks(String searchQuery) {
+        if(tile.getController() == null) return;
         List<ItemStack> stacks = tile.getController().getAllItems();
         if(!Objects.equals(searchQuery, "")){
             stacks = stacks.stream().filter(S -> S.getDisplayName().toLowerCase().contains(searchQuery.toLowerCase())).collect(Collectors.toList());

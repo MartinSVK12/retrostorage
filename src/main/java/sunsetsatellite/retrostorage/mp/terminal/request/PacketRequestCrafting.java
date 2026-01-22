@@ -1,9 +1,9 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.request;
 
 import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.block.entity.TileEntity;
 import org.jetbrains.annotations.NotNull;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import turniplabs.halplibe.helper.network.NetworkMessage;
 import turniplabs.halplibe.helper.network.UniversalPacket;

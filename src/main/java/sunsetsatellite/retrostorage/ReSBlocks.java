@@ -126,12 +126,14 @@ public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
                 (block) -> new BlockLogicAssembler(block, TileEntityAssembler::new, "assembler",false),
                 new MachineTextures(false)
                         .withDefaultSideTextures("assembler_side")
+                        .withDefaultTopTexture("recipe_encoder_top_filled")
         );
 
         advAssembler = customBlock(defaultBuilder(), "advAssembler", "adv_assembler", "advAssembler", 2,
                 (block) -> new BlockLogicAssembler(block, TileEntityAdvAssembler::new, "assembler",true),
                 new MachineTextures(true)
                         .withDefaultSideTextures("adv_assembler_side")
+                        .withDefaultTopTexture("adv_assembler_top_filled")
         );
 
         requestTerminal = customBlock(defaultBuilder(), "requestTerminal", "request_terminal", "requestTerminal", 2,

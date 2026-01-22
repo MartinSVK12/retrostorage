@@ -2,27 +2,22 @@ package sunsetsatellite.retrostorage.mp;
 
 import net.minecraft.core.block.entity.TileEntity;
 import org.jetbrains.annotations.NotNull;
-import sunsetsatellite.retrostorage.mp.data.ControllerUpdateData;
-import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import turniplabs.halplibe.helper.network.NetworkMessage;
 import turniplabs.halplibe.helper.network.UniversalPacket;
 
-public class PacketControllerUpdate implements NetworkMessage {
+public class PacketClearRequestQueue implements NetworkMessage {
 
     private int x;
     private int y;
     private int z;
-    private ControllerUpdateData data;
 
-    public PacketControllerUpdate(int x, int y, int z, ControllerUpdateData data) {
+    public PacketClearRequestQueue() {}
+
+    public PacketClearRequestQueue(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.data = data;
-    }
-
-    public PacketControllerUpdate() {
-
     }
 
     @Override
@@ -30,7 +25,6 @@ public class PacketControllerUpdate implements NetworkMessage {
         packet.writeInt(x);
         packet.writeInt(y);
         packet.writeInt(z);
-        data.write(packet);
     }
 
     @Override
@@ -38,16 +32,15 @@ public class PacketControllerUpdate implements NetworkMessage {
         x = packet.readInt();
         y = packet.readInt();
         z = packet.readInt();
-        data = new ControllerUpdateData().read(packet);
     }
 
     @Override
     public void handle(NetworkContext context) {
         if(context.player != null && context.player.world != null) {
             TileEntity te = context.player.world.getTileEntity(x, y, z);
-            if (te instanceof TileEntityDigitalController) {
-                TileEntityDigitalController c = (TileEntityDigitalController) te;
-                data.apply(c);
+            if (te instanceof INetworkController) {
+                INetworkController c = (INetworkController) te;
+                c.clearRequestQueue();
             }
         }
     }

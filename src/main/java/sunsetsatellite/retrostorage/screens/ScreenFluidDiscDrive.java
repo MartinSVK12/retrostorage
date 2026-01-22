@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.retrostorage.menus.MenuFluidDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidDiscDrive;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 
 public class ScreenFluidDiscDrive extends ScreenContainerAbstract {
 

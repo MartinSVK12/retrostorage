@@ -16,11 +16,11 @@ import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.catalyst.fluids.util.Fluids;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.api.*;
 import sunsetsatellite.retrostorage.mp.PacketRequestControllerContentsUpdate;
 import sunsetsatellite.retrostorage.mp.PacketRequestControllerCraftingQueue;
 import sunsetsatellite.retrostorage.mp.PacketRequestControllerUpdate;
-import sunsetsatellite.retrostorage.mp.PacketRequestCrafting;
-import sunsetsatellite.retrostorage.util.*;
+import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestCrafting;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
@@ -105,7 +105,6 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public ArrayList<CraftingTask> getCurrentTasks() {
         if (worldObj != null && worldObj.isClientSide) {
-
             return currentTasksCache;
         }
         return currentTasks;

@@ -7,15 +7,16 @@ import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TileEntityExporter extends TileEntityNetworkDevice
-        implements Container {
+        implements Container, IScreenActionListener {
 
     public TileEntityExporter() {
         contents = new ItemStack[9];
@@ -193,4 +194,19 @@ public class TileEntityExporter extends TileEntityNetworkDevice
     public boolean isWhitelist = true;
     public boolean enabled = true;
     public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 0) {
+            if (slot >= 0) {
+                slot--;
+            }
+        }
+        if (id == 1) {
+            slot++;
+        }
+        if (id == 2) {
+            isWhitelist = !isWhitelist;
+        }
+    }
 }

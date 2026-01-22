@@ -3,10 +3,7 @@ package sunsetsatellite.retrostorage.tiles;
 
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
-import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.Player;
-import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.ITileEntityInit;
 import sunsetsatellite.catalyst.core.util.network.Network;
@@ -14,7 +11,7 @@ import sunsetsatellite.catalyst.core.util.network.NetworkComponentTile;
 import sunsetsatellite.catalyst.core.util.network.NetworkManager;
 import sunsetsatellite.catalyst.core.util.network.NetworkType;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 
 import java.util.ArrayList;
 import java.util.HashMap;

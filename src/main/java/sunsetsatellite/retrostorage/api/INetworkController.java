@@ -1,9 +1,10 @@
-package sunsetsatellite.retrostorage.util;
+package sunsetsatellite.retrostorage.api;
 
 import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
@@ -106,4 +107,6 @@ public interface INetworkController {
     long countItems(int id, int meta, CompoundTag data);
 
     long countFluids(int id);
+
+    Vec3i getPosition();
 }

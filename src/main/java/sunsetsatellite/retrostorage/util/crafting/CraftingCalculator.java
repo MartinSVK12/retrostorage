@@ -6,6 +6,7 @@ import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.util.*;
 
 import java.util.ArrayList;

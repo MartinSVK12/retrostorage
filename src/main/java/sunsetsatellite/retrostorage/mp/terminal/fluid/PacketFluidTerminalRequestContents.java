@@ -1,19 +1,19 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.fluid;
 
 import org.jetbrains.annotations.NotNull;
-import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
+import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 import turniplabs.halplibe.helper.network.NetworkMessage;
 import turniplabs.halplibe.helper.network.UniversalPacket;
 
-public class PacketTerminalRequestContents implements NetworkMessage {
+public class PacketFluidTerminalRequestContents implements NetworkMessage {
 
     private String searchQuery;
 
-    public PacketTerminalRequestContents() {}
+    public PacketFluidTerminalRequestContents() {}
 
-    public PacketTerminalRequestContents(String searchQuery) {
+    public PacketFluidTerminalRequestContents(String searchQuery) {
         this.searchQuery = searchQuery;
     }
 
@@ -30,10 +30,10 @@ public class PacketTerminalRequestContents implements NetworkMessage {
     @Override
     public void handle(NetworkContext context) {
         if(EnvironmentHelper.isServerEnvironment()){
-            if(context.player != null && context.player.craftingInventory instanceof MenuDigitalTerminal){
-                MenuDigitalTerminal menu = (MenuDigitalTerminal) context.player.craftingInventory;
+            if(context.player != null && context.player.craftingInventory instanceof MenuDigitalFluidTerminal){
+                MenuDigitalFluidTerminal menu = (MenuDigitalFluidTerminal) context.player.craftingInventory;
                 menu.getFilteredStacks(searchQuery);
-                NetworkHandler.sendToPlayer(context.player,new PacketTerminalContents(menu.networkStacks));
+                NetworkHandler.sendToPlayer(context.player,new PacketFluidTerminalContents(menu.networkStacks));
             }
         }
     }

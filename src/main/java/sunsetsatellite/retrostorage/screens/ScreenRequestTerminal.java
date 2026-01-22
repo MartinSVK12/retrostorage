@@ -22,11 +22,13 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.menus.MenuRequestTerminal;
-import sunsetsatellite.retrostorage.mp.PacketRequestTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.PacketClearRequestQueue;
+import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
@@ -55,7 +57,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
         this.tile = tile;
         this.player = invPlayer.player;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
@@ -97,29 +99,38 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Request Terminal", 50, 6, 0x404040);
+        font.drawString("Request Terminal", 8, 6, 0x404040);
+        if(searching) font.drawCenteredString("<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
         font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
-        font.drawString("Page: " + tile.page + "/" + tile.pages + (searching ? " (Searching)" : ""), 63 - (searching ? 30 : 0), 93, 0x404040);
+        String pageText = "Page: " + tile.page + "/" + tile.pages;
+        int pageTextWidth = font.getStringWidth(pageText);
+        font.drawString(pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
         if(tile.getController() != null){
-            font.drawCenteredString(String.valueOf(tile.getController().getCraftables().size()), 88, 112, 0xFFFFFFFF);
+            String craftableSize = String.valueOf(tile.getController().getCraftables().size());
+            int strWidth = font.getStringWidth(craftableSize);
+            int color = 0xFFFFFF;
+            font.drawStringWithShadow(craftableSize, xSize - 8 - strWidth, (ySize - 95) + 2, color);
         }
     }
 
     public void init() {
         super.init();
-        buttons.add(new ButtonElement(0, Math.round(width / 2 + 50), Math.round(height / 2 - 5), 20, 20, ">"));
-        buttons.add(new ButtonElement(1, Math.round(width / 2 - 70), Math.round(height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
-        buttons.add(new ButtonElement(2, Math.round(width / 2 - 50), Math.round(height / 2 - 5), 20, 20, "Q"));
-        buttons.add(new ButtonElement(3, Math.round(width / 2 + 30), Math.round(height / 2 - 5), 20, 20, "X"));
+        int j = (width - xSize) / 2;
+        int k = (height - ySize) / 2;
+        buttons.add(new ButtonElement(0, j-27+6,k+8+8+29, 21, 21, "↓"));
+        buttons.add(new ButtonElement(1, j-27+6,k+8+8, 21, 21, "↑"));
+        buttons.add(new ButtonElement(2, j-27+6,k+8+8+29*2, 21, 21, "Q"));
+        buttons.add(new ButtonElement(3, j-27+6,k+8+8+29*3, 21, 21, "X"));
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
-        @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/digital_terminal.png");
+        @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/request_terminal.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+        drawTexturedModalRect(j-27, k+8, 177, 0, 27, 123);
     }
 
     @Override
@@ -145,8 +156,13 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
             mc.displayScreen(new ScreenRequestQueue(tile.getController(), this));
         }
         if (guibutton.id == 3) {
-            if (tile.getController() != null) {
-                tile.getController().clearRequestQueue();
+            INetworkController c = tile.getController();
+            if (c != null) {
+                c.clearRequestQueue();
+                Vec3i pos = c.getPosition();
+                if(EnvironmentHelper.isClientWorld()){
+                    NetworkHandler.sendToServer(new PacketClearRequestQueue(pos.x, pos.y, pos.z));
+                }
                 player.sendTranslatedChatMessage("action.retrostorage.clearTaskQueue");
             }
         }
@@ -177,7 +193,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
         if(controller != null) {
             for (int i = 0; i < slots.size(); i++) {
                 Vec2i slot = slots.get(i);
-                int id = i + (tile.page * 36);
+                int id = i + (tile.page * 54);
                 @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> stacks = getFilteredStacks();
                 if (mouseHoveringOverSlot(slot, mouseX, mouseY)) {
                     if (mouseButton == 0) {
@@ -202,11 +218,11 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
             INetworkController controller = tile.getController();
             if(controller != null) {
                 @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> stacks = getFilteredStacks();
-                this.tile.pages = (int) (double) (stacks.size() / 36);
+                this.tile.pages = (int) (double) (stacks.size() / 54);
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 54);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id).getLeft();
                     if(stack == null) continue;
@@ -215,7 +231,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 54);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id).getLeft();
                     if(stack == null) continue;

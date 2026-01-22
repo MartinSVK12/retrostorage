@@ -1,33 +1,36 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.fluid;
 
 import org.jetbrains.annotations.NotNull;
-import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
+import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
 import turniplabs.halplibe.helper.network.NetworkMessage;
 import turniplabs.halplibe.helper.network.UniversalPacket;
 
-public class PacketTerminalInteraction implements NetworkMessage {
+public class PacketFluidTerminalInteraction implements NetworkMessage {
 
     private String searchQuery;
     private int slotId;
     private int vSlotId;
+    private int page;
     private int mouseButton;
     private boolean shift;
 
-    public PacketTerminalInteraction(String searchQuery, int slotId, int vSlotId, int mouseButton, boolean shift) {
+    public PacketFluidTerminalInteraction(String searchQuery, int slotId, int vSlotId, int page, int mouseButton, boolean shift) {
         this.searchQuery = searchQuery;
         this.slotId = slotId;
         this.vSlotId = vSlotId;
+        this.page = page;
         this.mouseButton = mouseButton;
         this.shift = shift;
     }
 
-    public PacketTerminalInteraction() {}
+    public PacketFluidTerminalInteraction() {}
 
     @Override
     public void encodeToUniversalPacket(@NotNull UniversalPacket packet) {
         packet.writeString(searchQuery);
         packet.writeInt(slotId);
         packet.writeInt(vSlotId);
+        packet.writeInt(page);
         packet.writeInt(mouseButton);
         packet.writeBoolean(shift);
     }
@@ -37,14 +40,15 @@ public class PacketTerminalInteraction implements NetworkMessage {
         searchQuery = packet.readString();
         slotId = packet.readInt();
         vSlotId = packet.readInt();
+        page = packet.readInt();
         mouseButton = packet.readInt();
         shift = packet.readBoolean();
     }
 
     @Override
     public void handle(NetworkContext context) {
-        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalTerminal){
-            ((MenuDigitalTerminal) context.player.craftingInventory).handleTerminalInteraction(searchQuery, slotId, vSlotId, mouseButton, shift);
+        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalFluidTerminal){
+            ((MenuDigitalFluidTerminal) context.player.craftingInventory).handleTerminalInteraction(searchQuery, slotId, vSlotId, page, mouseButton, shift);
         }
     }
 }

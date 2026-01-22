@@ -22,11 +22,12 @@ import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
-import sunsetsatellite.retrostorage.mp.PacketTerminalInteraction;
-import sunsetsatellite.retrostorage.mp.PacketTerminalRequestContents;
+import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalInteraction;
+import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalRequestContents;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
+import turing.tmb.client.TMBRenderer;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
@@ -52,7 +53,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         this.tile = tile;
         this.inventoryPlayer = inventoryplayer;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
@@ -94,10 +95,14 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
 
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Digital Terminal", 50, 6, 0x404040);
+        font.drawString("Digital Terminal", 8, 6, 0x404040);
+        if(searching) font.drawCenteredString("<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
         font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
         if(tile.page > tile.pages) tile.page = 0;
-        font.drawString("Page: " + tile.page + "/" + tile.pages + (searching ? " (Searching)" : ""), 63 - (searching ? 30 : 0), 93, 0x404040);
+
+        String pageText = "Page: " + tile.page + "/" + tile.pages;
+        int pageTextWidth = font.getStringWidth(pageText);
+        font.drawString(pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
         if(tile.network != null) {
             INetworkController controller = tile.getController();
             if (controller != null) {
@@ -105,7 +110,9 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
                 if (controller.getAmount() >= controller.getItemCapacity() * 0.9) {
                     color = 0xFF4040;
                 }
-                font.drawCenteredString(controller.getStackAmount() + "/" + controller.getStackCapacity(), 90, 112, color);
+                String stackText = controller.getStackAmount() + "/" + controller.getStackCapacity();
+                int stackTextWidth = font.getStringWidth(stackText);
+                font.drawStringWithShadow(stackText, xSize - 8 - stackTextWidth, (ySize - 95) + 2, color);
             }
         }
     }
@@ -131,8 +138,10 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
 
     public void init() {
         super.init();
-        buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
-        buttons.add(new ButtonElement(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
+        int j = (width - xSize) / 2;
+        int k = (height - ySize) / 2;
+        buttons.add(new ButtonElement(0, j-27+6,k+27+8+29, 21, 21, "↓"));
+        buttons.add(new ButtonElement(1, j-27+6,k+27+8, 21, 21, "↑"));
         //buttons.add(new ButtonElement(2, Math.round((float) width / 2 - 40), Math.round((float) height / 2 - 5), 20, 20, "A:"));
         //buttons.get(2).enabled = false;
     }
@@ -144,6 +153,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+        drawTexturedModalRect(j-27, k+27, 177, 0, 27, 65);
     }
 
     @Override
@@ -174,7 +184,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
         int vSlotId = getVirtualSlotAtPosition(mouseX, mouseY);
         if(invSlot != null) slotId = invSlot.index;
 
-        NetworkHandler.sendToServer(new PacketTerminalInteraction(searchQuery,slotId,vSlotId,mouseButton,shift));
+        NetworkHandler.sendToServer(new PacketTerminalInteraction(searchQuery, slotId, vSlotId, tile.page, mouseButton,shift));
 
         lastVirtualSlotClicked = vSlotId;
 
@@ -192,11 +202,11 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
             INetworkController controller = tile.getController();
             if(controller != null) {
                 List<ItemStack> stacks = getFilteredStacks();
-                this.tile.pages = (int) (double) (stacks.size() / 36);
+                this.tile.pages = (int) (double) (stacks.size() / 54);
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 54);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id);
                     if(stack == null) continue;
@@ -205,7 +215,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
                 for (int i = 0; i < slots.size(); i++) {
                     Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
+                    int id = i + (tile.page * 54);
                     if(id >= stacks.size()) break;
                     stack = stacks.get(id);
                     if(stack == null) continue;
@@ -231,28 +241,10 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
             return ((MenuDigitalTerminal) inventorySlots).networkStacks;
         }
 
-        SearchQuery query = SearchQuery.resolve("");
+        SearchQuery query;
 
-        //miniscule amounts of reflection
-        try {
-            Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
-            for (Field F1 : tmbRenderer.getDeclaredFields()) {
-                if (F1.getType() == TextFieldElement.class) {
-                    try {
-                        TextFieldElement field = ((TextFieldElement) F1.get(null));
-                        if(field != null) {
-                            String text = field.getText();
-                            query = SearchQuery.resolve(text);
-                        }
-                    } catch (IllegalAccessException ignored) {
-                        //failed to access text field
-                    }
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ignored) {
-            //tmb not installed, ignore
-        }
+        String text = TMBRenderer.search.getText();
+        query = SearchQuery.resolve(text);
 
         searching = false;
         searchQuery = "";

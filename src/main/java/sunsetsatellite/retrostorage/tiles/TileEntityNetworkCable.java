@@ -71,7 +71,11 @@ public class TileEntityNetworkCable extends TileEntity implements ISupportsMulti
 
     @Override
     public boolean isConnected(Direction direction) {
-        return direction.getTileEntity(worldObj,this) instanceof TileEntityNetworkCable || direction.getTileEntity(worldObj,this) instanceof TileEntityNetworkDevice;
+        if(worldObj == null) return false;
+        if(direction.getTileEntity(worldObj,this) instanceof IConduitTile){
+            if(((IConduitTile) direction.getTileEntity(worldObj,this)).getConduitCapability() == ConduitCapability.RES_NETWORK) return true;
+        }
+        return direction.getTileEntity(worldObj,this) instanceof TileEntityNetworkDevice;
     }
 
     @Override

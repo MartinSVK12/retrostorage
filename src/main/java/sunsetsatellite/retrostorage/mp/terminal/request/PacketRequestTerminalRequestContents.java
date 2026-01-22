@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.request;
 
 import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.retrostorage.menus.MenuRequestTerminal;

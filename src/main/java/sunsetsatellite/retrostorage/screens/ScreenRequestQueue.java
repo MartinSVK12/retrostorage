@@ -8,7 +8,7 @@ import net.minecraft.core.lang.I18n;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.TickTimer;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class ScreenRequestQueue extends Screen {
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-        this.drawStringCentered(this.font, this.screenTitle, this.width / 2, 20, 16777215);
+        this.drawStringCentered(this.font, this.screenTitle, this.width / 2, 20, 0xffffff);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(140, this.height - 175, this.width * 2, this.height + 351); //TODO: fix this breaking at lower resolutions than 1080p
         refreshQueueTimer.tick();

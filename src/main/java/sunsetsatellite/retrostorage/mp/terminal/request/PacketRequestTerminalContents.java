@@ -1,12 +1,10 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.terminal.request;
 
 import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.collection.Pair;
 import org.jetbrains.annotations.NotNull;
-import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
 import sunsetsatellite.retrostorage.menus.MenuRequestTerminal;
-import sunsetsatellite.retrostorage.util.DiscManipulator;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import turniplabs.halplibe.helper.network.NetworkMessage;
 import turniplabs.halplibe.helper.network.UniversalPacket;

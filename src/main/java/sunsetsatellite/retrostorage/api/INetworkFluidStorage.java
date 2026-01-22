@@ -1,4 +1,4 @@
-package sunsetsatellite.retrostorage.util;
+package sunsetsatellite.retrostorage.api;
 
 import sunsetsatellite.catalyst.fluids.util.IFluidStackList;
 

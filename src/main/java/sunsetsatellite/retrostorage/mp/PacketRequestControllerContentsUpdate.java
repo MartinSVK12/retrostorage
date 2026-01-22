@@ -2,6 +2,7 @@ package sunsetsatellite.retrostorage.mp;
 
 import net.minecraft.core.block.entity.TileEntity;
 import org.jetbrains.annotations.NotNull;
+import sunsetsatellite.retrostorage.mp.data.ControllerContentsUpdateData;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;

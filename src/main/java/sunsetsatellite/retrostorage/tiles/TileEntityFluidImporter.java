@@ -5,22 +5,38 @@ import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import sunsetsatellite.catalyst.core.util.Connection;
 import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.io.IFluidIO;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class TileEntityFluidImporter extends TileEntityNetworkDevice implements IFluidIO, IFluidInventory {
+public class TileEntityFluidImporter extends TileEntityNetworkDevice implements IFluidIO, IFluidInventory, IScreenActionListener {
 
     public final Filter filter = new Filter();
     public static int transferSpeed = 1000;
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 0) {
+            if (slot >= 0) {
+                slot--;
+            }
+        }
+        if (id == 1) {
+            slot++;
+        }
+        if (id == 2) {
+            isWhitelist = !isWhitelist;
+        }
+    }
 
     public static class Filter implements IFluidInventory {
         public FluidStack[] fluidContents = new FluidStack[9];

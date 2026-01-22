@@ -12,6 +12,7 @@ import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
+import sunsetsatellite.retrostorage.api.IProcessor;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 import sunsetsatellite.retrostorage.util.*;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;

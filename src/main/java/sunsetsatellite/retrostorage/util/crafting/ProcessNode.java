@@ -5,9 +5,10 @@ import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
+import sunsetsatellite.retrostorage.api.INetworkController;
+import sunsetsatellite.retrostorage.api.IProcessor;
 import sunsetsatellite.retrostorage.util.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessNode extends Node {

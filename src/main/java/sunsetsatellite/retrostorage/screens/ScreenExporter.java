@@ -8,8 +8,11 @@ import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.retrostorage.menus.MenuExporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityExporter;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 public class ScreenExporter extends ScreenContainerAbstract {
 
@@ -41,22 +44,26 @@ public class ScreenExporter extends ScreenContainerAbstract {
     }
 
     @Override
-    protected void buttonClicked(ButtonElement guibutton) {
-        super.buttonClicked(guibutton);
-        if (!guibutton.enabled) {
+    protected void buttonClicked(ButtonElement button) {
+        super.buttonClicked(button);
+        if (!button.enabled) {
             return;
         }
-        if (guibutton.id == 0) {
+        if (button.id == 0) {
             if (tile.slot >= 0) {
                 tile.slot--;
             }
         }
-        if (guibutton.id == 1) {
+        if (button.id == 1) {
             tile.slot++;
         }
-        if (guibutton.id == 2) {
+        if (button.id == 2) {
             tile.isWhitelist = !tile.isWhitelist;
-            guibutton.displayString = tile.isWhitelist ? "W" : "B";
+            button.displayString = tile.isWhitelist ? "W" : "B";
+        }
+
+        if(EnvironmentHelper.isClientWorld()){
+            NetworkHandler.sendToServer(new PacketScreenAction(button.id, 0, 0, tile.getPosition(), tile.getClass()));
         }
     }
 

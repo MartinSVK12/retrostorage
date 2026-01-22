@@ -9,10 +9,14 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.retrostorage.menus.MenuDiscDrive;
 import sunsetsatellite.retrostorage.tiles.TileEntityDiscDrive;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.NetworkHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 public class ScreenDiscDrive extends ScreenContainerAbstract {
 
@@ -69,6 +73,9 @@ public class ScreenDiscDrive extends ScreenContainerAbstract {
         }
         if (guibutton.id == 0) {
             if (tile.getItem(1) == null) {
+                if(EnvironmentHelper.isClientWorld()){
+                    NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,tile.getPosition(), tile.getClass()));
+                }
                 tile.removeLastDisc();
             }
         }

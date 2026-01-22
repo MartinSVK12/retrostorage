@@ -1,11 +1,8 @@
-package sunsetsatellite.retrostorage.mp;
+package sunsetsatellite.retrostorage.mp.data;
 
-import com.formdev.flatlaf.ui.FlatButtonUI;
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.net.command.util.NbtHelper;
-import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.tiles.TileEntityDigitalController;
 import sunsetsatellite.retrostorage.util.DiscManipulator;

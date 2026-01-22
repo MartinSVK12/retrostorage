@@ -14,7 +14,7 @@ import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.retrostorage.menus.MenuTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import sunsetsatellite.retrostorage.util.INetworkController;
+import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.util.VariantStack;
 import sunsetsatellite.retrostorage.util.crafting.CalculationResult;
 import sunsetsatellite.retrostorage.util.crafting.CalculationResultType;
