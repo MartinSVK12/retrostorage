@@ -24,9 +24,9 @@ public class AdvInterfaceScreen extends HandledScreen {
         super.drawForeground();
         textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 64, 6, 0x404040);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 96) + 2, 0x404040);
-        if (tile.workingTile != null && tile.workingTile instanceof BlockEntity be) {
+        if (tile.workingTile != null && tile.workingTile.connected instanceof BlockEntity be) {
             Vec3i pos = new Vec3i(be.x, be.y, be.z);
-            textRenderer.draw(tile.workingTile.getClass().getSimpleName().replace("BlockEntity", "") + " at " + pos, 0, -10, 0xFFFFFF);
+            textRenderer.draw(tile.workingTile.connected.getClass().getSimpleName().replace("BlockEntity", "") + " at " + pos, 0, -10, 0xFFFFFF);
         }
         if (tile.workingNode != null) {
             textRenderer.draw(tile.workingNode.getState() + " (" + tile.workingNode.getCompletionPercentage() + "%)", 0, -20, 0xFFFFFF);

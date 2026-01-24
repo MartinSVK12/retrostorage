@@ -54,7 +54,11 @@ public class ProcessProgrammerScreen extends FilterScreen {
         textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 35, 6, 0x404040);
         textRenderer.draw("Process:", 10, 24, 0x404040);
         textRenderer.draw("Step: " + tile.task, 42, 50, 0x404040);
-        textRenderer.draw("Slot: " + tile.slot, 42, 75, 0x404040);
+        if(tile.slot == -1){
+            textRenderer.draw("Slot: *", 42, 75, 0x404040);
+        } else {
+            textRenderer.draw("Slot: " + tile.slot, 42, 75, 0x404040);
+        }
         textRenderer.draw("Inventory", 8, (backgroundHeight - 95) + 2, 0x404040);
     }
 
@@ -101,7 +105,7 @@ public class ProcessProgrammerScreen extends FilterScreen {
                 tile.slot++;
                 break;
             case 5:
-                if (tile.slot > 0) tile.slot--;
+                if (tile.slot > 0/*-1*/) tile.slot--;
                 break;
             case 7:
                 tile.setTask(selected);

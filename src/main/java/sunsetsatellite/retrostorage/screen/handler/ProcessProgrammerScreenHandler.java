@@ -17,7 +17,7 @@ public class ProcessProgrammerScreenHandler extends FilterScreenHandler {
 
         addSlot(new GhostSlot(tile.filter, 0, 62, 100));
         addFluidSlot(new GhostFluidSlot(tile.filter, 0, 81, 100));
-        addSlot(new Slot(tile, 0, 100, 100));
+        addSlot(new Slot(tile, 1, 100, 100));
 
         for (int k = 0; k < 9; k++) {
             addSlot(new Slot(playerInv, k, 8 + k * 18, 198));

@@ -61,7 +61,7 @@ public class ProcessProgrammerBlockEntity extends BlockEntity implements Managed
                 slot++;
                 break;
             case 5:
-                if (slot > 0) slot--;
+                if (slot > 0/*-1*/) slot--;
                 break;
             case 7:
                 setTask(selectedType);
@@ -105,15 +105,15 @@ public class ProcessProgrammerBlockEntity extends BlockEntity implements Managed
     }
 
     public void clearDisc() {
-        if (getStack(0) != null && getStack(0).getItem() instanceof AdvRecipeDiscItem) {
-            ItemStack disc = getStack(0);
+        if (getStack(1) != null && getStack(1).getItem() instanceof AdvRecipeDiscItem) {
+            ItemStack disc = getStack(1);
             disc.getStationNbt().put("disc", new NbtCompound());
         }
         tasks.clear();
     }
 
     public void saveProcess() {
-        if (getStack(0) != null && getStack(0).getItem() instanceof AdvRecipeDiscItem) {
+        if (getStack(1) != null && getStack(1).getItem() instanceof AdvRecipeDiscItem) {
             NbtCompound data = new NbtCompound();
             NbtCompound taskData = new NbtCompound();
             tasks.forEach((K, V) -> {

@@ -10,7 +10,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.block.BlockState;
 import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.io.FluidInventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.retrostorage.api.Processor;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
@@ -31,8 +33,8 @@ import static net.modificationstation.stationapi.api.state.property.Properties.H
 public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, BlockEntityInit, Processor {
 
     public HashMap<Direction, BlockEntity> connectedTiles = new HashMap<>();
-    public Inventory workingTile;
-    public FluidHandler workingFluidTile;
+    public InventoryWrapper workingTile;
+    public FluidInventoryWrapper workingFluidTile;
     public ProcessNode workingNode;
     public CraftingTask workingTask;
 
@@ -66,31 +68,44 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
             BlockEntity be = Direction.getDirectionFromSide(side).getTileEntity(world, this);
             if (!(be instanceof AdvInterfaceBlockEntity)) {
                 if (be instanceof Inventory inventory) {
-                    workingTile = inventory;
+                    workingTile = new InventoryWrapper(inventory);
                 }
                 if (be instanceof FluidHandler fluidHandler) {
-                    workingFluidTile = fluidHandler;
+                    workingFluidTile = new FluidInventoryWrapper(fluidHandler);
                 }
             }
 
             if (isInUse() && (workingTile != null || workingFluidTile != null)) {
                 for (CraftingProcess.Step step : workingNode.getProcess().steps) {
                     if (step.output && step.type == StackType.ITEM && workingTile != null) {
-                        ItemStack slotStack = workingTile.getStack(step.slot);
-                        ItemStack stepStack = step.stack;
-                        if (slotStack == null) {
-                            continue;
+                        if(step.slot != -1){
+                            ItemStack slotStack = workingTile.connected.getStack(step.slot);
+                            ItemStack stepStack = step.stack;
+                            if (slotStack == null) {
+                                continue;
+                            }
+                            if(stepStack.isItemEqual(slotStack)){
+                                ItemStack remainder = workingTask.insertFromProcess(slotStack);
+                                workingTile.connected.setStack(step.slot, remainder);
+                            }
+                        } else {
+
                         }
-                        workingTile.setStack(step.slot, null);
-                        workingTask.insertFromProcess(slotStack);
+
                     } else if ((step.output && step.type == StackType.FLUID && workingFluidTile != null)) {
-                        FluidStack slotStack = workingFluidTile.getFluid(step.slot, null);
-                        FluidStack stepStack = step.fluidStack;
-                        if (slotStack == null) {
-                            continue;
+                        if(step.slot != -1) {
+                            FluidStack slotStack = workingFluidTile.connected.getFluid(step.slot, null);
+                            FluidStack stepStack = step.fluidStack;
+                            if (slotStack == null) {
+                                continue;
+                            }
+                            if(stepStack.isFluidEqual(slotStack)){
+                                FluidStack remainder = workingTask.insertFromProcess(slotStack);
+                                workingFluidTile.connected.setFluid(step.slot, remainder, null);
+                            }
+                        } else {
+
                         }
-                        workingFluidTile.setFluid(step.slot, null, null);
-                        workingTask.insertFromProcess(slotStack);
                     }
                 }
             }
@@ -134,7 +149,7 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
 
     @Override
     public Inventory getConnectedTile() {
-        return workingTile;
+        return workingTile.connected;
     }
 
     @Override
@@ -153,7 +168,7 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
         if (!canInsertItems(items)) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.ITEM) {
-                ItemStack slotStack = workingTile.getStack(step.slot);
+                ItemStack slotStack = workingTile.connected.getStack(step.slot);
                 ItemStack stepStack = step.stack;
                 if (stepStack == null) continue;
                 ItemStack removed = items.remove(stepStack.itemId, stepStack.getDamage(), stepStack.count, stepStack.getStationNbt(), false, false);
@@ -161,9 +176,9 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                     return false;
                 }
                 if (slotStack == null) {
-                    workingTile.setStack(step.slot, removed);
+                    workingTile.connected.setStack(step.slot, removed);
                 } else {
-                    workingTile.getStack(step.slot).count += removed.count;
+                    workingTile.connected.getStack(step.slot).count += removed.count;
                 }
             }
         }
@@ -176,7 +191,8 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
         if (!isInUse() || workingTile == null) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.ITEM) {
-                ItemStack slotStack = workingTile.getStack(step.slot);
+                if(step.slot == -1) return false;
+                ItemStack slotStack = workingTile.get(step.slot);
                 ItemStack stepStack = step.stack;
                 if (slotStack != null) {
                     if (stepStack == null) continue;
@@ -210,7 +226,8 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
         if (items.isEmpty()) return true;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.FLUID) {
-                FluidStack slotStack = workingFluidTile.getFluid(step.slot, null);
+                if(step.slot == -1) return false;
+                FluidStack slotStack = workingFluidTile.connected.getFluid(step.slot, null);
                 FluidStack stepStack = step.fluidStack;
                 if (stepStack == null) continue;
                 FluidStack removed = items.removeById(stepStack.fluid.getFlowingBlock().id, stepStack.amount, false);
@@ -218,9 +235,9 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                     return false;
                 }
                 if (slotStack == null) {
-                    workingFluidTile.setFluid(step.slot, removed, null);
+                    workingFluidTile.connected.setFluid(step.slot, removed, null);
                 } else {
-                    workingFluidTile.getFluid(step.slot, null).amount += removed.amount;
+                    workingFluidTile.connected.getFluid(step.slot, null).amount += removed.amount;
                 }
             }
         }
@@ -234,7 +251,8 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
         if (!isInUse() || workingFluidTile == null) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.FLUID) {
-                FluidStack slotStack = workingFluidTile.getFluid(step.slot, null);
+                if(step.slot == -1) return false;
+                FluidStack slotStack = workingFluidTile.connected.getFluid(step.slot, null);
                 FluidStack stepStack = step.fluidStack;
                 if (slotStack != null) {
                     if (stepStack == null) continue;
@@ -251,7 +269,7 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                             can = false;
                             break;
                         }
-                        if (slotStack.amount + stepStack.amount > workingFluidTile.getFluidCapacity(step.slot, null)) {
+                        if (slotStack.amount + stepStack.amount > workingFluidTile.connected.getFluidCapacity(step.slot, null)) {
                             can = false;
                             break;
                         }
