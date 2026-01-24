@@ -1,42 +1,59 @@
 package sunsetsatellite.retrostorage.item;
 
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resource.language.TranslationStorage;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.client.item.CustomTooltipProvider;
 import net.modificationstation.stationapi.api.template.item.TemplateItem;
 import net.modificationstation.stationapi.api.util.Formatting;
-import net.modificationstation.stationapi.api.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.screen.CraftingProcessScreen;
+import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AdvRecipeDiscItem extends TemplateItem implements CustomTooltipProvider {
-
-    public AdvRecipeDiscItem(Identifier identifier) {
-        super(identifier);
+    public AdvRecipeDiscItem(String identifier) {
+        super(RetroStorage.NAMESPACE.id(identifier));
     }
 
     @Override
-    public String[] getTooltip(ItemStack stack, String s) {
-        StringBuilder text = new StringBuilder();
-        if (!stack.getStationNbt().getCompound("disc").values().isEmpty()) {
-            text.append(Formatting.LIGHT_PURPLE).append(stack.getStationNbt().getCompound("disc").getCompound("tasks").values().size()).append(" steps.").append("\n");
-        } else if (stack.getStationNbt().getCompound("disc").values().isEmpty()) {
-            text.append(Formatting.GRAY).append("Empty");
+    public @NotNull String[] getTooltip(ItemStack itemStack, String s) {
+        List<String> list = new ArrayList<>();
+        list.add(s);
+
+        NbtCompound disc = itemStack.getStationNbt().getCompound("disc");
+        NbtCompound tasks = disc.getCompound("tasks");
+        if (!disc.values().isEmpty()) {
+            list.add(Formatting.LIGHT_PURPLE + String.valueOf(tasks.values().size()) + " steps.");
+        } else {
+            list.add(Formatting.GRAY + "Empty" + Formatting.WHITE);
         }
-        NbtCompound tasksNBT = stack.getStationNbt().getCompound("disc").getCompound("tasks");
-        ArrayList<NbtCompound> tasks = new ArrayList<>();
-        for (Object value : tasksNBT.values()) {
-            tasks.add((NbtCompound) value);
+
+        ArrayList<NbtCompound> tags = new ArrayList<>();
+        for (Object value : tasks.values()) {
+            tags.add((NbtCompound) value);
         }
-        ItemStack output = RetroStorage.getFirstOutputOfProcess(tasks);
+        ItemStack output = RetroStorage.getFirstOutputOfProcess(tags);
         if (output != null) {
             String name = TranslationStorage.getInstance().getClientTranslation(output.getTranslationKey());
-            text.append(Formatting.LIGHT_PURPLE).append("Output: ").append(output.count).append("x ").append(name);
+            list.add(Formatting.LIGHT_PURPLE + "Output: " + output.count + "x " + name);
         }
-        return new String[]{s,text.toString()};
+
+        return list.toArray(new String[0]);
+    }
+
+    @Override
+    public ItemStack use(ItemStack stack, World world, PlayerEntity user) {
+        if (!Catalyst.serverEnv()) {
+            Minecraft.INSTANCE.setScreen(new CraftingProcessScreen(new CraftingProcess(stack.getStationNbt().getCompound("disc"))));
+        }
+        return super.use(stack, world, user);
     }
 }

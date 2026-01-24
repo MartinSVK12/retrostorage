@@ -1,17 +1,21 @@
 package sunsetsatellite.retrostorage.screen;
 
-
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.entity.player.PlayerInventory;
+import net.modificationstation.stationapi.api.network.packet.PacketHelper;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.ScreenActionPacket;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.block.entity.FluidImporterBlockEntity;
 import sunsetsatellite.retrostorage.screen.handler.FluidImporterScreenHandler;
 
-public class FluidImporterScreen extends FluidFakeScreen {
+public class FluidImporterScreen extends FilterScreen {
+    private final FluidImporterBlockEntity tile;
 
-    public FluidImporterScreen(PlayerInventory inventoryplayer, FluidImporterBlockEntity tileEntityImporter) {
-        super(new FluidImporterScreenHandler(inventoryplayer, tileEntityImporter));
-        tile = tileEntityImporter;
+    public FluidImporterScreen(PlayerInventory playerInv, FluidImporterBlockEntity tile) {
+        super(new FluidImporterScreenHandler(playerInv, tile));
+        this.tile = tile;
     }
 
     public void init() {
@@ -21,38 +25,44 @@ public class FluidImporterScreen extends FluidFakeScreen {
         buttons.add(new ButtonWidget(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 60), 20, 20, "+"));
     }
 
+    @Override
     protected void drawForeground() {
-        textRenderer.draw("Fluid Importer", 56, 6, 0x404040);
+        super.drawForeground();
+        textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 56, 6, 0x404040);
+        textRenderer.draw("Inventory", 8, (backgroundHeight - 96) + 2, 0x404040);
         textRenderer.draw("Slot: " + tile.slot, 16, 50, 0x404040);
-        textRenderer.draw("Inventory", 8, (backgroundHeight - 95) + 2, 0x404040);
     }
 
-    protected void drawBackground(float f) {
-        int i = minecraft.textureManager.getTextureId("/gui/trap.png");
+    @Override
+    protected void drawBackground(float tickDelta) {
+        int bg = this.minecraft.textureManager.getTextureId("/gui/trap.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.textureManager.bindTexture(i);
-        int j = (width - backgroundWidth) / 2;
-        int k = (height - backgroundHeight) / 2;
-        drawTexture(j, k, 0, 0, backgroundWidth, backgroundHeight);
+        this.minecraft.textureManager.bindTexture(bg);
+        int x = (this.width - this.backgroundWidth) / 2;
+        int y = (this.height - this.backgroundHeight) / 2;
+        drawTexture(x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
     }
 
-    protected void buttonClicked(ButtonWidget guibutton) {
-        if (!guibutton.active) {
+    @Override
+    protected void buttonClicked(ButtonWidget button) {
+        if (!button.active) {
             return;
         }
-        if (guibutton.id == 0) {
+        if (button.id == 0) {
             if (tile.slot >= 0) {
                 tile.slot--;
             }
         }
-        if (guibutton.id == 1) {
+        if (button.id == 1) {
             tile.slot++;
         }
-        if (guibutton.id == 2) {
+        if (button.id == 2) {
             tile.isWhitelist = !tile.isWhitelist;
-            guibutton.text = tile.isWhitelist ? "W" : "B";
+            button.text = tile.isWhitelist ? "W" : "B";
+        }
+
+        if (tile.world.isRemote) {
+            PacketHelper.send(new ScreenActionPacket(button.id, 0, 0, new Vec3i(tile.x, tile.y, tile.z)));
         }
     }
-
-    public FluidImporterBlockEntity tile;
 }

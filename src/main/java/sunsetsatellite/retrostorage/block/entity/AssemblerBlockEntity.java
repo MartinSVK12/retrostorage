@@ -1,16 +1,19 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
+import net.danygames2014.nyalib.block.BlockEntityInit;
+import net.danygames2014.nyalib.item.block.ManagedItemHandlerWithInventory;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.recipe.CraftingRecipe;
+import net.modificationstation.stationapi.api.block.BlockState;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.recipe.crafting.RecipeEntryCrafting;
 import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.api.Processor;
+import sunsetsatellite.retrostorage.block.AssemblerBlock;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 import sunsetsatellite.retrostorage.event.ReSItems;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.ItemStackList;
-import sunsetsatellite.retrostorage.util.Processor;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
@@ -19,116 +22,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AssemblerBlockEntity extends NetworkDeviceBlockEntity
-        implements Inventory, Processor {
+public class AssemblerBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, BlockEntityInit, Processor {
+
+    public boolean advanced = false;
+    public boolean init = false;
+
     public AssemblerBlockEntity() {
-        contents = new ItemStack[9];
-    }
-
-    @Override
-    public int size() {
-        return contents.length;
-    }
-
-    public boolean isEmpty() {
-        for (int i = 0; i < size() - 1; i++) {
-            if (getStack(i) != null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getStack(int i) {
-        return contents[i];
-    }
-
-    @Override
-    public ItemStack removeStack(int i, int j) {
-        if (contents[i] != null) {
-            if (contents[i].count <= j) {
-                ItemStack itemstack = contents[i];
-                contents[i] = null;
-                markDirty();
-                return itemstack;
-            }
-            ItemStack itemstack1 = contents[i].split(j);
-            if (contents[i].count == 0) {
-                contents[i] = null;
-            }
-            markDirty();
-            return itemstack1;
-        } else {
-            return null;
+        for (int i = 0; i < 9; i++) {
+            addItemSlot();
         }
     }
 
     @Override
-    public void setStack(int i, ItemStack itemstack) {
-
-        contents[i] = itemstack;
-        if (itemstack != null && itemstack.count > getMaxCountPerStack()) {
-            itemstack.count = getMaxCountPerStack();
-        }
-        markDirty();
-
-    }
-
-    @Override
-    public String getName() {
-        return "Assembler";
-    }
-    
-    @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        NbtList listTag = tag.getList("Items");
-        contents = new ItemStack[size()];
-        for (int i = 0; i < listTag.size(); i++) {
-            NbtCompound tag1 = (NbtCompound) listTag.get(i);
-            int j = tag1.getByte("Slot") & 0xff;
-            if (j < contents.length) {
-                contents[j] = new ItemStack(tag1);
-            }
-        }
-
-    }
-
-    @Override
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        NbtList listTag = new NbtList();
-        for (int i = 0; i < contents.length; i++) {
-            if (contents[i] != null) {
-                NbtCompound tag1 = new NbtCompound();
-                tag1.putByte("Slot", (byte) i);
-                contents[i].writeNbt(tag1);
-                listTag.add(tag1);
-            }
-        }
-
-        tag.put("Items", listTag);
-    }
-
-    @Override
-    public int getMaxCountPerStack() {
-        return 64;
+    public void init(BlockState blockState) {
+        advanced = ((AssemblerBlock) blockState.getBlock()).advanced;
     }
 
     @Override
     public void tick() {
         super.tick();
-        /*ArrayList<Class<?>> tiles = new ArrayList<>();
-        tiles.add(BlockEntityChest.class);
-        connectedTiles = getConnectedBlockEntity(tiles);*/
     }
 
-    public ArrayList<CraftingRecipe> getRecipes() {
-        ArrayList<CraftingRecipe> recipes = new ArrayList<>();
-        for (ItemStack stack : contents) {
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return canUse(player);
+    }
+
+    @Override
+    public String getName() {
+        if (advanced) {
+            return "container.retrostorage.advAssembler";
+        }
+        return "container.retrostorage.assembler";
+    }
+
+    public ArrayList<RecipeEntryCrafting<?, ItemStack>> getRecipes() {
+        ArrayList<RecipeEntryCrafting<?, ItemStack>> recipes = new ArrayList<>();
+        for (ItemStack stack : getInventory(null)) {
             if (stack != null && stack.getItem() == ReSItems.recipeDisc) {
-                CraftingRecipe recipe = RetroStorage.findRecipeFromNBT(stack.getStationNbt().getCompound("recipe"));
+                RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getStationNbt().getCompound("recipe"));
                 if (recipe != null) {
                     recipes.add(recipe);
                 }
@@ -186,7 +118,4 @@ public class AssemblerBlockEntity extends NetworkDeviceBlockEntity
     public boolean canInsertFluids(FluidStackList items) {
         return false;
     }
-
-    private ItemStack[] contents;
-
 }

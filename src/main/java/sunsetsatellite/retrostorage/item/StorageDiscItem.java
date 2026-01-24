@@ -1,34 +1,50 @@
 package sunsetsatellite.retrostorage.item;
 
-
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.client.item.CustomTooltipProvider;
 import net.modificationstation.stationapi.api.template.item.TemplateItem;
 import net.modificationstation.stationapi.api.util.Formatting;
-import net.modificationstation.stationapi.api.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+import sunsetsatellite.retrostorage.RetroStorage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StorageDiscItem extends TemplateItem implements CustomTooltipProvider {
-    public final int stackCapacity;
-    public final int itemCapacity;
-
-    public StorageDiscItem(Identifier identifier, int stackCapacity, int itemCapacity) {
-        super(identifier);
-        this.stackCapacity = stackCapacity;
-        this.itemCapacity = itemCapacity;
+    public StorageDiscItem(String namespaceId, int maxStackCapacity, int maxItemCapacity) {
+        super(RetroStorage.NAMESPACE.id(namespaceId));
+        this.maxStackCapacity = maxStackCapacity;
+        this.maxItemCapacity = maxItemCapacity;
+        setMaxCount(1);
     }
 
-    @Override
-    public String[] getTooltip(ItemStack stack, String originalTooltip) {
-        return new String[]{
-                originalTooltip,
-                Formatting.LIGHT_PURPLE+stack.getStationNbt().getCompound("contents").toString() + " out of " + ((StorageDiscItem) stack.getItem()).getMaxStackCapacity()};
-    }
 
     public int getMaxStackCapacity() {
-        return stackCapacity;
+        return maxStackCapacity;
+    }
+
+    public Item setMaxStackCapacity(int i) {
+        maxStackCapacity = i;
+        return this;
     }
 
     public int getMaxItemCapacity() {
-        return itemCapacity;
+        return maxItemCapacity;
+    }
+
+    public void setMaxItemCapacity(int maxItemCapacity) {
+        this.maxItemCapacity = maxItemCapacity;
+    }
+
+    private int maxStackCapacity;
+    private int maxItemCapacity;
+
+    @Override
+    public @NotNull String[] getTooltip(ItemStack itemStack, String s) {
+        List<String> tooltip = new ArrayList<>();
+        tooltip.add(s);
+        tooltip.add(Formatting.LIGHT_PURPLE + "" + itemStack.getStationNbt().getCompound("Disc").values().size() + " entries out of " + maxStackCapacity);
+        return tooltip.toArray(new String[0]);
     }
 }

@@ -1,21 +1,25 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 
+import net.danygames2014.nyalib.fluid.FluidStack;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.ItemStackList;
-import sunsetsatellite.retrostorage.util.NetworkController;
-import sunsetsatellite.retrostorage.util.Processor;
+import net.minecraft.nbt.NbtCompound;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
+import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.api.Processor;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 
 import java.util.List;
 
 public class CraftingTask {
     public Processor processor;
     public final NetworkController network;
-    private final int quantity;
-    public final NodeList nodes;
-    private final NetworkCraftable craftable;
+    private int quantity;
+    public NodeList nodes;
+    private NetworkCraftable craftable;
     private int totalSteps;
     private int currentStep;
     private long startTime = -1;
@@ -24,8 +28,8 @@ public class CraftingTask {
 
     private final ItemStackList internalStorage = new ItemStackList();
     private final FluidStackList internalFluidStorage = new FluidStackList();
-    private final ItemStackList initialRequirements;
-    private final FluidStackList initialFluidRequirements;
+    private ItemStackList initialRequirements;
+    private FluidStackList initialFluidRequirements;
 
     public CraftingTask(NetworkController network, int quantity, NodeList nodes, NetworkCraftable craftable, ItemStackList initialRequirements, FluidStackList initialFluidRequirements) {
         this.network = network;
@@ -34,6 +38,11 @@ public class CraftingTask {
         this.craftable = craftable;
         this.initialRequirements = initialRequirements;
         this.initialFluidRequirements = initialFluidRequirements;
+    }
+
+    public CraftingTask(NetworkController network, NbtCompound tag) {
+        this.network = network;
+        readFromNbt(tag);
     }
 
     public void start() {
@@ -97,11 +106,11 @@ public class CraftingTask {
         }
     }
 
-    public int insertFromProcess(ItemStack stack) {
+    public ItemStack insertFromProcess(ItemStack stack) {
+        if (stack == null) return null;
         int size = stack.count;
         for (Node node : this.nodes.all()) {
-            if (node instanceof ProcessNode) {
-                ProcessNode processing = (ProcessNode) node;
+            if (node instanceof ProcessNode processing) {
 
                 int needed = processing.getNeeded(stack);
                 if (needed > 0) {
@@ -109,7 +118,7 @@ public class CraftingTask {
                         needed = size;
                     }
 
-                    processing.markReceived(stack);
+                    processing.markReceived(stack.copy());
 
                     size -= needed;
 
@@ -118,24 +127,23 @@ public class CraftingTask {
                     } else {
                         ItemStack remainder = network.addItemToNetwork(stack);
 
-                        internalStorage.add(remainder);
+                        stack = internalStorage.add(remainder);
                     }
 
-                    if (size == 0) {
-                        return 0;
+                    if (stack == null || stack.count <= 0) {
+                        return null;
                     }
                 }
             }
         }
 
-        return size;
+        return stack;
     }
 
-    public int insertFromProcess(FluidStack stack) {
+    public FluidStack insertFromProcess(FluidStack stack) {
         int size = stack.amount;
         for (Node node : this.nodes.all()) {
-            if (node instanceof ProcessNode) {
-                ProcessNode processing = (ProcessNode) node;
+            if (node instanceof ProcessNode processing) {
 
                 int needed = processing.getNeeded(stack);
                 if (needed > 0) {
@@ -152,17 +160,17 @@ public class CraftingTask {
                     } else {
                         FluidStack remainder = network.addFluidToNetwork(stack);
 
-                        internalFluidStorage.add(remainder);
+                        stack = internalFluidStorage.add(remainder);
                     }
 
-                    if (size == 0) {
-                        return 0;
+                    if (stack == null || stack.amount <= 0) {
+                        return null;
                     }
                 }
             }
         }
 
-        return size;
+        return stack;
     }
 
     public void onCancelled() {
@@ -208,4 +216,72 @@ public class CraftingTask {
     public boolean isStarted() {
         return started;
     }
+
+    public void writeToNbt(NbtCompound tag) {
+        if (processor != null) {
+            if (processor instanceof NetworkDeviceBlockEntity) {
+                Vec3i position = ((NetworkDeviceBlockEntity) processor).getPosition();
+                NbtCompound pos = new NbtCompound();
+                position.writeToNBT(pos);
+                tag.put("Processor", pos);
+            }
+        }
+        tag.putInt("Quantity", quantity);
+        tag.putInt("TotalSteps", totalSteps);
+        tag.putInt("CurrentStep", currentStep);
+        tag.putLong("StartTime", startTime);
+        tag.putInt("Ticks", ticks);
+        tag.putBoolean("Started", started);
+        NbtCompound craftableTag = new NbtCompound();
+        craftable.writeToNBT(craftableTag);
+        tag.put("Craftable", craftableTag);
+        NbtCompound internalStorageTag = new NbtCompound();
+        NbtCompound internalFluidStorageTag = new NbtCompound();
+        NbtCompound initialRequirementsTag = new NbtCompound();
+        NbtCompound initialFluidRequirementsTag = new NbtCompound();
+        internalStorage.writeToNbt(internalStorageTag);
+        internalFluidStorage.writeToNbt(internalFluidStorageTag);
+        initialRequirements.writeToNbt(initialRequirementsTag);
+        initialFluidRequirements.writeToNbt(initialFluidRequirementsTag);
+        tag.put("InternalStorage", internalStorageTag);
+        tag.put("InternalFluidStorage", internalFluidStorageTag);
+        tag.put("Requirements", initialRequirementsTag);
+        tag.put("FluidRequirements", initialFluidRequirementsTag);
+        NbtCompound nodeListTag = new NbtCompound();
+        nodes.writeToNbt(nodeListTag);
+        tag.put("NodeList", nodeListTag);
+    }
+
+    public void readFromNbt(NbtCompound tag) {
+        if (tag.contains("Processor")) {
+            Vec3i pos = new Vec3i(tag.getCompound("Processor"));
+            if (network instanceof BlockEntity && ((BlockEntity) network).world != null) {
+                processor = (Processor) ((BlockEntity) network).world.getBlockEntity(pos.x, pos.y, pos.z);
+            }
+        }
+        quantity = tag.getInt("Quantity");
+        totalSteps = tag.getInt("TotalSteps");
+        currentStep = tag.getInt("CurrentStep");
+        startTime = tag.getLong("StartTime");
+        ticks = tag.getInt("Ticks");
+        started = tag.getBoolean("Started");
+        craftable = new NetworkCraftable(tag.getCompound("Craftable"));
+        NbtCompound internalStorageTag = tag.getCompound("InternalStorage");
+        NbtCompound internalFluidStorageTag = tag.getCompound("InternalFluidStorage");
+        NbtCompound initialRequirementsTag = tag.getCompound("Requirements");
+        NbtCompound initialFluidRequirementsTag = tag.getCompound("FluidRequirements");
+        internalStorage.readFromNbt(internalStorageTag);
+        internalFluidStorage.readFromNbt(internalFluidStorageTag);
+        if (initialRequirements == null) {
+            initialRequirements = new ItemStackList();
+        }
+        if (initialFluidRequirements == null) {
+            initialFluidRequirements = new FluidStackList();
+        }
+        initialRequirements.readFromNbt(initialRequirementsTag);
+        initialFluidRequirements.readFromNbt(initialFluidRequirementsTag);
+        NbtCompound nodeListTag = tag.getCompound("NodeList");
+        nodes = new NodeList(nodeListTag);
+    }
+
 }

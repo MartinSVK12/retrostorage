@@ -1,158 +1,62 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.modificationstation.stationapi.api.util.math.Direction;
-import sunsetsatellite.retrostorage.util.NetworkController;
-import sunsetsatellite.retrostorage.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.ScreenActionListener;
+import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
+import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
+import sunsetsatellite.retrostorage.util.Filter;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
 
-public class ImporterBlockEntity extends NetworkDeviceBlockEntity implements Inventory {
-    public ImporterBlockEntity(){
-        contents = new ItemStack[9];
-        this.workTimer = new TickTimer(this, this::work, 10, true);
-    }
+public class ImporterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener {
 
-    public int size() {
-        return contents.length;
-    }
+    public Filter filter = new Filter(9, 0);
+    public InventoryWrapper wrapper = new InventoryWrapper(filter);
 
-    public boolean isEmpty() {
-        for (int i = 0; i < size() - 1; i++) {
-            if (getStack(i) != null) {
-                return false;
-            }
-        }
-        return true;
-    }
+    public TickTimer workTimer = new TickTimer(this, this::work, 10, true);
+    public int slot = -1;
+    public boolean isWhitelist = true;
+    public boolean enabled = true;
+    public BlockEntity connectedTile;
 
-    public ItemStack getStack(int i) {
-        return contents[i];
-    }
-
-    public ItemStack removeStack(int i, int j) {
-        if (contents[i] != null) {
-            if (contents[i].count <= j) {
-                ItemStack itemstack = contents[i];
-                contents[i] = null;
-                markDirty();
-                return itemstack;
-            }
-            ItemStack itemstack1 = contents[i].split(j);
-            if (contents[i].count == 0) {
-                contents[i] = null;
-            }
-            markDirty();
-            return itemstack1;
-        } else {
-            return null;
-        }
-    }
-
-    public void setStack(int i, ItemStack itemstack) {
-        contents[i] = itemstack;
-        if (itemstack != null && itemstack.count > getMaxCountPerStack()) {
-            itemstack.count = getMaxCountPerStack();
-        }
-        markDirty();
-
-    }
-
-    public int containsItem(int itemId, int itemDamage) {
-        for (int i2 = 0; i2 < this.contents.length; ++i2) {
-            if (this.contents[i2] != null && this.contents[i2].itemId == itemId && this.contents[i2].getDamage() == itemDamage) {
-                return i2;
-            }
-        }
-
-        return -1;
-    }
-
-    public void markDirty() {
-        super.markDirty();
-    }
-
-    public String getName() {
-        return "Importer";
-    }
-
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        NbtList listTag = tag.getList("Items");
-        isWhitelist = tag.getBoolean("isWhitelist");
-        enabled = tag.getBoolean("enabled");
-        slot = tag.getInt("workSlot");
-        contents = new ItemStack[size()];
-        for (int i = 0; i < listTag.size(); i++) {
-            NbtCompound tag1 = (NbtCompound) listTag.get(i);
-            int j = tag1.getByte("Slot") & 0xff;
-            if (j >= 0 && j < contents.length) {
-                contents[j] = new ItemStack(tag1);
-            }
-        }
-
-    }
-
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        NbtList listTag = new NbtList();
-        for (int i = 0; i < contents.length; i++) {
-            if (contents[i] != null) {
-                NbtCompound tag1 = new NbtCompound();
-                tag1.putByte("Slot", (byte) i);
-                contents[i].writeNbt(tag1);
-                listTag.add(tag1);
-            }
-        }
-
-        tag.putInt("workSlot", slot);
-        tag.putBoolean("isWhitelist", isWhitelist);
-        tag.putBoolean("enabled", enabled);
-        tag.put("Items", listTag);
-
-    }
-
-    public int getMaxCountPerStack() {
-        return 64;
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity entityplayer) {
-        return super.canPlayerUse(entityplayer);
+    public boolean matchesFilter(ItemStack stack) {
+        if (stack == null) return false;
+        boolean contains = wrapper.contains(stack.itemId, stack.getDamage(), stack.getStationNbt());
+        return contains == isWhitelist;
     }
 
     @Override
     public void tick() {
         super.tick();
+        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        connectedTile = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         workTimer.tick();
-        ArrayList<Class<?>> tiles = new ArrayList<>();
-        tiles.add(Inventory.class);
-        connectedTiles = getConnectedBlockEntity(tiles);
-    }
-
-    public boolean matchesFilter(ItemStack stack){
-        if(stack == null) return false;
-        return (containsItem(stack.itemId,stack.getDamage()) != -1 && isWhitelist) || (containsItem(stack.itemId, stack.getDamage()) == -1 && !isWhitelist);
     }
 
     public void work() {
-        NetworkController controller = getController();
-        if(controller != null && enabled){
-            for (BlockEntity tile : connectedTiles.values()) {
-                if (tile != null && !(tile instanceof NetworkDeviceBlockEntity)) {
-                    Inventory inv = (Inventory) tile;
-                    if(slot == -1){
+        NetworkController con = getController();
+        if (con != null && enabled) {
+            if (connectedTile != null && !(connectedTile instanceof NetworkDeviceBlockEntity)) {
+                if (connectedTile instanceof Inventory inv) {
+                    if (slot == -1) {
+                        here:
                         for (int i = 0; i < inv.size(); i++) {
                             ItemStack stack = inv.getStack(i);
-                            if(matchesFilter(stack)){
-                                ItemStack leftovers = controller.addItemToNetwork(stack);
+                            if (matchesFilter(stack)) {
+                                for (CraftingTask task : con.getCurrentTasks()) {
+                                    ItemStack leftovers = task.insertFromProcess(stack);
+                                    if (leftovers == stack) continue;
+                                    inv.setStack(i, leftovers);
+                                    break here;
+                                }
+                                ItemStack leftovers = con.addItemToNetwork(stack);
                                 inv.setStack(i, leftovers);
                                 break;
                             }
@@ -162,8 +66,14 @@ public class ImporterBlockEntity extends NetworkDeviceBlockEntity implements Inv
                             return;
                         }
                         ItemStack stack = inv.getStack(slot);
-                        if(matchesFilter(stack)){
-                            ItemStack leftovers = controller.addItemToNetwork(stack);
+                        if (matchesFilter(stack)) {
+                            for (CraftingTask currentTask : con.getCurrentTasks()) {
+                                ItemStack leftovers = currentTask.insertFromProcess(stack);
+                                if (leftovers == stack) continue;
+                                inv.setStack(slot, leftovers);
+                                return;
+                            }
+                            ItemStack leftovers = con.addItemToNetwork(stack);
                             inv.setStack(slot, leftovers);
                         }
                     }
@@ -172,10 +82,41 @@ public class ImporterBlockEntity extends NetworkDeviceBlockEntity implements Inv
         }
     }
 
-    private ItemStack[] contents;
-    public TickTimer workTimer;
-    public int slot = -1;
-    public boolean isWhitelist = true;
-    public boolean enabled = true;
-    public HashMap<Direction, BlockEntity> connectedTiles = new HashMap<>();
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 0) {
+            if (slot >= 0) {
+                slot--;
+            }
+        }
+        if (id == 1) {
+            slot++;
+        }
+        if (id == 2) {
+            isWhitelist = !isWhitelist;
+        }
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        isWhitelist = nbt.getBoolean("isWhitelist");
+        enabled = nbt.getBoolean("enabled");
+        slot = nbt.getInt("workSlot");
+        filter.readNbt(nbt);
+    }
+
+    @Override
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        filter.writeNbt(nbt);
+        nbt.putInt("workSlot", slot);
+        nbt.putBoolean("isWhitelist", isWhitelist);
+        nbt.putBoolean("enabled", enabled);
+    }
+
+    @Override
+    public String getName() {
+        return "container.retrostorage.importer";
+    }
 }

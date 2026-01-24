@@ -1,11 +1,15 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-
+import net.danygames2014.nyalib.fluid.FluidStack;
 import net.minecraft.item.ItemStack;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import sunsetsatellite.retrostorage.util.*;
+import net.minecraft.nbt.NbtCompound;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.api.Processor;
+import sunsetsatellite.retrostorage.util.ProcessingState;
+import sunsetsatellite.retrostorage.util.VariantStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessNode extends Node {
@@ -27,9 +31,64 @@ public class ProcessNode extends Node {
         init();
     }
 
+    public ProcessNode(NbtCompound tag) {
+        readFromNbt(tag);
+        this.process = pattern.getProcess();
+    }
+
+    @Override
+    public void writeToNbt(NbtCompound tag) {
+        super.writeToNbt(tag);
+        tag.putString("Type", "ProcessNode");
+        tag.putInt("State", state.ordinal());
+        tag.putInt("QuantityFinished", quantityFinished);
+        NbtCompound itemsReceivedTag = new NbtCompound();
+        itemsReceived.writeToNbt(itemsReceivedTag);
+        tag.put("ItemsReceived", itemsReceivedTag);
+
+        NbtCompound fluidsReceivedTag = new NbtCompound();
+        fluidsReceived.writeToNbt(fluidsReceivedTag);
+        tag.put("FluidsReceived", fluidsReceivedTag);
+
+        NbtCompound singleItemsToReceiveTag = new NbtCompound();
+        singleItemsToReceive.writeToNbt(singleItemsToReceiveTag);
+        tag.put("SingleItemsToReceive", singleItemsToReceiveTag);
+
+        NbtCompound singleFluidsToReceiveTag = new NbtCompound();
+        singleFluidsToReceive.writeToNbt(singleFluidsToReceiveTag);
+        tag.put("SingleFluidsToReceive", singleFluidsToReceiveTag);
+
+        if (singleItemsToRequire != null) {
+            NbtCompound singleItemsToRequireTag = new NbtCompound();
+            singleItemsToRequire.writeToNbt(singleItemsToRequireTag);
+            tag.put("SingleItemsToRequire", singleItemsToRequireTag);
+        }
+
+        if (singleFluidsToRequire != null) {
+            NbtCompound singleFluidsToRequireTag = new NbtCompound();
+            singleFluidsToRequire.writeToNbt(singleFluidsToRequireTag);
+            tag.put("SingleFluidsToRequire", singleFluidsToRequireTag);
+        }
+    }
+
+    @Override
+    public void readFromNbt(NbtCompound tag) {
+        super.readFromNbt(tag);
+        state = ProcessingState.values()[tag.getInt("State")];
+        quantityFinished = tag.getInt("QuantityFinished");
+        itemsReceived.readFromNbt(tag.getCompound("ItemsReceived"));
+        fluidsReceived.readFromNbt(tag.getCompound("FluidsReceived"));
+        singleItemsToReceive.readFromNbt(tag.getCompound("SingleItemsToReceive"));
+        singleFluidsToReceive.readFromNbt(tag.getCompound("SingleFluidsToReceive"));
+        if (singleItemsToRequire == null) singleItemsToRequire = new ItemStackList();
+        singleItemsToRequire.readFromNbt(tag.getCompound("SingleItemsToRequire"));
+        if (singleFluidsToRequire == null) singleFluidsToRequire = new FluidStackList();
+        singleFluidsToRequire.readFromNbt(tag.getCompound("SingleFluidsToRequire"));
+    }
+
     private void init() {
         for (VariantStack stack : getPattern().getOutput()) {
-            switch (stack.getType()){
+            switch (stack.getType()) {
                 case ITEM: {
                     singleItemsToReceive.add(stack.getItem());
                     break;
@@ -86,7 +145,7 @@ public class ProcessNode extends Node {
 
             if (success) {
                 processor.setFocus(this, craftingTask);
-                allInserted = processor.canInsertItems(new ItemStackList(simulatedRequirementList)) && processor.canInsertFluids(new FluidStackList((ArrayList<FluidStack>) simulatedFluidRequirementList));
+                allInserted = processor.canInsertItems(new ItemStackList(simulatedRequirementList)) && processor.canInsertFluids(new FluidStackList(simulatedFluidRequirementList));
             } else {
                 return;
             }
@@ -106,10 +165,11 @@ public class ProcessNode extends Node {
 
             ItemStackList extracted = new ItemStackList();
             FluidStackList extractedFluids = new FluidStackList();
-            if(actualRequirements != null){
+            if (actualRequirements != null) {
                 internalStorage.move(actualRequirements, extracted, false);
-            }if(actualFluidRequirements != null){
-                internalFluidStorage.move(actualFluidRequirements,extractedFluids,false);
+            }
+            if (actualFluidRequirements != null) {
+                internalFluidStorage.move(actualFluidRequirements, extractedFluids, false);
             }
 
 
@@ -143,7 +203,7 @@ public class ProcessNode extends Node {
     }
 
     public int getNeeded(FluidStack stack) {
-        return singleFluidsToReceive.count(stack.fluid.blockId()) * totalQuantity - fluidsReceived.count(stack.fluid.blockId());
+        return singleFluidsToReceive.count(stack.fluid.getFlowingBlock().id) * totalQuantity - fluidsReceived.count(stack.fluid.getFlowingBlock().id);
     }
 
     public void markReceived(ItemStack stack) {
@@ -179,8 +239,8 @@ public class ProcessNode extends Node {
         }
 
         for (FluidStack stack : singleFluidsToReceive) {
-            if (fluidsReceived.getById(stack.fluid.blockId()) != null) {
-                int ratioReceived = fluidsReceived.count(stack.fluid.blockId()) / stack.amount;
+            if (fluidsReceived.getById(stack.fluid.getFlowingBlock().id) != null) {
+                int ratioReceived = fluidsReceived.count(stack.fluid.getFlowingBlock().id) / stack.amount;
                 if (tempQuantityFinished > ratioReceived) {
                     tempQuantityFinished = ratioReceived;
                 }

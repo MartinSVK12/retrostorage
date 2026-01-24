@@ -1,11 +1,11 @@
 package sunsetsatellite.retrostorage.util;
 
-
+import net.danygames2014.nyalib.fluid.FluidStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.teamterminus.machineessentials.MachineEssentials;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
+import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.retrostorage.item.FluidStorageDiscItem;
 import sunsetsatellite.retrostorage.item.StorageDiscItem;
 
@@ -23,7 +23,7 @@ public class DiscManipulator {
         Collection<?> values = disc.getStationNbt().getCompound("Disc").values();
         values.forEach((V) -> {
             if (V instanceof NbtCompound) {
-                String K = ((NbtCompound) V).getKey();
+                String K = ((NbtElement) V).getKey();
                 ItemStack itemStack = readUnlimitedStackFromNbt((NbtCompound) V);
                 if (itemStack == null) return;
                 if (itemStack.getItem() != null) {
@@ -54,27 +54,36 @@ public class DiscManipulator {
         return Collections.unmodifiableList(result);
     }
 
-    /*public static void serializeStacks(NbtCompound tag, List<ItemStack> stacks) {
+    public static void serializeStacks(NbtCompound tag, List<ItemStack> stacks) {
         for (int i = 0; i < stacks.size(); i++) {
             ItemStack item = stacks.get(i);
             NbtCompound itemNBT = new NbtCompound();
             if (item != null) {
-                itemNBT.putInt("Count", item.count);
-                itemNBT.putShort("id", (short) item.itemId);
-                itemNBT.putShort("Damage", (short) item.getDamage());
-                itemNBT.putByte("Expanded", (byte) 1);
-                itemNBT.putInt("Version", 19133);
-                itemNBT.putCompound("Data", item.getStationNbt());
-                tag.putCompound(String.valueOf(i), itemNBT);
+                item.writeNbt(itemNBT);
+                itemNBT.putInt("TrueCount", item.count);
+                tag.put(String.valueOf(i), itemNBT);
             } else {
-                tag.getValue().remove(String.valueOf(i));
+                tag.entries.remove(String.valueOf(i));
             }
         }
-    }*/
+    }
+
+    public static void serializeFluidStacks(NbtCompound tag, List<FluidStack> stacks) {
+        for (int i = 0; i < stacks.size(); i++) {
+            FluidStack fluid = stacks.get(i);
+            NbtCompound fluidNbt = new NbtCompound();
+            if (fluid != null) {
+                fluid.writeNbt(fluidNbt);
+                tag.put(String.valueOf(i), fluidNbt);
+            } else {
+                tag.entries.remove(String.valueOf(i));
+            }
+        }
+    }
 
     public static boolean canSaveAllToDiscs(List<ItemStack> discs, List<ItemStack> list) {
         int itemAmount = list.stream().filter(Objects::nonNull).filter((S) -> S.getItem() != null).mapToInt((S) -> S.count).sum();
-        int stackAmount = MachineEssentials.condenseItemList(list).size();
+        int stackAmount = Catalyst.condenseItemList(list).size();
 
         int maxItemCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof StorageDiscItem).mapToInt(item -> ((StorageDiscItem) item).getMaxItemCapacity()).sum();
         int maxStackCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof StorageDiscItem).mapToInt(item -> ((StorageDiscItem) item).getMaxStackCapacity()).sum();
@@ -82,9 +91,9 @@ public class DiscManipulator {
         return itemAmount <= maxItemCapacity && stackAmount <= maxStackCapacity;
     }
 
-   public static boolean canSaveAllToFluidDiscs(List<ItemStack> discs, List<FluidStack> list) {
+    public static boolean canSaveAllToFluidDiscs(List<ItemStack> discs, List<FluidStack> list) {
         int itemAmount = list.stream().filter(Objects::nonNull).filter((S) -> S.fluid != null).mapToInt((S) -> S.amount).sum();
-        int stackAmount = MachineEssentials.condenseFluidList(list).size();
+        int stackAmount = Catalyst.condenseFluidList(list).size();
 
         int maxItemCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof FluidStorageDiscItem).mapToInt(item -> ((FluidStorageDiscItem) item).getMaxItemCapacity()).sum();
         int maxStackCapacity = discs.stream().filter(Objects::nonNull).map(ItemStack::getItem).filter(item -> item instanceof FluidStorageDiscItem).mapToInt(item -> ((FluidStorageDiscItem) item).getMaxStackCapacity()).sum();
@@ -93,10 +102,10 @@ public class DiscManipulator {
     }
 
     public static void saveToDiscs(List<ItemStack> discs, List<ItemStack> stacks) {
-        if(!canSaveAllToDiscs(discs, stacks)) return;
-        ArrayList<ItemStack> mutableStacks = MachineEssentials.condenseItemList(stacks);
+        if (!canSaveAllToDiscs(discs, stacks)) return;
+        ArrayList<ItemStack> mutableStacks = Catalyst.condenseItemList(stacks);
 
-        discs = discs.stream().filter(Objects::nonNull).filter((S)-> S.getItem() instanceof StorageDiscItem).collect(Collectors.toList());
+        discs = discs.stream().filter(Objects::nonNull).filter((S) -> S.getItem() instanceof StorageDiscItem).collect(Collectors.toList());
 
         for (ItemStack discStack : discs) {
             StorageDiscItem disc = (StorageDiscItem) discStack.getItem();
@@ -116,7 +125,7 @@ public class DiscManipulator {
                 stackAmount += 1;
                 NbtCompound itemNBT = new NbtCompound();
                 stack.writeNbt(itemNBT);
-                itemNBT.putInt("ExtendedCount",stack.count);
+                itemNBT.putInt("TrueCount", stack.count);
                 tag.put(String.valueOf(i), itemNBT);
                 i++;
                 iter.remove();
@@ -128,10 +137,10 @@ public class DiscManipulator {
     }
 
     public static void saveToFluidDiscs(List<ItemStack> discs, List<FluidStack> stacks) {
-        if(!canSaveAllToFluidDiscs(discs, stacks)) return;
-        ArrayList<FluidStack> mutableStacks = MachineEssentials.condenseFluidList(stacks);
+        if (!canSaveAllToFluidDiscs(discs, stacks)) return;
+        ArrayList<FluidStack> mutableStacks = Catalyst.condenseFluidList(stacks);
 
-        discs = discs.stream().filter(Objects::nonNull).filter((S)-> S.getItem() instanceof FluidStorageDiscItem).collect(Collectors.toList());
+        discs = discs.stream().filter(Objects::nonNull).filter((S) -> S.getItem() instanceof FluidStorageDiscItem).collect(Collectors.toList());
 
         for (ItemStack discStack : discs) {
             FluidStorageDiscItem disc = (FluidStorageDiscItem) discStack.getItem();
@@ -158,12 +167,13 @@ public class DiscManipulator {
 
             discStack.getStationNbt().put("Disc", tag);
         }
+
     }
 
     public static ItemStack readUnlimitedStackFromNbt(NbtCompound tag) {
         ItemStack stack = new ItemStack(0, 0, 0);
         stack.readNbt(tag);
-        stack.count = tag.getInt("ExtendedCount");
+        stack.count = tag.getInt("TrueCount");
         return stack.getItem() != null && stack.count > 0 ? stack : null;
     }
 

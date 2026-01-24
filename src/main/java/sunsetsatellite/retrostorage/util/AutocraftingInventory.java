@@ -11,8 +11,8 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 
 public class AutocraftingInventory extends CraftingInventory {
-    private ItemStack[] stacks;
-    private int width;
+    private final ItemStack[] stacks;
+    private final int width;
 
     public AutocraftingInventory(int width, int height) {
         super(null, width, height);

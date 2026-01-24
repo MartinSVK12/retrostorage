@@ -5,3 +5,9 @@ accessible field net/minecraft/recipe/ShapedRecipe input [Lnet/minecraft/item/It
 accessible method net/minecraft/client/gui/screen/ingame/HandledScreen getSlotAt (II)Lnet/minecraft/screen/slot/Slot;
 accessible field net/minecraft/client/Minecraft INSTANCE Lnet/minecraft/client/Minecraft;
 accessible field net/minecraft/nbt/NbtCompound entries Ljava/util/Map;
+accessible field net/minecraft/client/gui/screen/ingame/HandledScreen itemRenderer Lnet/minecraft/client/render/item/ItemRenderer;
+accessible field net/minecraft/server/network/ConnectionListener connections Ljava/util/ArrayList;
+accessible field net/minecraft/block/entity/BlockEntity idToClass Ljava/util/Map;
+accessible field net/minecraft/block/entity/BlockEntity classToId Ljava/util/Map;
+accessible field net/minecraft/client/render/WorldRenderer blockRenderManager Lnet/minecraft/client/render/block/BlockRenderManager;
+accessible field net/minecraft/screen/slot/Slot index I

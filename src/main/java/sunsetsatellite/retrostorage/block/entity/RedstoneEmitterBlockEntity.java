@@ -1,118 +1,51 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.modificationstation.stationapi.api.util.math.Direction;
-import sunsetsatellite.retrostorage.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.ScreenActionListener;
+import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.recipe.crafting.RecipeEntryCrafting;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.block.RedstoneEmitterBlock;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
+import sunsetsatellite.retrostorage.item.AdvRecipeDiscItem;
+import sunsetsatellite.retrostorage.item.RecipeDiscItem;
+import sunsetsatellite.retrostorage.util.Filter;
+import sunsetsatellite.retrostorage.util.VariantStack;
+import sunsetsatellite.retrostorage.util.crafting.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
 
-public class RedstoneEmitterBlockEntity extends NetworkDeviceBlockEntity implements Inventory {
+public class RedstoneEmitterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener {
 
-    private ItemStack[] contents;
+    public Filter filter = new Filter(1, 0);
+
     public boolean isActive = false;
     public int mode = 0;
     public int amount = 0;
     public boolean useMeta = true;
     public boolean useData = false;
-    public TickTimer workTimer = new TickTimer(this, this::work, 100, true);
-
-    public RedstoneEmitterBlockEntity() {
-        contents = new ItemStack[1];
-    }
-
-    public int size() {
-        return contents.length;
-    }
-
-    public ItemStack getStack(int i) {
-        return contents[i];
-    }
-
-    public ItemStack removeStack(int i, int j) {
-        if (contents[i] != null) {
-            if (contents[i].count <= j) {
-                ItemStack itemstack = contents[i];
-                contents[i] = null;
-                markDirty();
-                return itemstack;
-            }
-            ItemStack itemstack1 = contents[i].split(j);
-            if (contents[i].count == 0) {
-                contents[i] = null;
-            }
-            markDirty();
-            return itemstack1;
-        } else {
-            return null;
-        }
-    }
-
-    public void work() {
-        ArrayList<Class<?>> list = new ArrayList<>();
-        list.add(AssemblerBlockEntity.class);
-        list.add(AdvInterfaceBlockEntity.class);
-        HashMap<Direction, BlockEntity> map = getConnectedBlockEntity(list);
-        map.forEach((K, V) -> {
-            if (V != null) {
-                connectedTile = V;
-            }
-        });
-        if (connectedTile != null && network != null && isActive) {
-            //TODO:
-            /*if (connectedTile instanceof BlockEntityAssembler) {
-                ItemStack stack = ((BlockEntityAssembler) connectedTile).getStack(asmSlot);
-                if (stack != null) {
-                    if (stack.getItem() == RetroStorage.recipeDisc) {
-                        RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getStationNbt().getCompound("recipe"));
-                        if (recipe != null) {
-                            CraftingCalculator calc = new CraftingCalculator(network, 1, new VariantStack(recipe.getOutput()), new NetworkCraftable(recipe), network.knownCraftables);
-                            CalculationResult result = calc.calculate();
-                            if (result.getType() == CalculationResultType.OK) {
-                                network.requestCrafting(result.getTask());
-                            }
-                        }
-                    }
-                }
-            } else if (connectedTile instanceof BlockEntityAdvInterface) {
-                if (!((BlockEntityAdvInterface) connectedTile).isInUse()) {
-                    ItemStack stack = ((BlockEntityAdvInterface) connectedTile).getStack(asmSlot);
-                    if (stack != null) {
-                        if (stack.getItem() == RetroStorage.advRecipeDisc) {
-                            if (stack.getStationNbt().containsKey("disc") && stack.getStationNbt().getCompound("disc").containsKey("processName")) {
-                                CraftingProcess process = new CraftingProcess(stack.getStationNbt().getCompound("disc"));
-                                NetworkCraftable craftable = new NetworkCraftable(process);
-                                CraftingCalculator calc = new CraftingCalculator(network, 1, craftable.getOutput().get(0), craftable, network.knownCraftables);
-                                CalculationResult result = calc.calculate();
-                                if (result.getType() == CalculationResultType.OK) {
-                                    network.requestCrafting(result.getTask());
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
-
-        }
-    }
+    public TickTimer workTimer = new TickTimer(this, this::work, 60, true);
+    public BlockEntity connectedTile;
+    public int asmSlot = 0;
 
     @Override
     public void tick() {
         super.tick();
+        if (world != null && world.isRemote) return;
+        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        connectedTile = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         workTimer.tick();
-        world.setBlocksDirty(x, y, z, x, y, z);
+        world.setBlockDirty(x, y, z);
         world.notifyNeighbors(x, y, z, isActive ? 15 : 0);
+        world.setBlockState(x, y, z, world.getBlockState(x, y, z).with(RedstoneEmitterBlock.ACTIVE, isActive));
         if (getController() != null) {
-            if (getStack(0) != null) {
-                int id = getStack(0).itemId;
-                int dmg = getStack(0).getMaxDamage();
-                NbtCompound tag = getStack(0).getStationNbt();
+            if (filter.getStack(0) != null) {
+                int id = filter.getStack(0).itemId;
+                int dmg = filter.getStack(0).getDamage();
+                NbtCompound tag = filter.getStack(0).getStationNbt();
                 long count = 0;
                 if (useMeta) {
                     count = getController().countItems(id, dmg, tag);
@@ -145,77 +78,110 @@ public class RedstoneEmitterBlockEntity extends NetworkDeviceBlockEntity impleme
         } else {
             isActive = false;
         }
-        super.tick();
     }
 
-    public void setStack(int i, ItemStack itemstack) {
-        contents[i] = itemstack;
-        if (itemstack != null && itemstack.count > getMaxCountPerStack()) {
-            itemstack.count = getMaxCountPerStack();
+    public void work() {
+        if (connectedTile != null && getController() != null && isActive) {
+            if (connectedTile instanceof AssemblerBlockEntity assembler) {
+                ItemStack stack = assembler.getStack(asmSlot);
+                if (stack != null) {
+                    if (stack.getItem() instanceof RecipeDiscItem) {
+                        RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(stack.getStationNbt().getCompound("recipe"));
+                        if (recipe != null) {
+                            CraftingCalculator calc = new CraftingCalculator(getController(), 1, new VariantStack(recipe.getOutput()), new NetworkCraftable(recipe), getController().getCraftables());
+                            CalculationResult result = calc.calculate();
+                            if (result.getType() == CalculationResultType.OK) {
+                                getController().requestCrafting(result.getTask());
+                            }
+                        }
+                    }
+                }
+            } else if (connectedTile instanceof AdvInterfaceBlockEntity intfc) {
+                if (!intfc.isInUse()) {
+                    ItemStack stack = intfc.getStack(asmSlot);
+                    if (stack != null) {
+                        if (stack.getItem() instanceof AdvRecipeDiscItem) {
+                            if (stack.getStationNbt().contains("disc") && stack.getStationNbt().getCompound("disc").contains("processName")) {
+                                CraftingProcess process = new CraftingProcess(stack.getStationNbt().getCompound("disc"));
+                                NetworkCraftable craftable = new NetworkCraftable(process);
+                                CraftingCalculator calc = new CraftingCalculator(getController(), 1, craftable.getOutput().get(0), craftable, getController().getCraftables());
+                                CalculationResult result = calc.calculate();
+                                if (result.getType() == CalculationResultType.OK) {
+                                    getController().requestCrafting(result.getTask());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        markDirty();
-
     }
-
-    public void markDirty() {
-        super.markDirty();
-    }
-
 
     @Override
-    public boolean canPlayerUse(PlayerEntity entityplayer) {
-        return super.canPlayerUse(entityplayer);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        filter.readNbt(nbt);
+        isActive = nbt.getBoolean("isActive");
+        mode = nbt.getInt("mode");
+        amount = nbt.getInt("checkAmount");
+        useMeta = nbt.getBoolean("useMeta");
+        asmSlot = nbt.getInt("asmSlot");
     }
 
+    @Override
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        filter.writeNbt(nbt);
+        nbt.putBoolean("isActive", isActive);
+        nbt.putInt("checkAmount", amount);
+        nbt.putInt("mode", mode);
+        nbt.putBoolean("useMeta", useMeta);
+        nbt.putInt("asmSlot", asmSlot);
+    }
+
+    @Override
     public String getName() {
-        return "Redstone Emitter";
+        return "container.retrostorage.redstoneEmitter";
     }
 
-
-    public void readNbt(NbtCompound nbttagcompound) {
-        super.readNbt(nbttagcompound);
-        NbtList nbttaglist = nbttagcompound.getList("Items");
-        contents = new ItemStack[size()];
-        isActive = nbttagcompound.getBoolean("isActive");
-        mode = nbttagcompound.getInt("mode");
-        amount = nbttagcompound.getInt("checkAmount");
-        useMeta = nbttagcompound.getBoolean("useMeta");
-        asmSlot = nbttagcompound.getInt("asmSlot");
-        for (int i = 0; i < nbttaglist.size(); i++) {
-            NbtCompound nbttagcompound1 = (NbtCompound) nbttaglist.get(i);
-            int j = nbttagcompound1.getByte("Slot") & 0xff;
-            if (j >= 0 && j < contents.length) {
-                contents[j] = new ItemStack(nbttagcompound1);
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 2) {
+            if (amount > 0)
+                amount--;
+        }
+        if (id == 1) {
+            amount++;
+        }
+        if (id == 3) {
+            useMeta = !useMeta;
+        }
+        if (id == 4) {
+            useData = !useData;
+        }
+        if (id == 5) {
+            if (connectedTile instanceof AssemblerBlockEntity asm) {
+                if (asm.advanced) {
+                    if (asmSlot < 26) {
+                        asmSlot++;
+                    }
+                } else {
+                    if (asmSlot < 8) {
+                        asmSlot++;
+                    }
+                }
             }
         }
-        super.readNbt(nbttagcompound);
-    }
-
-
-    public void writeNbt(NbtCompound nbttagcompound) {
-        super.writeNbt(nbttagcompound);
-        NbtList nbttaglist = new NbtList();
-        for (int i = 0; i < contents.length; i++) {
-            if (contents[i] != null) {
-                NbtCompound nbttagcompound1 = new NbtCompound();
-                nbttagcompound1.putByte("Slot", (byte) i);
-                contents[i].writeNbt(nbttagcompound1);
-                nbttaglist.add(nbttagcompound1);
+        if (id == 6) {
+            if (asmSlot > 0) {
+                asmSlot--;
             }
         }
-        nbttagcompound.put("Items", nbttaglist);
-        nbttagcompound.putBoolean("isActive", isActive);
-        nbttagcompound.putInt("checkAmount", amount);
-        nbttagcompound.putInt("mode", mode);
-        nbttagcompound.putBoolean("useMeta", useMeta);
-        nbttagcompound.putInt("asmSlot", asmSlot);
+        if (id == 0) {
+            mode++;
+            if (mode == 6) {
+                mode = 0;
+            }
+        }
     }
-
-    public int getMaxCountPerStack() {
-        return 64;
-    }
-
-    public BlockEntity connectedTile;
-    public int asmSlot = 0;
-
 }

@@ -1,21 +1,13 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
-import net.minecraft.entity.player.PlayerEntity;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 
 public class DigitalTerminalBlockEntity extends NetworkDeviceBlockEntity {
-
-    public DigitalTerminalBlockEntity() {}
-
-    public void tick() {
-        super.tick();
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity entityplayer) {
-        return super.canPlayerUse(entityplayer);
-    }
-
     public int page = 0;
     public int pages = 0;
+
+    @Override
+    public String getName() {
+        return "container.retrostorage.digitalTerminal";
+    }
 }

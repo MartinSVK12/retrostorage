@@ -1,27 +1,31 @@
 package sunsetsatellite.retrostorage.item;
 
-
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.client.item.CustomTooltipProvider;
 import net.modificationstation.stationapi.api.template.item.TemplateItem;
 import net.modificationstation.stationapi.api.util.Formatting;
-import net.modificationstation.stationapi.api.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.retrostorage.RetroStorage;
 
-public class RecipeDiscItem  extends TemplateItem implements CustomTooltipProvider {
+import java.util.ArrayList;
+import java.util.List;
 
-    public RecipeDiscItem(Identifier identifier) {
-        super(identifier);
+public class RecipeDiscItem extends TemplateItem implements CustomTooltipProvider {
+    public RecipeDiscItem(String identifier) {
+        super(RetroStorage.NAMESPACE.id(identifier));
     }
 
     @Override
-    public String[] getTooltip(ItemStack itemStack, String s) {
+    public @NotNull String[] getTooltip(ItemStack itemStack, String s) {
+        List<String> list = new ArrayList<>();
+        list.add(s);
         ItemStack result = RetroStorage.findRecipeResultFromNBT(itemStack.getStationNbt().getCompound("recipe"));
         if (result != null) {
-            return new String[]{s,Formatting.LIGHT_PURPLE + "Output: " + result.count + "x " + TranslationStorage.getInstance().getClientTranslation(result.getTranslationKey()) + Formatting.WHITE};
+            list.add(Formatting.LIGHT_PURPLE + "Output: " + result.count + "x " + TranslationStorage.getInstance().getClientTranslation(result.getTranslationKey()) + Formatting.WHITE);
+        } else {
+            list.add(Formatting.GRAY + "Empty" + Formatting.WHITE);
         }
-        return new String[]{s,Formatting.GRAY + "Empty" + Formatting.WHITE};
+        return list.toArray(new String[0]);
     }
 }

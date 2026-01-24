@@ -1,9 +1,9 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 
+import net.danygames2014.nyalib.fluid.FluidStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
 import sunsetsatellite.retrostorage.util.StackType;
 import sunsetsatellite.retrostorage.util.VariantStack;
 
@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 public class CraftingProcess {
 
-    public final String name;
-    public final List<Step> steps;
+    public String name;
+    public List<Step> steps;
 
     public CraftingProcess(String name, List<Step> steps) {
         this.name = name;
@@ -24,6 +24,21 @@ public class CraftingProcess {
     }
 
     public CraftingProcess(NbtCompound tag) {
+        readFromNBT(tag);
+    }
+
+    public void writeToNBT(NbtCompound tag) {
+        tag.putString("processName", name);
+        NbtCompound stepsTag = new NbtCompound();
+        for (Step step : steps) {
+            NbtCompound stepTag = new NbtCompound();
+            step.writeToNBT(stepTag);
+            stepsTag.put("task" + step.id, stepTag);
+        }
+        tag.put("tasks", stepsTag);
+    }
+
+    public void readFromNBT(NbtCompound tag) {
         this.name = tag.getString("processName");
         NbtCompound tasks = tag.getCompound("tasks");
         List<Step> unsortedSteps = new ArrayList<>();
@@ -41,12 +56,12 @@ public class CraftingProcess {
     }
 
     public static final class Step {
-        public final StackType type;
-        public final int slot;
-        public final int id;
-        public final boolean output;
-        public final ItemStack stack;
-        public final FluidStack fluidStack;
+        public StackType type;
+        public int slot;
+        public int id;
+        public boolean output;
+        public ItemStack stack;
+        public FluidStack fluidStack;
 
         public Step(int slot, int id, boolean output, ItemStack stack) {
             this.type = StackType.ITEM;
@@ -65,25 +80,53 @@ public class CraftingProcess {
             this.fluidStack = stack;
             this.stack = null;
         }
+
+        public void writeToNBT(NbtCompound tag) {
+            tag.putString("type", type.name().toLowerCase());
+            tag.putInt("slot", slot);
+            tag.putInt("id", id);
+            tag.putBoolean("isOutput", output);
+            NbtCompound stackTag = new NbtCompound();
+            if (stack != null) {
+                stack.writeNbt(stackTag);
+                tag.put("stack", stackTag);
+
+            }
+            if (fluidStack != null) {
+                fluidStack.writeNbt(stackTag);
+                tag.put("stack", stackTag);
+            }
+        }
+
+        public void readFromNBT(NbtCompound tag) {
+            type = tag.getString("type").equals("item") ? StackType.ITEM : StackType.FLUID;
+            slot = tag.getInt("slot");
+            id = tag.getInt("id");
+            output = tag.getBoolean("isOutput");
+            if (type == StackType.ITEM) {
+                stack = new ItemStack(tag.getCompound("stack"));
+            } else {
+                fluidStack = new FluidStack(tag.getCompound("stack"));
+            }
+        }
     }
 
-    public List<ItemStack> getItemOutputs(){
-        return steps.stream().filter((S)->S.output && S.type == StackType.ITEM).map((S)->S.stack.copy()).collect(Collectors.toList());
+    public List<ItemStack> getItemOutputs() {
+        return steps.stream().filter((S) -> S.output && S.type == StackType.ITEM).map((S) -> S.stack.copy()).collect(Collectors.toList());
     }
 
-    public List<FluidStack> getFluidOutputs(){
-        return steps.stream().filter((S)->S.output && S.type == StackType.FLUID).map((S)->S.fluidStack.copy()).collect(Collectors.toList());
+    public List<FluidStack> getFluidOutputs() {
+        return steps.stream().filter((S) -> S.output && S.type == StackType.FLUID).map((S) -> S.fluidStack.copy()).collect(Collectors.toList());
     }
 
-    public List<VariantStack> getAllOutputs(){
-        return steps.stream().filter((S)->S.output).map((S)->S.type == StackType.ITEM ? new VariantStack(S.stack.copy()) : new VariantStack(S.fluidStack.copy())).collect(Collectors.toList());
+    public List<VariantStack> getAllOutputs() {
+        return steps.stream().filter((S) -> S.output).map((S) -> S.type == StackType.ITEM ? new VariantStack(S.stack.copy()) : new VariantStack(S.fluidStack.copy())).collect(Collectors.toList());
     }
 
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CraftingProcess)) return false;
-        CraftingProcess process = (CraftingProcess) o;
+        if (!(o instanceof CraftingProcess process)) return false;
 
         return Objects.equals(name, process.name);
     }

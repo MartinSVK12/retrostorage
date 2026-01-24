@@ -1,28 +1,207 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import net.teamterminus.machineessentials.fluid.core.FluidType;
-import net.teamterminus.machineessentials.fluid.core.api.FluidInventory;
+import net.danygames2014.nyalib.fluid.Fluid;
+import net.danygames2014.nyalib.fluid.FluidStack;
+import net.danygames2014.nyalib.fluid.block.FluidHandler;
+import net.minecraft.block.entity.BlockEntity;
 import org.jetbrains.annotations.UnmodifiableView;
-import sunsetsatellite.retrostorage.util.FluidInventoryWrapper;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.IFluidStackList;
-import sunsetsatellite.retrostorage.util.NetworkFluidStorage;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.ScreenActionListener;
+import sunsetsatellite.catalyst.core.util.io.FluidInventoryWrapper;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.IFluidStackList;
+import sunsetsatellite.retrostorage.api.NetworkFluidStorage;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity implements NetworkFluidStorage {
+import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
 
-    public FluidInventoryWrapper wrapper = new FluidInventoryWrapper(null);
-    private int priority = 0;
+public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity implements NetworkFluidStorage, ScreenActionListener {
+    public FluidInventoryWrapper inventory = new FluidInventoryWrapper(null);
+    public int priority = 0;
+
+    @Override
+    public boolean isEmpty() {
+        return inventory.isEmpty();
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> getStacks() {
+        return inventory.getStacks();
+    }
+
+    @Override
+    public IFluidStackList copy() {
+        return inventory.copy();
+    }
+
+    @Override
+    public void clear() {
+        inventory.clear();
+    }
+
+    @Override
+    public void inventoryChanged() {
+        inventory.inventoryChanged();
+    }
+
+    @Override
+    public int getLastSlot() {
+        return inventory.getLastSlot();
+    }
+
+    @Override
+    public FluidStack getLast() {
+        return inventory.getLast();
+    }
+
+    @Override
+    public FluidStack getById(int id) {
+        return inventory.getById(id);
+    }
+
+    @Override
+    public FluidStack get(int index) {
+        return inventory.get(index);
+    }
+
+    @Override
+    public int find(int id) {
+        return inventory.find(id);
+    }
+
+    @Override
+    public int count(int id) {
+        return inventory.count(id);
+    }
+
+    @Override
+    public Set<Fluid> getDisallowedFluids() {
+        return inventory.getDisallowedFluids();
+    }
+
+    @Override
+    public ArrayList<FluidStack> returnMissing(ArrayList<FluidStack> stacks) {
+        return inventory.returnMissing(stacks);
+    }
+
+    @Override
+    public boolean containsAtLeast(FluidStackList stacks) {
+        return inventory.containsAtLeast(stacks);
+    }
+
+    @Override
+    public boolean containsAtLeast(List<FluidStack> stacks) {
+        return inventory.containsAtLeast(stacks);
+    }
+
+    @Override
+    public boolean containsAtLeast(int id, int amount) {
+        return inventory.containsAtLeast(id, amount);
+    }
+
+    @Override
+    public boolean contains(int id) {
+        return inventory.contains(id);
+    }
+
+    @Override
+    public List<FluidStack> exportAll(List<FluidStack> stacks, boolean strict) {
+        return inventory.exportAll(stacks, strict);
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> move(FluidStackList what, FluidStackList where, boolean strict) {
+        return inventory.move(what, where, strict);
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> move(List<FluidStack> what, FluidStackList where, boolean strict) {
+        return inventory.move(what, where, strict);
+    }
+
+    public FluidStack removeUntil(int id, int amount, boolean strict) {
+        return inventory.removeUntil(id, amount, strict);
+    }
+
+    @Override
+    public boolean removeAll(List<FluidStack> stacks, boolean strict) {
+        return inventory.removeAll(stacks, strict);
+    }
+
+    @Override
+    public FluidStack remove(int slot, boolean strict) {
+        return inventory.remove(slot, strict);
+    }
+
+    @Override
+    public FluidStack removeById(int id, int amount, boolean strict) {
+        return inventory.removeById(id, amount, strict);
+    }
+
+    @Override
+    public FluidStack remove(int slot, int amount, boolean strict) {
+        return inventory.remove(slot, amount, strict);
+    }
+
+    @Override
+    public int getFluidAmount() {
+        return inventory.getFluidAmount();
+    }
+
+    @Override
+    public int getFluidStackAmount() {
+        return inventory.getFluidStackAmount();
+    }
+
+    @Override
+    public int getMaxFluidStackSize() {
+        return inventory.getMaxFluidStackSize();
+    }
+
+    @Override
+    public int getMaxFluidAmount() {
+        return inventory.getMaxFluidAmount();
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> addAll(List<FluidStack> stacks) {
+        return inventory.addAll(stacks);
+    }
+
+    @Override
+    public @UnmodifiableView List<FluidStack> addAll(FluidStackList stacks) {
+        return inventory.addAll(stacks);
+    }
+
+    @Override
+    public FluidStack add(int index, FluidStack stack) {
+        return inventory.add(index, stack);
+    }
+
+    @Override
+    public FluidStack add(FluidStack stack) {
+        return inventory.add(stack);
+    }
+
+    @Override
+    public String getName() {
+        return "container.retrostorage.fluidStorageBus";
+    }
 
     @Override
     public void tick() {
         super.tick();
-        wrapper.connected = getConnectedBlockEntity(FluidInventory.class);
+        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        BlockEntity blockEntity = Direction.getDirectionFromSide(side).getTileEntity(world, this);
+        if (blockEntity instanceof FluidHandler inv) {
+            inventory.connected = inv;
+        } else {
+            inventory.connected = null;
+        }
     }
 
     @Override
@@ -36,162 +215,11 @@ public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity impleme
     }
 
     @Override
-    public FluidStack add(FluidStack stack) {
-        return wrapper.add(stack);
-    }
-
-    @Override
-    public FluidStack add(int index, FluidStack stack) {
-        return wrapper.add(index, stack);
-    }
-
-    @Override
-    public @UnmodifiableView List<FluidStack> addAll(FluidStackList stacks) {
-        return wrapper.addAll(stacks);
-    }
-
-    @Override
-    public @UnmodifiableView List<FluidStack> addAll(List<FluidStack> stacks) {
-        return wrapper.addAll(stacks);
-    }
-
-    @Override
-    public int getMaxFluidAmount() {
-        return wrapper.getMaxFluidAmount();
-    }
-
-    @Override
-    public int getMaxFluidStackSize() {
-        return wrapper.getMaxFluidStackSize();
-    }
-
-    @Override
-    public int getFluidStackAmount() {
-        return wrapper.getFluidStackAmount();
-    }
-
-    @Override
-    public int getFluidAmount() {
-        return wrapper.getFluidAmount();
-    }
-
-    @Override
-    public FluidStack remove(int slot, int amount, boolean strict) {
-        return wrapper.remove(slot, amount, strict);
-    }
-
-    @Override
-    public FluidStack removeById(int id, int amount, boolean strict) {
-        return wrapper.removeById(id, amount, strict);
-    }
-
-    @Override
-    public FluidStack remove(int slot, boolean strict) {
-        return wrapper.remove(slot, strict);
-    }
-
-    @Override
-    public boolean removeAll(List<FluidStack> stacks, boolean strict) {
-        return wrapper.removeAll(stacks, strict);
-    }
-
-    @Override
-    public @UnmodifiableView List<FluidStack> move(List<FluidStack> what, FluidStackList where, boolean strict) {
-        return wrapper.move(what, where, strict);
-    }
-
-    @Override
-    public @UnmodifiableView List<FluidStack> move(FluidStackList what, FluidStackList where, boolean strict) {
-        return wrapper.move(what, where, strict);
-    }
-
-    @Override
-    public List<FluidStack> exportAll(List<FluidStack> stacks, boolean strict) {
-        return wrapper.exportAll(stacks, strict);
-    }
-
-    @Override
-    public boolean contains(int id) {
-        return wrapper.contains(id);
-    }
-
-    @Override
-    public boolean containsAtLeast(int id, int amount) {
-        return wrapper.containsAtLeast(id, amount);
-    }
-
-    @Override
-    public boolean containsAtLeast(List<FluidStack> stacks) {
-        return wrapper.containsAtLeast(stacks);
-    }
-
-    @Override
-    public boolean containsAtLeast(FluidStackList stacks) {
-        return wrapper.containsAtLeast(stacks);
-    }
-
-    @Override
-    public ArrayList<FluidStack> returnMissing(ArrayList<FluidStack> stacks) {
-        return wrapper.returnMissing(stacks);
-    }
-
-    @Override
-    public Set<FluidType> getDisallowedFluids() {
-        return wrapper.getDisallowedFluids();
-    }
-
-    @Override
-    public int count(int id) {
-        return wrapper.count(id);
-    }
-
-    @Override
-    public int find(int id) {
-        return wrapper.find(id);
-    }
-
-    @Override
-    public FluidStack get(int index) {
-        return wrapper.get(index);
-    }
-
-    @Override
-    public FluidStack getById(int id) {
-        return wrapper.getById(id);
-    }
-
-    @Override
-    public FluidStack getLast() {
-        return wrapper.getLast();
-    }
-
-    @Override
-    public int getLastSlot() {
-        return wrapper.getLastSlot();
-    }
-
-    @Override
-    public void inventoryChanged() {
-        wrapper.inventoryChanged();
-    }
-
-    @Override
-    public void clear() {
-        wrapper.clear();
-    }
-
-    @Override
-    public IFluidStackList copy() {
-        return wrapper.copy();
-    }
-
-    @Override
-    public @UnmodifiableView List<FluidStack> getStacks() {
-        return wrapper.getStacks();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return wrapper.isEmpty();
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 0) {
+            priority += 1;
+        } else if (id == 1) {
+            priority -= 1;
+        }
     }
 }

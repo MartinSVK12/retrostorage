@@ -1,0 +1,109 @@
+package sunsetsatellite.retrostorage.util.crafting;
+
+import com.mojang.datafixers.util.Pair;
+import net.danygames2014.nyalib.fluid.FluidStack;
+import net.minecraft.item.ItemStack;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static sunsetsatellite.retrostorage.RetroStorage.f2i;
+
+public class CraftingPreviewInfo {
+
+    private final ItemStackList missing = new ItemStackList();
+    private final FluidStackList missingFluids = new FluidStackList();
+    private final ItemStackList toTake = new ItemStackList();
+    private final FluidStackList toTakeFluids = new FluidStackList();
+
+    private final ItemStackList toCraft = new ItemStackList();
+    private final FluidStackList toCraftFluids = new FluidStackList();
+    private final ItemStackList toProcess = new ItemStackList();
+    private final FluidStackList toProcessFluids = new FluidStackList();
+
+    public ItemStackList getMissing() {
+        return missing;
+    }
+
+    public boolean hasMissing() {
+        return !missing.isEmpty();
+    }
+
+    public ItemStackList getToTake() {
+        return toTake;
+    }
+
+    public ItemStackList getToCraft() {
+        return toCraft;
+    }
+
+    public ItemStackList getToProcess() {
+        return toProcess;
+    }
+
+    public FluidStackList getMissingFluids() {
+        return missingFluids;
+    }
+
+    public FluidStackList getToTakeFluids() {
+        return toTakeFluids;
+    }
+
+    public FluidStackList getToCraftFluids() {
+        return toCraftFluids;
+    }
+
+    public FluidStackList getToProcessFluids() {
+        return toProcessFluids;
+    }
+
+    private List<Pair<ItemStack, String>> listCache = new ArrayList<>();
+
+    public int size() {
+        return (int) (missing.getStackAmount() + missingFluids.getFluidStackAmount() + toTake.getStackAmount() + toTakeFluids.getFluidStackAmount() + toCraft.getStackAmount() + toCraftFluids.getFluidStackAmount() + toProcess.getStackAmount() + toProcessFluids.getFluidStackAmount());
+    }
+
+    public List<Pair<ItemStack, String>> toList() {
+        if (!listCache.isEmpty()) {
+            return listCache;
+        }
+        List<Pair<ItemStack, String>> list = new ArrayList<>();
+        for (int i = 0; i < missing.getStackAmount(); i++) {
+            list.add(Pair.of(missing.get(i), "missing"));
+        }
+
+        for (int i = 0; i < missingFluids.getFluidStackAmount(); i++) {
+            list.add(Pair.of(f2i(missingFluids.get(i)), "missingFluids"));
+        }
+
+        for (ItemStack stack : toCraft) {
+            list.add(Pair.of(stack, "toCraft"));
+        }
+        for (ItemStack stack : toProcess) {
+            list.add(Pair.of(stack, "toProcess"));
+        }
+        for (int i = 0; i < toTake.getStackAmount(); i++) {
+            list.add(Pair.of(toTake.get(i), "toTake"));
+        }
+
+        for (FluidStack stack : toCraftFluids) {
+            list.add(Pair.of(f2i(stack), "toCraftFluids"));
+        }
+        for (FluidStack stack : toProcessFluids) {
+            list.add(Pair.of(f2i(stack), "toProcessFluids"));
+        }
+        for (int i = 0; i < toTakeFluids.getFluidStackAmount(); i++) {
+            list.add(Pair.of(f2i(toTakeFluids.get(i)), "toTakeFluids"));
+        }
+
+        listCache = list;
+        return list;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{Missing: Items: %s Fluids: %s | To Craft: Items: %s Fluids: %s | To Process: Items: %s Fluids: %s | To Take: Items: %s Fluids: %s}", missing, missingFluids, toCraft, toCraftFluids, toProcess, toProcessFluids, toTake, toTakeFluids);
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "retrostorage:block/fluid_exporter"
+    }
+  }
+}

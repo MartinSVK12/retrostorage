@@ -1,8 +1,7 @@
 package sunsetsatellite.retrostorage.util;
 
-
+import net.danygames2014.nyalib.fluid.FluidStack;
 import net.minecraft.item.ItemStack;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -36,10 +35,10 @@ public class VariantStack {
         return fluidStack;
     }
 
-    public ItemStack forceGetItem(){
+    public ItemStack forceGetItem() {
         return switch (type) {
             case ITEM -> Objects.requireNonNull(itemStack);
-            case FLUID -> new ItemStack(Objects.requireNonNull(fluidStack).fluid.flowing(), fluidStack.amount, 0);
+            case FLUID -> new ItemStack(Objects.requireNonNull(fluidStack).fluid.getFlowingBlock(), fluidStack.amount);
         };
     }
 

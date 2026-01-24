@@ -1,149 +1,80 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
+import net.danygames2014.nyalib.fluid.FluidStack;
+import net.danygames2014.nyalib.fluid.block.FluidHandler;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.modificationstation.stationapi.api.util.math.Direction;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import net.teamterminus.machineessentials.fluid.core.FluidType;
-import net.teamterminus.machineessentials.fluid.core.FluidTypeRegistry;
-import net.teamterminus.machineessentials.fluid.core.api.FluidInventory;
-import net.teamterminus.machineessentials.util.Connection;
-import net.teamterminus.machineessentials.util.FluidIO;
-import sunsetsatellite.retrostorage.RetroStorage;
-import sunsetsatellite.retrostorage.util.NetworkController;
-import sunsetsatellite.retrostorage.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.ScreenActionListener;
+import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.io.FluidInventoryWrapper;
+import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
+import sunsetsatellite.retrostorage.util.Filter;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
 
-public class FluidImporterBlockEntity extends NetworkDeviceBlockEntity implements FluidIO, FluidInventory {
+public class FluidImporterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener {
 
-    public final Filter filter = new Filter();
-    public static int transferSpeed = 1000;
+    public Filter filter = new Filter(0, 9);
+    public FluidInventoryWrapper wrapper = new FluidInventoryWrapper(filter);
 
-    public static class Filter implements FluidInventory {
-        public FluidStack[] fluidContents = new FluidStack[9];
+    public TickTimer workTimer = new TickTimer(this, this::work, 10, true);
+    public int slot = -1;
+    public boolean isWhitelist = true;
+    public boolean enabled = true;
+    public BlockEntity connectedTile;
 
-        @Override
-        public FluidStack insertFluid(int slot, FluidStack fluidStack) {
-            FluidStack stack = fluidContents[slot];
-            FluidStack split = fluidStack.split(Math.min(fluidStack.amount, getRemainingCapacity(slot)));
-            if (stack != null && split.amount > 0) {
-                fluidContents[slot].amount += split.amount;
-            } else {
-                fluidContents[slot] = split;
-            }
-            return fluidStack;
-        }
-
-        @Override
-        public int getRemainingCapacity(int slot) {
-            return 1;
-        }
-
-        @Override
-        public boolean canInsertFluid(int slot, FluidStack fluidStack) {
-            if (getFluidInSlot(slot) != null) if (!getFluidInSlot(slot).isFluidEqual(fluidStack)) return false;
-            return Math.min(fluidStack.amount, getRemainingCapacity(slot)) > 0;
-        }
-
-        @Override
-        public FluidStack getFluidInSlot(int slot) {
-            if (this.fluidContents.length == 0) return null;
-            if (this.fluidContents[slot] == null || this.fluidContents[slot].fluid == null || this.fluidContents[slot].amount == 0) {
-                this.fluidContents[slot] = null;
-            }
-            return fluidContents[slot];
-        }
-
-        @Override
-        public int getFluidCapacityForSlot(int slot) {
-            return 1;
-        }
-
-        @Override
-        public ArrayList<FluidType> getAllowedFluidsForSlot(int slot) {
-            ArrayList<FluidType> allFluids = FluidTypeRegistry.getAll();
-            allFluids.removeIf(RetroStorage.DISALLOWED_FLUIDS::contains);
-            return allFluids;
-        }
-
-        @Override
-        public void setFluidInSlot(int slot, FluidStack fluid) {
-            if (fluid == null || fluid.amount == 0 || fluid.fluid == null) {
-                this.fluidContents[slot] = null;
-                this.onFluidInventoryChanged();
-                return;
-            }
-            ArrayList<FluidType> allFluids = getAllowedFluidsForSlot(slot);
-            if (allFluids.contains(fluid.fluid)) {
-                this.fluidContents[slot] = fluid;
-                this.onFluidInventoryChanged();
-            }
-
-        }
-
-        @Override
-        public int size() {
-            return fluidContents.length;
-        }
-
-        @Override
-        public void onFluidInventoryChanged() {
-
-        }
-
-        @Override
-        public int getTransferSpeed() {
-            return transferSpeed;
-        }
-
-        public boolean hasFluid(FluidStack fluidStack) {
-            if (fluidStack == null) return false;
-            return Arrays.stream(fluidContents).anyMatch((F) -> F != null && F.isFluidEqual(fluidStack));
-        }
+    public boolean matchesFilter(FluidStack stack) {
+        if (stack == null) return false;
+        boolean contains = wrapper.contains(stack.fluid.getFlowingBlock().id);
+        return contains == isWhitelist;
     }
 
     @Override
     public void tick() {
         super.tick();
+        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        connectedTile = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         workTimer.tick();
-        ArrayList<Class<?>> tiles = new ArrayList<>();
-        tiles.add(FluidInventory.class);
-        connectedTiles = getConnectedBlockEntity(tiles);
     }
 
-    public boolean matchesFilter(FluidStack stack){
-        if(stack == null) return false;
-        return (filter.hasFluid(stack) && isWhitelist) || (!filter.hasFluid(stack) && !isWhitelist);
-    }
-
-    public void work(){
-        NetworkController controller = getController();
-        if(controller != null && enabled){
-            for (BlockEntity tile : connectedTiles.values()) {
-                if (tile != null && !(tile instanceof NetworkDeviceBlockEntity)) {
-                    FluidInventory inv = (FluidInventory) tile;
-                    if(slot == -1){
-                        for (int i = 0; i < inv.size(); i++) {
-                            FluidStack stack = inv.getFluidInSlot(i);
-                            if(matchesFilter(stack)){
-                                FluidStack leftovers = controller.addFluidToNetwork(stack);
-                                inv.setFluidInSlot(i, leftovers);
+    public void work() {
+        NetworkController con = getController();
+        if (con != null && enabled) {
+            if (connectedTile != null && !(connectedTile instanceof NetworkDeviceBlockEntity)) {
+                if (connectedTile instanceof FluidHandler inv) {
+                    if (slot == -1) {
+                        here:
+                        for (int i = 0; i < inv.getFluids(null).length; i++) {
+                            FluidStack stack = inv.getFluid(i, null);
+                            if (matchesFilter(stack)) {
+                                for (CraftingTask task : con.getCurrentTasks()) {
+                                    FluidStack leftovers = task.insertFromProcess(stack);
+                                    if (leftovers == stack) continue;
+                                    inv.setFluid(i, leftovers, null);
+                                    break here;
+                                }
+                                FluidStack leftovers = con.addFluidToNetwork(stack);
+                                inv.setFluid(i, leftovers, null);
                                 break;
                             }
                         }
                     } else {
-                        if (slot >= inv.size()) {
+                        if (slot >= inv.getFluids(null).length) {
                             return;
                         }
-                        FluidStack stack = inv.getFluidInSlot(slot);
-                        if(matchesFilter(stack)){
-                            FluidStack leftovers = controller.addFluidToNetwork(stack);
-                            inv.setFluidInSlot(slot, leftovers);
+                        FluidStack stack = inv.getFluid(slot, null);
+                        if (matchesFilter(stack)) {
+                            for (CraftingTask currentTask : con.getCurrentTasks()) {
+                                FluidStack leftovers = currentTask.insertFromProcess(stack);
+                                if (leftovers == stack) continue;
+                                inv.setFluid(slot, leftovers, null);
+                                return;
+                            }
+                            FluidStack leftovers = con.addFluidToNetwork(stack);
+                            inv.setFluid(slot, leftovers, null);
                         }
                     }
                 }
@@ -151,115 +82,41 @@ public class FluidImporterBlockEntity extends NetworkDeviceBlockEntity implement
         }
     }
 
-    public int slot = -1;
-    public boolean isWhitelist = true;
-    public boolean enabled = true;
-    public HashMap<Direction, BlockEntity> connectedTiles = new HashMap<>();
-    public TickTimer workTimer;
-
-    public FluidImporterBlockEntity(){
-        this.workTimer = new TickTimer(this, this::work, 10, true);
-    }
-
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        NbtList listTag = tag.getList("Fluids");
-        isWhitelist = tag.getBoolean("isWhitelist");
-        enabled = tag.getBoolean("enabled");
-        slot = tag.getInt("workSlot");
-        filter.fluidContents = new FluidStack[filter.size()];
-        for (int i = 0; i < listTag.size(); i++) {
-            NbtCompound tag1 = (NbtCompound) listTag.get(i);
-            int j = tag1.getByte("Slot") & 0xff;
-            if (j < filter.fluidContents.length) {
-                filter.fluidContents[j] = new FluidStack(tag1);
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 0) {
+            if (slot >= 0) {
+                slot--;
             }
         }
-
-    }
-
-    @Override
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        NbtList listTag = new NbtList();
-        for (int i = 0; i < filter.fluidContents.length; i++) {
-            if (filter.fluidContents[i] != null) {
-                NbtCompound tag1 = new NbtCompound();
-                tag1.putByte("Slot", (byte) i);
-                filter.fluidContents[i].writeNbt(tag1);
-                listTag.add(tag1);
-            }
+        if (id == 1) {
+            slot++;
         }
-
-        tag.putInt("workSlot", slot);
-        tag.putBoolean("isWhitelist", isWhitelist);
-        tag.putBoolean("enabled", enabled);
-        tag.put("Fluids", listTag);
+        if (id == 2) {
+            isWhitelist = !isWhitelist;
+        }
     }
 
     @Override
-    public int getActiveFluidSlotForSide(Direction dir) {
-        return 0;
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        isWhitelist = nbt.getBoolean("isWhitelist");
+        enabled = nbt.getBoolean("enabled");
+        slot = nbt.getInt("workSlot");
+        filter.readNbt(nbt);
     }
 
     @Override
-    public Connection getFluidIOForSide(Direction dir) {
-        return Connection.NONE;
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        filter.writeNbt(nbt);
+        nbt.putInt("workSlot", slot);
+        nbt.putBoolean("isWhitelist", isWhitelist);
+        nbt.putBoolean("enabled", enabled);
     }
 
     @Override
-    public void setFluidIOForSide(Direction dir, Connection con) {
-
-    }
-
-    @Override
-    public boolean canInsertFluid(int slot, FluidStack fluidStack) {
-        return false;
-    }
-
-    @Override
-    public FluidStack getFluidInSlot(int slot) {
-        return null;
-    }
-
-    @Override
-    public int getFluidCapacityForSlot(int slot) {
-        return 0;
-    }
-
-    @Override
-    public ArrayList<FluidType> getAllowedFluidsForSlot(int slot) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public void setFluidInSlot(int slot, FluidStack fluid) {
-
-    }
-
-    @Override
-    public FluidStack insertFluid(int slot, FluidStack fluidStack) {
-        return null;
-    }
-
-    @Override
-    public int getRemainingCapacity(int slot) {
-        return 0;
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public void onFluidInventoryChanged() {
-
-    }
-
-    @Override
-    public int getTransferSpeed() {
-        return 0;
+    public String getName() {
+        return "container.retrostorage.fluidImporter";
     }
 }

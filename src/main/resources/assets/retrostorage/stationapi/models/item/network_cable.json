@@ -1,3 +1,6 @@
 {
-  "parent": "retrostorage:block/network_cable"
+  "parent": "retrostorage:block/cable/template/inventory_6",
+  "textures": {
+    "texture": "retrostorage:block/block_cable"
+  }
 }

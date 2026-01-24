@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrostorage:block/fluid_storage_bus"
+    },
+    "facing=east": {
+      "model": "retrostorage:block/fluid_storage_bus",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrostorage:block/fluid_storage_bus",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrostorage:block/fluid_storage_bus",
+      "y": 270
+    }
+  }
+}

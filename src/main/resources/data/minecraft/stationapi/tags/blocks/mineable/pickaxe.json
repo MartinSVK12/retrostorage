@@ -1,0 +1,25 @@
+{
+  "values": [
+    "retrostorage:disc_drive",
+    "retrostorage:fluid_disc_drive",
+    "retrostorage:digital_terminal",
+    "retrostorage:fluid_terminal",
+    "retrostorage:digital_controller",
+    "retrostorage:importer",
+    "retrostorage:exporter",
+    "retrostorage:fluid_importer",
+    "retrostorage:fluid_exporter",
+    "retrostorage:assembler",
+    "retrostorage:adv_assembler",
+    "retrostorage:adv_interface",
+    "retrostorage:request_terminal",
+    "retrostorage:redstone_emitter",
+    "retrostorage:recipe_encoder",
+    "retrostorage:process_programmer",
+    "retrostorage:storage_bus",
+    "retrostorage:fluid_storage_bus",
+    "retrostorage:fluid_redstone_emitter",
+    "retrostorage:coprocessor",
+    "retrostorage:network_cable"
+  ]
+}

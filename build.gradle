@@ -1,130 +1,324 @@
-//file:noinspection GroovyAssignabilityCheck
-//file:noinspection GroovyUnusedAssignment
-//file:noinspection ForeignDelegate
+
 plugins {
-	id 'fabric-loom' version '1.8.10'
-	id 'babric-loom-extension' version '1.8.9'
-	id 'maven-publish'
+    id 'maven-publish'
+    id 'fabric-loom' version '1.14.10'
+    id 'babric-loom-extension' version '1.14.1'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+version = property("mod_version")
+group = property("maven_group")
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
-loom {
-	accessWidenerPath = file("src/main/resources/retrostorage.accesswidener")
-}
-
-repositories {
-	// Used for the fabric toolchain in this project.
-	maven {
-		name = 'Babric'
-		url = 'https://maven.glass-launcher.net/babric'
-	}
-
-	// Used for mappings.
-	maven {
-		name = 'Glass Releases'
-		url = 'https://maven.glass-launcher.net/releases'
-	}
-
-	// Used for StationAPI and HowManyItems.
-	maven {
-		name = 'Glass Snapshots'
-		url = 'https://maven.glass-launcher.net/snapshots'
-	}
-
-	// NyaRepo
-	maven {
-		name = "nyarepo"
-		url = "https://maven.fildand.cz/releases"
-	}
-
-	// Used for a StationAPI dependency.
-	maven {
-		name = 'Froge'
-		url 'https://maven.minecraftforge.net/'
-	}
-
-	// Used for projects that do not have a maven repository, but do have a GitHub repository with working build scripts.
-	maven {
-		name = 'Jitpack'
-		url = 'https://jitpack.io'
-	}
-
-	// Used for another StationAPI dependency
-	exclusiveContent {
-		forRepository {
-			maven {
-				name = "Modrinth"
-				url = "https://api.modrinth.com/maven"
-			}
-		}
-		filter {
-			includeGroup "maven.modrinth"
-		}
-	}
-
-	mavenCentral()
-}
-
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.glasslauncher:biny:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
-	implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
-	implementation "me.carleslc:Simple-Yaml:1.8.4"
-
-	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
-
-	// Optional, but convenient mods for mod creators and users alike.
-	modImplementation("net.glasslauncher.mods:ModMenu:${project.modmenu_version}") {
-		transitive false
-	}
-
-	modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
-		transitive false
-	}
-
-	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
-		transitive false
-	}
-
-	modImplementation("net.glasslauncher.mods:AlwaysMoreItems:${project.alwaysmoreitems_version}") {
-		transitive false
-	}
-
-	modImplementation("com.github.matthewperiut:retrocommands:${project.retrocommands_version}") {
-		transitive false
-	}
-
-	implementation(project(path: ":me", configuration: "namedElements"))
-}
-
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+base {
+    archivesName = project.archives_base_name
 }
 
 java {
-	withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/retrostorage.accesswidener")
+    mixin {
+        useLegacyMixinAp = false
+    }
+}
+
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'fabric-loom'
+    apply plugin: 'babric-loom-extension'
+    apply plugin: 'com.modrinth.minotaur'
+}
+
+repositories {
+    // NyaRepo
+    maven {
+        name = "nyarepo"
+        url = "https://maven.fildand.cz/releases"
+    }
+
+    // Used for Babric Loom Extensions
+    maven {
+        name = 'Babric'
+        url = 'https://maven.glass-launcher.net/babric'
+    }
+
+    // Used for many dependencies
+    maven {
+        name = 'Glass Releases'
+        url = 'https://maven.glass-launcher.net/releases'
+    }
+
+    // Used for Snapshots
+    maven {
+        name = 'Glass Snapshots'
+        url = 'https://maven.glass-launcher.net/snapshots'
+    }
+
+    // Used for a StationAPI dependency.
+    maven {
+        name = 'Froge'
+        url 'https://maven.minecraftforge.net/'
+    }
+
+    //Signalum Maven
+    maven {
+        name = "SignalumMavenReleases"
+        url = "https://maven.thesignalumproject.net/releases"
+    }
+
+    // Used for projects that do not have a maven repository, but do have a GitHub repository with working build scripts.
+    maven {
+        name = 'Jitpack'
+        url = 'https://jitpack.io'
+    }
+
+    // Modrinth Maven
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.glasslauncher:biny:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    implementation "org.slf4j:slf4j-api:1.8.0-beta4"
+    implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2"
+    implementation "me.carleslc:Simple-Yaml:1.8.4"
+
+    modImplementation("net.modificationstation:StationAPI:${project.stapi_version}") {
+        exclude group: "babric", module: "fabric-loader"
+        exclude group: "net.glasslauncher.mods", module: "GlassConfigAPI"
+    }
+
+    implementation(project(path: ":core", configuration: "namedElements"))
+    implementation(project(path: ":multiblocks", configuration: "namedElements"))
+    implementation(project(path: ":multipart", configuration: "namedElements"))
+    implementation(project(path: ":buildcraft", configuration: "namedElements"))
+    //implementation(project(path: ":nyalib", configuration: "namedElements"))
+
+    /*modImplementation("sunsetsatellite:catalyst-core:1.0.0+stapi")
+    modImplementation("sunsetsatellite:catalyst-multiblocks:1.0.0+stapi")
+    modImplementation("sunsetsatellite:catalyst-multipart:1.0.0+stapi")*/
+
+    /*modImplementation("net.danygames2014.NyaLib.submodule:nyalib-base:0.15.0-SNAPSHOT-1.0.0") {
+        transitive false
+    }*/
+
+    modImplementation("net.danygames2014:WhatsThis:${project.whatsthis_version}") {
+        transitive false
+    }
+
+    modImplementation("net.danygames2014:NyaLib:${project.nyalib_version}")
+
+    modImplementation("net.glasslauncher.mods:ModMenu:${project.modmenu_version}") {
+        transitive false
+    }
+
+    modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
+        transitive false
+    }
+
+    modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
+        transitive false
+    }
+
+    //implementation(project(path: ":ami", configuration: "namedElements"))
+    modImplementation("net.glasslauncher.mods:AlwaysMoreItems:${project.alwaysmoreitems_version}") {
+        transitive false
+    }
+
+    modImplementation("maven.modrinth:retrocommands:${project.retrocommands_version}-b1.7.3") {
+        transitive false
+    }
+
+    modImplementation("net.danygames2014:spawneggs:${project.spawneggs_version}") {
+        transitive false
+    }
+
+    modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}-b1.7.3") {
+        transitive false
+    }
+
+    modRuntimeOnly("maven.modrinth:retroauth:${project.retroauth_version}-b1.7.3") {
+        transitive false
+    }
+
+    modRuntimeOnly("maven.modrinth:unitweaks:${project.unitweaks_version}-b1.7.3") {
+        transitive false
+    }
+
+    modRuntimeOnly("maven.modrinth:fast-stapi-intro:2.0.0-b1.7.3") {
+        transitive false
+    }
+
+    modRuntimeOnly("maven.modrinth:uniwrench:${project.uniwrench_version}-b1.7.3") {
+        transitive false
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
+
+java {
+    withSourcesJar()
 }
 
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}" }
-	}
+    from("LICENSE") {
+        rename { "${it}_" + base.archivesName.get() }
+    }
+}
+
+// Maven Publishing
+/*publishing {
+    repositories {
+        mavenLocal()
+
+        // Glass Maven
+        if (project.hasProperty("calmilamsy_secret_publishing_cave_username")) {
+            maven {
+                url = "https://maven.glass-launcher.net/releases"
+                credentials {
+                    username "${project.calmilamsy_secret_publishing_cave_username}"
+                    password "${project.calmilamsy_secret_publishing_cave_password}"
+                }
+            }
+        }
+
+        // NyaRepo
+        if (project.hasProperty("nyarepo_publishing_cave_username")) {
+            maven {
+                url = "https://maven.fildand.cz/releases"
+                credentials {
+                    username "${project.nyarepo_publishing_cave_username}"
+                    password "${project.nyarepo_publishing_cave_password}"
+                }
+            }
+        }
+    }
+
+    publications {
+        create("mavenJava", MavenPublication) {
+            //noinspection GrUnresolvedAccess
+            artifactId = base.archivesName.get()
+            //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
+            from components.java
+        }
+    }
+}
+
+// Modrinth Publishing
+modrinth {
+    token = project.modrinth_publishing_cave
+    projectId = project.modrinth_slug
+    versionNumber = project.mod_version
+    versionName = "${project.modrinth_version_name} ${project.mod_version}"
+    changelog = rootProject.file("CHANGELOG.md").text
+    versionType = "release"
+    uploadFile = remapJar
+    gameVersions = ["b1.7.3"]
+    loaders = ["fabric", "babric"]
+    dependencies {
+        required.project "stationapi"
+        required.project "glass-config-api"
+    }
+}*/
+
+tasks.register("update") {
+    doLast {
+        def propsFile = file("gradle.properties")
+
+        List<String> lines = propsFile.readLines()
+
+        updateDependency(lines, "BINY", "yarn_mappings", "https://maven.glass-launcher.net/releases/net/glasslauncher/biny")
+        updateDependency(lines, "Fabric Loader", "loader_version", "https://maven.fabricmc.net/net/fabricmc/fabric-loader/")
+        updateDependency(lines, "StationAPI", "stapi_version", "https://maven.glass-launcher.net/releases/net/modificationstation/StationAPI")
+        updateDependency(lines, "Glass Networking", "glass_networking_version", "https://maven.glass-launcher.net/releases/net/glasslauncher/mods/glass-networking")
+        updateDependency(lines, "Glass Config API", "gcapi_version", "https://maven.glass-launcher.net/releases/net/glasslauncher/mods/GlassConfigAPI")
+        updateDependency(lines, "Always More Items", "alwaysmoreitems_version", "https://maven.glass-launcher.net/releases/net/glasslauncher/mods/AlwaysMoreItems")
+        updateDependency(lines, "ModMenu", "modmenu_version", "https://maven.glass-launcher.net/releases/net/glasslauncher/mods/ModMenu")
+        updateDependency(lines, "BH Creative", "bhcreative_version", "https://api.modrinth.com/maven/maven/modrinth/bh-creative")
+        updateDependency(lines, "Spawn Eggs", "spawneggs_version", "https://maven.glass-launcher.net/releases/net/danygames2014/spawneggs")
+        updateDependency(lines, "Retro Commands", "retrocommands_version", "https://api.modrinth.com/maven/maven/modrinth/retrocommands")
+        updateDependency(lines, "RetroAuth", "retroauth_version", "https://api.modrinth.com/maven/maven/modrinth/retroauth")
+        updateDependency(lines, "NyaLib", "nyalib_version", "https://maven.glass-launcher.net/releases/net/danygames2014/NyaLib")
+        updateDependency(lines, "UniTweaks", "unitweaks_version", "https://api.modrinth.com/maven/maven/modrinth/unitweaks")
+        updateDependency(lines, "UniWrench", "uniwrench_version", "https://api.modrinth.com/maven/maven/modrinth/uniwrench")
+
+        propsFile.text = lines.join(System.lineSeparator())
+        println("Finished updating dependencies, please reload your Gradle Project")
+    }
+}
+
+def updateDependency(List<String> lines, String name, String property, String artifactUrl) {
+    println("Updating Dependency " + name)
+
+    if (!project.hasProperty(property)) {
+        println("Project does not have property " + property)
+        return
+    }
+
+    String latestVersion = fetchLatestVersion(artifactUrl)
+
+    if (latestVersion == null) {
+        println("Error while fetching latest version")
+        return
+    }
+
+    for (int i = 0; i < lines.size(); i++) {
+        if (lines[i].contains(property)){
+            String[] split = lines[i].split("=")
+            String currentVersion = split[1]
+
+            if (!currentVersion.equalsIgnoreCase(latestVersion)){
+                println("Dependency " + name + " updated. (" + currentVersion + " -> " + latestVersion + ")")
+                lines[i] = split[0] + "=" + latestVersion
+            } else {
+                println("Dependency " + name + " is already up to date. (" + currentVersion + ")")
+            }
+
+            break
+        }
+    }
+}
+
+static def fetchLatestVersion(String artifactUrl) {
+    String latestVersion
+
+    try {
+        String artifactMeta = new URL(artifactUrl + "/maven-metadata.xml").text
+        latestVersion = artifactMeta.split("<latest>")[1].split("</latest>")[0]
+    } catch (Exception e) {
+        println("Error while updating dependency " + artifactUrl)
+        println(e.message)
+        return null
+    }
+
+    return latestVersion
 }

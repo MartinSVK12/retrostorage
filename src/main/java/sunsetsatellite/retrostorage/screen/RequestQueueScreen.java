@@ -1,84 +1,74 @@
 package sunsetsatellite.retrostorage.screen;
 
-
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.resource.language.TranslationStorage;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.util.NetworkController;
+import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.screen.widget.TaskListWidget;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayList;
 
+import static sunsetsatellite.retrostorage.RetroStorage.gui;
+
 public class RequestQueueScreen extends Screen {
-    protected String screenTitle = "Scroll Container";
-    private TaskSlotScreen slotContainer;
-    public ArrayList<CraftingTask> list = new ArrayList<>();
-    public NetworkController network;
+    public final String guiId = "container.retrostorage.requestQueue";
+    private TaskListWidget taskList;
+    public ArrayList<CraftingTask> tasks = new ArrayList<>();
+    public NetworkController controller;
     public RequestTerminalScreen parent;
+    public TickTimer refreshQueueTimer = new TickTimer(this, this::refreshList, 20, true);
 
-    public RequestQueueScreen(NetworkController network, RequestTerminalScreen parent) {
-        super();
+    public RequestQueueScreen(NetworkController controller, RequestTerminalScreen parent) {
         this.parent = parent;
-        this.network = network;
+        this.controller = controller;
     }
 
+    @Override
     public void init() {
-        this.screenTitle = "Request Queue";
-        this.slotContainer = new TaskSlotScreen(this.minecraft, this.width, this.height, 72, this.height - 64, 36, this);
-
-        this.slotContainer.registerScrollButtons(this.buttons, 4, 5);
-        this.initButtons();
+        super.init();
+        taskList = new TaskListWidget(minecraft, width, height, 72, height - 64, 36, this);
+        taskList.registerButtons(buttons, 4, 5);
     }
-
-    public void initButtons() {
-    }
-
-    protected void buttonClicked(ButtonWidget guibutton) {
-        if (guibutton.active) {
-
-        }
-    }
-
 
     @Override
     public boolean shouldPause() {
         return false;
     }
 
-    public void render(int x, int y, float renderPartialTicks) {
-        int backgroundWidth = 256;
-        int backgroundHeight = 256;
-        super.render(x, y, renderPartialTicks);
-        int i = minecraft.textureManager.getTextureId("/assets/retrostorage/stationapi/textures/gui/request_queue.png");
+    @Override
+    public void render(int mouseX, int mouseY, float delta) {
+        int xSize = 256;
+        int ySize = 256;
+        super.render(mouseX, mouseY, delta);
+        int bg = this.minecraft.textureManager.getTextureId(gui("request_queue"));
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.textureManager.bindTexture(i);
-        int j = (width - backgroundWidth) / 2;
-        int k = (height - backgroundHeight) / 2;
-        drawTexture(j, k, 0, 0, backgroundWidth, backgroundHeight);
-        drawCenteredString(this.screenTitle, this.width / 2, 20, 16777215);
+        this.minecraft.textureManager.bindTexture(bg);
+        int x = (this.width - xSize) / 2;
+        int y = (this.height - ySize) / 2;
+        drawTexture(x, y, 0, 0, xSize, ySize);
+        drawCenteredTextWithShadow(textRenderer, TranslationStorage.getInstance().getClientTranslation(guiId), this.width / 2, 0x14, 0xFFFFFFFF);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(140, this.height - 175, this.width * 2, this.height + 351); //TODO: fix this breaking at lower resolutions than 1080p
-        this.list.clear();
-        if (network != null) {
-            list.addAll(network.getRequestQueue());
-            for (CraftingTask task : network.getRequestQueue()) {
-                slotContainer.posZ = (36 * (task.nodes.all().size() + 2));
-            }
-        }
-        this.slotContainer.render(x, y, renderPartialTicks);
+        refreshQueueTimer.tick();
+        this.taskList.render(mouseX, mouseY, delta);
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
-
-    public void drawCenteredString(String string, int x, int y, int color) {
-        int length = textRenderer.getWidth(string);
-        textRenderer.drawWithShadow(string, x - length / 2, y, color);
+    private void refreshList() {
+        tasks.clear();
+        if (controller != null) {
+            tasks.addAll(controller.getRequestQueue());
+            for (CraftingTask task : controller.getRequestQueue()) {
+                taskList.itemHeight = (36 * (task.nodes.all().size() + 2));
+            }
+        }
     }
 
-    public void drawString(String string, int x, int y, int color) {
-        textRenderer.draw(string, x, y, color);
+    public TextRenderer getFont() {
+        return this.textRenderer;
     }
 }
-

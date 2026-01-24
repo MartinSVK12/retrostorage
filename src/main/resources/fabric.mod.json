@@ -2,20 +2,22 @@
   "schemaVersion": 1,
   "id": "retrostorage",
   "version": "${version}",
-
   "name": "RetroStorage",
   "description": "Digital storage system mod for Minecraft b1.7.3 using StAPI.",
   "authors": [
     "sunsetsatellite"
   ],
+  "contributors": [
+    "swifterjackie - prerelease testing",
+    "theMidford - testing and textures"
+  ],
   "contact": {
     "sources": "https://github.com/MartinSVK12/retrostorage/tree/StAPI"
   },
-
   "license": "MIT",
   "icon": "icon.png",
-
   "environment": "*",
+  "accessWidener": "retrostorage.accesswidener",
   "entrypoints": {
     "stationapi:event_bus": [
       "sunsetsatellite.retrostorage.RetroStorage",
@@ -24,20 +26,27 @@
       "sunsetsatellite.retrostorage.event.ReSRecipes",
       "sunsetsatellite.retrostorage.event.ReSTextures",
       "sunsetsatellite.retrostorage.event.ReSBlockEntities",
-      "sunsetsatellite.retrostorage.event.ReSScreens"
+      "sunsetsatellite.retrostorage.event.ReSScreens",
+      "sunsetsatellite.retrostorage.event.ReSNetworks",
+      "sunsetsatellite.retrostorage.event.ReSPackets"
     ],
     "stationapi:event_bus_client": [
-
     ],
     "stationapi:event_bus_server": [
-
+    ],
+    "whatsthis": [
+      "sunsetsatellite.retrostorage.compat.whatsthis.ProbeInfoProviderListener",
+      "sunsetsatellite.retrostorage.compat.whatsthis.NetworkDeviceProbeInfoProvider"
     ]
   },
   "mixins": [
     "retrostorage.mixins.json"
   ],
-
   "depends": {
-    "minecraft": "1.0.0-beta.7.3"
+    "minecraft": "1.0.0-beta.7.3",
+    "stationapi": ">=2.0.0-alpha.5.4",
+    "alwaysmoreitems": ">=1.8.0",
+    "catalyst-core": ">=1.1.0+stapi",
+    "nyalib": ">=0.18.0-alpha.34"
   }
 }

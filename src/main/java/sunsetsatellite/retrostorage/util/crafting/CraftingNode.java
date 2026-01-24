@@ -1,19 +1,24 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
-
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.CraftingRecipe;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.ItemStackList;
-import sunsetsatellite.retrostorage.util.NetworkController;
+import net.minecraft.nbt.NbtCompound;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.recipe.crafting.RecipeEntryCrafting;
+import sunsetsatellite.retrostorage.api.NetworkController;
 
 import java.util.List;
 
 public class CraftingNode extends Node {
-    private final CraftingRecipe recipe;
+    private final RecipeEntryCrafting<?, ItemStack> recipe;
 
     public CraftingNode(boolean root, NetworkCraftable pattern) {
         super(root, pattern);
+        this.recipe = pattern.getRecipe();
+    }
+
+    public CraftingNode(NbtCompound tag) {
+        readFromNbt(tag);
         this.recipe = pattern.getRecipe();
     }
 
@@ -53,7 +58,18 @@ public class CraftingNode extends Node {
         }
     }
 
-    public CraftingRecipe getRecipe() {
+    @Override
+    public void writeToNbt(NbtCompound tag) {
+        super.writeToNbt(tag);
+        tag.putString("Type", "CraftingNode");
+    }
+
+    @Override
+    public void readFromNbt(NbtCompound tag) {
+        super.readFromNbt(tag);
+    }
+
+    public RecipeEntryCrafting<?, ItemStack> getRecipe() {
         return recipe;
     }
 }

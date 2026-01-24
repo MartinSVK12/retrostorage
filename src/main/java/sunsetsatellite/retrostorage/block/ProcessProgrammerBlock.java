@@ -1,40 +1,38 @@
 package sunsetsatellite.retrostorage.block;
 
+import net.danygames2014.nyalib.block.DropInventoryOnBreak;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
-import net.modificationstation.stationapi.api.util.Identifier;
-import sunsetsatellite.retrostorage.block.entity.ProcessProgrammerBlockEntity;
-import sunsetsatellite.retrostorage.block.entity.RecipeEncoderBlockEntity;
-import sunsetsatellite.retrostorage.screen.handler.ProcessProgrammerScreenHandler;
-import sunsetsatellite.retrostorage.screen.handler.RecipeEncoderScreenHandler;
-import sunsetsatellite.retrostorage.util.InventoryWrapper;
+import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.block.base.RotatableBlockWithEntity;
 
-public class ProcessProgrammerBlock extends RotatableBlockWithEntity {
-    public ProcessProgrammerBlock(Identifier identifier, Material material) {
-        super(identifier, material);
+import java.util.function.Supplier;
+
+public class ProcessProgrammerBlock extends RotatableBlockWithEntity implements DropInventoryOnBreak {
+
+    private final Supplier<? extends BlockEntity> blockEntityFactory;
+    private final String guiId;
+
+    public ProcessProgrammerBlock(String identifier, Supplier<? extends BlockEntity> blockEntityFactory, String guiId) {
+        super(RetroStorage.NAMESPACE.id(identifier), Material.STONE);
+        this.blockEntityFactory = blockEntityFactory;
+        this.guiId = guiId;
     }
 
     @Override
     protected BlockEntity createBlockEntity() {
-        return new ProcessProgrammerBlockEntity();
-    }
-
-    @Override
-    public void onBreak(World world, int x, int y, int z) {
-        BlockEntity blockEntity = world.getBlockEntity(x, y, z);
-        InventoryWrapper inv = new InventoryWrapper((Inventory) blockEntity);
-        inv.ejectAll(world, x, y, z);
-        super.onBreak(world, x, y, z);
+        return blockEntityFactory.get();
     }
 
     @Override
     public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
+        if (world.isRemote) return super.onUse(world, x, y, z, player);
         BlockEntity blockEntity = world.getBlockEntity(x, y, z);
-        GuiHelper.openGUI(player,Identifier.of("retrostorage:open_process_programmer"), (Inventory) blockEntity,new ProcessProgrammerScreenHandler(player.inventory, (ProcessProgrammerBlockEntity) blockEntity));
+        Catalyst.displayGui(player, blockEntity, RetroStorage.key("gui/" + guiId));
         return true;
     }
+
 }

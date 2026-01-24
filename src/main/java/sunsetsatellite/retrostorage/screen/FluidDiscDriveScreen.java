@@ -1,71 +1,79 @@
 package sunsetsatellite.retrostorage.screen;
 
-
+import net.glasslauncher.mods.alwaysmoreitems.util.StringUtil;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.retrostorage.api.NetworkController;
 import sunsetsatellite.retrostorage.block.entity.FluidDiscDriveBlockEntity;
 import sunsetsatellite.retrostorage.screen.handler.FluidDiscDriveScreenHandler;
-import sunsetsatellite.retrostorage.util.NetworkController;
-import sunsetsatellite.retrostorage.util.RenderDigitalItem;
+import sunsetsatellite.retrostorage.util.DigitalItemRenderer;
 
-public class FluidDiscDriveScreen extends ReSScreen {
+import static sunsetsatellite.retrostorage.RetroStorage.gui;
 
-    public FluidDiscDriveScreen(PlayerInventory inventoryplayer, FluidDiscDriveBlockEntity tileentitydiscdrive) {
-        super(new FluidDiscDriveScreenHandler(inventoryplayer, tileentitydiscdrive));
-        tile = tileentitydiscdrive;
+public class FluidDiscDriveScreen extends HandledScreen {
+    private final FluidDiscDriveBlockEntity tile;
+    private final DigitalItemRenderer digitalItemRenderer = new DigitalItemRenderer(16, 16, HandledScreen.itemRenderer);
+
+    public FluidDiscDriveScreen(PlayerInventory playerInv, FluidDiscDriveBlockEntity tile) {
+        super(new FluidDiscDriveScreenHandler(playerInv, tile));
+        this.tile = tile;
     }
 
+    @Override
+    public void init() {
+        super.init();
+        buttons.add(new ButtonWidget(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 50), 20, 20, "-"));
+    }
+
+    @Override
     protected void drawForeground() {
-        textRenderer.draw("Fluid Disc Drive", 50, 6, 0x404040);
+        super.drawForeground();
+        textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 50, 6, 0x404040);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 96) + 2, 0x404040);
-        if(tile.network != null) {
+        if (tile.network != null) {
             NetworkController controller = tile.getController();
             if (controller != null) {
                 int color = 0xFFFFFF;
                 if (controller.getFluidAmount() >= controller.getFluidCapacity() * 0.9) {
                     color = 0xFF4040;
                 }
-                drawCenteredString(controller.getFluidStackAmount() + "/" + controller.getFluidStackCapacity(), 88, 40, color);
+                StringUtil.drawCenteredString(textRenderer, controller.getFluidStackAmount() + "/" + controller.getFluidStackCapacity(), backgroundWidth, 40, color, true);
             }
         }
-        if(!tile.discsUsed.isEmpty()){
-            drawCenteredString(tile.discsUsed.size()+"/"+tile.maxDiscs+" discs in use.", 88, 20, 0xFFFFFF);
+        if (!tile.discsUsed.isEmpty()) {
+            StringUtil.drawCenteredString(textRenderer, tile.discsUsed.size() + "/" + tile.maxDiscs + " discs" +/*+ (tile.discsUsed.size() == 1 ? "" : "s") +*/" in use.", backgroundWidth, 20, 0xFFFFFF, true);
         } else {
-            drawCenteredString("No discs in use.", 88, 20, 0xFFFFFF);
+            StringUtil.drawCenteredString(textRenderer, "No discs in use.", backgroundWidth, 20, 0xFFFFFF, true);
         }
 
-        for (int i = 0; i < Math.min(tile.discsUsed.size(),16); i++) {
+        for (int i = 0; i < Math.min(tile.discsUsed.size(), 16); i++) {
             ItemStack disc = tile.discsUsed.get(i);
-            renderDigitalItem.render(disc, 5 + (10 * i), 55);
+            digitalItemRenderer.render(disc, 5 + (10 * i), 55);
         }
     }
 
-    public void init() {
-        super.init();
-        buttons.add(new ButtonWidget(0, Math.round(width / 2 + 50), Math.round(height / 2 - 50), 20, 20, "-"));
-    }
-
-    protected void drawBackground(float f) {
-        int i = minecraft.textureManager.getTextureId("/assets/retrostorage/stationapi/textures/gui/discdrivegui.png");
+    @Override
+    protected void drawBackground(float tickDelta) {
+        int bg = this.minecraft.textureManager.getTextureId(gui("disc_drive_gui"));
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.textureManager.bindTexture(i);
-        int j = (width - backgroundWidth) / 2;
-        int k = (height - backgroundHeight) / 2;
-        drawTexture(j, k, 0, 0, backgroundWidth, backgroundHeight);
+        this.minecraft.textureManager.bindTexture(bg);
+        int x = (this.width - this.backgroundWidth) / 2;
+        int y = (this.height - this.backgroundHeight) / 2;
+        drawTexture(x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
     }
 
-    protected void buttonClicked(ButtonWidget guibutton) {
-        if (!guibutton.active) {
-            return;
-        }
-        if (guibutton.id == 0) {
+    @Override
+    protected void buttonClicked(ButtonWidget button) {
+        super.buttonClicked(button);
+        if (!button.active) return;
+        if (button.id == 0) {
             if (tile.getStack(1) == null) {
                 tile.removeLastDisc();
             }
         }
     }
-
-    private final FluidDiscDriveBlockEntity tile;
 }

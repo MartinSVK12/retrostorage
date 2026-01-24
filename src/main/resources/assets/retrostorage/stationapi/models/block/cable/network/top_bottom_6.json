@@ -1,0 +1,6 @@
+{
+  "parent": "retrostorage:block/cable/template/top_bottom_6",
+  "textures": {
+    "texture": "retrostorage:block/block_cable"
+  }
+}

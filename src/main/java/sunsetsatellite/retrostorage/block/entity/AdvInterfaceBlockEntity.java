@@ -1,17 +1,22 @@
 package sunsetsatellite.retrostorage.block.entity;
 
-
+import net.danygames2014.nyalib.block.BlockEntityInit;
+import net.danygames2014.nyalib.fluid.FluidStack;
+import net.danygames2014.nyalib.fluid.block.FluidHandler;
+import net.danygames2014.nyalib.item.block.ManagedItemHandlerWithInventory;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.modificationstation.stationapi.api.util.math.Direction;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import net.teamterminus.machineessentials.fluid.core.api.FluidInventory;
+import net.modificationstation.stationapi.api.block.BlockState;
+import sunsetsatellite.catalyst.core.util.Direction;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.retrostorage.api.Processor;
+import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 import sunsetsatellite.retrostorage.item.AdvRecipeDiscItem;
-import sunsetsatellite.retrostorage.util.*;
+import sunsetsatellite.retrostorage.util.ProcessingState;
+import sunsetsatellite.retrostorage.util.StackType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
@@ -20,140 +25,52 @@ import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
-        implements Inventory, Processor {
+import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
 
-    private ItemStack[] contents;
+public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, BlockEntityInit, Processor {
+
     public HashMap<Direction, BlockEntity> connectedTiles = new HashMap<>();
     public Inventory workingTile;
-    public FluidInventory workingFluidTile;
+    public FluidHandler workingFluidTile;
     public ProcessNode workingNode;
     public CraftingTask workingTask;
 
     public AdvInterfaceBlockEntity() {
-        contents = new ItemStack[10];
-    }
-
-    public int size() {
-        return contents.length;
-    }
-
-    public boolean isEmpty() {
-        for (int i = 0; i < size() - 1; i++) {
-            if (getStack(i) != null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public ItemStack getStack(int i) {
-        return contents[i];
-    }
-
-    public ItemStack removeStack(int i, int j) {
-        if (contents[i] != null) {
-            if (contents[i].count <= j) {
-                ItemStack itemstack = contents[i];
-                contents[i] = null;
-                markDirty();
-                return itemstack;
-            }
-            ItemStack itemstack1 = contents[i].split(j);
-            if (contents[i].count == 0) {
-                contents[i] = null;
-            }
-            markDirty();
-            return itemstack1;
-        } else {
-            return null;
+        for (int i = 0; i < 9; i++) {
+            addItemSlot();
         }
     }
 
-    public void setStack(int i, ItemStack itemstack) {
-        contents[i] = itemstack;
-        if (itemstack != null && itemstack.count > getMaxCountPerStack()) {
-            itemstack.count = getMaxCountPerStack();
-        }
-        markDirty();
+    @Override
+    public void init(BlockState blockState) {
 
     }
 
-    public void markDirty() {
-        super.markDirty();
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return canUse(player);
     }
 
+    @Override
     public String getName() {
-        return "Adv. Item Interface";
-    }
-
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        NbtList listTag = tag.getList("Items");
-        contents = new ItemStack[size()];
-        for (int i = 0; i < listTag.size(); i++) {
-            NbtCompound tag1 = (NbtCompound) listTag.get(i);
-            int j = tag1.getByte("Slot") & 0xff;
-            if (j >= 0 && j < contents.length) {
-                contents[j] = new ItemStack(tag1);
-            }
-        }
-    }
-
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        NbtList listTag = new NbtList();
-        for (int i = 0; i < contents.length; i++) {
-            if (contents[i] != null) {
-                NbtCompound tag1 = new NbtCompound();
-                tag1.putByte("Slot", (byte) i);
-                contents[i].writeNbt(tag1);
-                listTag.add(tag1);
-            }
-        }
-        tag.put("Items", listTag);
-    }
-
-    public int getMaxCountPerStack() {
-        return 64;
-    }
-
-    public int containsItem(int itemId, int itemDamage) {
-        for (int i2 = 0; i2 < this.contents.length; ++i2) {
-            if (this.contents[i2] != null && this.contents[i2].itemId == itemId && this.contents[i2].getDamage() == itemDamage) {
-                return i2;
-            }
-        }
-
-        return -1;
+        return "container.retrostorage.advInterface";
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (network != null && getController() != null) {
-            ArrayList<Class<?>> tiles = new ArrayList<>();
-            tiles.add(Inventory.class);
-            tiles.add(FluidInventory.class);
-            connectedTiles = getConnectedBlockEntity(tiles);
-            int i = 0;
-            for (BlockEntity tile : connectedTiles.values()) {
-                if (tile instanceof Inventory && !(tile instanceof AdvInterfaceBlockEntity)) {
-                    workingTile = (Inventory) tile;
+        if (world != null && world.isRemote) return;
+        if (getController() != null) {
+            int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+            BlockEntity be = Direction.getDirectionFromSide(side).getTileEntity(world, this);
+            if (!(be instanceof AdvInterfaceBlockEntity)) {
+                if (be instanceof Inventory inventory) {
+                    workingTile = inventory;
                 }
-                if (tile instanceof FluidInventory && !(tile instanceof AdvInterfaceBlockEntity)) {
-                    workingFluidTile = (FluidInventory) tile;
+                if (be instanceof FluidHandler fluidHandler) {
+                    workingFluidTile = fluidHandler;
                 }
-                if ((tile instanceof Inventory || tile instanceof FluidInventory) && !(tile instanceof AdvInterfaceBlockEntity)) {
-                    break;
-                }
-
-                i++;
-            }
-            if (i >= 6) {
-                workingTile = null;
             }
 
             if (isInUse() && (workingTile != null || workingFluidTile != null)) {
@@ -167,12 +84,12 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
                         workingTile.setStack(step.slot, null);
                         workingTask.insertFromProcess(slotStack);
                     } else if ((step.output && step.type == StackType.FLUID && workingFluidTile != null)) {
-                        FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
+                        FluidStack slotStack = workingFluidTile.getFluid(step.slot, null);
                         FluidStack stepStack = step.fluidStack;
                         if (slotStack == null) {
                             continue;
                         }
-                        workingFluidTile.setFluidInSlot(step.slot, null);
+                        workingFluidTile.setFluid(step.slot, null, null);
                         workingTask.insertFromProcess(slotStack);
                     }
                 }
@@ -186,24 +103,19 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
         }
     }
 
+    @Override
+    public List<NetworkCraftable> getCraftables() {
+        return getProcesses().stream().map(NetworkCraftable::new).toList();
+    }
+
     public ArrayList<CraftingProcess> getProcesses() {
         ArrayList<CraftingProcess> processes = new ArrayList<>();
-        for (ItemStack stack : contents) {
+        for (ItemStack stack : getInventory(null)) {
             if (stack != null && stack.getItem() instanceof AdvRecipeDiscItem && stack.getStationNbt().contains("disc")) {
                 processes.add(new CraftingProcess(stack.getStationNbt().getCompound("disc")));
             }
         }
         return processes;
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity entityplayer) {
-        return super.canPlayerUse(entityplayer);
-    }
-
-    @Override
-    public List<NetworkCraftable> getCraftables() {
-        return getProcesses().stream().map(NetworkCraftable::new).collect(Collectors.toList());
     }
 
     @Override
@@ -243,7 +155,7 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
             if (!step.output && step.type == StackType.ITEM) {
                 ItemStack slotStack = workingTile.getStack(step.slot);
                 ItemStack stepStack = step.stack;
-                if(stepStack == null) continue;
+                if (stepStack == null) continue;
                 ItemStack removed = items.remove(stepStack.itemId, stepStack.getDamage(), stepStack.count, stepStack.getStationNbt(), false, false);
                 if (removed == null) {
                     return false;
@@ -267,7 +179,7 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
                 ItemStack slotStack = workingTile.getStack(step.slot);
                 ItemStack stepStack = step.stack;
                 if (slotStack != null) {
-                    if(stepStack == null) continue;
+                    if (stepStack == null) continue;
                     if (!slotStack.isItemEqual(stepStack)) {
                         can = false;
                         break;
@@ -294,21 +206,21 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
 
     @Override
     public boolean insertFluids(FluidStackList items) {
-        if(!canInsertFluids(items)) return false;
-        if(items.isEmpty()) return true;
+        if (!canInsertFluids(items)) return false;
+        if (items.isEmpty()) return true;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.FLUID) {
-                FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
+                FluidStack slotStack = workingFluidTile.getFluid(step.slot, null);
                 FluidStack stepStack = step.fluidStack;
-                if(stepStack == null) continue;
-                FluidStack removed = items.removeById(stepStack.fluid.blockId(), stepStack.amount, false);
+                if (stepStack == null) continue;
+                FluidStack removed = items.removeById(stepStack.fluid.getFlowingBlock().id, stepStack.amount, false);
                 if (removed == null) {
                     return false;
                 }
                 if (slotStack == null) {
-                    workingFluidTile.setFluidInSlot(step.slot, removed);
+                    workingFluidTile.setFluid(step.slot, removed, null);
                 } else {
-                    workingFluidTile.getFluidInSlot(step.slot).amount += removed.amount;
+                    workingFluidTile.getFluid(step.slot, null).amount += removed.amount;
                 }
             }
         }
@@ -317,29 +229,29 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
 
     @Override
     public boolean canInsertFluids(FluidStackList items) {
-        if(items.isEmpty()) return true;
+        if (items.isEmpty()) return true;
         boolean can = true;
         if (!isInUse() || workingFluidTile == null) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
             if (!step.output && step.type == StackType.FLUID) {
-                FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
+                FluidStack slotStack = workingFluidTile.getFluid(step.slot, null);
                 FluidStack stepStack = step.fluidStack;
                 if (slotStack != null) {
-                    if(stepStack == null) continue;
+                    if (stepStack == null) continue;
                     if (!slotStack.isFluidEqual(stepStack)) {
                         can = false;
                         break;
                     } else {
-                        FluidStack testStack = items.get(stepStack.fluid.blockId());
+                        FluidStack testStack = items.getById(stepStack.fluid.getFlowingBlock().id);
                         if (testStack == null) {
                             can = false;
                             break;
                         }
-                        if (testStack.fluid.blockId() < stepStack.fluid.blockId()) {
+                        if (testStack.amount < stepStack.amount) {
                             can = false;
                             break;
                         }
-                        if (slotStack.fluid.blockId() + stepStack.fluid.blockId() > workingFluidTile.getFluidCapacityForSlot(step.slot)) {
+                        if (slotStack.amount + stepStack.amount > workingFluidTile.getFluidCapacity(step.slot, null)) {
                             can = false;
                             break;
                         }
@@ -350,4 +262,3 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity
         return can;
     }
 }
-

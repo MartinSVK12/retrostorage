@@ -16,9 +16,11 @@ import java.util.Set;
 )
 public abstract class NbtCompoundMixin extends NbtElement {
 
-    @Shadow public abstract Collection values();
+    @Shadow
+    public abstract Collection values();
 
-    @Shadow private Map entries;
+    @Shadow
+    private Map entries;
 
     public boolean equals(Object o) {
         if (!(o instanceof NbtCompound)) {
@@ -29,7 +31,7 @@ public abstract class NbtCompoundMixin extends NbtElement {
             if (set.size() != otherSet.size()) {
                 return false;
             } else {
-                for(Map.Entry entry : set) {
+                for (Map.Entry entry : set) {
                     String key = (String) entry.getKey();
                     NbtElement value1 = (NbtElement) this.entries.get(key);
                     NbtElement value2 = (NbtElement) ((NbtCompound) o).entries.get(key);

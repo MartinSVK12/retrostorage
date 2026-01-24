@@ -1,12 +1,14 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 
+import net.danygames2014.nyalib.fluid.FluidStack;
 import net.minecraft.item.ItemStack;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import org.jetbrains.annotations.Nullable;
-import sunsetsatellite.retrostorage.util.FluidStackList;
-import sunsetsatellite.retrostorage.util.ItemStackList;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtInt;
+import sunsetsatellite.catalyst.core.util.io.FluidStackList;
+import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class NodeRequirements {
@@ -23,6 +25,80 @@ public class NodeRequirements {
     @Nullable
     private List<FluidStack> cachedSimulatedFluidRequirementSet = null;
 
+    public NodeRequirements(NbtCompound tag) {
+        readFromNbt(tag);
+    }
+
+    public NodeRequirements() {
+    }
+
+    public void writeToNbt(NbtCompound tag) {
+        NbtCompound itemRequirementsTag = new NbtCompound();
+        for (Map.Entry<Integer, ItemStackList> entry : itemRequirements.entrySet()) {
+            NbtCompound listTag = new NbtCompound();
+            entry.getValue().writeToNbt(listTag);
+            itemRequirementsTag.put(String.valueOf(entry.getKey()), listTag);
+        }
+        tag.put("ItemRequirements", itemRequirementsTag);
+        NbtCompound fluidRequirementsTag = new NbtCompound();
+        for (Map.Entry<Integer, FluidStackList> entry : fluidRequirements.entrySet()) {
+            NbtCompound listTag = new NbtCompound();
+            entry.getValue().writeToNbt(listTag);
+            fluidRequirementsTag.put(String.valueOf(entry.getKey()), listTag);
+        }
+        tag.put("FluidRequirements", fluidRequirementsTag);
+
+        NbtCompound itemsNeededPerCraftTag = new NbtCompound();
+        for (Map.Entry<Integer, Integer> entry : itemsNeededPerCraft.entrySet()) {
+            itemsNeededPerCraftTag.putInt(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        tag.put("ItemsNeededPerCraft", itemsNeededPerCraftTag);
+
+        NbtCompound fluidsNeededPerCraftTag = new NbtCompound();
+        for (Map.Entry<Integer, Integer> entry : fluidsNeededPerCraft.entrySet()) {
+            itemsNeededPerCraftTag.putInt(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        tag.put("FluidsNeededPerCraft", fluidsNeededPerCraftTag);
+    }
+
+    public void readFromNbt(NbtCompound tag) {
+        NbtCompound itemRequirementsTag = tag.getCompound("ItemRequirements");
+        NbtCompound fluidRequirementsTag = tag.getCompound("FluidRequirements");
+        NbtCompound itemsNeededPerCraftTag = tag.getCompound("ItemsNeededPerCraft");
+        NbtCompound fluidsNeededPerCraftTag = tag.getCompound("FluidsNeededPerCraft");
+
+        for (Object o : itemRequirementsTag.entries.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            NbtCompound listTag = (NbtCompound) entry.getValue();
+            int ingredientNumber = Integer.parseInt((String) entry.getKey());
+            ItemStackList list = new ItemStackList();
+            list.readFromNbt(listTag);
+            itemRequirements.put(ingredientNumber, list);
+        }
+
+        for (Object o : fluidRequirementsTag.entries.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            NbtCompound listTag = (NbtCompound) entry.getValue();
+            int ingredientNumber = Integer.parseInt((String) entry.getKey());
+            FluidStackList list = new FluidStackList();
+            list.readFromNbt(listTag);
+            fluidRequirements.put(ingredientNumber, list);
+        }
+
+        for (Object o : itemsNeededPerCraftTag.entries.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            int key = Integer.parseInt((String) entry.getKey());
+            int value = ((NbtInt) entry.getValue()).value;
+            itemsNeededPerCraft.put(key, value);
+        }
+
+        for (Object o : fluidsNeededPerCraftTag.entries.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            int key = Integer.parseInt((String) entry.getKey());
+            int value = ((NbtInt) entry.getValue()).value;
+            fluidsNeededPerCraft.put(key, value);
+        }
+    }
 
     public void addItemRequirement(int ingredientNumber, ItemStack stack, int size, int perCraft) {
         stack = stack.copy();
@@ -124,7 +200,7 @@ public class NodeRequirements {
 
                     if (needed < toUse.amount) {
                         if (!simulate) {
-                            fluidRequirements.get(i).removeById(toUse.fluid.blockId(), needed, false);
+                            fluidRequirements.get(i).removeById(toUse.fluid.getFlowingBlock().id, needed, false);
                         }
 
                         FluidStack copy = toUse.copy();

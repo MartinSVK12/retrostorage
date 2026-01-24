@@ -1,30 +1,13 @@
 package sunsetsatellite.retrostorage.block;
 
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.util.Identifier;
-import sunsetsatellite.retrostorage.block.entity.DigitalTerminalBlockEntity;
-import sunsetsatellite.retrostorage.block.entity.RequestTerminalBlockEntity;
-import sunsetsatellite.retrostorage.screen.DigitalTerminalScreen;
-import sunsetsatellite.retrostorage.screen.RequestTerminalScreen;
+import sunsetsatellite.retrostorage.block.base.NetworkDeviceBlock;
 
-public class RequestTerminalBlock extends NetworkDeviceBlock  {
-    public RequestTerminalBlock(Identifier identifier, Material material) {
-        super(identifier, material);
-    }
+import java.util.function.Supplier;
 
-    @Override
-    protected BlockEntity createBlockEntity() {
-        return new RequestTerminalBlockEntity();
-    }
+public class RequestTerminalBlock extends NetworkDeviceBlock {
 
-    @Override
-    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
-        BlockEntity blockEntity = world.getBlockEntity(x, y, z);
-        Minecraft.INSTANCE.setScreen(new RequestTerminalScreen(player.inventory, (RequestTerminalBlockEntity) blockEntity));
-        return true;
+    public RequestTerminalBlock(String identifier, Supplier<? extends BlockEntity> blockEntityFactory, String guiId) {
+        super(identifier, blockEntityFactory, guiId);
     }
 }

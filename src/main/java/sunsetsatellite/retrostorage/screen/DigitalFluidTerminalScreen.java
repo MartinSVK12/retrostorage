@@ -1,72 +1,159 @@
 package sunsetsatellite.retrostorage.screen;
 
-
-
+import net.glasslauncher.mods.alwaysmoreitems.gui.Tooltip;
+import net.glasslauncher.mods.alwaysmoreitems.util.AlwaysMoreItems;
+import net.glasslauncher.mods.alwaysmoreitems.util.ItemStackElement;
+import net.glasslauncher.mods.alwaysmoreitems.util.StringUtil;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.modificationstation.stationapi.api.util.math.Vec2f;
-import net.teamterminus.machineessentials.fluid.core.FluidStack;
-import net.teamterminus.machineessentials.fluid.core.api.FluidInventoryItem;
-import net.teamterminus.machineessentials.util.NumberFormat;
+import net.minecraft.screen.slot.Slot;
+import net.modificationstation.stationapi.api.client.TooltipHelper;
+import net.modificationstation.stationapi.api.network.packet.PacketHelper;
+import net.modificationstation.stationapi.api.util.Formatting;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import sunsetsatellite.retrostorage.block.entity.DigitalFluidTerminalBlockEntity;
-import sunsetsatellite.retrostorage.interfaces.mixin.IExtendedScreenDraw;
-import sunsetsatellite.retrostorage.screen.handler.DigitalFluidTerminalScreenHandler;
-import sunsetsatellite.retrostorage.screen.handler.DigitalTerminalScreenHandler;
-import sunsetsatellite.retrostorage.util.NetworkController;
-import sunsetsatellite.retrostorage.util.RenderDigitalItem;
+import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.ExtendedScreenDraw;
+import sunsetsatellite.catalyst.core.util.NumberFormatter;
+import sunsetsatellite.catalyst.core.util.TickTimer;
+import sunsetsatellite.catalyst.core.util.vector.Vec2i;
+import sunsetsatellite.retrostorage.RetroStorage;
+import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.block.entity.FluidTerminalBlockEntity;
+import sunsetsatellite.retrostorage.packet.terminal.fluid.FluidTerminalInteractionPacket;
+import sunsetsatellite.retrostorage.packet.terminal.fluid.FluidTerminalRequestContentsPacket;
+import sunsetsatellite.retrostorage.screen.handler.FluidTerminalScreenHandler;
+import sunsetsatellite.retrostorage.util.DigitalItemRenderer;
 
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class DigitalFluidTerminalScreen extends ReSScreen implements IExtendedScreenDraw {
+import static sunsetsatellite.retrostorage.RetroStorage.gui;
 
-    public final DigitalFluidTerminalBlockEntity tile;
-    //public final GuiTooltip tooltip = new GuiTooltip(Minecraft.getMinecraft(this));
-    public final ArrayList<Vec2f> slots = new ArrayList<>();
-    public final PlayerInventory inventoryPlayer;
+public class DigitalFluidTerminalScreen extends HandledScreen implements ExtendedScreenDraw {
+    private final PlayerInventory playerInv;
+    private final FluidTerminalBlockEntity tile;
+    private final DigitalItemRenderer digitalItemRenderer = new DigitalItemRenderer(16, 16, HandledScreen.itemRenderer);
 
-    public DigitalFluidTerminalScreen(PlayerInventory inventoryplayer, DigitalFluidTerminalBlockEntity tile) {
-        super(new DigitalFluidTerminalScreenHandler(inventoryplayer, tile));
-        backgroundHeight = 220;
+    public final ArrayList<Vec2i> slots = new ArrayList<>();
+    public boolean searching = false;
+    public String searchQuery = "";
+    public int lastVirtualSlotClicked = -1;
+
+    public TickTimer requestTimer = new TickTimer(this, () -> PacketHelper.send(new FluidTerminalRequestContentsPacket(searchQuery)), 10, true);
+
+    public DigitalFluidTerminalScreen(PlayerInventory playerInv, FluidTerminalBlockEntity tile) {
+        super(new FluidTerminalScreenHandler(playerInv, tile));
+        this.playerInv = playerInv;
         this.tile = tile;
-        this.inventoryPlayer = inventoryplayer;
-
-        for (int i = 0; i < 4; i++) {
+        this.backgroundHeight = 220;
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
-                slots.add(new Vec2f(x,y));
+                slots.add(new Vec2i(x, y));
             }
         }
     }
 
+    @Override
+    public void init() {
+        super.init();
+        int j = (width - backgroundWidth) / 2;
+        int k = (height - backgroundHeight) / 2;
+        buttons.add(new ButtonWidget(0, j - 26 + 6, k + 27 + 8 + 29, 20, 20, "+"));
+        buttons.add(new ButtonWidget(1, j - 26 + 6, k + 27 + 8, 20, 20, "-"));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        int scrollDelta = Mouse.getDWheel();
+        if (scrollDelta != 0) {
+            handlePageScroll(scrollDelta > 0);
+        }
+        requestTimer.tick();
+    }
+
+    public void handlePageScroll(boolean scrollUp) {
+        if (tile.network != null) {
+            NetworkController controller = tile.getController();
+            if (controller != null) {
+                if (scrollUp) {
+                    if (tile.page > 0) {
+                        tile.page--;
+                    } else {
+                        tile.page = tile.pages;
+                    }
+                } else {
+                    // Scrolling down
+                    if (tile.page < tile.pages) {
+                        tile.page++;
+                    } else {
+                        tile.page = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     protected void drawForeground() {
-        textRenderer.draw("Digital Fluid Terminal", 40, 6, 0x404040);
+        textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 8, 6, 0x404040);
+        if (searching)
+            StringUtil.drawCenteredString(textRenderer, "<< Searching >>", (backgroundWidth / 2), -8, 0xFFFFFF, false);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 95) + 2, 0x404040);
-        if(tile.page > tile.pages) tile.page = 0;
-        textRenderer.draw("Page: " + tile.page + "/" + tile.pages, 63, 93, 0x404040);
-        if(tile.network != null) {
+        if (tile.page > tile.pages) tile.page = 0;
+
+        String pageText = "Page: " + tile.page + "/" + tile.pages;
+        int pageTextWidth = textRenderer.getWidth(pageText);
+        textRenderer.draw(pageText, backgroundWidth - 8 - pageTextWidth, 6, 0x404040);
+        if (tile.network != null) {
             NetworkController controller = tile.getController();
             if (controller != null) {
                 int color = 0xFFFFFF;
                 if (controller.getFluidAmount() >= controller.getFluidCapacity() * 0.9) {
                     color = 0xFF4040;
                 }
-                drawCenteredString(NumberFormat.format(controller.getFluidStackAmount()) + "/" + NumberFormat.format(controller.getFluidStackCapacity()), 90, 112, color);
+                String s = NumberFormatter.format(controller.getFluidStackAmount()) + "/" + NumberFormatter.format(controller.getFluidStackCapacity()) + " (" + NumberFormatter.format(controller.getFluidAmount()) + "/" + NumberFormatter.format(controller.getFluidCapacity()) + ")";
+                int stackTextWidth = textRenderer.getWidth(s);
+                textRenderer.drawWithShadow(s, backgroundWidth - 8 - stackTextWidth, (backgroundHeight - 95) + 2, color);
             }
         }
     }
 
-    public boolean mouseHoveringOverSlot(final Vec2f slot, int x, int y)
-    {
+    @Override
+    protected void drawBackground(float tickDelta) {
+        int bg = this.minecraft.textureManager.getTextureId(gui("digital_terminal"));
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        this.minecraft.textureManager.bindTexture(bg);
+        int x = (this.width - this.backgroundWidth) / 2;
+        int y = (this.height - this.backgroundHeight) / 2;
+        drawTexture(x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        drawTexture(x - 27, y + 27, 177, 0, 27, 65);
+    }
+
+    @Override
+    protected void buttonClicked(ButtonWidget button) {
+        super.buttonClicked(button);
+        if (!button.active) return;
+        if (button.id == 0) {
+            if (tile.page == tile.pages) tile.page = 0;
+            else tile.page = Math.min(tile.pages, tile.page + 1);
+        }
+        if (button.id == 1) {
+            if (tile.page == 0) tile.page = tile.pages;
+            else tile.page = Math.max(0, tile.page - 1);
+        }
+    }
+
+    public boolean mouseHoveringOverSlot(final Vec2i slot, int x, int y) {
         final int k = (width - backgroundWidth) / 2;
         final int l = (height - backgroundHeight) / 2;
         x -= k;
@@ -74,171 +161,34 @@ public class DigitalFluidTerminalScreen extends ReSScreen implements IExtendedSc
         return x >= slot.x - 1 && x < slot.x + 16 + 1 && y >= slot.y - 1 && y < slot.y + 16 + 1;
     }
 
-    public void init() {
-        super.init();
-        buttons.add(new ButtonWidget(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 5), 20, 20, ">"));
-        buttons.add(new ButtonWidget(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 5), 20, 20, "<"));// /2 - 34, - 150
-        //buttons.add(new ButtonWidget(2, Math.round((float) width / 2 - 40), Math.round((float) height / 2 - 5), 20, 20, "A:"));
-        //buttons.get(2).enabled = false;
-    }
-
-    protected void drawBackground(float f) {
-        int i = minecraft.textureManager.getTextureId("/assets/retrostorage/stationapi/textures/gui/digital_terminal.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.textureManager.bindTexture(i);
-        int j = (width - backgroundWidth) / 2;
-        int k = (height - backgroundHeight) / 2;
-        drawTexture(j, k, 0, 0, backgroundWidth, backgroundHeight);
-    }
-
-    protected void buttonClicked(ButtonWidget guibutton) {
-        if (!guibutton.active) {
-            return;
+    public int getVirtualSlotAtPosition(int x, int y) {
+        for (int i = 0; i < slots.size(); i++) {
+            Vec2i slot = slots.get(i);
+            if (mouseHoveringOverSlot(slot, x, y)) {
+                return i;
+            }
         }
-        if (guibutton.id == 0) {
-            if(tile.page == tile.pages) tile.page = 0;
-            else tile.page = Math.min(tile.pages, tile.page + 1);
-        }
-        if (guibutton.id == 1) {
-            if (tile.page == 0) tile.page = tile.pages;
-            else tile.page = Math.max(0, tile.page - 1);
-        }
+        return -1;
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
+    protected void mouseClicked(int mouseX, int mouseY, int button) {
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
         boolean alt = Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
         boolean space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean mod = shift || control || alt || space;
 
-        NetworkController controller = tile.getController();
-        if(controller != null){
+        Slot invSlot = getSlotAt(mouseX, mouseY);
+        int slotId = -1;
+        int vSlotId = getVirtualSlotAtPosition(mouseX, mouseY);
+        if (invSlot != null) slotId = invSlot.index;
 
-            for (int i = 0; i < slots.size(); i++) {
-                Vec2f slot = slots.get(i);
-                int id = i + (tile.page * 36);
-                List<ItemStack> stacks = getFilteredStacks();
-                if(mouseHoveringOverSlot(slot,mouseX,mouseY)){
-                    //left click
-                    if(mouseButton == 0){
-                        ItemStack heldItemStack = inventoryPlayer.getCursorStack();
-                        if(heldItemStack != null) {
+        PacketHelper.send(new FluidTerminalInteractionPacket(searchQuery, slotId, vSlotId, tile.page, button, shift));
 
-                            if (drainBucket(controller)) break;
+        lastVirtualSlotClicked = vSlotId;
 
-                            //insert into bucket
-                            if (id >= stacks.size()) break;
-                            ItemStack stack = stacks.get(id);
-                            if (stack == null) break;
-                            /*BlockFluid blockFluid = (BlockFluid) Block.blocksList[stack.itemID];
-                            if (stack.stackSize >= 1000) {
-                                if (inventoryPlayer.getHeldItemStack() != null
-                                        && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucketEmpty
-                                        && CatalystFluids.CONTAINERS.findEmptyContainers(blockFluid).contains(inventoryPlayer.getHeldItemStack().getItem())) {
-                                    Item item = CatalystFluids.CONTAINERS.findFilledContainersWithContainer(blockFluid, inventoryPlayer.getHeldItemStack().getItem()).get(0);
-                                    if (item != null) {
-                                        ItemStack filledBucket = new ItemStack(item, 1);
-                                        if (controller.countFluids(blockFluid.id) >= 1000) {
-                                            controller.removeFluidFromNetwork(blockFluid.id, 1000);
-                                            if (inventoryPlayer.getHeldItemStack().stackSize > 1) {
-                                                boolean isInvFull = true;
-                                                for (int j = 0; i < inventoryPlayer.mainInventory.length; ++j) {
-                                                    if (inventoryPlayer.mainInventory[j] == null) {
-                                                        isInvFull = false;
-                                                        break;
-                                                    }
-                                                }
-                                                if (isInvFull) {
-                                                    inventoryPlayer.player.dropPlayerItem(filledBucket);
-                                                } else {
-                                                    inventoryPlayer.insertItem(filledBucket, false);
-                                                }
-                                                inventoryPlayer.getHeldItemStack().stackSize--;
-                                                break;
-                                            } else {
-                                                inventoryPlayer.setHeldItemStack(filledBucket);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            //I/O from fluid containers
-                            if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
-                                IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                                List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithAnyContainer((Item) item);
-                                if(fluids != null && !fluids.isEmpty()){
-                                    if(CatalystFluids.CONTAINERS.findContainers(blockFluid).contains(item)) {
-                                        //fill
-                                        if(item.canFill(heldItemStack)){
-                                            int amount = item.getRemainingCapacity(heldItemStack);
-                                            FluidStack fluidStack = controller.removeFluidFromNetwork(blockFluid.id, amount);
-                                            item.fill(fluidStack,heldItemStack);
-                                            if(fluidStack.amount <= 0) fluidStack = null;
-                                            if(fluidStack != null){
-                                                controller.addFluidToNetwork(fluidStack);
-                                            }
-                                        }
-                                    }
-                                }
-                            }*/
-                        }
-                    }
-                    //right click
-                    if(mouseButton == 1){
-                        ItemStack heldItemStack = inventoryPlayer.getCursorStack();
-                        if(heldItemStack != null) {
-                            //insert from bucket
-                            if (drainBucket(controller)) break;
-
-                            /*if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
-                                IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                                List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithAnyContainer((Item) item);
-                                if (fluids != null && !fluids.isEmpty()) {
-                                    //drain
-                                    if (drainFluidContainer(controller, heldItemStack, item)) break;
-                                }
-                            }*/
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean drainFluidContainer(NetworkController controller, ItemStack heldItemStack, FluidInventoryItem item) {
-        /*if(item.canDrain(inventoryPlayer.getHeldItemStack())){
-            int amountInItem = item.getCapacity(heldItemStack) - item.getRemainingCapacity(heldItemStack);
-            FluidStack drained = item.drain(heldItemStack, amountInItem);
-            Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
-            fluidStack.ifPresent((S)->item.fill(S,heldItemStack));
-            return true;
-        }*/
-        return false;
-    }
-
-    private boolean drainBucket(NetworkController controller) {
-        /*if (inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof ItemBucket) {
-            ItemBucket bucket = (ItemBucket) inventoryPlayer.getHeldItemStack().getItem();
-            List<BlockFluid> fluids = CatalystFluids.CONTAINERS.findFluidsWithFilledContainer(bucket);
-            if (!fluids.isEmpty()) {
-                BlockFluid fluid = fluids.get(0);
-                if (controller.getFluidAmount() + 1000 <= controller.getFluidCapacity()) {
-                    controller.addFluidToNetwork(new FluidStack(fluid, 1000));
-                    inventoryPlayer.setHeldItemStack(new ItemStack(bucket.getContainerItem(), 1));
-                    return true;
-                }
-            }
-        }*/
-        return false;
-    }
-
-    public void onClosed() {
+        super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -246,37 +196,35 @@ public class DigitalFluidTerminalScreen extends ReSScreen implements IExtendedSc
         final int centerX = (width - backgroundWidth) / 2;
         final int centerY = (height - backgroundHeight) / 2;
 
-        if(tile.network != null) {
+        if (tile.network != null) {
             NetworkController controller = tile.getController();
-            if(controller != null) {
+            if (controller != null) {
                 List<ItemStack> stacks = getFilteredStacks();
-                this.tile.pages = (int) (double) (stacks.size() / 36);
+                this.tile.pages = (int) (double) (stacks.size() / 54);
                 for (int i = 0; i < slots.size(); i++) {
-                    Vec2f slot = slots.get(i);
+                    Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
-                    if(id >= stacks.size()) break;
+                    int id = i + (tile.page * 54);
+                    if (id >= stacks.size()) break;
                     stack = stacks.get(id);
-                    if(stack == null) continue;
-                    renderDigitalItem.render(stack, (int) slot.x, (int) slot.y,mouseHoveringOverSlot(slot,mouseX,mouseY));
+                    if (stack == null) continue;
+                    digitalItemRenderer.render(stack, slot.x, slot.y, mouseHoveringOverSlot(slot, mouseX, mouseY));
                 }
                 for (int i = 0; i < slots.size(); i++) {
-                    Vec2f slot = slots.get(i);
+                    Vec2i slot = slots.get(i);
                     ItemStack stack;
-                    int id = i + (tile.page * 36);
-                    if(id >= stacks.size()) break;
+                    int id = i + (tile.page * 54);
+                    if (id >= stacks.size()) break;
                     stack = stacks.get(id);
-                    if(stack == null) continue;
+                    if (stack == null) continue;
                     final PlayerInventory inventoryPlayer = minecraft.player.inventory;
-                    if (inventoryPlayer.getCursorStack() == null && mouseHoveringOverSlot(slot,mouseX,mouseY)) {
-                        String var13 = (TranslationStorage.getInstance().getClientTranslation(stack.getTranslationKey())).trim();
-                        if (!var13.isEmpty()) {
-                            int var14 = mouseX - centerX + 12;
-                            int y = mouseY - centerY - 12;
-                            int w = this.textRenderer.getWidth(var13);
-                            this.fillGradient(var14 - 3, y - 3, var14 + w + 3, y + 8 + 3, -1073741824, -1073741824);
-                            this.textRenderer.drawWithShadow(var13, var14, y, -1);
-                        }
+                    if (inventoryPlayer.getCursorStack() == null && mouseHoveringOverSlot(slot, mouseX, mouseY)) {
+                        GL11.glTranslatef(-centerX, -centerY, 0.0F);
+                        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                        List<Object> tooltip = new ArrayList<>(TooltipHelper.getTooltipForItemStack(TranslationStorage.getInstance().getClientTranslation(stack.getTranslationKey()), stack, inventoryPlayer, this));
+                        tooltip.add(Formatting.GRAY + String.valueOf(stack.count) + " mB");
+                        Tooltip.INSTANCE.setTooltip(tooltip, mouseX + 8, mouseY + 8);
+                        break;
                     }
                 }
             }
@@ -284,12 +232,27 @@ public class DigitalFluidTerminalScreen extends ReSScreen implements IExtendedSc
     }
 
     public @UnmodifiableView List<ItemStack> getFilteredStacks() {
+        if (tile.world.isRemote) {
+            return ((FluidTerminalScreenHandler) handler).networkStacks;
+        }
+
+        searching = false;
+        searchQuery = "";
 
         NetworkController controller = tile.getController();
-        if(controller != null) {
-            List<ItemStack> stacks = controller.getAllFluids().stream().map(FluidStack::toItemStack).collect(Collectors.toList());
-            return stacks;
+        if (controller != null) {
+            if (!AlwaysMoreItems.getItemFilter().getFilterText().isBlank()) {
+                List<ItemStack> stacks = controller.getAllFluids().stream().map(RetroStorage::f2i).toList();
+                searching = true;
+                searchQuery = AlwaysMoreItems.getItemFilter().getFilterText();
+                List<ItemStack> searchList = AlwaysMoreItems.getItemFilter().getItemList().stream().map(ItemStackElement::getItemStack).toList();
+                stacks = stacks.stream().filter((S) -> Catalyst.listContains(searchList, S, (checkedStack, listStack) -> listStack.isItemEqual(checkedStack))).toList();
+                return stacks;
+            } else {
+                return controller.getAllFluids().stream().map(RetroStorage::f2i).toList();
+            }
         }
+
         return Collections.emptyList();
     }
 }
