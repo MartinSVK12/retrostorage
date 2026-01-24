@@ -67,5 +67,5 @@ public class ScreenExporter extends ScreenContainerAbstract {
         }
     }
 
-    TileEntityExporter tile;
+    public TileEntityExporter tile;
 }

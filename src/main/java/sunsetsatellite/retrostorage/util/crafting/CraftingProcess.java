@@ -110,6 +110,34 @@ public class CraftingProcess {
                 fluidStack = new FluidStack(tag.getCompound("stack"));
             }
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Step)) return false;
+
+            Step step = (Step) o;
+
+            boolean header = slot == step.slot
+                    && id == step.id
+                    && output == step.output
+                    && type == step.type;
+
+            header = header && (stack == null ? step.stack == null : stack.isItemEqual(step.stack));
+            header = header && (fluidStack == null ? step.fluidStack == null : fluidStack.isFluidEqual(step.fluidStack));
+
+            return header;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hashCode(type);
+            result = 31 * result + slot;
+            result = 31 * result + id;
+            result = 31 * result + Boolean.hashCode(output);
+            result = 31 * result + Objects.hashCode(stack);
+            result = 31 * result + Objects.hashCode(fluidStack);
+            return result;
+        }
     }
 
     public List<ItemStack> getItemOutputs(){
@@ -128,9 +156,9 @@ public class CraftingProcess {
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CraftingProcess)) return false;
-        CraftingProcess process = (CraftingProcess) o;
+        CraftingProcess otherProcess = (CraftingProcess) o;
 
-        return Objects.equals(name, process.name);
+        return steps.stream().allMatch(step -> otherProcess.steps.stream().anyMatch(step::equals)) && Objects.equals(name, otherProcess.name);
     }
 
     @Override

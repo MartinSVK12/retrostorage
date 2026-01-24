@@ -27,6 +27,7 @@ public class RetroStorageServer implements DedicatedServerModInitializer {
         Catalyst.GUIS.register(key("gui/adv_interface"), new MpGuiEntry(TileEntityAdvInterface.class, MenuAdvInterface.class));
         Catalyst.GUIS.register(key("gui/energy_acceptor"), new MpGuiEntry(TileEntityEnergyAcceptor.class, MenuEnergyAcceptor.class));
         Catalyst.GUIS.register(key("gui/redstone_emitter"), new MpGuiEntry(TileEntityRedstoneEmitter.class, MenuRedstoneEmitter.class));
+        Catalyst.GUIS.register(key("gui/fluid_redstone_emitter"), new MpGuiEntry(TileEntityFluidRedstoneEmitter.class, MenuFluidRedstoneEmitter.class));
         Catalyst.GUIS.register(key("gui/storage_bus"), new MpGuiEntry(TileEntityStorageBus.class, MenuStorageBus.class));
         Catalyst.GUIS.register(key("gui/fluid_storage_bus"), new MpGuiEntry(TileEntityFluidStorageBus.class, MenuFluidStorageBus.class));
     }

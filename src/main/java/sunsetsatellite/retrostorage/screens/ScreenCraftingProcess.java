@@ -75,7 +75,7 @@ public class ScreenCraftingProcess extends Screen {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
-    public Font getFOnt(){
+    public Font getFont(){
         return font;
     }
 

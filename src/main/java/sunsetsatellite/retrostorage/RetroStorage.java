@@ -86,6 +86,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         EntityHelper.createTileEntity(TileEntityWirelessLink.class,id("wireless_link"));
         EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, id("energy_acceptor"));
         EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class,id("redstone_emitter"));
+        EntityHelper.createTileEntity(TileEntityFluidRedstoneEmitter.class,id("fluid_redstone_emitter"));
         EntityHelper.createTileEntity(TileEntityCoprocessor.class,id("crafting_coprocessor"));
         EntityHelper.createTileEntity(TileEntityStorageBus.class,id("storage_bus"));
         EntityHelper.createTileEntity(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
@@ -551,7 +552,13 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
                 .addInput('B', new ItemStack(Items.DYE, 1, DyeColor.LIGHT_BLUE.itemMeta))
                 .addInput('L', new ItemStack(Items.DYE, 1, DyeColor.BLUE.itemMeta))
                 .addInput('D', exporter)
-                .create("fluid_importer", new ItemStack(fluidExporter, 1));
+                .create("fluid_exporter", new ItemStack(fluidExporter, 1));
+
+        RecipeBuilder.Shaped(MOD_ID, "LBL", "BDB", "LBL")
+                .addInput('B', new ItemStack(Items.DYE, 1, DyeColor.LIGHT_BLUE.itemMeta))
+                .addInput('L', new ItemStack(Items.DYE, 1, DyeColor.BLUE.itemMeta))
+                .addInput('D', fluidRedstoneEmitter)
+                .create("fluid_redstone_emitter", new ItemStack(fluidRedstoneEmitter, 1));
 
         RecipeBuilder.Shaped(MOD_ID, " C ", "IHE", " C ")
                 .addInput('C', machineCasing)

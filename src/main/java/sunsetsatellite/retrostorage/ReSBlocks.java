@@ -47,6 +47,7 @@ public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
     public static Block<?> advInterface;
     public static Block<?> wirelessLink;
     public static Block<?> redstoneEmitter;
+    public static Block<?> fluidRedstoneEmitter;
     public static Block<?> craftingCoprocessor;
     public static Block<?> storageBus;
     public static Block<?> fluidStorageBus;
@@ -189,6 +190,12 @@ public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
                 (block) -> new BlockLogicRedstoneEmitter(block, TileEntityRedstoneEmitter::new, "redstone_emitter"),
                 new MachineTextures(false)
                         .withDefaultTexture("redstone_emitter_off")
+        );
+
+        fluidRedstoneEmitter = customBlock(defaultBuilder(), "fluidRedstoneEmitter", "fluid_redstone_emitter", "fluidRedstoneEmitter", 2,
+                (block) -> new BlockLogicFluidRedstoneEmitter(block, TileEntityFluidRedstoneEmitter::new, "fluid_redstone_emitter"),
+                new MachineTextures(false)
+                        .withDefaultTexture("fluid_redstone_emitter_off")
         );
 
         storageBus = customBlock(defaultBuilder(), "storageBus", "storage_bus", "storageBus", 2,

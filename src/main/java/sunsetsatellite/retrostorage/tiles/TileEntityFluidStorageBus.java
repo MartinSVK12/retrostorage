@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.tiles;
 
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityFluidStorageBus extends TileEntityNetworkDevice implements INetworkFluidStorage {
+public class TileEntityFluidStorageBus extends TileEntityNetworkDevice implements INetworkFluidStorage, IScreenActionListener {
 
     public FluidInventoryWrapper wrapper = new FluidInventoryWrapper(null);
     private int priority = 0;
@@ -192,5 +193,14 @@ public class TileEntityFluidStorageBus extends TileEntityNetworkDevice implement
     @Override
     public boolean isEmpty() {
         return wrapper.isEmpty();
+    }
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if(id == 0){
+            priority -= 1;
+        } else if (id == 1) {
+            priority += 1;
+        }
     }
 }

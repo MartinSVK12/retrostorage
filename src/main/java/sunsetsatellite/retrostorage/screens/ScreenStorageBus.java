@@ -5,15 +5,19 @@ import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
 import net.minecraft.client.render.texture.Texture;
+import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuStorageBus;
 import sunsetsatellite.retrostorage.tiles.TileEntityStorageBus;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.api.INetworkController;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.ArrayList;
 
@@ -57,10 +61,14 @@ public class ScreenStorageBus extends ScreenContainerAbstract implements IExtend
         if (guibutton.id == 1) {
             tile.setPriority(tile.getPriority() + 1);
         }
+
+        if(EnvironmentHelper.isClientWorld()){
+            NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,tile.getPosition(), tile.getClass()));
+        }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
-        @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/digital_terminal.png");
+        @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/storage_bus.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
@@ -83,6 +91,9 @@ public class ScreenStorageBus extends ScreenContainerAbstract implements IExtend
             }
         }
         font.drawCenteredString("Filtering not yet available :(", 88, 45, 0xFFFFFFFF);
+        if(tile.wrapper.connected != null){
+            font.drawCenteredString(TextFormatting.LIME+"Connected to "+tile.wrapper.connected.getClass().getSimpleName().replace("TileEntity","")+"!", 88, 65, 0xFFFFFFFF);
+        }
     }
 
     @Override

@@ -5,16 +5,20 @@ import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
 import net.minecraft.client.render.texture.Texture;
+import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
+import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.retrostorage.menus.MenuFluidStorageBus;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidStorageBus;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
 import sunsetsatellite.retrostorage.api.INetworkController;
+import turniplabs.halplibe.helper.EnvironmentHelper;
+import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.ArrayList;
 
@@ -58,6 +62,10 @@ public class ScreenFluidStorageBus extends ScreenContainerAbstract implements IE
         if (guibutton.id == 1) {
             tile.setPriority(tile.getPriority() + 1);
         }
+
+        if(EnvironmentHelper.isClientWorld()){
+            NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,tile.getPosition(), tile.getClass()));
+        }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
@@ -85,6 +93,9 @@ public class ScreenFluidStorageBus extends ScreenContainerAbstract implements IE
             }
         }
         font.drawCenteredString("Filtering not yet available :(", 88, 45, 0xFFFFFFFF);
+        if(tile.wrapper.connected != null){
+            font.drawCenteredString(TextFormatting.LIME+"Connected to "+tile.wrapper.connected.getClass().getSimpleName().replace("TileEntity","")+"!", 88, 65, 0xFFFFFFFF);
+        }
     }
 
     @Override

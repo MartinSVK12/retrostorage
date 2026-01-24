@@ -8,17 +8,19 @@ import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
+import sunsetsatellite.retrostorage.menus.MenuFluidRedstoneEmitter;
 import sunsetsatellite.retrostorage.menus.MenuRedstoneEmitter;
 import sunsetsatellite.retrostorage.tiles.TileEntityAdvInterface;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
+import sunsetsatellite.retrostorage.tiles.TileEntityFluidRedstoneEmitter;
 import sunsetsatellite.retrostorage.tiles.TileEntityRedstoneEmitter;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
-public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
+public class ScreenFluidRedstoneEmitter extends ScreenFluidFake {
 
-    public ScreenRedstoneEmitter(ContainerInventory inventoryplayer, TileEntityRedstoneEmitter tileEntityRedstoneEmitter) {
-        super(new MenuRedstoneEmitter(inventoryplayer, tileEntityRedstoneEmitter));
+    public ScreenFluidRedstoneEmitter(ContainerInventory inventoryplayer, TileEntityFluidRedstoneEmitter tileEntityRedstoneEmitter) {
+        super(inventoryplayer, new MenuFluidRedstoneEmitter(inventoryplayer, tileEntityRedstoneEmitter));
         tile = tileEntityRedstoneEmitter;
     }
 
@@ -33,7 +35,7 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Redstone Emitter", 45, 6, 0x404040);
+        font.drawString("Fluid Redstone Emitter", 38, 6, 0x404040);
         font.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
         font.drawString(String.valueOf(tile.amount), 120, 40, 0x404040);
         if (tile.connectedTile instanceof TileEntityAssembler) {
@@ -55,7 +57,7 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
             buttons.add(new ButtonElement(5, Math.round(width / 2f - 80), Math.round(height / 2f - 65), 20, 20, "+"));
             buttons.add(new ButtonElement(6, Math.round(width / 2f - 80), Math.round(height / 2f - 35), 20, 20, "-"));
         }
-        buttons.add(new ButtonElement(3, Math.round(width / 2f + 60), Math.round(height / 2f) - 75, 20, 20, tile.useMeta ? "M" : "!M"));
+        //buttons.add(new ButtonElement(3, Math.round(width / 2f + 60), Math.round(height / 2f) - 75, 20, 20, tile.useMeta ? "M" : "!M"));
         //buttons.add(new ButtonElement(4, Math.round(width / 2 + 60) , Math.round(height / 2) - 55, 20, 20, "D"));
         switch (tile.mode) {
             case 0:
@@ -89,11 +91,11 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
             return;
         }
         if (guibutton.id == 2) {
-            if (tile.amount > 0)
-                tile.amount--;
+            if (tile.amount >= 1000)
+                tile.amount -= 1000;
         }
         if (guibutton.id == 1) {
-            tile.amount++;
+            tile.amount += 1000;
         }
         if (guibutton.id == 3) {
             tile.useMeta = !tile.useMeta;
@@ -155,5 +157,5 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
         }
     }
 
-    private final TileEntityRedstoneEmitter tile;
+    private final TileEntityFluidRedstoneEmitter tile;
 }

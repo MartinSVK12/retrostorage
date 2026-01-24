@@ -113,6 +113,6 @@ public class CraftingProcessStepElement extends SlotElement {
     }
 
     protected void drawString(String s, int x, int y, int color) {
-        this.parent.drawString(this.parent.getFOnt(), s, x, y, color);
+        this.parent.drawString(this.parent.getFont(), s, x, y, color);
     }
 }

@@ -80,7 +80,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
 
         @Override
         public ArrayList<Fluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
+            ArrayList<Fluid> allFluids = new ArrayList<>(Fluid.fluidMap.values());
             allFluids.removeIf((B)->{
                 for (Fluid disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
                     return disallowedFluid == B;

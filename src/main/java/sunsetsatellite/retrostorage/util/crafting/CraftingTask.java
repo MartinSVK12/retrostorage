@@ -106,6 +106,7 @@ public class CraftingTask {
     }
 
     public ItemStack insertFromProcess(ItemStack stack) {
+        if(stack == null) return null;
         int size = stack.stackSize;
         for (Node node : this.nodes.all()) {
             if (node instanceof ProcessNode) {

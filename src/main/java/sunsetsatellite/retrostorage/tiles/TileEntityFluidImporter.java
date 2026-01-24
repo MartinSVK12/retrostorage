@@ -13,6 +13,7 @@ import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.api.INetworkController;
+import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,7 +81,7 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
 
         @Override
         public ArrayList<Fluid> getAllowedFluidsForSlot(int slot) {
-            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
+            ArrayList<Fluid> allFluids = new ArrayList<>(Fluid.fluidMap.values());;
             allFluids.removeIf((F)->{
                 for (Fluid disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
                     return disallowedFluid == F;
@@ -148,9 +149,16 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
                 if (tile != null && !(tile instanceof TileEntityNetworkDevice)) {
                     IFluidInventory inv = (IFluidInventory) tile;
                     if(slot == -1){
+                        here:
                         for (int i = 0; i < inv.getFluidInventorySize(); i++) {
                             FluidStack stack = inv.getFluidInSlot(i);
                             if(matchesFilter(stack)){
+                                for (CraftingTask task : controller.getCurrentTasks()) {
+                                    FluidStack leftovers = task.insertFromProcess(stack);
+                                    if(leftovers == stack) continue;
+                                    inv.setFluidInSlot(i, leftovers);
+                                    break here;
+                                }
                                 FluidStack leftovers = controller.addFluidToNetwork(stack);
                                 inv.setFluidInSlot(i, leftovers);
                                 break;
@@ -162,6 +170,12 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
                         }
                         FluidStack stack = inv.getFluidInSlot(slot);
                         if(matchesFilter(stack)){
+                            for (CraftingTask currentTask : controller.getCurrentTasks()) {
+                                FluidStack leftovers = currentTask.insertFromProcess(stack);
+                                if(leftovers == stack) continue;
+                                inv.setFluidInSlot(slot, leftovers);
+                                return;
+                            }
                             FluidStack leftovers = controller.addFluidToNetwork(stack);
                             inv.setFluidInSlot(slot, leftovers);
                         }

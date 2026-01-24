@@ -5,6 +5,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.UnmodifiableView;
+import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.core.util.io.IItemStackList;
 import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
@@ -13,7 +14,7 @@ import sunsetsatellite.retrostorage.api.INetworkItemStorage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityStorageBus extends TileEntityNetworkDevice implements INetworkItemStorage {
+public class TileEntityStorageBus extends TileEntityNetworkDevice implements INetworkItemStorage, IScreenActionListener {
 
     public InventoryWrapper wrapper = new InventoryWrapper(null);
     private int priority = 0;
@@ -202,5 +203,14 @@ public class TileEntityStorageBus extends TileEntityNetworkDevice implements INe
     @Override
     public boolean isEmpty() {
         return wrapper.isEmpty();
+    }
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if(id == 0){
+            priority -= 1;
+        } else if (id == 1) {
+            priority += 1;
+        }
     }
 }

@@ -178,16 +178,20 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                         if (slotStack == null) {
                             continue;
                         }
-                        workingTile.setItem(step.slot, null);
-                        workingTask.insertFromProcess(slotStack);
+                        if(stepStack.isItemEqual(slotStack)){
+                            ItemStack remainder = workingTask.insertFromProcess(slotStack);
+                            workingTile.setItem(step.slot, remainder);
+                        }
                     } else if ((step.output && step.type == StackType.FLUID && workingFluidTile != null)) {
                         FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
                         FluidStack stepStack = step.fluidStack;
                         if (slotStack == null) {
                             continue;
                         }
-                        workingFluidTile.setFluidInSlot(step.slot, null);
-                        workingTask.insertFromProcess(slotStack);
+                        if(stepStack.isFluidEqual(slotStack)){
+                            FluidStack remainder = workingTask.insertFromProcess(slotStack);
+                            workingFluidTile.setFluidInSlot(step.slot, remainder);
+                        }
                     }
                 }
             }

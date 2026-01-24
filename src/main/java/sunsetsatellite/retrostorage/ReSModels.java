@@ -13,6 +13,7 @@ import org.useless.dragonfly.models.block.BlockModelDFJava;
 import sunsetsatellite.catalyst.CatalystMultipart;
 import sunsetsatellite.catalyst.multipart.block.model.BlockModelMultipart;
 import sunsetsatellite.catalyst.multipart.block.model.MultipartBlockModelBuilder;
+import sunsetsatellite.retrostorage.blocks.models.BlockModelFluidRedstoneEmitter;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelMachine;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
 import sunsetsatellite.retrostorage.blocks.states.NetworkCableStateInterpreter;
@@ -50,6 +51,7 @@ public class ReSModels implements ModelEntrypoint {
         });
 
         ModelHelper.setBlockModel(redstoneEmitter, () -> new BlockModelRedstoneEmitter(redstoneEmitter));
+        ModelHelper.setBlockModel(fluidRedstoneEmitter, () -> new BlockModelFluidRedstoneEmitter(fluidRedstoneEmitter));
 
         blockTextures.forEach((block, tex)-> {
             //LOGGER.info("Loading block model for '{}'", block.namespaceId());
