@@ -46,7 +46,7 @@
     "minecraft": "1.0.0-beta.7.3",
     "stationapi": ">=2.0.0-alpha.5.4",
     "alwaysmoreitems": ">=1.8.0",
-    "catalyst-core": ">=1.1.0+stapi",
+    "catalyst-core": ">=1.1.1+stapi",
     "nyalib": ">=0.18.0-alpha.34"
   }
 }
