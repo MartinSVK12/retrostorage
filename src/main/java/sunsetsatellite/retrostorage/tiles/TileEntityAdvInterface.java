@@ -246,8 +246,8 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public Container getConnectedTile() {
-        return workingTile;
+    public TileEntity getConnectedTile() {
+        return (TileEntity) workingTile;
     }
 
     @Override
@@ -314,6 +314,11 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                         }
                     }
                 }
+            } else if(step.output && step.type == StackType.ITEM){
+                ItemStack slotStack = workingTile.getItem(step.slot);
+                ItemStack stepStack = step.stack;
+                if(stepStack == null) continue;
+                if(slotStack != null && !stepStack.isItemEqual(slotStack)) can = false;
             }
         }
         return can;
@@ -374,6 +379,11 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                         }
                     }
                 }
+            } else if(step.output && step.type == StackType.FLUID){
+                FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
+                FluidStack stepStack = step.fluidStack;
+                if(stepStack == null) continue;
+                if(slotStack != null && !stepStack.isFluidEqual(slotStack)) can = false;
             }
         }
         return can;

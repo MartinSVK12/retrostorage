@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.tiles;
 
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
@@ -195,7 +196,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     @Override
-    public Container getConnectedTile() {
+    public TileEntity getConnectedTile() {
         return null;
     }
 

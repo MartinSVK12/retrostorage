@@ -1,5 +1,6 @@
 package sunsetsatellite.retrostorage.api;
 
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
@@ -16,7 +17,7 @@ public interface IProcessor {
 
     void setFocus(ProcessNode node, CraftingTask task);
 
-    Container getConnectedTile();
+    TileEntity getConnectedTile();
 
     ProcessNode getWorkingNode();
 

@@ -123,7 +123,7 @@ public class ProcessNode extends Node {
             if (getQuantity() <= 0) {
                 return;
             }
-            if (processor.isInUse() && processor.getWorkingNode() != this && processor.getWorkingTask() != craftingTask) {
+            if (processor.isInUse() && (processor.getWorkingNode() != this || processor.getWorkingTask() != craftingTask)) {
                 this.state = ProcessingState.ALREADY_IN_USE;
                 return;
             }
@@ -171,7 +171,7 @@ public class ProcessNode extends Node {
             }
 
 
-            processor.setFocus(this, craftingTask);
+            //processor.setFocus(this, craftingTask);
             success = processor.insertItems(extracted) && processor.insertFluids(extractedFluids);
 
             if (!success) {

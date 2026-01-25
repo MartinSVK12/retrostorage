@@ -123,7 +123,7 @@ public class CraftingTask {
                     size -= needed;
 
                     if (!processing.isRoot()) {
-                        internalStorage.add(stack);
+                        stack = internalStorage.add(stack);
                     } else {
                         ItemStack remainder = network.addItemToNetwork(stack);
 
@@ -157,7 +157,7 @@ public class CraftingTask {
                     size -= needed;
 
                     if (!processing.isRoot()) {
-                        internalFluidStorage.add(stack);
+                        stack = internalFluidStorage.add(stack);
                     } else {
                         FluidStack remainder = network.addFluidToNetwork(stack);
 

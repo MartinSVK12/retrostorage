@@ -3,6 +3,9 @@ package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.tessellator.Tessellator;
+import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.player.inventory.container.Container;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.api.IProcessor;
 import sunsetsatellite.retrostorage.util.ProcessingState;
 import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
@@ -67,6 +70,16 @@ public class TaskSlotElement extends SlotElement {
                 ProcessNode pNode = (ProcessNode) node;
                 ProcessingState state = pNode.getState();
                 IProcessor processor = parent.network.findProcessorWithNode(pNode);
+                TileEntity machine = null;
+                if(processor != null){
+                    if(processor.getConnectedTile() != null){
+                        machine = processor.getConnectedTile();
+                    }
+                }
+                String machineInfo = machine == null ? "None" : machine.getClass().getSimpleName().replace("TileEntity", "");
+                if(machine != null){
+                    machineInfo += " at " + new Vec3i(machine.x, machine.y, machine.z);
+                }
                 color = (state == ProcessingState.BLOCKED || state == ProcessingState.NO_MACHINE) ? 0xFF0000 : (state == ProcessingState.ALREADY_IN_USE) ? 0xFF8C00 : (state == ProcessingState.ACTIVE) ? 0x00FF00 : 0xFFFFFF;
                 if (state == ProcessingState.WAITING) {
                     drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
@@ -75,7 +88,7 @@ public class TaskSlotElement extends SlotElement {
                 } else {
                     drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize * node.getTotalQuantity() + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
                     drawString(String.format(" %d/%d (%d%%) | %s", pNode.getFinishedQuantity(), pNode.getTotalQuantity(), pNode.getCompletionPercentage(), pNode.getState()), x, y += 10, 0xFFFFFF);
-                    drawString(" Processor: " + (processor == null ? "None" : processor.toString().replace("TileEntity", "")), x, y += 10, 0x808080);
+                    drawString(" Processor: " + machineInfo, x, y += 10, 0x808080);
                 }
             } else {
                 drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, 0xFFFFFF);
