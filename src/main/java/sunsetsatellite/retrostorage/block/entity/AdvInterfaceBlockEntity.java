@@ -171,14 +171,16 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                 ItemStack slotStack = workingTile.connected.getStack(step.slot);
                 ItemStack stepStack = step.stack;
                 if (stepStack == null) continue;
-                ItemStack removed = items.remove(stepStack.itemId, stepStack.getDamage(), stepStack.count, stepStack.getStationNbt(), false, false);
-                if (removed == null) {
-                    return false;
-                }
-                if (slotStack == null) {
-                    workingTile.connected.setStack(step.slot, removed);
-                } else {
-                    workingTile.connected.getStack(step.slot).count += removed.count;
+                if(slotStack == null || stepStack.isItemEqual(slotStack)){
+                    ItemStack removed = items.remove(stepStack.itemId, stepStack.getDamage(), stepStack.count, stepStack.getStationNbt(), false, false);
+                    if (removed == null) {
+                        return false;
+                    }
+                    if (slotStack == null) {
+                        workingTile.connected.setStack(step.slot, removed);
+                    } else {
+                        workingTile.connected.getStack(step.slot).count += removed.count;
+                    }
                 }
             }
         }
@@ -234,10 +236,12 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                 if (removed == null) {
                     return false;
                 }
-                if (slotStack == null) {
-                    workingFluidTile.connected.setFluid(step.slot, removed, null);
-                } else {
-                    workingFluidTile.connected.getFluid(step.slot, null).amount += removed.amount;
+                if(slotStack == null || stepStack.isFluidEqual(slotStack)){
+                    if (slotStack == null) {
+                        workingFluidTile.connected.setFluid(step.slot, removed, null);
+                    } else {
+                        workingFluidTile.connected.getFluid(step.slot, null).amount += removed.amount;
+                    }
                 }
             }
         }
