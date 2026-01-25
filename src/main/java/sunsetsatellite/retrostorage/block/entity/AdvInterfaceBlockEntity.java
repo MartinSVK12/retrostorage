@@ -85,8 +85,8 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                                 continue;
                             }
                             if(stepStack.isItemEqual(slotStack)){
-                                workingTask.insertFromProcess(slotStack);
-                                workingTile.connected.setStack(step.slot, null);
+                                ItemStack remainder = workingTask.insertFromProcess(slotStack);
+                                workingTile.connected.setStack(step.slot, remainder);
                             }
                         } else {
 
@@ -100,8 +100,8 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
                                 continue;
                             }
                             if(stepStack.isFluidEqual(slotStack)){
-                                workingTask.insertFromProcess(slotStack);
-                                workingFluidTile.connected.setFluid(step.slot, null, null);
+                                FluidStack remainder = workingTask.insertFromProcess(slotStack);
+                                workingFluidTile.connected.setFluid(step.slot, remainder, null);
                             }
                         } else {
 
@@ -148,8 +148,8 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
     }
 
     @Override
-    public Inventory getConnectedTile() {
-        return workingTile.connected;
+    public BlockEntity getConnectedTile() {
+        return (BlockEntity) workingTile.connected;
     }
 
     @Override

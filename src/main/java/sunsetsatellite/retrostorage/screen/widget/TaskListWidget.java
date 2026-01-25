@@ -1,8 +1,10 @@
 package sunsetsatellite.retrostorage.screen.widget;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.TranslationStorage;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.api.Processor;
 import sunsetsatellite.retrostorage.screen.RequestQueueScreen;
 import sunsetsatellite.retrostorage.util.ProcessingState;
@@ -68,6 +70,16 @@ public class TaskListWidget extends ListWidget {
             if (node instanceof ProcessNode pNode) {
                 ProcessingState state = pNode.getState();
                 Processor processor = parent.controller.findProcessorWithNode(pNode);
+                BlockEntity machine = null;
+                if(processor != null){
+                    if(processor.getConnectedTile() != null){
+                        machine = processor.getConnectedTile();
+                    }
+                }
+                String machineInfo = machine == null ? "None" : machine.getClass().getSimpleName().replace("TileEntity", "");
+                if(machine != null){
+                    machineInfo += " at " + new Vec3i(machine.x, machine.y, machine.z);
+                }
                 color = (state == ProcessingState.BLOCKED || state == ProcessingState.NO_MACHINE) ? 0xFF0000 : (state == ProcessingState.ALREADY_IN_USE) ? 0xFF8C00 : (state == ProcessingState.ACTIVE) ? 0x00FF00 : 0xFFFFFF;
                 if (state == ProcessingState.WAITING) {
                     drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + TranslationStorage.getInstance().getClientTranslation(node.getPattern().getOutput().get(0).forceGetItem().getTranslationKey()), x, y += 10, color);
@@ -76,7 +88,7 @@ public class TaskListWidget extends ListWidget {
                 } else {
                     drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().count * node.getTotalQuantity() + "x " + TranslationStorage.getInstance().getClientTranslation(node.getPattern().getOutput().get(0).forceGetItem().getTranslationKey()), x, y += 10, color);
                     drawString(String.format(" %d/%d (%d%%) | %s", pNode.getFinishedQuantity(), pNode.getTotalQuantity(), pNode.getCompletionPercentage(), pNode.getState()), x, y += 10, 0xFFFFFF);
-                    drawString(" Processor: " + (processor == null ? "None" : processor.toString().replace("BlockEntity", "")), x, y += 10, 0x808080);
+                    drawString(" Processor: " + machineInfo, x, y += 10, 0x808080);
                 }
             } else {
                 drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().count + "x " + TranslationStorage.getInstance().getClientTranslation(node.getPattern().getOutput().get(0).forceGetItem().getTranslationKey()), x, y += 10, 0xFFFFFF);

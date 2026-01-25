@@ -2,6 +2,7 @@ package sunsetsatellite.retrostorage.block.entity;
 
 import net.danygames2014.nyalib.block.BlockEntityInit;
 import net.danygames2014.nyalib.item.block.ManagedItemHandlerWithInventory;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -85,7 +86,7 @@ public class AssemblerBlockEntity extends NetworkDeviceBlockEntity implements Ma
     }
 
     @Override
-    public Inventory getConnectedTile() {
+    public BlockEntity getConnectedTile() {
         return null;
     }
 
