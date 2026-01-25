@@ -269,14 +269,16 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 ItemStack slotStack = workingTile.getItem(step.slot);
                 ItemStack stepStack = step.stack;
                 if(stepStack == null) continue;
-                ItemStack removed = items.remove(stepStack.itemID, stepStack.getMetadata(), stepStack.stackSize, stepStack.getData(), false, false);
-                if (removed == null) {
-                    return false;
-                }
-                if (slotStack == null) {
-                    workingTile.setItem(step.slot, removed);
-                } else {
-                    workingTile.getItem(step.slot).stackSize += removed.stackSize;
+                if(slotStack == null || stepStack.isItemEqual(slotStack)){
+                    ItemStack removed = items.remove(stepStack.itemID, stepStack.getMetadata(), stepStack.stackSize, stepStack.getData(), false, false);
+                    if (removed == null) {
+                        return false;
+                    }
+                    if (slotStack == null) {
+                        workingTile.setItem(step.slot, removed);
+                    } else {
+                        workingTile.getItem(step.slot).stackSize += removed.stackSize;
+                    }
                 }
             }
         }
@@ -326,14 +328,16 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
                 FluidStack stepStack = step.fluidStack;
                 if(stepStack == null) continue;
-                FluidStack removed = items.removeById(stepStack.fluid.getFirstId(), stepStack.amount, false);
-                if (removed == null) {
-                    return false;
-                }
-                if (slotStack == null) {
-                    workingFluidTile.setFluidInSlot(step.slot, removed);
-                } else {
-                    workingFluidTile.getFluidInSlot(step.slot).amount += removed.amount;
+                if(slotStack == null || stepStack.isFluidEqual(slotStack)){
+                    FluidStack removed = items.removeById(stepStack.fluid.getFirstId(), stepStack.amount, false);
+                    if (removed == null) {
+                        return false;
+                    }
+                    if (slotStack == null) {
+                        workingFluidTile.setFluidInSlot(step.slot, removed);
+                    } else {
+                        workingFluidTile.getFluidInSlot(step.slot).amount += removed.amount;
+                    }
                 }
             }
         }

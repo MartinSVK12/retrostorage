@@ -59,7 +59,7 @@ public class ScreenRecipeEncoder extends ScreenContainerAbstract {
     public void init() {
         super.init();
         //if (player.getGamemode() == Gamemode.creative) {
-        recipeNameField = new TextFieldElement(this, font, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 160, 20, "", "Recipe name...");
+        recipeNameField = new TextFieldElement(this, font, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 160, 20, "", "Recipe identifier...");
         //}
         buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 15), Math.round((float) height / 2 - 25), 60, 20, "Encode"));
     }
