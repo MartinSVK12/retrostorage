@@ -23,17 +23,14 @@ import org.lwjgl.opengl.GL11;
 import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.menus.MenuRecipeEncoder;
-import sunsetsatellite.retrostorage.mp.PacketQuickRecipeEncode;
 import sunsetsatellite.retrostorage.tiles.TileEntityRecipeEncoder;
 import sunsetsatellite.retrostorage.util.DigitalItemElement;
-import turing.tmb.api.ISupportsRecipeFilling;
-import turing.tmb.api.recipe.IRecipeTranslator;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 
 import java.util.Objects;
 
-public class ScreenRecipeEncoder extends ScreenContainerAbstract implements ISupportsRecipeFilling {
+public class ScreenRecipeEncoder extends ScreenContainerAbstract {
 
     public DigitalItemElement guiRenderItem = new DigitalItemElement(Minecraft.getMinecraft());
     /*public GuiRecipeEncoder(ContainerInventory inventoryplayer, World world, int i, int j, int k)
@@ -61,9 +58,9 @@ public class ScreenRecipeEncoder extends ScreenContainerAbstract implements ISup
 
     public void init() {
         super.init();
-        if (player.getGamemode() == Gamemode.creative) {
-            recipeNameField = new TextFieldElement(this, font, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 160, 20, "", "Recipe name...");
-        }
+        //if (player.getGamemode() == Gamemode.creative) {
+        recipeNameField = new TextFieldElement(this, font, Math.round((float) width / 2 - 81), Math.round((float) height / 2 - 112), 160, 20, "", "Recipe name...");
+        //}
         buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 15), Math.round((float) height / 2 - 25), 60, 20, "Encode"));
     }
 
@@ -137,7 +134,7 @@ public class ScreenRecipeEncoder extends ScreenContainerAbstract implements ISup
     public String recipeName;
     private final Player player;
 
-    @Override
+    /*@Override
     public void fillRecipe(IRecipeTranslator<?> recipe) {
         if (recipe.getOriginal() instanceof RecipeEntryCraftingShaped || recipe.getOriginal() instanceof RecipeEntryCraftingShapeless) {
             tile.encodeDisc((RecipeEntryCrafting<?, ItemStack>) recipe.getOriginal());
@@ -145,5 +142,5 @@ public class ScreenRecipeEncoder extends ScreenContainerAbstract implements ISup
                 NetworkHandler.sendToServer(new PacketQuickRecipeEncode(tile.x, tile.y, tile.z, recipe.getOriginal().toString()));
             }
         }
-    }
+    }*/
 }
