@@ -241,10 +241,31 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
             return ((MenuDigitalTerminal) inventorySlots).networkStacks;
         }
 
-        SearchQuery query;
+        SearchQuery query = SearchQuery.resolve("");
 
-        String text = TMBRenderer.search.getText();
-        query = SearchQuery.resolve(text);
+        //miniscule amounts of reflection
+        try {
+            Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
+            for (Field F1 : tmbRenderer.getDeclaredFields()) {
+                if (F1.getType() == TextFieldElement.class) {
+                    try {
+                        TextFieldElement field = ((TextFieldElement) F1.get(null));
+                        if(field != null) {
+                            String text = field.getText();
+                            query = SearchQuery.resolve(text);
+                        }
+                    } catch (IllegalAccessException ignored) {
+                        //failed to access text field
+                    }
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ignored) {
+            //tmb not installed, ignore
+        }
+
+        /*String text = TMBRenderer.search.getText();
+        query = SearchQuery.resolve(text);*/
 
         searching = false;
         searchQuery = "";
