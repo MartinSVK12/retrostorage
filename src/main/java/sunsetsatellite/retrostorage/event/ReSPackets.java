@@ -24,6 +24,8 @@ public class ReSPackets {
 
     @EventListener
     public static void registerPackets(PacketRegisterEvent event) {
+        Registry.register(PacketTypeRegistry.INSTANCE, NAMESPACE.id("update_slot"), UpdateSlotPacket.TYPE);
+
         Registry.register(PacketTypeRegistry.INSTANCE, NAMESPACE.id("fluid_terminal_contents"), FluidTerminalContentsPacket.TYPE);
         Registry.register(PacketTypeRegistry.INSTANCE, NAMESPACE.id("fluid_terminal_interaction"), FluidTerminalInteractionPacket.TYPE);
         Registry.register(PacketTypeRegistry.INSTANCE, NAMESPACE.id("fluid_terminal_request_contents"), FluidTerminalRequestContentsPacket.TYPE);

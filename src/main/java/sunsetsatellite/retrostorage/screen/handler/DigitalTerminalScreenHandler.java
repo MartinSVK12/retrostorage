@@ -7,12 +7,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import paulevs.bhcreative.util.SlotUpdatePacket;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.retrostorage.api.NetworkController;
 import sunsetsatellite.retrostorage.block.entity.DigitalTerminalBlockEntity;
 import sunsetsatellite.retrostorage.item.MobileTerminalItem;
+import sunsetsatellite.retrostorage.packet.UpdateSlotPacket;
 import sunsetsatellite.retrostorage.packet.terminal.item.TerminalContentsPacket;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class DigitalTerminalScreenHandler extends ScreenHandler {
                     int amount = stack.getItem().getMaxCount();
                     playerInv.addStack(con.removeItemFromNetwork(stack.itemId, stack.getDamage(), stack.getStationNbt(), amount));
                     if (Catalyst.serverEnv()) {
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                     }
                     return;
                 }
@@ -103,7 +103,7 @@ public class DigitalTerminalScreenHandler extends ScreenHandler {
                 if (heldItemStack != null) {
                     playerInv.setCursorStack(con.addItemToNetwork(heldItemStack));
                     if (Catalyst.serverEnv()) {
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                     }
                 } else {
                     if (id >= networkStacks.size()) return;
@@ -112,7 +112,7 @@ public class DigitalTerminalScreenHandler extends ScreenHandler {
                     int amount = stack.getItem().getMaxCount();
                     playerInv.setCursorStack(con.removeItemFromNetwork(stack.itemId, stack.getDamage(), stack.getStationNbt(), amount));
                     if (Catalyst.serverEnv()) {
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                     }
                 }
             }
@@ -124,7 +124,7 @@ public class DigitalTerminalScreenHandler extends ScreenHandler {
                     if (heldItemStack.count <= 0) {
                         playerInv.setCursorStack(leftovers.orElse(null));
                         if (Catalyst.serverEnv()) {
-                            ((ServerPlayerEntity) player).networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                            ((ServerPlayerEntity) player).networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                         }
                     }
                     leftovers.ifPresent((S) -> heldItemStack.count += S.count);
@@ -135,7 +135,7 @@ public class DigitalTerminalScreenHandler extends ScreenHandler {
                     int amount = Math.min(stack.count / 2, stack.getItem().getMaxCount() / 2);
                     playerInv.setCursorStack(con.removeItemFromNetwork(stack.itemId, stack.getDamage(), stack.getStationNbt(), amount));
                     if (Catalyst.serverEnv()) {
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                     }
                 }
             }

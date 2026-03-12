@@ -15,13 +15,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import paulevs.bhcreative.util.SlotUpdatePacket;
+
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.api.NetworkController;
 import sunsetsatellite.retrostorage.block.entity.FluidTerminalBlockEntity;
 import sunsetsatellite.retrostorage.item.MobileTerminalItem;
+import sunsetsatellite.retrostorage.packet.UpdateSlotPacket;
 import sunsetsatellite.retrostorage.packet.terminal.fluid.FluidTerminalContentsPacket;
 
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class FluidTerminalScreenHandler extends ScreenHandler {
                             playerInv.setCursorStack(new ItemStack(fullBucketItem));
                             if (Catalyst.serverEnv()) {
                                 ServerPlayerEntity player = (ServerPlayerEntity) playerInv.player;
-                                player.networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                                player.networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                             }
                             return;
                         }
@@ -110,7 +111,7 @@ public class FluidTerminalScreenHandler extends ScreenHandler {
                             }
                             if (Catalyst.serverEnv()) {
                                 ServerPlayerEntity player = (ServerPlayerEntity) playerInv.player;
-                                player.networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                                player.networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                             }
                         }
                     }
@@ -142,7 +143,7 @@ public class FluidTerminalScreenHandler extends ScreenHandler {
                             }
                             if (Catalyst.serverEnv()) {
                                 ServerPlayerEntity player = (ServerPlayerEntity) playerInv.player;
-                                player.networkHandler.sendPacket(new SlotUpdatePacket(-1, playerInv.getCursorStack()));
+                                player.networkHandler.sendPacket(new UpdateSlotPacket(-1, playerInv.getCursorStack()));
                             }
                         }
                     }

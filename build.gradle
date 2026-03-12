@@ -109,7 +109,7 @@ dependencies {
 
     implementation(project(path: ":core", configuration: "namedElements"))
     implementation(project(path: ":multiblocks", configuration: "namedElements"))
-    implementation(project(path: ":multipart", configuration: "namedElements"))
+    //implementation(project(path: ":multipart", configuration: "namedElements"))
     implementation(project(path: ":buildcraft", configuration: "namedElements"))
     //implementation(project(path: ":nyalib", configuration: "namedElements"))
 
@@ -196,6 +196,27 @@ jar {
 }
 
 // Maven Publishing
+publishing {
+    repositories {
+        maven {
+            name = "signalumMaven"
+            url = "https://maven.thesignalumproject.net/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+
+    publications {
+        maven(MavenPublication) {
+            groupId = project.maven_group
+            artifactId = project.archives_base_name
+            version = project.mod_version
+            from components.java
+        }
+    }
+}
 /*publishing {
     repositories {
         mavenLocal()
