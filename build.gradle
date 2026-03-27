@@ -30,7 +30,7 @@ loom {
 
 repositories {
 	mavenCentral()
-	maven { url = "https://jitpack.io" }
+	
 	maven {
 		name = 'Babric'
 		url = 'https://maven.glass-launcher.net/babric'
@@ -50,7 +50,7 @@ repositories {
 	ivy {
 		url = "https://github.com/Better-than-Adventure"
 		patternLayout {
-			artifact "[organisation]/releases/download/v[revision]/[module].jar"
+			artifact "[organisation]/releases/download/[revision]/[module]-bta-[revision].jar"
 			m2compatible = true
 		}
 		metadataSources { artifact() }
@@ -104,13 +104,15 @@ dependencies {
 	implementation(project(path: ":catalyst-multipart", configuration: "namedElements"))
 
 	implementation(project(path: ":tmb", configuration: "namedElements"))
+	modImplementation "useless:btwaila:1.2.3-7.3_04"
+	modImplementation "useless:dragonfly:1.7.0-alpha.5"
 	/*implementation(project(path: ":btwaila", configuration: "namedElements"))
 	implementation(project(path: ":dragonfly", configuration: "namedElements"))
 	implementation(project(path: ":vintage-questing", configuration: "namedElements"))*/
 
-    modImplementation "sunsetsatellite:vintage-questing:2.0.0-alpha.4"
-    modImplementation "useless:dragonfly:1.7.0-alpha.5"
-    modImplementation "useless:btwaila:1.2.2-7.3_04"
+    /*modImplementation "sunsetsatellite:vintage-questing:2.0.0-alpha.4"
+
+    */
     //modImplementation "turing:tmb:2.0.0"
 
 	// Remote dependencies
@@ -137,7 +139,7 @@ dependencies {
 
 	include(implementation("org.apache.commons:commons-lang3:3.12.0"))
 
-	modImplementation("com.github.Better-than-Adventure:legacy-lwjgl3:1.0.5")
+	modImplementation("legacy-lwjgl3:legacy-lwjgl3:1.0.6")
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
