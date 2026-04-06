@@ -8,6 +8,7 @@ import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.ScreenActionListener;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
+import sunsetsatellite.retrostorage.api.AttachesToMachines;
 import sunsetsatellite.retrostorage.api.NetworkController;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 import sunsetsatellite.retrostorage.util.Filter;
@@ -17,22 +18,22 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
+import static net.modificationstation.stationapi.api.state.property.Properties.FACING;
 
-public class ExporterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener {
+public class ExporterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener, AttachesToMachines {
 
     public Filter filter = new Filter(9, 0);
 
     public TickTimer workTimer = new TickTimer(this, this::work, 10, true);
     public int slot = -1;
-    public boolean isWhitelist = true;
+    public boolean isStocking = false;
     public boolean enabled = true;
     public BlockEntity connectedTile;
 
     @Override
     public void tick() {
         super.tick();
-        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        int side = world.getBlockState(x, y, z).get(FACING).getId();
         connectedTile = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         workTimer.tick();
     }
@@ -52,14 +53,19 @@ public class ExporterBlockEntity extends NetworkDeviceBlockEntity implements Scr
                         });
                     } else {
                         ItemStack invStack = inv.get(slot);
-                        if (invStack == null) {
-                            Arrays.stream(filter.getInventory(null)).filter(Objects::nonNull).findAny().ifPresent((S) -> {
-                                Optional<ItemStack> stack = Optional.ofNullable(con.removeItemFromNetwork(S.itemId, S.getDamage(), null, Math.min(S.count, S.getMaxCount())));
+                        Arrays.stream(filter.getInventory(null)).filter(Objects::nonNull).findAny().ifPresent((S) -> {
+                            if(!isStocking || (invStack == null || invStack.count < S.count)) {
+                                Optional<ItemStack> stack;
+                                if(isStocking && invStack != null){
+                                    stack = Optional.ofNullable(con.removeItemFromNetwork(S.itemId, S.getDamage(), null, Math.min(S.count - invStack.count, S.getMaxCount())));
+                                } else {
+                                    stack = Optional.ofNullable(con.removeItemFromNetwork(S.itemId, S.getDamage(), null, Math.min(S.count, S.getMaxCount())));
+                                }
                                 AtomicReference<Optional<ItemStack>> leftovers = new AtomicReference<>(Optional.empty());
                                 stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(inv.add(slot, S2))));
                                 leftovers.get().ifPresent(con::addItemToNetwork);
-                            });
-                        }
+                            }
+                        });
                     }
                 }
             }
@@ -77,14 +83,14 @@ public class ExporterBlockEntity extends NetworkDeviceBlockEntity implements Scr
             slot++;
         }
         if (id == 2) {
-            isWhitelist = !isWhitelist;
+            isStocking = !isStocking;
         }
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        isWhitelist = nbt.getBoolean("isWhitelist");
+        isStocking = nbt.getBoolean("isStocking");
         enabled = nbt.getBoolean("enabled");
         slot = nbt.getInt("workSlot");
         filter.readNbt(nbt);
@@ -95,12 +101,17 @@ public class ExporterBlockEntity extends NetworkDeviceBlockEntity implements Scr
         super.writeNbt(nbt);
         filter.writeNbt(nbt);
         nbt.putInt("workSlot", slot);
-        nbt.putBoolean("isWhitelist", isWhitelist);
+        nbt.putBoolean("isStocking", isStocking);
         nbt.putBoolean("enabled", enabled);
     }
 
     @Override
     public String getName() {
         return "container.retrostorage.exporter";
+    }
+
+    @Override
+    public BlockEntity getAttachedMachine() {
+        return connectedTile;
     }
 }

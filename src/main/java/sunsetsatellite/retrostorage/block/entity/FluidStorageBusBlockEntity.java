@@ -10,6 +10,7 @@ import sunsetsatellite.catalyst.core.util.ScreenActionListener;
 import sunsetsatellite.catalyst.core.util.io.FluidInventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.FluidStackList;
 import sunsetsatellite.catalyst.core.util.io.IFluidStackList;
+import sunsetsatellite.retrostorage.api.AttachesToMachines;
 import sunsetsatellite.retrostorage.api.NetworkFluidStorage;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 
@@ -17,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
+import static net.modificationstation.stationapi.api.state.property.Properties.FACING;
 
-public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity implements NetworkFluidStorage, ScreenActionListener {
+public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity implements NetworkFluidStorage, ScreenActionListener, AttachesToMachines {
     public FluidInventoryWrapper inventory = new FluidInventoryWrapper(null);
     public int priority = 0;
 
@@ -195,7 +196,7 @@ public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity impleme
     @Override
     public void tick() {
         super.tick();
-        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        int side = world.getBlockState(x, y, z).get(FACING).getId();
         BlockEntity blockEntity = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         if (blockEntity instanceof FluidHandler inv) {
             inventory.connected = inv;
@@ -221,5 +222,13 @@ public class FluidStorageBusBlockEntity extends NetworkDeviceBlockEntity impleme
         } else if (id == 1) {
             priority -= 1;
         }
+    }
+
+    @Override
+    public BlockEntity getAttachedMachine() {
+        if(inventory != null && inventory.connected instanceof BlockEntity tile){
+            return tile;
+        }
+        return null;
     }
 }

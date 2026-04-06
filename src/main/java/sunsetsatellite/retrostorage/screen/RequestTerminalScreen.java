@@ -110,7 +110,7 @@ public class RequestTerminalScreen extends HandledScreen implements ExtendedScre
     protected void drawForeground() {
         textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 8, 6, 0x404040);
         if (searching)
-            StringUtil.drawCenteredString(textRenderer, "<< Searching >>", (backgroundWidth / 2), -8, 0xFFFFFF, false);
+            StringUtil.drawCenteredString(textRenderer, "<< Searching using AMI >>", (backgroundWidth / 2) - 42, -8, 0xFFFFFF, false);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 95) + 2, 0x404040);
         if (tile.page > tile.pages) tile.page = 0;
 

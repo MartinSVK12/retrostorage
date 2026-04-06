@@ -6,15 +6,18 @@ import net.danygames2014.nyalib.network.NetworkType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.model.FullyRotatableBlockWithEntity;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 import sunsetsatellite.retrostorage.util.ReSNetwork;
 
 import java.util.function.Supplier;
 
-public abstract class NetworkDeviceBlock extends RotatableBlockWithEntity implements NetworkEdgeComponent {
+public abstract class NetworkDeviceBlock extends FullyRotatableBlockWithEntity implements NetworkEdgeComponent {
 
     public static final NetworkType RES_NETWORK = new NetworkType(RetroStorage.NAMESPACE.id("network"), ReSNetwork::new);
     private final Supplier<? extends BlockEntity> blockEntityFactory;
@@ -27,7 +30,7 @@ public abstract class NetworkDeviceBlock extends RotatableBlockWithEntity implem
     }
 
     @Override
-    protected BlockEntity createBlockEntity() {
+    public BlockEntity createBlockEntity() {
         return blockEntityFactory.get();
     }
 
@@ -70,5 +73,10 @@ public abstract class NetworkDeviceBlock extends RotatableBlockWithEntity implem
         if (entity instanceof NetworkDeviceBlockEntity networkDevice) {
             networkDevice.network = null;
         }
+    }
+
+    @Override
+    public boolean renderLayer(BlockView view, BlockStateView blockStateView, int x, int y, int z, int meta, int layer) {
+        return layer == 0;
     }
 }

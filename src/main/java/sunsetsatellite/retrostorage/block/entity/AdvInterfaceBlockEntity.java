@@ -14,6 +14,7 @@ import sunsetsatellite.catalyst.core.util.io.FluidInventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.FluidStackList;
 import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.retrostorage.api.AttachesToMachines;
 import sunsetsatellite.retrostorage.api.Processor;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 import sunsetsatellite.retrostorage.item.AdvRecipeDiscItem;
@@ -28,9 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
+import static net.modificationstation.stationapi.api.state.property.Properties.FACING;
 
-public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, BlockEntityInit, Processor {
+public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, BlockEntityInit, Processor, AttachesToMachines {
 
     public HashMap<Direction, BlockEntity> connectedTiles = new HashMap<>();
     public InventoryWrapper workingTile;
@@ -62,9 +63,11 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
     @Override
     public void tick() {
         super.tick();
+        workingTile = null;
+        workingFluidTile = null;
         if (world != null && world.isRemote) return;
         if (getController() != null) {
-            int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+            int side = world.getBlockState(x, y, z).get(FACING).getId();
             BlockEntity be = Direction.getDirectionFromSide(side).getTileEntity(world, this);
             if (!(be instanceof AdvInterfaceBlockEntity)) {
                 if (be instanceof Inventory inventory) {
@@ -282,5 +285,13 @@ public class AdvInterfaceBlockEntity extends NetworkDeviceBlockEntity implements
             }
         }
         return can;
+    }
+
+    @Override
+    public BlockEntity getAttachedMachine() {
+        if(workingTile != null && workingTile.connected instanceof BlockEntity tile){
+            return tile;
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package sunsetsatellite.retrostorage.packet;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkHandler;
@@ -8,6 +10,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.modificationstation.stationapi.api.entity.player.PlayerHelper;
 import net.modificationstation.stationapi.api.network.packet.ManagedPacket;
 import net.modificationstation.stationapi.api.network.packet.PacketType;
+import net.modificationstation.stationapi.api.util.SideUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
@@ -64,6 +67,12 @@ public class UpdateSlotPacket extends Packet implements ManagedPacket<UpdateSlot
     }
 
     public void apply(NetworkHandler handler) {
+        SideUtil.run(()->{},()-> handleServer(handler));
+
+    }
+
+    @Environment(EnvType.SERVER)
+    public void handleServer(NetworkHandler handler) {
         if (handler instanceof ServerPlayNetworkHandler serverHandler) {
             PlayerEntity player = PlayerHelper.getPlayerFromPacketHandler(serverHandler);
             if (this.slot == -1) {
@@ -72,7 +81,6 @@ public class UpdateSlotPacket extends Packet implements ManagedPacket<UpdateSlot
                 player.inventory.setStack(this.slot, this.stack);
             }
         }
-
     }
 
     public int size() {

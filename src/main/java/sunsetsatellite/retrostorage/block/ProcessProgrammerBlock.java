@@ -6,12 +6,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.model.FullyRotatableBlockWithEntity;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.block.base.RotatableBlockWithEntity;
 
 import java.util.function.Supplier;
 
-public class ProcessProgrammerBlock extends RotatableBlockWithEntity implements DropInventoryOnBreak {
+public class ProcessProgrammerBlock extends FullyRotatableBlockWithEntity implements DropInventoryOnBreak {
 
     private final Supplier<? extends BlockEntity> blockEntityFactory;
     private final String guiId;
@@ -23,7 +24,7 @@ public class ProcessProgrammerBlock extends RotatableBlockWithEntity implements 
     }
 
     @Override
-    protected BlockEntity createBlockEntity() {
+    public BlockEntity createBlockEntity() {
         return blockEntityFactory.get();
     }
 

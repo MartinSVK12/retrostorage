@@ -16,7 +16,7 @@ import sunsetsatellite.retrostorage.util.Filter;
 import sunsetsatellite.retrostorage.util.VariantStack;
 import sunsetsatellite.retrostorage.util.crafting.*;
 
-import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
+import static net.modificationstation.stationapi.api.state.property.Properties.FACING;
 
 public class FluidRedstoneEmitterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener {
 
@@ -35,7 +35,7 @@ public class FluidRedstoneEmitterBlockEntity extends NetworkDeviceBlockEntity im
     public void tick() {
         super.tick();
         if (world != null && world.isRemote) return;
-        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        int side = world.getBlockState(x, y, z).get(FACING).getId();
         connectedTile = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         workTimer.tick();
         world.setBlockDirty(x, y, z);

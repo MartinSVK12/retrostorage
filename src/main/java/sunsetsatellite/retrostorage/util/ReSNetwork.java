@@ -17,7 +17,7 @@ public class ReSNetwork extends Network {
 
     public <T> T findFirst(Class<T> clazz) {
         for (NetworkComponentEntry entry : components.values()) {
-            BlockEntity blockEntity = new Vec3i(entry.pos()).getTileEntity(world);
+            BlockEntity blockEntity = new Vec3i(entry.pos()).getBlockEntity(world);
             if (blockEntity == null) continue;
             Class<? extends BlockEntity> beClass = blockEntity.getClass();
             if (clazz.isAssignableFrom(beClass)) {
@@ -30,7 +30,7 @@ public class ReSNetwork extends Network {
     public <T> Set<T> search(Class<T> clazz) {
         HashSet<T> result = new HashSet<>();
         for (NetworkComponentEntry entry : components.values()) {
-            BlockEntity blockEntity = new Vec3i(entry.pos()).getTileEntity(world);
+            BlockEntity blockEntity = new Vec3i(entry.pos()).getBlockEntity(world);
             if (blockEntity == null) continue;
             Class<? extends BlockEntity> beClass = blockEntity.getClass();
             if (clazz.isAssignableFrom(beClass)) {

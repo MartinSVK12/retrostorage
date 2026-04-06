@@ -37,6 +37,9 @@
     "whatsthis": [
       "sunsetsatellite.retrostorage.compat.whatsthis.ProbeInfoProviderListener",
       "sunsetsatellite.retrostorage.compat.whatsthis.NetworkDeviceProbeInfoProvider"
+    ],
+    "uniwrench:event_bus": [
+      "sunsetsatellite.retrostorage.compat.uniwrench.UniWrenchCompatListener"
     ]
   },
   "mixins": [

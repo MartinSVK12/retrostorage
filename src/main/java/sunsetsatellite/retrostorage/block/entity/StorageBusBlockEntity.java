@@ -11,15 +11,16 @@ import sunsetsatellite.catalyst.core.util.ScreenActionListener;
 import sunsetsatellite.catalyst.core.util.io.IItemStackList;
 import sunsetsatellite.catalyst.core.util.io.InventoryWrapper;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.retrostorage.api.AttachesToMachines;
 import sunsetsatellite.retrostorage.api.NetworkItemStorage;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
+import static net.modificationstation.stationapi.api.state.property.Properties.FACING;
 
-public class StorageBusBlockEntity extends NetworkDeviceBlockEntity implements NetworkItemStorage, ScreenActionListener {
+public class StorageBusBlockEntity extends NetworkDeviceBlockEntity implements NetworkItemStorage, ScreenActionListener, AttachesToMachines {
 
     @Override
     public ItemStack add(ItemStack stack) {
@@ -206,7 +207,7 @@ public class StorageBusBlockEntity extends NetworkDeviceBlockEntity implements N
     @Override
     public void tick() {
         super.tick();
-        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        int side = world.getBlockState(x, y, z).get(FACING).getId();
         BlockEntity blockEntity = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         if (blockEntity instanceof Inventory inv) {
             inventory.connected = inv;
@@ -232,5 +233,13 @@ public class StorageBusBlockEntity extends NetworkDeviceBlockEntity implements N
         } else if (id == 1) {
             priority -= 1;
         }
+    }
+
+    @Override
+    public BlockEntity getAttachedMachine() {
+        if(inventory != null && inventory.connected instanceof BlockEntity tile){
+            return tile;
+        }
+        return null;
     }
 }

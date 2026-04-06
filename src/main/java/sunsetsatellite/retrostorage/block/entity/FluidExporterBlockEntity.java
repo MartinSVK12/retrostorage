@@ -8,6 +8,7 @@ import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.ScreenActionListener;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.io.FluidInventoryWrapper;
+import sunsetsatellite.retrostorage.api.AttachesToMachines;
 import sunsetsatellite.retrostorage.api.NetworkController;
 import sunsetsatellite.retrostorage.block.base.entity.NetworkDeviceBlockEntity;
 import sunsetsatellite.retrostorage.util.Filter;
@@ -17,9 +18,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static net.modificationstation.stationapi.api.state.property.Properties.HORIZONTAL_FACING;
+import static net.modificationstation.stationapi.api.state.property.Properties.FACING;
 
-public class FluidExporterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener {
+public class FluidExporterBlockEntity extends NetworkDeviceBlockEntity implements ScreenActionListener, AttachesToMachines {
 
     public Filter filter = new Filter(0, 9);
 
@@ -32,7 +33,7 @@ public class FluidExporterBlockEntity extends NetworkDeviceBlockEntity implement
     @Override
     public void tick() {
         super.tick();
-        int side = world.getBlockState(x, y, z).get(HORIZONTAL_FACING).getOpposite().getId();
+        int side = world.getBlockState(x, y, z).get(FACING).getId();
         connectedTile = Direction.getDirectionFromSide(side).getTileEntity(world, this);
         workTimer.tick();
     }
@@ -102,5 +103,10 @@ public class FluidExporterBlockEntity extends NetworkDeviceBlockEntity implement
     @Override
     public String getName() {
         return "container.retrostorage.fluidExporter";
+    }
+
+    @Override
+    public BlockEntity getAttachedMachine() {
+        return connectedTile;
     }
 }

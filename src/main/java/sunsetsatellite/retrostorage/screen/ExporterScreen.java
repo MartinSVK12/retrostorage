@@ -21,7 +21,7 @@ public class ExporterScreen extends FilterScreen {
     public void init() {
         super.init();
         buttons.add(new ButtonWidget(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 60), 20, 20, "-"));
-        //buttons.add(new ButtonWidget(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isWhitelist ? "W" : "B"));
+        buttons.add(new ButtonWidget(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isStocking ? "S" : "F"));
         buttons.add(new ButtonWidget(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 60), 20, 20, "+"));
     }
 
@@ -57,8 +57,8 @@ public class ExporterScreen extends FilterScreen {
             tile.slot++;
         }
         if (button.id == 2) {
-            tile.isWhitelist = !tile.isWhitelist;
-            button.text = tile.isWhitelist ? "W" : "B";
+            tile.isStocking = !tile.isStocking;
+            button.text = tile.isStocking ? "S" : "F";
         }
 
         if (tile.world.isRemote) {
