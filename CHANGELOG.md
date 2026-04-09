@@ -1,0 +1,3 @@
+- RetroStorage devices can now be rotated in any direction.
+- Added UniWrench compatibility.
+- Improved exporters by adding a stocking mode.
