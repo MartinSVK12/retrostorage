@@ -14,6 +14,7 @@ import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
 import sunsetsatellite.retrostorage.menus.MenuProcessProgrammer;
+import sunsetsatellite.retrostorage.mp.PacketModifyFilterAmount;
 import sunsetsatellite.retrostorage.tiles.TileEntityProcessProgrammer;
 import turniplabs.halplibe.helper.EnvironmentHelper;
 import turniplabs.halplibe.helper.network.NetworkHandler;
@@ -154,24 +155,42 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
         if (slot != null && slot.getFluidStack() != null) {
             if (wheel < 0) {
                 if (shift) {
-                    if (slot.getFluidStack().amount > 10) slot.getFluidStack().amount -= 10;
+                    if (slot.getFluidStack().amount > 10) {
+                        slot.getFluidStack().amount -= 10;
+                        if(EnvironmentHelper.isClientWorld()){
+                            NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -10));
+                        }
+                    }
                 } else if (control) {
-                    if (slot.getFluidStack().amount > 100) slot.getFluidStack().amount -= 100;
+                    if (slot.getFluidStack().amount > 100) {
+                        slot.getFluidStack().amount -= 100;
+                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -100));
+                    }
                 } else if (alt) {
-                    if (slot.getFluidStack().amount > 1000) slot.getFluidStack().amount -= 1000;
+                    if (slot.getFluidStack().amount > 1000) {
+                        slot.getFluidStack().amount -= 1000;
+                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -1000));
+                    }
                 } else {
-                    if (slot.getFluidStack().amount > 1) slot.getFluidStack().amount--;
+                    if (slot.getFluidStack().amount > 1) {
+                        slot.getFluidStack().amount--;
+                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -1));
+                    }
                 }
             }
             if (wheel > 0) {
                 if (shift) {
                     slot.getFluidStack().amount += 10;
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 10));
                 } else if (control) {
                     slot.getFluidStack().amount += 100;
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 100));
                 } else if (alt) {
                     slot.getFluidStack().amount += 1000;
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 1000));
                 } else {
                     slot.getFluidStack().amount++;
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 1));
                 }
             }
         }

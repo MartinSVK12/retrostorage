@@ -99,7 +99,11 @@ public class MenuDigitalTerminal extends MenuAbstract {
                     ItemStack stack = networkStacks.get(id);
                     if(stack == null) return;
                     int amount = stack.getItem().getItemStackLimit(stack);
-                    inventoryPlayer.insertItem(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount),false);
+                    ItemStack itemStack = controller.removeItemFromNetwork(stack.itemID, stack.getMetadata(), stack.getData(), amount);
+                    inventoryPlayer.insertItem(itemStack,false);
+                    if(itemStack.stackSize > 0){
+                        inventoryPlayer.player.dropPlayerItem(itemStack);
+                    }
                     if(EnvironmentHelper.isServerEnvironment()){
                         ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
                     }

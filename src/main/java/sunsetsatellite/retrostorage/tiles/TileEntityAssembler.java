@@ -23,7 +23,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TileEntityAssembler extends TileEntityNetworkDevice
-        implements Container, IProcessor, ITileEntityInit {
+        implements Container, IProcessor, ITileEntityInit
+{
+
+    protected ItemStack[] contents;
+    public boolean advanced = false;
+    public List<NetworkCraftable> craftableCache = new ArrayList<>();
+
     public TileEntityAssembler() {
         contents = new ItemStack[9];
     }
@@ -49,6 +55,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     @Override
     public ItemStack removeItem(int i, int j) {
+        craftableCache.clear();
         if (contents[i] != null) {
             /*if (network != null) {
                 RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getItem(i).getData().getCompound("recipe"));
@@ -75,6 +82,7 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     @Override
     public void setItem(int i, ItemStack itemstack) {
+        craftableCache.clear();
         /*if (network != null) {
             if (itemstack == null) {
                 RecipeEntryCrafting<?, ItemStack> recipe = RetroStorage.findRecipeFromNBT(getItem(i).getData().getCompound("recipe"));
@@ -182,7 +190,12 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
 
     @Override
     public List<NetworkCraftable> getCraftables() {
-        return getRecipes().stream().map(NetworkCraftable::new).collect(Collectors.toList());
+        if(!craftableCache.isEmpty()){
+            return craftableCache;
+        } else {
+            craftableCache = getRecipes().stream().map(NetworkCraftable::new).collect(Collectors.toList());
+        }
+        return craftableCache;
     }
 
     @Override
@@ -229,8 +242,5 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     public boolean canInsertFluids(FluidStackList items) {
         return false;
     }
-
-    protected ItemStack[] contents;
-    public boolean advanced = false;
    // public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 }

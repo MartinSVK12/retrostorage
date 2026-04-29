@@ -97,6 +97,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         NetworkHandler.registerNetworkMessage(PacketTerminalInteraction::new);
         NetworkHandler.registerNetworkMessage(PacketQuickRecipeEncode::new);
         NetworkHandler.registerNetworkMessage(PacketClearRequestQueue::new);
+        NetworkHandler.registerNetworkMessage(PacketModifyFilterAmount::new);
 
         NetworkHandler.registerNetworkMessage(PacketFluidTerminalRequestContents::new);
         NetworkHandler.registerNetworkMessage(PacketFluidTerminalContents::new);

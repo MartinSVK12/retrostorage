@@ -21,7 +21,7 @@ public class ScreenAdvInterface extends ScreenContainerAbstract {
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Adv. Interface", 50, 6, 0x404040);
+        font.drawString("Interface", 64, 6, 0x404040);
         font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
         if(tile.workingTile != null && tile.workingTile instanceof TileEntity){
             Vec3i pos = new Vec3i(((TileEntity) tile.workingTile).x, ((TileEntity) tile.workingTile).y, ((TileEntity) tile.workingTile).z);

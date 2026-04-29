@@ -97,7 +97,7 @@ public class TileEntityFluidExporter extends TileEntityNetworkDevice implements 
                 this.onFluidInventoryChanged();
                 return;
             }
-            ArrayList<Fluid> allFluids = (ArrayList<Fluid>) Fluid.fluidMap.values();;
+            Collection<Fluid> allFluids = Fluid.fluidMap.values();;
             allFluids.removeIf((F)->{
                 for (Fluid disallowedFluid : RetroStorage.DISALLOWED_FLUIDS) {
                     return disallowedFluid == F;

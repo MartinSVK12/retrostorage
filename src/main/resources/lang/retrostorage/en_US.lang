@@ -154,3 +154,5 @@ action.retrostorage.linkBroken=Link broken!
 action.retrostorage.linkUnlinked=Unlinked.
 action.retrostorage.linkLinked=Linked to:
 action.retrostorage.linkSelfError=Link failed! Block cannot be linked to itself!
+
+gui.retrostorage.request.complete=Request fulfilled!

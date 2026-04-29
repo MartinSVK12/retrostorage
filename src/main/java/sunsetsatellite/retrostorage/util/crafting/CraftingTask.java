@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.util.crafting;
 
 import com.mojang.nbt.tags.CompoundTag;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.item.ItemStack;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
@@ -10,6 +11,7 @@ import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 import sunsetsatellite.retrostorage.api.INetworkController;
 import sunsetsatellite.retrostorage.api.IProcessor;
+import sunsetsatellite.retrostorage.screens.RequestFulfilledToast;
 
 import java.util.List;
 
@@ -75,6 +77,7 @@ public class CraftingTask {
             internalStorage.addAll(leftovers);
             internalFluidStorage.clear();
             internalFluidStorage.addAll(fluidLeftovers);
+            Minecraft.getMinecraft().guiToasts.addToast(new RequestFulfilledToast(this));
             return internalStorage.isEmpty() && internalFluidStorage.isEmpty();
         } else { //task not finished
             if (!initialRequirements.isEmpty()) {
