@@ -201,7 +201,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
                         ItemStack stack = stacks.get(id).getLeft();
                         NetworkCraftable craftable = stacks.get(id).getRight();
                         if (stack == null) break;
-                        List<NetworkCraftable> craftables = stacks.stream().map(Pair::getRight).collect(Collectors.toList());
+                        List<NetworkCraftable> craftables = getAllStacks().stream().map(Pair::getRight).collect(Collectors.toList());
                         mc.displayScreen(new ScreenTaskRequest(tile, stack, craftable, craftables));
                     }
                 }
@@ -252,6 +252,23 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
                 }
             }
         }
+    }
+
+    public @UnmodifiableView List<Pair<ItemStack,NetworkCraftable>> getAllStacks() {
+        if(EnvironmentHelper.isClientWorld()){
+            return ((MenuRequestTerminal) inventorySlots).networkCraftables;
+        }
+        INetworkController controller = tile.getController();
+        if(controller != null) {
+            List<NetworkCraftable> craftables = controller.getCraftables();
+            List<Pair<ItemStack,NetworkCraftable>> stacks = new ArrayList<>();
+            craftables.stream().map(NC -> {
+                if(NC.getOutput().isEmpty()) return null;
+                return Pair.of(NC.getOutput().get(0).forceGetItem(),NC);
+            }).filter(Objects::nonNull).forEach(stacks::add);
+            return stacks;
+        }
+        return Collections.emptyList();
     }
 
     public @UnmodifiableView List<Pair<ItemStack,NetworkCraftable>> getFilteredStacks() {
