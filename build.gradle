@@ -212,59 +212,26 @@ publishing {
         }
     }
 }
-/*publishing {
-    repositories {
-        mavenLocal()
-
-        // Glass Maven
-        if (project.hasProperty("calmilamsy_secret_publishing_cave_username")) {
-            maven {
-                url = "https://maven.glass-launcher.net/releases"
-                credentials {
-                    username "${project.calmilamsy_secret_publishing_cave_username}"
-                    password "${project.calmilamsy_secret_publishing_cave_password}"
-                }
-            }
-        }
-
-        // NyaRepo
-        if (project.hasProperty("nyarepo_publishing_cave_username")) {
-            maven {
-                url = "https://maven.fildand.cz/releases"
-                credentials {
-                    username "${project.nyarepo_publishing_cave_username}"
-                    password "${project.nyarepo_publishing_cave_password}"
-                }
-            }
-        }
-    }
-
-    publications {
-        create("mavenJava", MavenPublication) {
-            //noinspection GrUnresolvedAccess
-            artifactId = base.archivesName.get()
-            //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
-            from components.java
-        }
-    }
-}
 
 // Modrinth Publishing
 modrinth {
-    token = project.modrinth_publishing_cave
-    projectId = project.modrinth_slug
+    token = project.modrinthToken
+    projectId = "retrostorage"
     versionNumber = project.mod_version
-    versionName = "${project.modrinth_version_name} ${project.mod_version}"
-    changelog = rootProject.file("CHANGELOG.md").text
+    versionName = "RetroStorage (StAPI) ${project.mod_version.replace("+stapi","")}"
+    changelog = project.file("CHANGELOG.md").text
     versionType = "release"
     uploadFile = remapJar
     gameVersions = ["b1.7.3"]
     loaders = ["fabric", "babric"]
     dependencies {
-        required.project "stationapi"
-        required.project "glass-config-api"
+        required.version("stationapi", project.stapi_version)
+        required.version("catalyst", "1.3.0+stapi")
+        required.version("nyalib", "0.19.1")
+        required.version("always-more-items", project.alwaysmoreitems_version)
+        optional.project("whats-this")
     }
-}*/
+}
 
 tasks.register("update") {
     doLast {

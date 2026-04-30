@@ -1,3 +1,1 @@
-- RetroStorage devices can now be rotated in any direction.
-- Added UniWrench compatibility.
-- Improved exporters by adding a stocking mode.
+- Fixed a bug where requesting an item would mildly break if you were searching in the request terminal before.
