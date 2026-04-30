@@ -205,7 +205,7 @@ public class RequestTerminalScreen extends HandledScreen implements ExtendedScre
                         ItemStack stack = stacks.get(id).getFirst();
                         NetworkCraftable craftable = stacks.get(id).getSecond();
                         if (stack == null) break;
-                        List<NetworkCraftable> craftables = stacks.stream().map(Pair::getSecond).collect(Collectors.toList());
+                        List<NetworkCraftable> craftables = getAllStacks().stream().map(Pair::getSecond).collect(Collectors.toList());
                         minecraft.setScreen(new TaskRequestScreen(tile, stack, craftable, craftables));
                     }
                 }
@@ -253,6 +253,25 @@ public class RequestTerminalScreen extends HandledScreen implements ExtendedScre
                 }
             }
         }
+    }
+
+    public @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> getAllStacks() {
+        if (tile.world.isRemote) {
+            return ((RequestTerminalScreenHandler) handler).networkCraftables;
+        }
+
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            List<NetworkCraftable> craftables = controller.getCraftables();
+            List<Pair<ItemStack, NetworkCraftable>> stacks = new ArrayList<>();
+            craftables.stream().map(NC -> {
+                if (NC.getOutput().isEmpty()) return null;
+                return Pair.of(NC.getOutput().get(0).forceGetItem(), NC);
+            }).filter(Objects::nonNull).forEach(stacks::add);
+            return stacks;
+        }
+
+        return Collections.emptyList();
     }
 
     public @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> getFilteredStacks() {
