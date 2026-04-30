@@ -222,7 +222,7 @@ modrinth {
 	loaders = ["bta-babric"]
 	dependencies {
 		required.project("halplibe", "catalyst", "dragonfly-model-library")
-		optional.project("btwaila")
+		optional.project("btwaila", "tmb")
 	}
 }
 
