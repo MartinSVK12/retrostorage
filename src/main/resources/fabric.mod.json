@@ -63,8 +63,11 @@
     "catalyst-fluids": ">=2.3.2",
     "catalyst-energy": ">=2.0.5",
     "catalyst-multipart": ">=2.0.3",
-    "halplibe": ">=5.2.0"
+    "halplibe": ">=5.2.0",
+    "dragonfly": ">=1.7.0-alpha.5"
   },
   "suggests": {
+    "btwaila": "*",
+    "tmb": "*"
   }
 }
