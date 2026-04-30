@@ -210,6 +210,22 @@ publishing {
 	}
 }
 
+modrinth {
+	token = project.modrinthToken
+	projectId = "retrostorage"
+	versionNumber = project.mod_version
+	versionName = "RetroStorage ${project.mod_version}"
+	changelog = rootProject.file("CHANGELOG.md").text
+	versionType = "release"
+	uploadFile = remapJar
+	gameVersions = ["b1.7.3"]
+	loaders = ["bta-babric"]
+	dependencies {
+		required.project("halplibe", "catalyst", "dragonfly-model-library")
+		optional.project("btwaila")
+	}
+}
+
 static boolean checkVersion(String group, String name, String version) {
 	try {
 		def xml = new URL("https://maven.thesignalumproject.net/releases/${group}/${name}/maven-metadata.xml").text

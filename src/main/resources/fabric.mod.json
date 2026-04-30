@@ -48,6 +48,9 @@
     ],
     "initModels": [
       "sunsetsatellite.retrostorage.ReSModels"
+    ],
+    "gatherTMBPlugins": [
+      "sunsetsatellite.retrostorage.api.impl.tmb.TMBReSPlugin"
     ]
   },
   "mixins": [
