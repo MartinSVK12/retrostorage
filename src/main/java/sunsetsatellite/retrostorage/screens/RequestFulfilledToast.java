@@ -34,7 +34,7 @@ public class RequestFulfilledToast implements IToastable {
 
     @Override
     public String getMessage(long l) {
-        return (task.getQuantity()*task.getCraftable().getOutput().get(0).forceGetItem().stackSize)+"x "+task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName();
+        return task.getQuantity()+"x "+task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName();
     }
 
     @Override

@@ -96,7 +96,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
     public void readFromNBT(CompoundTag CompoundTag) {
         super.readFromNBT(CompoundTag);
         ListTag listTag = CompoundTag.getList("Items");
-        isWhitelist = CompoundTag.getBoolean("isWhitelist");
+        isStocking = CompoundTag.getBoolean("isStocking");
         enabled = CompoundTag.getBoolean("enabled");
         slot = CompoundTag.getInteger("workSlot");
         contents = new ItemStack[getContainerSize()];
@@ -124,7 +124,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
         }
 
         CompoundTag.putInt("workSlot", slot);
-        CompoundTag.putBoolean("isWhitelist", isWhitelist);
+        CompoundTag.putBoolean("isStocking", isStocking);
         CompoundTag.putBoolean("enabled", enabled);
         CompoundTag.put("Items", listTag);
 
@@ -173,14 +173,19 @@ public class TileEntityExporter extends TileEntityNetworkDevice
                         });
                     } else {
                         ItemStack invStack = wrapper.get(slot);
-                        if(invStack == null){
-                            Arrays.stream(contents).filter(Objects::nonNull).findAny().ifPresent((S)->{
-                                Optional<ItemStack> stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, Math.min(S.stackSize,S.getMaxStackSize(wrapper.connected))));
+                        Arrays.stream(contents).filter(Objects::nonNull).findAny().ifPresent((S)->{
+                            if(!isStocking || (invStack == null || invStack.stackSize < S.stackSize)){
+                                Optional<ItemStack> stack;
+                                if(isStocking && invStack != null){
+                                    stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, Math.min(S.stackSize - invStack.stackSize, S.getMaxStackSize(wrapper.connected))));
+                                } else {
+                                    stack = Optional.ofNullable(controller.removeItemFromNetwork(S.itemID, S.getMetadata(), null, Math.min(S.stackSize,S.getMaxStackSize(wrapper.connected))));
+                                }
                                 AtomicReference<Optional<ItemStack>> leftovers = new AtomicReference<>(Optional.empty());
                                 stack.ifPresent(S2 -> leftovers.set(Optional.ofNullable(wrapper.add(slot,S2))));
                                 leftovers.get().ifPresent(controller::addItemToNetwork);
-                            });
-                        }
+                            }
+                        });
                     }
                 }
 
@@ -191,7 +196,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
     private ItemStack[] contents;
     public TickTimer workTimer;
     public int slot = -1;
-    public boolean isWhitelist = true;
+    public boolean isStocking = true;
     public boolean enabled = true;
     public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
 
@@ -206,7 +211,7 @@ public class TileEntityExporter extends TileEntityNetworkDevice
             slot++;
         }
         if (id == 2) {
-            isWhitelist = !isWhitelist;
+            isStocking = !isStocking;
         }
     }
 }

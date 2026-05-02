@@ -24,7 +24,7 @@ public class ScreenExporter extends ScreenContainerAbstract {
     public void init() {
         super.init();
         buttons.add(new ButtonElement(0, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 60), 20, 20, "-"));
-        //buttons.add(new ButtonElement(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isWhitelist ? "W" : "B"));
+        buttons.add(new ButtonElement(2, Math.round((float) width / 2 + 50), Math.round((float) height / 2 - 30), 20, 20, tile.isStocking ? "S" : "F"));
         buttons.add(new ButtonElement(1, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 60), 20, 20, "+"));
     }
 
@@ -58,8 +58,8 @@ public class ScreenExporter extends ScreenContainerAbstract {
             tile.slot++;
         }
         if (button.id == 2) {
-            tile.isWhitelist = !tile.isWhitelist;
-            button.displayString = tile.isWhitelist ? "W" : "B";
+            tile.isStocking = !tile.isStocking;
+            button.displayString = tile.isStocking ? "S" : "F";
         }
 
         if(EnvironmentHelper.isClientWorld()){
