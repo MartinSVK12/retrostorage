@@ -59,11 +59,11 @@
   "depends": {
     "minecraft": "~7.3",
     "fabricloader": ">=0.15.5",
-    "catalyst-core": ">=2.3.0",
-    "catalyst-fluids": ">=2.3.2",
-    "catalyst-energy": ">=2.0.5",
-    "catalyst-multipart": ">=2.0.3",
-    "halplibe": ">=5.2.0",
+    "catalyst-core": ">=2.3.1",
+    "catalyst-fluids": ">=2.3.3",
+    "catalyst-energy": ">=2.0.6",
+    "catalyst-multipart": ">=2.0.4",
+    "halplibe": ">=5.3.0",
     "dragonfly": ">=1.7.0-alpha.5"
   },
   "suggests": {
