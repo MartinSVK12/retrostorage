@@ -1,1 +1,1 @@
-- Fixed a bug where requesting an item would mildly break if you were searching in the request terminal before.
+- Updated to StAPI alpha 6.
