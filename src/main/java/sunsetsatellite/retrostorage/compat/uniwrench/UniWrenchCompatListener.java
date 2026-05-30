@@ -45,7 +45,7 @@ public class UniWrenchCompatListener {
         if (wrenchMode == WrenchMode.MODE_ROTATE && world.getBlockEntity(x,y,z) instanceof AttachesToMachines) {
             BlockState state = world.getBlockState(x, y, z);
             state = state.cycle(FACING);
-            world.setBlockStateWithNotify(x, y, z, state);
+            world.setBlockState(x, y, z, state);
             return true;
         } else {
             return false;

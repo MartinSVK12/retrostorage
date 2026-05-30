@@ -9,7 +9,7 @@
       "apply": {
         "model": "retrostorage:block/cable/network/side_6",
         "uvlock": false,
-        "y": 0
+        "y": 90
       },
       "when": {
         "north": "true"
@@ -19,7 +19,7 @@
       "apply": {
         "model": "retrostorage:block/cable/network/side_6",
         "uvlock": false,
-        "y": 90
+        "y": 180
       },
       "when": {
         "east": "true"
@@ -29,7 +29,7 @@
       "apply": {
         "model": "retrostorage:block/cable/network/side_6",
         "uvlock": false,
-        "y": 180
+        "y": 270
       },
       "when": {
         "south": "true"
@@ -39,7 +39,7 @@
       "apply": {
         "model": "retrostorage:block/cable/network/side_6",
         "uvlock": false,
-        "y": 270
+        "y": 0
       },
       "when": {
         "west": "true"
