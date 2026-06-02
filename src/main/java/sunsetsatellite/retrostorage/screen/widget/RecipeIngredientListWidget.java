@@ -52,7 +52,7 @@ public class RecipeIngredientListWidget extends ListWidget {
 
     @Override
     protected void renderEntry(int index, int j, int k, int l, Tessellator tessellator) {
-        if (parent.tile.network != null) {
+        if (parent.tile.getController() != null) {
             if (parent.calculationResult.getType() == CalculationResultType.RECURSIVE) {
                 this.parent.drawTextWithShadow(this.parent.getFont(), "Recursion detected!", j + 2, k + 2, 0xFFFF0000);
                 this.parent.drawTextWithShadow(this.parent.getFont(), "Recipe requires item that requires itself.", j + 2, k + 12, 0xFFFF8080);

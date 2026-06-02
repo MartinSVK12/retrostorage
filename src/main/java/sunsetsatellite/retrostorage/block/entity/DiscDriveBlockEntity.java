@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import org.jetbrains.annotations.UnmodifiableView;
 import sunsetsatellite.catalyst.Catalyst;
+import sunsetsatellite.catalyst.core.util.ScreenActionListener;
 import sunsetsatellite.catalyst.core.util.io.IItemStackList;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.retrostorage.api.NetworkItemStorage;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DiscDriveBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, NetworkItemStorage, BlockEntityInit {
+public class DiscDriveBlockEntity extends NetworkDeviceBlockEntity implements ManagedItemHandlerWithInventory, NetworkItemStorage, BlockEntityInit, ScreenActionListener {
 
     public ArrayList<ItemStack> discsUsed = new ArrayList<>();
     public ItemStackList networkStacks;
@@ -323,5 +324,14 @@ public class DiscDriveBlockEntity extends NetworkDeviceBlockEntity implements Ma
     @Override
     public boolean isEmpty() {
         return getStacks().isEmpty();
+    }
+
+    @Override
+    public void buttonClicked(int id, int button, int channel) {
+        if (id == 0) {
+            if (getStack(1) == null) {
+                removeLastDisc();
+            }
+        }
     }
 }

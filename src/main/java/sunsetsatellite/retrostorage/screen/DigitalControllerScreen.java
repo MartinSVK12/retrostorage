@@ -22,7 +22,7 @@ public class DigitalControllerScreen extends Screen {
         int i = 64;
         textRenderer.draw("Digital Controller", 2, i, 0xFFFFFFFF);
         textRenderer.draw("Press ESC to exit.", 2, i += 10, 0xFFFFFFFF);
-        if (tile.network != null) {
+        if (tile.network != null || tile.world.isRemote) {
             if (tile.active) {
                 if (tile.externalEnergy != null) {
                     textRenderer.draw("External energy source connected.", 2, i += 10, 0xFFFFFFFF);

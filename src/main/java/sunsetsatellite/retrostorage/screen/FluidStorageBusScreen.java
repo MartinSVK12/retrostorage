@@ -99,15 +99,13 @@ public class FluidStorageBusScreen extends HandledScreen implements ExtendedScre
         textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 45, 6, 0x404040);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 95) + 2, 0x404040);
         textRenderer.draw("Priority: " + tile.getPriority(), 63, 93, 0x404040);
-        if (tile.network != null) {
-            NetworkController controller = tile.getController();
-            if (controller != null) {
-                int color = 0xFFFFFF;
-                if (tile.getFluidAmount() >= tile.getMaxFluidAmount() * 0.9) {
-                    color = 0xFF4040;
-                }
-                drawCenteredTextWithShadow(textRenderer, tile.getFluidStackAmount() + "/" + tile.getMaxFluidStackSize(), 90, 112, color);
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            int color = 0xFFFFFF;
+            if (tile.getFluidAmount() >= tile.getMaxFluidAmount() * 0.9) {
+                color = 0xFF4040;
             }
+            drawCenteredTextWithShadow(textRenderer, tile.getFluidStackAmount() + "/" + tile.getMaxFluidStackSize(), 90, 112, color);
         }
         drawCenteredTextWithShadow(textRenderer, "Filtering not yet available :(", 88, 45, 0xFFFFFFFF);
         if (tile.inventory.connected != null) {

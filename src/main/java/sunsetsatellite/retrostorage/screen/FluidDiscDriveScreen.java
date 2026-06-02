@@ -34,15 +34,13 @@ public class FluidDiscDriveScreen extends HandledScreen {
         super.drawForeground();
         textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 50, 6, 0x404040);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 96) + 2, 0x404040);
-        if (tile.network != null) {
-            NetworkController controller = tile.getController();
-            if (controller != null) {
-                int color = 0xFFFFFF;
-                if (controller.getFluidAmount() >= controller.getFluidCapacity() * 0.9) {
-                    color = 0xFF4040;
-                }
-                StringUtil.drawCenteredString(textRenderer, controller.getFluidStackAmount() + "/" + controller.getFluidStackCapacity(), backgroundWidth, 40, color, true);
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            int color = 0xFFFFFF;
+            if (controller.getFluidAmount() >= controller.getFluidCapacity() * 0.9) {
+                color = 0xFF4040;
             }
+            StringUtil.drawCenteredString(textRenderer, controller.getFluidStackAmount() + "/" + controller.getFluidStackCapacity(), backgroundWidth, 40, color, true);
         }
         if (!tile.discsUsed.isEmpty()) {
             StringUtil.drawCenteredString(textRenderer, tile.discsUsed.size() + "/" + tile.maxDiscs + " discs" +/*+ (tile.discsUsed.size() == 1 ? "" : "s") +*/" in use.", backgroundWidth, 20, 0xFFFFFF, true);

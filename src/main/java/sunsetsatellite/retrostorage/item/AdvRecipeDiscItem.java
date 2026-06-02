@@ -1,5 +1,7 @@
 package sunsetsatellite.retrostorage.item;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.entity.player.PlayerEntity;
@@ -49,11 +51,10 @@ public class AdvRecipeDiscItem extends TemplateItem implements CustomTooltipProv
         return list.toArray(new String[0]);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public ItemStack use(ItemStack stack, World world, PlayerEntity user) {
-        if (!Catalyst.serverEnv()) {
-            Minecraft.INSTANCE.setScreen(new CraftingProcessScreen(new CraftingProcess(stack.getStationNbt().getCompound("disc"))));
-        }
+        Minecraft.INSTANCE.setScreen(new CraftingProcessScreen(new CraftingProcess(stack.getStationNbt().getCompound("disc"))));
         return super.use(stack, world, user);
     }
 }

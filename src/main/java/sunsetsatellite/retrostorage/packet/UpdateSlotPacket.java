@@ -2,6 +2,7 @@ package sunsetsatellite.retrostorage.packet;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.ClientNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkHandler;
@@ -67,8 +68,20 @@ public class UpdateSlotPacket extends Packet implements ManagedPacket<UpdateSlot
     }
 
     public void apply(NetworkHandler handler) {
-        SideUtil.run(()->{},()-> handleServer(handler));
+        SideUtil.run(()-> handleClient(handler),()-> handleServer(handler));
 
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void handleClient(NetworkHandler handler) {
+        if(handler instanceof ClientNetworkHandler clientHandler){
+            PlayerEntity player = PlayerHelper.getPlayerFromPacketHandler(clientHandler);
+            if (this.slot == -1) {
+                player.inventory.setCursorStack(this.stack);
+            } else {
+                player.inventory.setStack(this.slot, this.stack);
+            }
+        }
     }
 
     @Environment(EnvType.SERVER)

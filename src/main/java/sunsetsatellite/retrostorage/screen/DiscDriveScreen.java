@@ -6,7 +6,9 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.modificationstation.stationapi.api.network.packet.PacketHelper;
 import org.lwjgl.opengl.GL11;
+import sunsetsatellite.catalyst.core.util.mp.ScreenActionPacket;
 import sunsetsatellite.retrostorage.api.NetworkController;
 import sunsetsatellite.retrostorage.block.entity.DiscDriveBlockEntity;
 import sunsetsatellite.retrostorage.screen.handler.DiscDriveScreenHandler;
@@ -34,15 +36,13 @@ public class DiscDriveScreen extends HandledScreen {
         super.drawForeground();
         textRenderer.draw(TranslationStorage.getInstance().getClientTranslation(tile.getName()), 60, 6, 0x404040);
         textRenderer.draw("Inventory", 8, (backgroundHeight - 96) + 2, 0x404040);
-        if (tile.network != null) {
-            NetworkController controller = tile.getController();
-            if (controller != null) {
-                int color = 0xFFFFFF;
-                if (controller.getAmount() >= controller.getItemCapacity() * 0.9) {
-                    color = 0xFF4040;
-                }
-                StringUtil.drawCenteredString(textRenderer, controller.getStackAmount() + "/" + controller.getStackCapacity(), backgroundWidth, 40, color, true);
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            int color = 0xFFFFFF;
+            if (controller.getAmount() >= controller.getItemCapacity() * 0.9) {
+                color = 0xFF4040;
             }
+            StringUtil.drawCenteredString(textRenderer, controller.getStackAmount() + "/" + controller.getStackCapacity(), backgroundWidth, 40, color, true);
         }
         if (!tile.discsUsed.isEmpty()) {
             StringUtil.drawCenteredString(textRenderer, tile.discsUsed.size() + "/" + tile.maxDiscs + " discs" +/*+ (tile.discsUsed.size() == 1 ? "" : "s") +*/" in use.", backgroundWidth, 20, 0xFFFFFF, true);
@@ -73,6 +73,9 @@ public class DiscDriveScreen extends HandledScreen {
         if (button.id == 0) {
             if (tile.getStack(1) == null) {
                 tile.removeLastDisc();
+            }
+            if(tile.world.isRemote){
+                PacketHelper.send(new ScreenActionPacket(button.id, 0, 0, tile.getPosition()));
             }
         }
     }

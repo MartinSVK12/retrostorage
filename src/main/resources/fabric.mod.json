@@ -24,13 +24,13 @@
       "sunsetsatellite.retrostorage.event.ReSBlocks",
       "sunsetsatellite.retrostorage.event.ReSItems",
       "sunsetsatellite.retrostorage.event.ReSRecipes",
-      "sunsetsatellite.retrostorage.event.ReSTextures",
       "sunsetsatellite.retrostorage.event.ReSBlockEntities",
-      "sunsetsatellite.retrostorage.event.ReSScreens",
       "sunsetsatellite.retrostorage.event.ReSNetworks",
       "sunsetsatellite.retrostorage.event.ReSPackets"
     ],
     "stationapi:event_bus_client": [
+      "sunsetsatellite.retrostorage.event.ReSTextures",
+      "sunsetsatellite.retrostorage.event.ReSScreens"
     ],
     "stationapi:event_bus_server": [
     ],

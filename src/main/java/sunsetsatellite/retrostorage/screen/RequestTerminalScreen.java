@@ -85,22 +85,20 @@ public class RequestTerminalScreen extends HandledScreen implements ExtendedScre
     }
 
     public void handlePageScroll(boolean scrollUp) {
-        if (tile.network != null) {
-            NetworkController controller = tile.getController();
-            if (controller != null) {
-                if (scrollUp) {
-                    if (tile.page > 0) {
-                        tile.page--;
-                    } else {
-                        tile.page = tile.pages;
-                    }
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            if (scrollUp) {
+                if (tile.page > 0) {
+                    tile.page--;
                 } else {
-                    // Scrolling down
-                    if (tile.page < tile.pages) {
-                        tile.page++;
-                    } else {
-                        tile.page = 0;
-                    }
+                    tile.page = tile.pages;
+                }
+            } else {
+                // Scrolling down
+                if (tile.page < tile.pages) {
+                    tile.page++;
+                } else {
+                    tile.page = 0;
                 }
             }
         }
@@ -117,14 +115,12 @@ public class RequestTerminalScreen extends HandledScreen implements ExtendedScre
         String pageText = "Page: " + tile.page + "/" + tile.pages;
         int pageTextWidth = textRenderer.getWidth(pageText);
         textRenderer.draw(pageText, backgroundWidth - 8 - pageTextWidth, 6, 0x404040);
-        if (tile.network != null) {
-            NetworkController controller = tile.getController();
-            if (controller != null) {
-                int color = 0xFFFFFF;
-                String craftableSize = String.valueOf(tile.getController().getCraftables().size());
-                int stackTextWidth = textRenderer.getWidth(craftableSize);
-                textRenderer.drawWithShadow(craftableSize, backgroundWidth - 8 - stackTextWidth, (backgroundHeight - 95) + 2, color);
-            }
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            int color = 0xFFFFFF;
+            String craftableSize = String.valueOf(tile.getController().getCraftables().size());
+            int stackTextWidth = textRenderer.getWidth(craftableSize);
+            textRenderer.drawWithShadow(craftableSize, backgroundWidth - 8 - stackTextWidth, (backgroundHeight - 95) + 2, color);
         }
     }
 
@@ -220,36 +216,34 @@ public class RequestTerminalScreen extends HandledScreen implements ExtendedScre
         final int centerX = (width - backgroundWidth) / 2;
         final int centerY = (height - backgroundHeight) / 2;
 
-        if (tile.network != null) {
-            NetworkController controller = tile.getController();
-            if (controller != null) {
-                @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> stacks = getFilteredStacks();
-                this.tile.pages = (int) (double) (stacks.size() / 54);
-                for (int i = 0; i < slots.size(); i++) {
-                    Vec2i slot = slots.get(i);
-                    ItemStack stack;
-                    int id = i + (tile.page * 54);
-                    if (id >= stacks.size()) break;
-                    stack = stacks.get(id).getFirst();
-                    if (stack == null) continue;
-                    digitalItemRenderer.render(stack, slot.x, slot.y, mouseHoveringOverSlot(slot, mouseX, mouseY));
-                }
-                for (int i = 0; i < slots.size(); i++) {
-                    Vec2i slot = slots.get(i);
-                    ItemStack stack;
-                    int id = i + (tile.page * 54);
-                    if (id >= stacks.size()) break;
-                    stack = stacks.get(id).getFirst();
-                    if (stack == null) continue;
-                    final PlayerInventory inventoryPlayer = minecraft.player.inventory;
-                    if (inventoryPlayer.getCursorStack() == null && mouseHoveringOverSlot(slot, mouseX, mouseY)) {
-                        GL11.glTranslatef(-centerX, -centerY, 0.0F);
-                        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                        List<Object> tooltip = new ArrayList<>(TooltipHelper.getTooltipForItemStack(TranslationStorage.getInstance().getClientTranslation(stack.getTranslationKey()), stack, inventoryPlayer, this));
-                        tooltip.add(Formatting.GRAY + String.valueOf(stack.count));
-                        Tooltip.INSTANCE.setTooltip(tooltip, mouseX + 8, mouseY + 8);
-                        break;
-                    }
+        NetworkController controller = tile.getController();
+        if (controller != null) {
+            @UnmodifiableView List<Pair<ItemStack, NetworkCraftable>> stacks = getFilteredStacks();
+            this.tile.pages = (int) (double) (stacks.size() / 54);
+            for (int i = 0; i < slots.size(); i++) {
+                Vec2i slot = slots.get(i);
+                ItemStack stack;
+                int id = i + (tile.page * 54);
+                if (id >= stacks.size()) break;
+                stack = stacks.get(id).getFirst();
+                if (stack == null) continue;
+                digitalItemRenderer.render(stack, slot.x, slot.y, mouseHoveringOverSlot(slot, mouseX, mouseY));
+            }
+            for (int i = 0; i < slots.size(); i++) {
+                Vec2i slot = slots.get(i);
+                ItemStack stack;
+                int id = i + (tile.page * 54);
+                if (id >= stacks.size()) break;
+                stack = stacks.get(id).getFirst();
+                if (stack == null) continue;
+                final PlayerInventory inventoryPlayer = minecraft.player.inventory;
+                if (inventoryPlayer.getCursorStack() == null && mouseHoveringOverSlot(slot, mouseX, mouseY)) {
+                    GL11.glTranslatef(-centerX, -centerY, 0.0F);
+                    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    List<Object> tooltip = new ArrayList<>(TooltipHelper.getTooltipForItemStack(TranslationStorage.getInstance().getClientTranslation(stack.getTranslationKey()), stack, inventoryPlayer, this));
+                    tooltip.add(Formatting.GRAY + String.valueOf(stack.count));
+                    Tooltip.INSTANCE.setTooltip(tooltip, mouseX + 8, mouseY + 8);
+                    break;
                 }
             }
         }

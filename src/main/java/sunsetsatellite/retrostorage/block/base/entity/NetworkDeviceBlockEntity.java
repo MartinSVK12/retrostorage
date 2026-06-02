@@ -1,10 +1,16 @@
 package sunsetsatellite.retrostorage.block.base.entity;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.modificationstation.stationapi.api.network.packet.PacketHelper;
+import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.retrostorage.api.NetworkController;
+import sunsetsatellite.retrostorage.packet.SendControllerPacket;
 import sunsetsatellite.retrostorage.util.ReSNetwork;
 
 import java.util.ArrayList;
@@ -13,11 +19,22 @@ import java.util.HashMap;
 public abstract class NetworkDeviceBlockEntity extends BlockEntity {
 
     public ReSNetwork network;
+    public NetworkController controller = null;
 
     public NetworkController getController() {
+        if (world.isRemote) {
+            return controller;
+        }
         if (network != null) {
             NetworkController controller = network.findFirst(NetworkController.class);
             if (controller == null) return null;
+            if(Catalyst.serverEnv() && controller.isActive()){
+                for (Object entity : world.players) {
+                    if(entity instanceof PlayerEntity player){
+                        PacketHelper.sendTo(player, new SendControllerPacket(getPosition(), controller.getPosition()));
+                    }
+                }
+            }
             return controller.isActive() ? controller : null;
         }
         return null;
