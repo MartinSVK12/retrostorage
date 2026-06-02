@@ -4,7 +4,9 @@ import net.danygames2014.nyalib.block.DropInventoryOnBreak;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.model.FullyRotatableBlockWithEntity;
 import sunsetsatellite.retrostorage.RetroStorage;
@@ -34,6 +36,11 @@ public class ProcessProgrammerBlock extends FullyRotatableBlockWithEntity implem
         BlockEntity blockEntity = world.getBlockEntity(x, y, z);
         Catalyst.displayGui(player, blockEntity, RetroStorage.key("gui/" + guiId));
         return true;
+    }
+
+    @Override
+    public boolean renderLayer(BlockView view, BlockStateView blockStateView, int x, int y, int z, int meta, int layer) {
+        return layer == 0;
     }
 
 }

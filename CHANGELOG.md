@@ -1,1 +1,1 @@
-- Fixed several multiplayer issues and crashes.
+- Fixed texture error for the recipe encoder and process programmer.
