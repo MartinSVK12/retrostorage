@@ -385,7 +385,7 @@ public class ReSRecipes {
             CraftingRegistry.addShapedRecipe(new ItemStack(redstoneEmitter, 1),
                     "MTM", "CRD", "MEM",
                     'M', machineCasing,
-                    'T', Block.REDSTONE_TORCH,
+                    'T', Block.LIT_REDSTONE_TORCH,
                     'C', networkCable,
                     'R', redstoneCore,
                     'D', chipDigitizer,

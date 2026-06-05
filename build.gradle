@@ -227,7 +227,7 @@ modrinth {
     dependencies {
         required.version("stationapi", project.stapi_version)
         required.version("catalyst", "1.3.0+stapi")
-        required.version("nyalib", "0.19.1")
+        required.version("nyalib", "0.21.0")
         required.version("always-more-items", project.alwaysmoreitems_version)
         optional.project("whats-this")
     }

@@ -1,1 +1,1 @@
-- Fixed more multiplayer issues.
+- Fixed redstone emitter recipe.
