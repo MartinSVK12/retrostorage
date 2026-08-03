@@ -42,10 +42,9 @@ public class MenuFluidFake extends MenuFluid {
             if (fluidStack != null) {
                 slot.putStack(null);
             } else {
-                if (inventory.getHeldItemStack() != null && inventory.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
+                if (inventory.getHeldItemStack() != null && inventory.getHeldItemStack().getItem() instanceof IItemFluidContainer item) {
                     ItemStack stack = inventory.getHeldItemStack();
-                    IItemFluidContainer item = (IItemFluidContainer) inventory.getHeldItemStack().getItem();
-                    if (slot.getFluidStack() == null) {
+					if (slot.getFluidStack() == null) {
                         FluidStack currentFluid = item.getCurrentFluid(stack);
                         if(currentFluid != null) {
                             if (slot.isFluidValid(currentFluid.fluid)) {

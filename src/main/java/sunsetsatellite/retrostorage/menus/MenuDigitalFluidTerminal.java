@@ -1,11 +1,11 @@
 package sunsetsatellite.retrostorage.menus;
 
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.entity.player.Player;
-import net.minecraft.core.item.ItemBucketEmpty;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.packet.PacketContainerSetSlot;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
@@ -49,18 +49,18 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
                 addSlot(new Slot(playerInv, i1 + j * 9 + 9, 8 + i1 * 18, 140 + j * 18));
             }
         }
-        if(EnvironmentHelper.isServerEnvironment()){
+        if(EnvironmentHelper.isMultiplayerServer()){
             NetworkHandler.sendToPlayer(inventoryPlayer.player,new PacketFluidTerminalContents(networkStacks));
         }
     }
 
     @Override
-    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
+    public IntList getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
         return null;
     }
 
     @Override
-    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
+    public IntList getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
         return null;
     }
 
@@ -81,10 +81,8 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
                     if (stack == null) return;
                     Block<?> blockFluid = Blocks.blocksList[stack.itemID];
                     if(blockFluid == null) return;
-                    if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
-                        IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                        if(item instanceof ItemBucketEmpty && stack.stackSize < 1000) return;
-                        if (item.canFill(heldItemStack)) {
+                    if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer item) {
+						if (item.canFill(heldItemStack)) {
                             int amount = item.getRemainingCapacity(heldItemStack);
                             FluidStack fluidStack = controller.removeFluidFromNetwork(blockFluid.id(), amount);
                             item.fill(fluidStack,heldItemStack);
@@ -92,8 +90,8 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
                             if(fluidStack != null){
                                 controller.addFluidToNetwork(fluidStack);
                             }
-                            if(EnvironmentHelper.isServerEnvironment()) {
-                                ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                            if(EnvironmentHelper.isMultiplayerServer()) {
+                                ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                             }
                         }
                     }
@@ -101,9 +99,8 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
             } else if (mouseButton == 1) { //right click
                 ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
                 if(heldItemStack != null) {
-                    if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer) {
-                        IItemFluidContainer item = (IItemFluidContainer) inventoryPlayer.getHeldItemStack().getItem();
-                        if (item.canDrain(heldItemStack)) {
+                    if(inventoryPlayer.getHeldItemStack() != null && inventoryPlayer.getHeldItemStack().getItem() instanceof IItemFluidContainer item) {
+						if (item.canDrain(heldItemStack)) {
                             int amount = item.getCurrentFluid(heldItemStack).amount;
                             if (amount > 0) {
                                 FluidStack drained = item.drain(heldItemStack, amount);
@@ -111,8 +108,8 @@ public class MenuDigitalFluidTerminal extends MenuAbstract {
                                     Optional<FluidStack> fluidStack = Optional.ofNullable(controller.addFluidToNetwork(drained));
                                     fluidStack.ifPresent((S) -> item.fill(S, heldItemStack));
                                 }
-                                if (EnvironmentHelper.isServerEnvironment()) {
-                                    ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                                if (EnvironmentHelper.isMultiplayerServer()) {
+                                    ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                                 }
                             }
                         }

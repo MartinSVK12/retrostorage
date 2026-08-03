@@ -20,7 +20,7 @@ public abstract class ItemDragHandlerMixin {
 
     @Shadow protected abstract void stopDragging();
 
-    @Shadow private int cancelButtonRelease;
+    @Shadow protected int cancelButtonRelease;
 
     @Shadow @Final public ScreenContainerAbstract container;
 
@@ -34,17 +34,15 @@ public abstract class ItemDragHandlerMixin {
 
     @Inject(method = "mousePressed", at = @At("HEAD"), cancellable = true)
     private void mousePressed(int x, int y, Slot slot, int button, CallbackInfo ci) {
-        if(container instanceof ScreenDigitalTerminal) {
-            ScreenDigitalTerminal screen = (ScreenDigitalTerminal) container;
-            if(screen.lastVirtualSlotClicked != -1){
+        if(container instanceof ScreenDigitalTerminal screen) {
+			if(screen.lastVirtualSlotClicked != -1){
                 screen.lastVirtualSlotClicked = -1;
                 ci.cancel();
                 return;
             }
         }
-        if(container instanceof ScreenDigitalFluidTerminal) {
-            ScreenDigitalFluidTerminal screen = (ScreenDigitalFluidTerminal) container;
-            if(screen.lastVirtualSlotClicked != -1){
+        if(container instanceof ScreenDigitalFluidTerminal screen) {
+			if(screen.lastVirtualSlotClicked != -1){
                 screen.lastVirtualSlotClicked = -1;
                 ci.cancel();
             }

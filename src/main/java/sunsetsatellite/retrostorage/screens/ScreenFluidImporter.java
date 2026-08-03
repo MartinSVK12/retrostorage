@@ -3,10 +3,11 @@ package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.gui.ButtonElement;
 
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.retrostorage.menus.MenuFluidImporter;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidImporter;
@@ -28,14 +29,14 @@ public class ScreenFluidImporter extends ScreenFluidFake {
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Fluid Importer", 56, 6, 0x404040);
-        font.drawString("Slot: " + tile.slot, 16, 50, 0x404040);
-        font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,"Fluid Importer", 56, 6, 0x404040);
+        drawStringNoShadow(fontRenderer,"Slot: " + tile.slot, 16, 50, 0x404040);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/gui/trap.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -60,7 +61,7 @@ public class ScreenFluidImporter extends ScreenFluidFake {
             button.displayString = tile.isWhitelist ? "W" : "B";
         }
 
-        if(EnvironmentHelper.isClientWorld()){
+        if(EnvironmentHelper.isMultiplayerClient()){
             NetworkHandler.sendToServer(new PacketScreenAction(button.id, 0, 0, tile.getPosition(), tile.getClass()));
         }
     }

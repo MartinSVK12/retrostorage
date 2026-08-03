@@ -9,64 +9,51 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.util.helper.Sides;
 import net.minecraft.core.world.WorldSource;
+import net.minecraft.core.world.pos.TilePosc;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sunsetsatellite.retrostorage.util.MachineTextures;
 
 import java.util.HashMap;
 
 public class BlockModelMachine extends BlockModelStandard<BlockLogic> {
 
-    protected MachineTextures machineTextures = new MachineTextures();
+    protected MachineTextures textures = new MachineTextures();
 
     public BlockModelMachine(Block<? extends BlockLogic> block) {
         super((Block<BlockLogic>) block);
     }
 
-    public BlockModelMachine(Block<? extends BlockLogic> block, MachineTextures machineTextures) {
+    public BlockModelMachine(Block<? extends BlockLogic> block, MachineTextures textures) {
         super((Block<BlockLogic>) block);
-        this.machineTextures = machineTextures;
+        this.textures = textures;
     }
 
     public BlockModelMachine withTextures(MachineTextures machineTextures) {
-        this.machineTextures = machineTextures;
+        this.textures = machineTextures;
         return this;
     }
 
-    @Override
-    public IconCoordinate getBlockOverbrightTexture(WorldSource blockAccess, int x, int y, int z, int side) {
-        TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-        return null;
-    }
+	@Override
+	public @Nullable IconCoordinate getBlockTexture(@NotNull WorldSource world, @NotNull TilePosc tilePos, @NotNull Side side) {
+		HashMap<Side, String> usingTextures = textures.defaultTextures;
 
-    @Override
-    public IconCoordinate getBlockOverbrightTextureFromSideAndMeta(Side side, int data) {
-       /* int index = Sides.orientationLookUpHorizontal[6 * Math.min(data, 5) + side.getId()];
-        if (index >= Sides.orientationLookUpHorizontal.length) return null;
+		int data = world.getBlockData(tilePos);
+		int index = Sides.orientationLookUpHorizontal[6 * Math.min(data, 5) + side.id];
+		if (index >= Sides.orientationLookUpHorizontal.length) return BLOCK_TEXTURE_UNASSIGNED;
 
-        Side id = Side.getSideById(index);*/
+		Side id = Side.fromId(index);
 
-        return null; //overbrightTextures.get(id);
-    }
+		return TextureRegistry.getTexture(usingTextures.get(id));
+	}
 
-    @Override
-    public IconCoordinate getBlockTexture(WorldSource blockAccess, int x, int y, int z, Side side) {
-        HashMap<Side, String> usingTextures = machineTextures.defaultTextures;
+	@Override
+	public @Nullable IconCoordinate getBlockTextureFromSideAndMetadata(@NotNull Side side, int data) {
+		int index = Sides.orientationLookUpHorizontal[6 * 2 + side.id];
+		if (index >= Sides.orientationLookUpHorizontal.length) return BLOCK_TEXTURE_UNASSIGNED;
 
-        int data = blockAccess.getBlockMetadata(x, y, z);
-        int index = Sides.orientationLookUpHorizontal[6 * Math.min(data, 5) + side.getId()];
-        if (index >= Sides.orientationLookUpHorizontal.length) return BLOCK_TEXTURE_UNASSIGNED;
+		Side id = Side.fromId(index);
 
-        Side id = Side.getSideById(index);
-
-        return TextureRegistry.getTexture(usingTextures.get(id));
-    }
-
-    @Override
-    public IconCoordinate getBlockTextureFromSideAndMetadata(Side side, int data) {
-        int index = Sides.orientationLookUpHorizontal[6 * Math.min(data, 5) + side.getId()];
-        if (index >= Sides.orientationLookUpHorizontal.length) return BLOCK_TEXTURE_UNASSIGNED;
-
-        Side id = Side.getSideById(index);
-
-        return TextureRegistry.getTexture(machineTextures.defaultTextures.get(id));
-    }
+		return TextureRegistry.getTexture(textures.defaultTextures.get(id));
+	}
 }

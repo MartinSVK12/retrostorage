@@ -4,11 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
@@ -62,14 +63,14 @@ public class ScreenStorageBus extends ScreenContainerAbstract implements IExtend
             tile.setPriority(tile.getPriority() + 1);
         }
 
-        if(EnvironmentHelper.isClientWorld()){
+        if(EnvironmentHelper.isMultiplayerClient()){
             NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,tile.getPosition(), tile.getClass()));
         }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/storage_bus.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -77,9 +78,9 @@ public class ScreenStorageBus extends ScreenContainerAbstract implements IExtend
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Storage Bus", 56, 6, 0x404040);
-        font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
-        font.drawString("Priority: " + tile.getPriority(), 63, 93, 0x404040);
+        drawStringNoShadow(fontRenderer,"Storage Bus", 56, 6, 0x404040);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,"Priority: " + tile.getPriority(), 63, 93, 0x404040);
         if(tile.network != null) {
             INetworkController controller = tile.getController();
             if (controller != null) {
@@ -87,12 +88,12 @@ public class ScreenStorageBus extends ScreenContainerAbstract implements IExtend
                 if (tile.getAmount() >= tile.getItemCapacity() * 0.9) {
                     color = 0xFF4040;
                 }
-                font.drawCenteredString(tile.getStackAmount() + "/" + tile.getStackCapacity(), 90, 112, color);
+                drawStringCenteredShadow(fontRenderer,tile.getStackAmount() + "/" + tile.getStackCapacity(), 90, 112, color);
             }
         }
-        font.drawCenteredString("Filtering not yet available :(", 88, 45, 0xFFFFFFFF);
+        drawStringCenteredShadow(fontRenderer,"Filtering not yet available :(", 88, 45, 0xFFFFFFFF);
         if(tile.wrapper.connected != null){
-            font.drawCenteredString(TextFormatting.LIME+"Connected to "+tile.wrapper.connected.getClass().getSimpleName().replace("TileEntity","")+"!", 88, 65, 0xFFFFFFFF);
+            drawStringCenteredShadow(fontRenderer,TextFormatting.LIME+"Connected to "+tile.wrapper.connected.getClass().getSimpleName().replace("TileEntity","")+"!", 88, 65, 0xFFFFFFFF);
         }
     }
 

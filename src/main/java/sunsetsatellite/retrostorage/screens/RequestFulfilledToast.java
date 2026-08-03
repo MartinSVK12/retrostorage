@@ -27,25 +27,25 @@ public class RequestFulfilledToast implements IToastable {
         return I18n.getInstance().translateKey("gui.retrostorage.request.complete");
     }
 
-    @Override
-    public int nameColor(long l) {
-        return 0xffffff00;
-    }
+	@Override
+	public int titleColor(long l) {
+		return 0xffffff00;
+	}
 
     @Override
     public String getMessage(long l) {
         return task.getQuantity()+"x "+task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName();
     }
 
-    @Override
-    public int descriptionColor(long l) {
-        return 0xffffffff;
-    }
+	@Override
+	public int messageColor(long l) {
+		return 0xffffffff;
+	}
 
     @Override
     public double getAnimationProgress(long runtime) {
         runtime = System.currentTimeMillis() - this.startTime;
-        return (double)runtime / (double)ANIMATION_DURATION_MILLIS;
+        return (double)runtime / ANIMATION_DURATION_MILLIS;
     }
 
     @Override

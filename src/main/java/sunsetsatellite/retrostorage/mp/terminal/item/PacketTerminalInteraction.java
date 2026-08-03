@@ -47,8 +47,8 @@ public class PacketTerminalInteraction implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalTerminal){
-            ((MenuDigitalTerminal) context.player.craftingInventory).handleTerminalInteraction(searchQuery, slotId, vSlotId, page, mouseButton, shift);
+        if(context.player != null && context.player.containerMenu instanceof MenuDigitalTerminal){
+            ((MenuDigitalTerminal) context.player.containerMenu).handleTerminalInteraction(searchQuery, slotId, vSlotId, page, mouseButton, shift);
         }
     }
 }

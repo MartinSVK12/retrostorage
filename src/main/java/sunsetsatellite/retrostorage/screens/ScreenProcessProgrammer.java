@@ -4,12 +4,13 @@ package sunsetsatellite.retrostorage.screens;
 import net.minecraft.client.gui.ButtonElement;
 
 import net.minecraft.client.gui.TextFieldElement;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.util.SlotFluid;
@@ -33,18 +34,18 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Process Programmer", 35, 6, 0x404040);
-        font.drawString("Process:", 10, 24, 0x404040);
-        font.drawString("Step: " + tile.currentTask, 42, 50, 0x404040);
-        font.drawString("Slot: " + tile.currentSlot, 42, 75, 0x404040);
-        font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,"Process Programmer", 35, 6, 0x404040);
+        drawStringNoShadow(fontRenderer,"Process:", 10, 24, 0x404040);
+        drawStringNoShadow(fontRenderer,"Step: " + tile.currentTask, 42, 50, 0x404040);
+        drawStringNoShadow(fontRenderer,"Slot: " + tile.currentSlot, 42, 75, 0x404040);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
 
 
     }
 
     public void init() {
         super.init();
-        processName = new TextFieldElement(this, font, Math.round((float) width / 2 - 31), Math.round((float) height / 2 - 92), 100, 20, Objects.equals(tile.currentProcessName, "") ? "New Process" : tile.currentProcessName, "Process name..");
+        processName = new TextFieldElement(this, fontRenderer, Math.round((float) width / 2 - 31), Math.round((float) height / 2 - 92), 100, 20, Objects.equals(tile.currentProcessName, "") ? "New Process" : tile.currentProcessName, "Process name..");
         buttons.add(new ButtonElement(0, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 12), 40, 20, "Save"));
         buttons.add(new ButtonElement(1, Math.round((float) width / 2 + 31), Math.round((float) height / 2 - 12), 40, 20, "Clear"));
         buttons.add(new ButtonElement(6, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 40), 40, 20, (tile.isCurrentOutput ? "Output" : "Input")));
@@ -63,7 +64,7 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
 
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/process_programmer.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -119,8 +120,8 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
                 buttons.get(8).enabled = true;
                 break;
         }
-        if(EnvironmentHelper.isClientWorld()){
-            NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,new Vec3i(tile.x, tile.y, tile.z), tile.getClass()));
+        if(EnvironmentHelper.isMultiplayerClient()){
+            NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id,0,0,new Vec3i(tile.tilePos), tile.getClass()));
         }
 
     }
@@ -157,40 +158,40 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
                 if (shift) {
                     if (slot.getFluidStack().amount > 10) {
                         slot.getFluidStack().amount -= 10;
-                        if(EnvironmentHelper.isClientWorld()){
-                            NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -10));
+                        if(EnvironmentHelper.isMultiplayerClient()){
+                            NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, -10));
                         }
                     }
                 } else if (control) {
                     if (slot.getFluidStack().amount > 100) {
                         slot.getFluidStack().amount -= 100;
-                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -100));
+                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, -100));
                     }
                 } else if (alt) {
                     if (slot.getFluidStack().amount > 1000) {
                         slot.getFluidStack().amount -= 1000;
-                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -1000));
+                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, -1000));
                     }
                 } else {
                     if (slot.getFluidStack().amount > 1) {
                         slot.getFluidStack().amount--;
-                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, -1));
+                        NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, -1));
                     }
                 }
             }
             if (wheel > 0) {
                 if (shift) {
                     slot.getFluidStack().amount += 10;
-                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 10));
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, 10));
                 } else if (control) {
                     slot.getFluidStack().amount += 100;
-                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 100));
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, 100));
                 } else if (alt) {
                     slot.getFluidStack().amount += 1000;
-                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 1000));
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, 1000));
                 } else {
                     slot.getFluidStack().amount++;
-                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.x, tile.y, tile.z, slot.slotIndex, 1));
+                    NetworkHandler.sendToServer(new PacketModifyFilterAmount(tile.tilePos.x(), tile.tilePos.y(), tile.tilePos.z(), slot.slotIndex, 1));
                 }
             }
         }

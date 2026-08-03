@@ -8,6 +8,8 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.WorldSource;
+import net.minecraft.core.world.pos.TilePosc;
+import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.retrostorage.tiles.TileEntityFluidRedstoneEmitter;
 import sunsetsatellite.retrostorage.tiles.TileEntityRedstoneEmitter;
 
@@ -15,34 +17,34 @@ import java.util.function.Supplier;
 
 public class BlockLogicFluidRedstoneEmitter extends BlockLogicNetworkDevice {
 
-    public BlockLogicFluidRedstoneEmitter(Block<?> block, Supplier<TileEntity> tileEntitySupplier, String guiId) {
-        super(block, tileEntitySupplier, guiId);
-    }
+	public BlockLogicFluidRedstoneEmitter(Block<?> block, Supplier<TileEntity> tileEntitySupplier, String guiId) {
+		super(block, tileEntitySupplier, guiId);
+	}
 
-    @Override
-    public boolean isSignalSource() {
-        return true;
-    }
+	@Override
+	public boolean isSignalSource() {
+		return true;
+	}
 
-    @Override
-    public boolean isSolidRender() {
-        return false;
-    }
+	@Override
+	public boolean isSolidRender() {
+		return false;
+	}
 
-    @Override
-    public boolean renderAsNormalBlockOnCondition(WorldSource world, int x, int y, int z) {
-        return false;
-    }
+	@Override
+	public boolean renderAsNormalBlockOnCondition(@NotNull WorldSource source, @NotNull TilePosc tilePos) {
+		return false;
+	}
 
-    @Override
-    public boolean getDirectSignal(World worldSource, int x, int y, int z, Side side) {
-        TileEntityFluidRedstoneEmitter tile = (TileEntityFluidRedstoneEmitter) worldSource.getTileEntity(x, y, z);
-        return tile != null && tile.isActive;
-    }
+	@Override
+	public boolean isEmittingSignal(@NotNull WorldSource world, @NotNull TilePosc tilePos, @NotNull Side side) {
+		TileEntityFluidRedstoneEmitter tile = (TileEntityFluidRedstoneEmitter) world.getTileEntity(tilePos);
+		return tile != null && tile.isActive;
+	}
 
-    @Override
-    public boolean getSignal(WorldSource world, int x, int y, int z, Side side) {
-        TileEntityFluidRedstoneEmitter tile = (TileEntityFluidRedstoneEmitter) world.getTileEntity(x, y, z);
-        return tile != null && tile.isActive;
-    }
+	@Override
+	public boolean isEmittingDirectSignal(@NotNull World world, @NotNull TilePosc tilePos, @NotNull Side side) {
+		TileEntityFluidRedstoneEmitter tile = (TileEntityFluidRedstoneEmitter) world.getTileEntity(tilePos);
+		return tile != null && tile.isActive;
+	}
 }

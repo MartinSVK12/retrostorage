@@ -44,8 +44,8 @@ public class PacketRequestTerminalContents implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(context.player != null && context.player.craftingInventory instanceof MenuRequestTerminal){
-            ((MenuRequestTerminal) context.player.craftingInventory).networkCraftables = craftables;
+        if(context.player != null && context.player.containerMenu instanceof MenuRequestTerminal){
+            ((MenuRequestTerminal) context.player.containerMenu).networkCraftables = craftables;
         }
     }
 }

@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.tiles;
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.Connection;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.IScreenActionListener;
@@ -196,8 +197,8 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
     }
 
     @Override
-    public void readFromNBT(CompoundTag CompoundTag) {
-        super.readFromNBT(CompoundTag);
+    public void readAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         ListTag listTag = CompoundTag.getList("Fluids");
         isWhitelist = CompoundTag.getBoolean("isWhitelist");
         enabled = CompoundTag.getBoolean("enabled");
@@ -214,8 +215,8 @@ public class TileEntityFluidImporter extends TileEntityNetworkDevice implements 
     }
 
     @Override
-    public void writeToNBT(CompoundTag CompoundTag) {
-        super.writeToNBT(CompoundTag);
+    public void writeAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         ListTag listTag = new ListTag();
         for (int i = 0; i < filter.fluidContents.length; i++) {
             if (filter.fluidContents[i] != null) {

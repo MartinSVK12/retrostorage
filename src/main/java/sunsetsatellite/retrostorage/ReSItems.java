@@ -4,17 +4,19 @@ import net.minecraft.core.item.Item;
 import sunsetsatellite.catalyst.core.util.DataInitializer;
 import sunsetsatellite.retrostorage.items.*;
 import turniplabs.halplibe.helper.ItemBuilder;
-import turniplabs.halplibe.util.ItemInitEntrypoint;
+import turniplabs.halplibe.helper.creativeInventory.CreativeInventoryCategory;
+import turniplabs.halplibe.helper.creativeInventory.CreativeInventoryPlacement;
+
 import java.util.HashMap;
 import java.util.function.Supplier;
 
 import static sunsetsatellite.retrostorage.ReSConfig.item;
 import static sunsetsatellite.retrostorage.RetroStorage.*;
 
-public class ReSItems extends DataInitializer implements ItemInitEntrypoint {
+public class ReSItems extends DataInitializer {
 
     public static HashMap<Item, String> itemTextures = new HashMap<>();
-    
+
     public static Item blankDisc;
     public static Item storageDisc1;
     public static Item storageDisc2;
@@ -62,7 +64,6 @@ public class ReSItems extends DataInitializer implements ItemInitEntrypoint {
     public static Item linkingCard;
     public static Item blankCard;
 
-    @Override
     public void afterItemInit() {
         init();
     }
@@ -71,14 +72,18 @@ public class ReSItems extends DataInitializer implements ItemInitEntrypoint {
         Item item = new Item(lang, key("item/"+name), item(configId));
         itemTextures.put(item, texture);
         //LOGGER.info("Registering item '" + item.namespaceID.toString() + "' with texture 'signalindustries:item/" + texture + "'.");
-        return new ItemBuilder(MOD_ID).build(item);
+        return new ItemBuilder(MOD_ID)
+			.setCreativeInventoryPlacement(new CreativeInventoryPlacement.Category(CreativeInventoryCategory.MISCELLANEOUS))
+			.build(item);
     }
 
     public Item customItem(Supplier<Item> itemSupplier, String texture) {
         Item item = itemSupplier.get();
         itemTextures.put(item, texture);
         //LOGGER.info("Registering item '" + item.namespaceID.toString() + "' with texture 'signalindustries:item/" + texture + "'.");
-        return new ItemBuilder(MOD_ID).build(item);
+        return new ItemBuilder(MOD_ID)
+			.setCreativeInventoryPlacement(new CreativeInventoryPlacement.Category(CreativeInventoryCategory.MISCELLANEOUS))
+			.build(item);
     }
 
     @Override

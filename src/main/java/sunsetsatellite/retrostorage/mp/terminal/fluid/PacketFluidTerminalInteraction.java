@@ -47,8 +47,8 @@ public class PacketFluidTerminalInteraction implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalFluidTerminal){
-            ((MenuDigitalFluidTerminal) context.player.craftingInventory).handleTerminalInteraction(searchQuery, slotId, vSlotId, page, mouseButton, shift);
+        if(context.player != null && context.player.containerMenu instanceof MenuDigitalFluidTerminal){
+            ((MenuDigitalFluidTerminal) context.player.containerMenu).handleTerminalInteraction(searchQuery, slotId, vSlotId, page, mouseButton, shift);
         }
     }
 }

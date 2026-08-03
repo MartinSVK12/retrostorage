@@ -4,12 +4,15 @@ package sunsetsatellite.retrostorage.screens;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
-import net.minecraft.client.render.Font;
+import net.minecraft.client.render.font.FontRenderer;
+import net.minecraft.client.render.renderer.GLRenderer;
+import net.minecraft.client.render.renderer.State;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+
+import org.lwjgl.opengl.GL41;
 import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.retrostorage.menus.MenuTaskRequest;
 import sunsetsatellite.retrostorage.tiles.TileEntityRequestTerminal;
@@ -50,8 +53,6 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
 
     public void init() {
         this.slotContainer = new RecipeItemSlotElement(this.mc, this.width, this.height, 140, this.height - 48, 36, this);
-
-        this.slotContainer.registerScrollButtons(this.buttons, 4, 5);
         this.initButtons();
 
         recalculate();
@@ -120,15 +121,15 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
     @Override
     protected void drawGuiContainerForegroundLayer() {
         guiRenderItem.render(requestedItem, 32, 32);
-        font.drawString("x"+NumberUtil.format(requestAmount), 6, 36, 0x404040);
-        font.drawString(requestedItem.getDisplayName(), 55, 36, 0x404040);
-        font.drawString(this.screenTitle, 95, 10, 0x404040);
+        drawStringNoShadow(fontRenderer,"x"+NumberUtil.format(requestAmount), 6, 36, 0x404040);
+        drawStringNoShadow(fontRenderer,requestedItem.getDisplayName(), 55, 36, 0x404040);
+        drawStringNoShadow(fontRenderer,this.screenTitle, 95, 10, 0x404040);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/task_request.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -139,14 +140,14 @@ public class ScreenTaskRequest extends ScreenContainerAbstract {
     public void render(int x, int y, float renderPartialTicks) {
         buttons.get(2).enabled = calculationResult.getType() == CalculationResultType.OK;
         super.render(x, y, renderPartialTicks);
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(140, this.height - 175, this.width * 2, this.height + 100); //TODO: fix this breaking at lower resolutions than 1080p
-        this.slotContainer.drawScreen(x, y, renderPartialTicks);
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        GLRenderer.enableState(State.SCISSOR_TEST);
+        GL41.glScissor(140, this.height - 175, this.width * 2, this.height + 100); //TODO: fix this breaking at lower resolutions than 1080p
+        this.slotContainer.render(x, y, renderPartialTicks);
+		GLRenderer.disableState(State.SCISSOR_TEST);
     }
 
-    public Font getFont(){
-        return this.font;
+    public FontRenderer getFont(){
+        return this.fontRenderer;
     }
 }
 

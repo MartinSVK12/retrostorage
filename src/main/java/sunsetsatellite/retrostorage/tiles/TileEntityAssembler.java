@@ -8,6 +8,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.ITileEntityInit;
 import sunsetsatellite.retrostorage.ReSItems;
@@ -119,8 +120,8 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     @Override
-    public void readFromNBT(CompoundTag CompoundTag) {
-        super.readFromNBT(CompoundTag);
+    public void readAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
@@ -134,8 +135,8 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
     }
 
     @Override
-    public void writeToNBT(CompoundTag CompoundTag) {
-        super.writeToNBT(CompoundTag);
+    public void writeAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         ListTag listTag = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -154,16 +155,16 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         return 64;
     }
 
-    @Override
-    public boolean stillValid(Player entityplayer) {
-        if (worldObj.getTileEntity(x, y, z) != this) {
+	@Override
+    public boolean stillValid(@NonNull Player entityplayer) {
+        if (worldObj.getTileEntity(tilePos) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortContainer() {
+    public void sort() {
 
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.net.packet.Packet;
 import net.minecraft.core.net.packet.PacketTileEntityData;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.conduit.ConduitCapability;
@@ -79,7 +80,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getEnergyConsumption() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return energyConsumptionCache;
         }
         return getAttachedFluidStorage().size() + getAttachedStorage().size() + getProcessors().size() + getCoprocessors().size();
@@ -96,7 +97,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public ArrayDeque<CraftingTask> getRequestQueue() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerCraftingQueue(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerCraftingQueue(tilePos.x,tilePos.y,tilePos.z));
             return requestQueueCache;
         }
         return requestQueue;
@@ -240,7 +241,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         if (task != null) {
             RetroStorage.LOGGER.debug("Requesting: " + task.getCraftable().getOutput());
             if (worldObj != null && worldObj.isClientSide) {
-                NetworkHandler.sendToServer(new PacketRequestCrafting(x,y,z, task));
+                NetworkHandler.sendToServer(new PacketRequestCrafting(tilePos.x,tilePos.y,tilePos.z, task));
                 return;
             }
             requestQueue.add(task);
@@ -274,7 +275,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public @UnmodifiableView List<ItemStack> getAllItems() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerContentsUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerContentsUpdate(tilePos.x,tilePos.y,tilePos.z));
             return itemCache;
         }
         return getAllItems(RetroStorage::sortById);
@@ -283,7 +284,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public @UnmodifiableView List<FluidStack> getAllFluids() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerContentsUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerContentsUpdate(tilePos.x,tilePos.y,tilePos.z));
             return fluidCache;
         }
         return getAllFluids(RetroStorage::sortByIdFluid);
@@ -334,14 +335,13 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         return Collections.unmodifiableMap(map);
     }
 
-    public void readFromNBT(CompoundTag CompoundTag) {
-        super.readFromNBT(CompoundTag);
+    public void readAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         energy = CompoundTag.getDouble("Energy");
         active = CompoundTag.getBoolean("Active");
     }
 
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
+    public void writeAdditionalData(@NonNull CompoundTag tag) {
         DoubleTag nbt = new DoubleTag(energy);
         tag.put("Energy", nbt);
         tag.putBoolean("Active", active);
@@ -361,7 +361,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getItemCapacity() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return itemCapacityCache;
         }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getItemCapacity).sum();
@@ -371,7 +371,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getStackCapacity() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return itemStackCapacityCache;
         }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getStackCapacity).sum();
@@ -381,7 +381,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getStackAmount() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return itemStackAmountCache;
         }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getStackAmount).sum();
@@ -391,7 +391,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getAmount() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return itemAmountCache;
         }
         return getAttachedStorage().stream().mapToLong(INetworkItemStorage::getAmount).sum();
@@ -400,7 +400,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getFluidCapacity() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return fluidCapacityCache;
         }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getMaxFluidAmount).sum();
@@ -410,7 +410,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getFluidStackCapacity() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return fluidStackCapacityCache;
         }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getMaxFluidStackSize).sum();
@@ -420,7 +420,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getFluidStackAmount() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return fluidStackAmountCache;
         }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getFluidStackAmount).sum();
@@ -430,7 +430,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
     @Override
     public long getFluidAmount() {
         if (worldObj != null && worldObj.isClientSide) {
-            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(x,y,z));
+            NetworkHandler.sendToServer(new PacketRequestControllerUpdate(tilePos.x,tilePos.y,tilePos.z));
             return fluidAmountCache;
         }
         return getAttachedFluidStorage().stream().mapToLong(INetworkFluidStorage::getFluidAmount).sum();

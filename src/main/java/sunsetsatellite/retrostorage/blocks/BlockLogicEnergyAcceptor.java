@@ -5,9 +5,13 @@ import net.minecraft.core.block.Block;
 import net.minecraft.core.block.BlockLogic;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.block.material.Material;
+import net.minecraft.core.block.material.Materials;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
+import net.minecraft.core.world.pos.TilePosc;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.network.NetworkComponent;
 import sunsetsatellite.catalyst.core.util.network.NetworkType;
@@ -22,22 +26,23 @@ public class BlockLogicEnergyAcceptor extends BlockLogic implements NetworkCompo
     public final String guiId;
 
     public BlockLogicEnergyAcceptor(Block<?> block, Supplier<TileEntity> tileEntitySupplier, String guiId) {
-        super(block, Material.stone);
+        super(block, Materials.STONE);
         this.guiId = guiId;
         block.withEntity(tileEntitySupplier);
     }
 
-    public boolean onBlockRightClicked(World world, int i, int j, int k, Player entityplayer, Side side, double xHit, double yHit) {
-        if (world.isClientSide) {
-            return true;
-        } else {
-            TileEntityEnergyAcceptor tile = (TileEntityEnergyAcceptor) world.getTileEntity(i, j, k);
-            if (tile != null && guiId != null) {
-                Catalyst.displayGui(entityplayer, tile, RetroStorage.key("gui/"+guiId));
-            }
-            return true;
-        }
-    }
+	@Override
+	public boolean onInteracted(@NotNull World world, @NotNull TilePosc tilePos, @NotNull Player player, @Nullable Side side, double xHit, double yHit) {
+		if (world.isClientSide) {
+			return true;
+		} else {
+			TileEntityEnergyAcceptor tile = (TileEntityEnergyAcceptor) world.getTileEntity(tilePos);
+			if (tile != null && guiId != null) {
+				Catalyst.displayGui(player, tile, RetroStorage.key("gui/"+guiId));
+			}
+			return true;
+		}
+	}
 
     @Override
     public NetworkType getType() {

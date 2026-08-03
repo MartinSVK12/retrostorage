@@ -22,7 +22,7 @@ public class EncoderRecipeFiller implements RecipeFiller<RecipeEntryCrafting<?, 
         TileEntityRecipeEncoder tile = screen.tile;
         if (translator.getOriginal() instanceof RecipeEntryCraftingShaped || translator.getOriginal() instanceof RecipeEntryCraftingShapeless) {
             if(tile.worldObj != null && tile.worldObj.isClientSide){
-                NetworkHandler.sendToServer(new PacketQuickRecipeEncode(tile.x, tile.y, tile.z, translator.getOriginal().toString()));
+                NetworkHandler.sendToServer(new PacketQuickRecipeEncode(tile.tilePos.x, tile.tilePos.y, tile.tilePos.z, translator.getOriginal().toString()));
             } else {
                 tile.encodeDisc(translator.getOriginal());
             }

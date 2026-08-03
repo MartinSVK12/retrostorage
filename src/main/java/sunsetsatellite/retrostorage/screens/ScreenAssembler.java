@@ -1,10 +1,11 @@
 package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.retrostorage.menus.MenuAssembler;
 import sunsetsatellite.retrostorage.tiles.TileEntityAssembler;
 
@@ -18,8 +19,8 @@ public class ScreenAssembler extends ScreenContainerAbstract {
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString(tile.advanced ? "Adv. Assembler" : "Assembler", tile.advanced ? 54 : 64, 6, 0x404040);
-        font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,tile.advanced ? "Adv. Assembler" : "Assembler", tile.advanced ? 54 : 64, 6, 0x404040);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f) {
@@ -27,7 +28,7 @@ public class ScreenAssembler extends ScreenContainerAbstract {
         if(tile.advanced){
             i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/disc_container_extended.png");
         }
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;

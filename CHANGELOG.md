@@ -1,3 +1,0 @@
-- Fixed some multiplayer issues.
-- Fixed a bug where requesting would mildly break if you were searching in the terminal before.
-- Added a stocking mode to exporters.

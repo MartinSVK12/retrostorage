@@ -9,6 +9,7 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.core.util.io.IItemStackList;
@@ -114,8 +115,8 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     }
 
     @Override
-    public void readFromNBT(CompoundTag compoundTag) {
-        super.readFromNBT(compoundTag);
+    public void readAdditionalData(@NonNull CompoundTag compoundTag) {
+
         ListTag listTag = compoundTag.getList("Items");
         contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
@@ -142,8 +143,8 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     }
 
     @Override
-    public void writeToNBT(CompoundTag compoundTag) {
-        super.writeToNBT(compoundTag);
+    public void writeAdditionalData(@NonNull CompoundTag compoundTag) {
+
         ListTag listTag = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -174,16 +175,16 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
         return 64;
     }
 
-    @Override
-    public boolean stillValid(Player entityplayer) {
-        if (worldObj.getTileEntity(x, y, z) != this) {
+	@Override
+    public boolean stillValid(@NonNull Player entityplayer) {
+        if (worldObj.getTileEntity(tilePos) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortContainer() {
+    public void sort() {
 
     }
 
@@ -311,7 +312,7 @@ public class TileEntityDiscDrive extends TileEntityNetworkDevice
     public long getAmount() {
         return getStacks().stream().mapToInt((S)->S.stackSize).sum();
     }
-    
+
     @Override
     public ItemStack remove(int slot, long amount, boolean strict, boolean unlimited) {
         ArrayList<ItemStack> list = new ArrayList<>(getStacks());

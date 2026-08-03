@@ -8,24 +8,20 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.sound.BlockSounds;
-import sunsetsatellite.catalyst.CatalystMultipart;
 import sunsetsatellite.catalyst.core.util.DataInitializer;
-import sunsetsatellite.catalyst.multipart.block.model.BlockModelMultipart;
-import sunsetsatellite.catalyst.multipart.block.model.MultipartBlockModelBuilder;
 import sunsetsatellite.retrostorage.blocks.*;
-import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
-import sunsetsatellite.retrostorage.blocks.states.NetworkCableStateInterpreter;
 import sunsetsatellite.retrostorage.tiles.*;
 import sunsetsatellite.retrostorage.util.MachineTextures;
 import turniplabs.halplibe.helper.BlockBuilder;
-import turniplabs.halplibe.util.BlockInitEntrypoint;
+import turniplabs.halplibe.helper.creativeInventory.CreativeInventoryCategory;
+import turniplabs.halplibe.helper.creativeInventory.CreativeInventoryPlacement;
 
 import java.util.HashMap;
 
 import static sunsetsatellite.retrostorage.ReSConfig.block;
 import static sunsetsatellite.retrostorage.RetroStorage.MOD_ID;
 
-public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
+public class ReSBlocks extends DataInitializer {
 
     public static HashMap<Block<? extends BlockLogic>, MachineTextures> blockTextures = new HashMap<>();
 
@@ -53,16 +49,17 @@ public class ReSBlocks extends DataInitializer implements BlockInitEntrypoint {
     public static Block<?> fluidStorageBus;
     public static Block<?> energyAcceptor;;
 
-    @Override
     public void afterBlockInit() {
         init();
     }
 
     public BlockBuilder defaultBuilder() {
-        BlockBuilder builder = new BlockBuilder(MOD_ID);
-        builder = builder.setBlockSound(BlockSounds.STONE);
-        builder = builder.setHardness(1).setResistance(3).addTags(BlockTags.MINEABLE_BY_PICKAXE);
-        return builder;
+		return new BlockBuilder(MOD_ID)
+			.setCreativeInventoryPlacement(new CreativeInventoryPlacement.Category(CreativeInventoryCategory.MISCELLANEOUS))
+			.setBlockSound(BlockSounds.STONE)
+			.setHardness(1)
+			.setResistance(3)
+			.addTags(BlockTags.MINEABLE_BY_PICKAXE);
     }
 
     public Block<? extends BlockLogic> simpleBlock(BlockBuilder builder, String lang, String name, String configId, int miningLevel, Material material, MachineTextures blockTextures) {

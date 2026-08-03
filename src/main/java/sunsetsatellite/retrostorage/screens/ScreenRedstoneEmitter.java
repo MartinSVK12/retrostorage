@@ -3,10 +3,11 @@ package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.core.util.mp.PacketScreenAction;
 import sunsetsatellite.retrostorage.menus.MenuRedstoneEmitter;
 import sunsetsatellite.retrostorage.tiles.TileEntityAdvInterface;
@@ -25,7 +26,7 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
     @Override
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture l = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/emittergui.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(l);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -33,15 +34,15 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Redstone Emitter", 45, 6, 0x404040);
-        font.drawString("Inventory", 8, (ySize - 96) + 2, 0x404040);
-        font.drawString(String.valueOf(tile.amount), 120, 40, 0x404040);
+        drawStringNoShadow(fontRenderer,"Redstone Emitter", 45, 6, 0x404040);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 96) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,String.valueOf(tile.amount), 120, 40, 0x404040);
         if (tile.connectedTile instanceof TileEntityAssembler) {
-            font.drawString("ASM", 9, 6, 0x404040);
-            font.drawString(String.valueOf(tile.asmSlot), 10, 40, 0x404040);
+            drawStringNoShadow(fontRenderer,"ASM", 9, 6, 0x404040);
+            drawStringNoShadow(fontRenderer,String.valueOf(tile.asmSlot), 10, 40, 0x404040);
         } else if (tile.connectedTile instanceof TileEntityAdvInterface) {
-            font.drawString("INT", 9, 6, 0x404040);
-            font.drawString(String.valueOf(tile.asmSlot), 10, 40, 0x404040);
+            drawStringNoShadow(fontRenderer,"INT", 9, 6, 0x404040);
+            drawStringNoShadow(fontRenderer,String.valueOf(tile.asmSlot), 10, 40, 0x404040);
         }
     }
 
@@ -150,7 +151,7 @@ public class ScreenRedstoneEmitter extends ScreenContainerAbstract {
             }
         }
 
-        if(EnvironmentHelper.isClientWorld()){
+        if(EnvironmentHelper.isMultiplayerClient()){
             NetworkHandler.sendToServer(new PacketScreenAction(guibutton.id, 0, 0, tile.getPosition(), tile.getClass()));
         }
     }

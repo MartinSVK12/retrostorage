@@ -6,6 +6,9 @@ import net.minecraft.client.render.texture.stitcher.TextureRegistry;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.WorldSource;
+import net.minecraft.core.world.pos.TilePosc;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sunsetsatellite.retrostorage.blocks.BlockLogicRedstoneEmitter;
 import sunsetsatellite.retrostorage.tiles.TileEntityRedstoneEmitter;
 
@@ -18,16 +21,16 @@ public class BlockModelRedstoneEmitter extends BlockModelStandard<BlockLogicReds
         super(block);
     }
 
-    @Override
-    public IconCoordinate getBlockTexture(WorldSource blockAccess, int x, int y, int z, Side side) {
-        TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter) blockAccess.getTileEntity(x, y, z);
-        if (tile != null && tile.isActive) {
-            return emitterActive;
-        }
-        return emitterInactive;
-    }
+	@Override
+	public @Nullable IconCoordinate getBlockTexture(@NotNull WorldSource source, @NotNull TilePosc tilePos, @NotNull Side side) {
+		TileEntityRedstoneEmitter tile = (TileEntityRedstoneEmitter) source.getTileEntity(tilePos);
+		if (tile != null && tile.isActive) {
+			return emitterActive;
+		}
+		return emitterInactive;
+	}
 
-    @Override
+	@Override
     public IconCoordinate getBlockTextureFromSideAndMetadata(Side side, int data) {
         return emitterActive;
     }

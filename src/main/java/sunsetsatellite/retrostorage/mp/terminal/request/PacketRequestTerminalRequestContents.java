@@ -29,9 +29,9 @@ public class PacketRequestTerminalRequestContents implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(EnvironmentHelper.isServerEnvironment()){
-            if(context.player != null && context.player.craftingInventory instanceof MenuRequestTerminal){
-                MenuRequestTerminal menu = (MenuRequestTerminal) context.player.craftingInventory;
+        if(EnvironmentHelper.isMultiplayerServer()){
+            if(context.player != null && context.player.containerMenu instanceof MenuRequestTerminal){
+                MenuRequestTerminal menu = (MenuRequestTerminal) context.player.containerMenu;
                 menu.getCraftables(searchQuery);
                 NetworkHandler.sendToPlayer(context.player,new PacketRequestTerminalContents(menu.networkCraftables));
             }

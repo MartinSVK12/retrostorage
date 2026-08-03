@@ -1,5 +1,5 @@
 {
-  "parent": "retrostorage:template_conduit_north",
+  "parent": "retrostorage:block/template_conduit_base",
   "textures": {
     "conduit": "retrostorage:block/block_cable"
   }

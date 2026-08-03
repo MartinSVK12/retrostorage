@@ -5,13 +5,12 @@ import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.core.util.TickTimer;
-import sunsetsatellite.retrostorage.ReSItems;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
 import sunsetsatellite.retrostorage.items.ItemRecipeDisc;
@@ -116,8 +115,8 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
         super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
-        worldObj.markBlocksDirty(x, y, z, x, y, z);
-        worldObj.notifyBlocksOfNeighborChange(x, y, z, isActive ? 15 : 0);
+		worldObj.markBlockDirty(tilePos);
+		worldObj.notifyBlockChange(tilePos, getBlock());
         if (getController() != null) {
             if (getItem(0) != null) {
                 int id = getItem(0).itemID;
@@ -174,8 +173,8 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
+    public void readAdditionalData(@NonNull CompoundTag nbttagcompound) {
+        super.readAdditionalData(nbttagcompound);
         ListTag nbttaglist = nbttagcompound.getList("Items");
         contents = new ItemStack[getContainerSize()];
         isActive = nbttagcompound.getBoolean("isActive");
@@ -190,12 +189,12 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
                 contents[j] = ItemStack.readItemStackFromNbt(nbttagcompound1);
             }
         }
-        super.readFromNBT(nbttagcompound);
+        super.readAdditionalData(nbttagcompound);
     }
 
     @Override
-    public void writeToNBT(CompoundTag nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
+    public void writeAdditionalData(@NonNull CompoundTag nbttagcompound) {
+        super.writeAdditionalData(nbttagcompound);
         ListTag nbttaglist = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -219,7 +218,7 @@ public class TileEntityRedstoneEmitter extends TileEntityNetworkDevice implement
     }
 
     @Override
-    public void sortContainer() {
+    public void sort() {
 
     }
 

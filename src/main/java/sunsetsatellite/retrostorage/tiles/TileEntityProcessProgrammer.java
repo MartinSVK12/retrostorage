@@ -6,6 +6,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.IScreenActionListener;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
@@ -211,8 +212,7 @@ public class TileEntityProcessProgrammer extends TileEntity
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
+    public void readAdditionalData(CompoundTag tag) {
         currentProcessName = tag.getString("ProcessName");
         ListTag listTag = tag.getList("Items");
         contents = new ItemStack[getContainerSize()];
@@ -226,8 +226,7 @@ public class TileEntityProcessProgrammer extends TileEntity
     }
 
     @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
+    public void writeAdditionalData(CompoundTag tag) {
         ListTag listTag = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -311,16 +310,16 @@ public class TileEntityProcessProgrammer extends TileEntity
         }
     }
 
-    @Override
-    public boolean stillValid(Player entityplayer) {
-        if (worldObj.getTileEntity(x, y, z) != this) {
+	@Override
+    public boolean stillValid(@NonNull Player entityplayer) {
+        if (worldObj.getTileEntity(tilePos) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortContainer() {
+    public void sort() {
 
     }
 

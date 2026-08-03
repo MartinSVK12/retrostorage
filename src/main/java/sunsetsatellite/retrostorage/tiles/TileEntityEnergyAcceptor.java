@@ -5,6 +5,7 @@ import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.energy.simple.impl.TileEntityEnergyDevice;
 
 public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements Container {
@@ -85,9 +86,9 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag)
+    public void readAdditionalData(CompoundTag tag)
     {
-        super.readFromNBT(tag);
+        super.readAdditionalData(tag);
         ListTag ListTag = tag.getList("Items");
         contents = new ItemStack[getContainerSize()];
         for(int i = 0; i < ListTag.tagCount(); i++)
@@ -102,9 +103,9 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
     }
 
     @Override
-    public void writeToNBT(CompoundTag tag)
+    public void writeAdditionalData(CompoundTag tag)
     {
-        super.writeToNBT(tag);
+        super.writeAdditionalData(tag);
         ListTag ListTag = new ListTag();
         for(int i = 0; i < contents.length; i++)
         {
@@ -126,18 +127,16 @@ public class TileEntityEnergyAcceptor extends TileEntityEnergyDevice implements 
         return 64;
     }
 
-    @Override
-    public boolean stillValid(Player entityplayer)
-    {
-        if(worldObj.getTileEntity(x, y, z) != this)
-        {
-            return false;
-        }
-        return entityplayer.distanceToSqr((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D;
-    }
+	@Override
+	public boolean stillValid(@NonNull Player entityplayer) {
+		if (worldObj.getTileEntity(tilePos) != this) {
+			return false;
+		}
+		return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
+	}
 
     @Override
-    public void sortContainer() {
+    public void sort() {
 
     }
 }

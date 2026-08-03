@@ -3,6 +3,7 @@ package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.tessellator.Tessellator;
+import net.minecraft.client.render.tessellator.TessellatorGeneral;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.player.inventory.container.Container;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
@@ -20,86 +21,86 @@ public class TaskSlotElement extends SlotElement {
         parent = gui;
     }
 
-    @Override
-    protected int getSize() {
-        return parent.list.size();
-    }
-
-    @Override
-    protected void elementClicked(int i, boolean bl) {
-
-    }
-
-    @Override
-    protected boolean isSelected(int i) {
-        return false;
-    }
-
-    @Override
-    protected void drawBackground() {
-
-    }
-
-    protected int getContentHeight() {
-        int i = 1;
-        for (CraftingTask craftingTask : this.parent.list) {
-            i += craftingTask.nodes.all().size();
-        }
-        return this.parent.list.size() * (36 * i) + 36;
-    }
-
-    @Override
-    protected void drawSlot(int index, int i, int k, int l, Tessellator tessellator) {
-        CraftingTask task = this.parent.list.get(index);
-        int color = 0xFFFFFF;
-        if (task.isStarted()) {
-            color = 0x00FF00;
-            int size = task.nodes.all().size();
-            drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), i + 2, k + 1, color);
-            drawString(String.format("%d s | %d%%", (System.currentTimeMillis() - task.getStartTime()) / 1000, task.getCompletionPercentage()), i + 2, k + 12, 0xFFFFFF);
-            drawString(String.format("%d subtask%s remain%s.", size, size > 1 ? "s" : "", size <= 1 ? "s" : ""), i + 2, k + 12 + 10, 0x808080);
-        } else {
-            drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), i + 2, k + 1, color);
-            drawString("Waiting..", i + 2, k + 12, 0x808080);
-        }
-
-        int y = k + 12 + 20;
-        int x = i + 2;
-        for (Node node : task.nodes.all()) {
-            if (node instanceof ProcessNode) {
-                ProcessNode pNode = (ProcessNode) node;
-                ProcessingState state = pNode.getState();
-                IProcessor processor = parent.network.findProcessorWithNode(pNode);
-                TileEntity machine = null;
-                if(processor != null){
-                    if(processor.getConnectedTile() != null){
-                        machine = processor.getConnectedTile();
-                    }
-                }
-                String machineInfo = machine == null ? "None" : machine.getClass().getSimpleName().replace("TileEntity", "");
-                if(machine != null){
-                    machineInfo += " at " + new Vec3i(machine.x, machine.y, machine.z);
-                }
-                color = (state == ProcessingState.BLOCKED || state == ProcessingState.NO_MACHINE) ? 0xFF0000 : (state == ProcessingState.ALREADY_IN_USE) ? 0xFF8C00 : (state == ProcessingState.ACTIVE) ? 0x00FF00 : 0xFFFFFF;
-                if (state == ProcessingState.WAITING) {
-                    drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
-                    drawString(" Waiting..", x, y += 10, 0x808080);
-                    y += 10;
-                } else {
-                    drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize * node.getTotalQuantity() + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
-                    drawString(String.format(" %d/%d (%d%%) | %s", pNode.getFinishedQuantity(), pNode.getTotalQuantity(), pNode.getCompletionPercentage(), pNode.getState()), x, y += 10, 0xFFFFFF);
-                    drawString(" Processor: " + machineInfo, x, y += 10, 0x808080);
-                }
-            } else {
-                drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, 0xFFFFFF);
-                drawString(" Waiting..", x, y += 10, 0x808080);
-                y += 10;
-            }
-            y += 10;
-        }
-    }
-
     protected void drawString(String s, int x, int y, int color) {
-        this.parent.drawString(this.parent.getFont(), s, x, y, color);
+        this.parent.drawStringNoShadow(this.parent.getFont(), s, x, y, color);
     }
+
+	@Override
+	protected int getItemCount() {
+		return parent.list.size();
+	}
+
+	@Override
+	protected int getMaxPosition() {
+		int i = 1;
+		for (CraftingTask craftingTask : this.parent.list) {
+			i += craftingTask.nodes.all().size();
+		}
+		return this.parent.list.size() * (36 * i) + 36;
+	}
+
+	@Override
+	protected void selectItem(int itemIndex, boolean doubleClicked) {
+
+	}
+
+	@Override
+	protected boolean isSelectedItem(int itemIndex) {
+		return false;
+	}
+
+	@Override
+	protected void renderHoleBackground() {
+
+	}
+
+	@Override
+	protected void renderItem(int index, int i, int k, int height, TessellatorGeneral tessellator) {
+		CraftingTask task = this.parent.list.get(index);
+		int color = 0xFFFFFF;
+		if (task.isStarted()) {
+			color = 0x00FF00;
+			int size = task.nodes.all().size();
+			drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), i + 2, k + 1, color);
+			drawString(String.format("%d s | %d%%", (System.currentTimeMillis() - task.getStartTime()) / 1000, task.getCompletionPercentage()), i + 2, k + 12, 0xFFFFFF);
+			drawString(String.format("%d subtask%s remain%s.", size, size > 1 ? "s" : "", size <= 1 ? "s" : ""), i + 2, k + 12 + 10, 0x808080);
+		} else {
+			drawString(String.format("%dx %s", task.getQuantity(), task.getCraftable().getOutput().get(0).forceGetItem().getDisplayName()), i + 2, k + 1, color);
+			drawString("Waiting..", i + 2, k + 12, 0x808080);
+		}
+
+		int y = k + 12 + 20;
+		int x = i + 2;
+		for (Node node : task.nodes.all()) {
+			if (node instanceof ProcessNode pNode) {
+				ProcessingState state = pNode.getState();
+				IProcessor processor = parent.network.findProcessorWithNode(pNode);
+				TileEntity machine = null;
+				if(processor != null){
+					if(processor.getConnectedTile() != null){
+						machine = processor.getConnectedTile();
+					}
+				}
+				String machineInfo = machine == null ? "None" : machine.getClass().getSimpleName().replace("TileEntity", "");
+				if(machine != null){
+					machineInfo += " at " + new Vec3i(machine.tilePos);
+				}
+				color = (state == ProcessingState.BLOCKED || state == ProcessingState.NO_MACHINE) ? 0xFF0000 : (state == ProcessingState.ALREADY_IN_USE) ? 0xFF8C00 : (state == ProcessingState.ACTIVE) ? 0x00FF00 : 0xFFFFFF;
+				if (state == ProcessingState.WAITING) {
+					drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
+					drawString(" Waiting..", x, y += 10, 0x808080);
+					y += 10;
+				} else {
+					drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize * node.getTotalQuantity() + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, color);
+					drawString(String.format(" %d/%d (%d%%) | %s", pNode.getFinishedQuantity(), pNode.getTotalQuantity(), pNode.getCompletionPercentage(), pNode.getState()), x, y += 10, 0xFFFFFF);
+					drawString(" Processor: " + machineInfo, x, y += 10, 0x808080);
+				}
+			} else {
+				drawString(" " + node.getClass().getSimpleName().replace("Node", "") + ": " + node.getPattern().getOutput().get(0).forceGetItem().stackSize + "x " + node.getPattern().getOutput().get(0).forceGetItem().getDisplayName(), x, y += 10, 0xFFFFFF);
+				drawString(" Waiting..", x, y += 10, 0x808080);
+				y += 10;
+			}
+			y += 10;
+		}
+	}
 }

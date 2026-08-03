@@ -1,9 +1,11 @@
 package sunsetsatellite.retrostorage.tiles;
 
 
+import com.mojang.nbt.tags.CompoundTag;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.ITileEntityInit;
 import sunsetsatellite.catalyst.core.util.network.Network;
@@ -22,13 +24,13 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
 
     @Override
     public void init(Block<?> block) {
-        networkChanged(NetworkManager.getNet(worldObj,x,y,z));
+        networkChanged(NetworkManager.getNet(worldObj,getPosition()));
         setInitialized();
     }
 
     @Override
     public void tick() {
-        networkChanged(NetworkManager.getNet(worldObj,x,y,z));
+        networkChanged(NetworkManager.getNet(worldObj,getPosition()));
         if (worldObj != null && worldObj.isClientSide) return;
         super.tick();
     }
@@ -40,7 +42,7 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
 
     @Override
     public Vec3i getPosition() {
-        return new Vec3i(x,y,z);
+        return new Vec3i(tilePos);
     }
 
     @Override
@@ -101,11 +103,19 @@ public abstract class TileEntityNetworkDevice extends TileEntity implements Netw
     }
 
     public boolean stillValid(Player entityplayer) {
-        if (worldObj.getTileEntity(x, y, z) != this) {
+        if (worldObj.getTileEntity(tilePos) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
     }
 
+	@Override
+	public void writeAdditionalData(@NotNull CompoundTag compoundTag) {
 
+	}
+
+	@Override
+	public void readAdditionalData(@NotNull CompoundTag compoundTag) {
+
+	}
 }

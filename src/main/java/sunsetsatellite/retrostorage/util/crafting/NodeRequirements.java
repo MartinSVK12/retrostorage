@@ -4,11 +4,11 @@ import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.IntTag;
 import com.mojang.nbt.tags.Tag;
 import net.minecraft.core.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class NodeRequirements {

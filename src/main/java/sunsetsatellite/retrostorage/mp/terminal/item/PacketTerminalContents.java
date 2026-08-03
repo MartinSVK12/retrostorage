@@ -43,8 +43,8 @@ public class PacketTerminalContents implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(context.player != null && context.player.craftingInventory instanceof MenuDigitalTerminal){
-            ((MenuDigitalTerminal) context.player.craftingInventory).networkStacks = stacks;
+        if(context.player != null && context.player.containerMenu instanceof MenuDigitalTerminal){
+            ((MenuDigitalTerminal) context.player.containerMenu).networkStacks = stacks;
         }
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
@@ -98,8 +99,8 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public void readFromNBT(CompoundTag CompoundTag) {
-        super.readFromNBT(CompoundTag);
+    public void readAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         ListTag listTag = CompoundTag.getList("Items");
         contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
@@ -112,15 +113,15 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public void writeToNBT(CompoundTag CompoundTag) {
-        super.writeToNBT(CompoundTag);
+    public void writeAdditionalData(@NonNull CompoundTag CompoundTag) {
+
         ListTag listTag = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
                 CompoundTag CompoundTag1 = new CompoundTag();
                 CompoundTag1.putByte("Slot", (byte) i);
                 contents[i].writeToNBT(CompoundTag1);
-                listTag.addTag(CompoundTag1);
+				listTag.addTag(CompoundTag1);
             }
         }
         CompoundTag.put("Items", listTag);
@@ -214,19 +215,20 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return processes;
     }
 
-    public boolean stillValid(Player entityplayer) {
-        if (worldObj.getTileEntity(x, y, z) != this) {
+	@Override
+    public boolean stillValid(@NonNull Player entityplayer) {
+        if (worldObj.getTileEntity(tilePos) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
     }
 
-    @Override
-    public void sortContainer() {
+	@Override
+	public void sort() {
 
-    }
+	}
 
-    @Override
+	@Override
     public List<NetworkCraftable> getCraftables() {
         return getProcesses().stream().map(NetworkCraftable::new).collect(Collectors.toList());
     }

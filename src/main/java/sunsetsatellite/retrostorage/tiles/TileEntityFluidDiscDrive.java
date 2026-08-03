@@ -7,6 +7,7 @@ import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
@@ -109,8 +110,8 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     }
 
     @Override
-    public void readFromNBT(CompoundTag compoundTag) {
-        super.readFromNBT(compoundTag);
+    public void readAdditionalData(@NonNull CompoundTag compoundTag) {
+
         ListTag listTag = compoundTag.getList("Items");
         discStorage = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
@@ -137,8 +138,8 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
     }
 
     @Override
-    public void writeToNBT(CompoundTag compoundTag) {
-        super.writeToNBT(compoundTag);
+    public void writeAdditionalData(@NonNull CompoundTag compoundTag) {
+
         ListTag listTag = new ListTag();
         for (int i = 0; i < discStorage.length; i++) {
             if (discStorage[i] != null) {
@@ -169,16 +170,16 @@ public class TileEntityFluidDiscDrive extends TileEntityNetworkDevice
         return 64;
     }
 
-    @Override
-    public boolean stillValid(Player entityplayer) {
-        if (worldObj.getTileEntity(x, y, z) != this) {
+	@Override
+    public boolean stillValid(@NonNull Player entityplayer) {
+        if (worldObj.getTileEntity(tilePos) != this) {
             return false;
         }
-        return entityplayer.distanceToSqr((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D) <= 64D;
+        return entityplayer.distanceToSqr((double) tilePos.x + 0.5D, (double) tilePos.y + 0.5D, (double) tilePos.z + 0.5D) <= 64D;
     }
 
     @Override
-    public void sortContainer() {
+    public void sort() {
 
     }
 

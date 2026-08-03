@@ -6,7 +6,7 @@ import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.player.inventory.container.Container;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.Connection;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.IScreenActionListener;
@@ -259,8 +259,8 @@ public class TileEntityFluidRedstoneEmitter extends TileEntityNetworkDevice impl
         super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         workTimer.tick();
-        worldObj.markBlocksDirty(x, y, z, x, y, z);
-        worldObj.notifyBlocksOfNeighborChange(x, y, z, isActive ? 15 : 0);
+		worldObj.markBlockDirty(tilePos);
+		worldObj.notifyBlockChange(tilePos, getBlock());
         if (getController() != null) {
             if (filter.getFluidInSlot(0) != null) {
                 int id = filter.getFluidInSlot(0).fluid.getFirstId();
@@ -296,8 +296,8 @@ public class TileEntityFluidRedstoneEmitter extends TileEntityNetworkDevice impl
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
+    public void readAdditionalData(@NonNull CompoundTag nbttagcompound) {
+        super.readAdditionalData(nbttagcompound);
         isActive = nbttagcompound.getBoolean("isActive");
         mode = nbttagcompound.getInteger("mode");
         amount = nbttagcompound.getInteger("checkAmount");
@@ -312,12 +312,12 @@ public class TileEntityFluidRedstoneEmitter extends TileEntityNetworkDevice impl
                 filter.fluidContents[j] = new FluidStack(tag);
             }
         }
-        super.readFromNBT(nbttagcompound);
+        super.readAdditionalData(nbttagcompound);
     }
 
     @Override
-    public void writeToNBT(CompoundTag nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
+    public void writeAdditionalData(@NonNull CompoundTag nbttagcompound) {
+        super.writeAdditionalData(nbttagcompound);
         ListTag listTag = new ListTag();
         for (int i = 0; i < filter.fluidContents.length; i++) {
             if (filter.fluidContents[i] != null) {

@@ -22,32 +22,14 @@
     "main": [
       "sunsetsatellite.retrostorage.RetroStorage"
     ],
-    "recipesReady": [
-      "sunsetsatellite.retrostorage.RetroStorage"
-    ],
     "btwaila": [
       "sunsetsatellite.retrostorage.api.impl.btwaila.BTWailaReSPlugin"
-    ],
-    "afterBlockInit": [
-      "sunsetsatellite.retrostorage.ReSBlocks"
-    ],
-    "afterItemInit": [
-      "sunsetsatellite.retrostorage.ReSItems"
     ],
     "client": [
       "sunsetsatellite.retrostorage.RetroStorageClient"
     ],
-    "beforeClientStart": [
-      "sunsetsatellite.retrostorage.RetroStorageClient"
-    ],
-    "afterClientStart": [
-      "sunsetsatellite.retrostorage.RetroStorageClient"
-    ],
     "server": [
       "sunsetsatellite.retrostorage.RetroStorageServer"
-    ],
-    "initModels": [
-      "sunsetsatellite.retrostorage.ReSModels"
     ],
     "gatherTMBPlugins": [
       "sunsetsatellite.retrostorage.api.impl.tmb.TMBReSPlugin"
@@ -56,18 +38,16 @@
   "mixins": [
     "retrostorage.mixins.json"
   ],
-  "depends": {
-    "minecraft": "~7.3",
-    "fabricloader": ">=0.15.5",
-    "catalyst-core": ">=2.3.1",
-    "catalyst-fluids": ">=2.3.3",
-    "catalyst-energy": ">=2.0.6",
-    "catalyst-multipart": ">=2.0.4",
-    "halplibe": ">=5.3.0",
-    "dragonfly": ">=1.7.0-alpha.5"
-  },
-  "suggests": {
-    "btwaila": "*",
-    "tmb": "*"
-  }
+	"depends": {
+		"minecraft": "~8.0",
+		"fabricloader": ">=${loader}",
+		"catalyst-core": ">=${core}",
+		"catalyst-fluids": ">=${fluids}",
+		"catalyst-energy": ">=${energy}",
+		"halplibe": ">=${halplibe}"
+	},
+	"suggests": {
+		"btwaila": "*",
+		"tmb": "*"
+	}
 }

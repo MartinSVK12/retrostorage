@@ -3,13 +3,14 @@ package sunsetsatellite.retrostorage.screens;
 
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.lang.I18n;
 
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import net.minecraft.core.util.helper.Color;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.CatalystEnergy;
 import sunsetsatellite.retrostorage.menus.MenuEnergyAcceptor;
@@ -28,7 +29,7 @@ public class ScreenEnergyAcceptor extends ScreenContainerAbstract {
     @Override
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/acceptor.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -44,7 +45,6 @@ public class ScreenEnergyAcceptor extends ScreenContainerAbstract {
         c.setRGB(colorBytes[0],colorBytes[1],colorBytes[2]);
         color = c.getAlpha() << 24 | c.getRed() << 16 | c.getBlue() << 8 | c.getGreen();
         drawRectWidthHeight(x + 80, y + 40, (int) x_mapped, 7, color);
-        GL11.glEnable(3553);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ScreenEnergyAcceptor extends ScreenContainerAbstract {
     @Override
     protected void drawGuiContainerForegroundLayer() {
         super.drawGuiContainerForegroundLayer();
-        font.drawString(name, 48, 6, 0xFF404040);
+        drawStringNoShadow(fontRenderer,name, 48, 6, 0xFF404040);
     }
 
 

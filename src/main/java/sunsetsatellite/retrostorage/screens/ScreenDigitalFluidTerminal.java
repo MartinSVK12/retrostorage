@@ -6,7 +6,9 @@ import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TextFieldElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.option.enums.DescriptionPromptEnum;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.item.ItemStack;
@@ -17,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.core.util.NumberUtil;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
@@ -96,14 +98,14 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Digital Fluid Terminal", 8, 6, 0x404040);
-        if(searching) font.drawCenteredString("<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
-        font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,"Digital Fluid Terminal", 8, 6, 0x404040);
+        if(searching) drawStringCenteredShadow(fontRenderer,"<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
         if(tile.page > tile.pages) tile.page = 0;
 
         String pageText = "Page: " + tile.page + "/" + tile.pages;
-        int pageTextWidth = font.getStringWidth(pageText);
-        font.drawString(pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
+        int pageTextWidth = fontRenderer.stringWidth(pageText);
+        drawStringNoShadow(fontRenderer,pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
         if(tile.network != null) {
             INetworkController controller = tile.getController();
             if (controller != null) {
@@ -112,8 +114,8 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
                     color = 0xFF4040;
                 }
                 String s = NumberUtil.format(controller.getFluidStackAmount()) + "/" + NumberUtil.format(controller.getFluidStackCapacity()) + " ("+ NumberUtil.format(controller.getFluidAmount()) +"/"+ NumberUtil.format(controller.getFluidCapacity()) + ")";
-                int strWidth = font.getStringWidth(s);
-                font.drawStringWithShadow(s, xSize - 8 - strWidth, (ySize - 95) + 2, color);
+                int strWidth = fontRenderer.stringWidth(s);
+				drawStringShadow(fontRenderer, s, xSize - 8 - strWidth, (ySize - 95) + 2, color);
             }
         }
     }
@@ -139,7 +141,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/digital_terminal.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -211,15 +213,12 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
                     final ContainerInventory inventoryPlayer = mc.thePlayer.inventory;
                     if (inventoryPlayer.getHeldItemStack() == null && mouseHoveringOverSlot(slot,mouseX,mouseY))
                     {
-                        GL11.glTranslatef(-centerX, -centerY, 0.0F);
-                        boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || mc.gameSettings.itemDescriptions.value == DescriptionPromptEnum.ALWAYS_SHOW;
+                        GLRenderer.modelM4f().translate(-centerX, -centerY, 0.0F);
+                        boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || GameSettings.ITEM_DESCRIPTIONS.value == DescriptionPromptEnum.ALWAYS_SHOW;
                         String str = tooltip.getTooltipText(stack, showDescription, null) + "\n" + TextFormatting.GRAY + stack.stackSize;
-                        if(!str.isEmpty())
-                        {
-                            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                            tooltip.render(str, mouseX, mouseY, 8, -8);
-                        }
-                        GL11.glPopMatrix();
+						GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+						tooltip.render(str, mouseX, mouseY, 8, -8);
+						//GLRenderer.popFrame();
                         break;
                     }
                 }
@@ -229,7 +228,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
     public @UnmodifiableView List<ItemStack> getFilteredStacks() {
 
-        if(EnvironmentHelper.isClientWorld()){
+        if(EnvironmentHelper.isMultiplayerClient()){
             return ((MenuDigitalFluidTerminal) inventorySlots).networkStacks;
         }
 

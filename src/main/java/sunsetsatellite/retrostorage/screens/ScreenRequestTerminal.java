@@ -6,7 +6,9 @@ import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TextFieldElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.option.enums.DescriptionPromptEnum;
+import net.minecraft.client.render.renderer.GLRenderer;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.entity.player.Player;
@@ -18,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
@@ -99,17 +101,17 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
     }
 
     protected void drawGuiContainerForegroundLayer() {
-        font.drawString("Request Terminal", 8, 6, 0x404040);
-        if(searching) font.drawCenteredString("<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
-        font.drawString("Inventory", 8, (ySize - 95) + 2, 0x404040);
+        drawStringNoShadow(fontRenderer,"Request Terminal", 8, 6, 0x404040);
+        if(searching) drawStringCenteredShadow(fontRenderer,"<< Searching >>", (xSize / 2), -8, 0xFFFFFF);
+        drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
         String pageText = "Page: " + tile.page + "/" + tile.pages;
-        int pageTextWidth = font.getStringWidth(pageText);
-        font.drawString(pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
+        int pageTextWidth = fontRenderer.stringWidth(pageText);
+        drawStringNoShadow(fontRenderer,pageText, xSize - 8 - pageTextWidth, 6, 0x404040);
         if(tile.getController() != null){
             String craftableSize = String.valueOf(tile.getController().getCraftables().size());
-            int strWidth = font.getStringWidth(craftableSize);
+            int strWidth = fontRenderer.stringWidth(craftableSize);
             int color = 0xFFFFFF;
-            font.drawStringWithShadow(craftableSize, xSize - 8 - strWidth, (ySize - 95) + 2, color);
+            drawStringShadow(fontRenderer, craftableSize, xSize - 8 - strWidth, (ySize - 95) + 2, color);
         }
     }
 
@@ -125,7 +127,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
 
     protected void drawGuiContainerBackgroundLayer(float f) {
         @NotNull Texture i = mc.textureManager.loadTexture("/assets/retrostorage/textures/gui/request_terminal.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(i);
         int j = (width - xSize) / 2;
         int k = (height - ySize) / 2;
@@ -160,7 +162,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
             if (c != null) {
                 c.clearRequestQueue();
                 Vec3i pos = c.getPosition();
-                if(EnvironmentHelper.isClientWorld()){
+                if(EnvironmentHelper.isMultiplayerClient()){
                     NetworkHandler.sendToServer(new PacketClearRequestQueue(pos.x, pos.y, pos.z));
                 }
                 player.sendTranslatedChatMessage("action.retrostorage.clearTaskQueue");
@@ -238,15 +240,14 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
                     final ContainerInventory inventoryPlayer = mc.thePlayer.inventory;
                     if (inventoryPlayer.getHeldItemStack() == null && mouseHoveringOverSlot(slot,mouseX,mouseY))
                     {
-                        GL11.glTranslatef(-centerX, -centerY, 0.0F);
-                        boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || mc.gameSettings.itemDescriptions.value == DescriptionPromptEnum.ALWAYS_SHOW;
+                        GLRenderer.modelM4f().translate(-centerX, -centerY, 0.0F);
+                        boolean showDescription = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || GameSettings.ITEM_DESCRIPTIONS.value == DescriptionPromptEnum.ALWAYS_SHOW;
                         String str = tooltip.getTooltipText(stack, showDescription, null);
                         if(!str.isEmpty())
                         {
-                            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                            GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                             tooltip.render(str, mouseX, mouseY, 8, -8);
                         }
-                        GL11.glPopMatrix();
                         break;
                     }
                 }
@@ -255,7 +256,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
     }
 
     public @UnmodifiableView List<Pair<ItemStack,NetworkCraftable>> getAllStacks() {
-        if(EnvironmentHelper.isClientWorld()){
+        if(EnvironmentHelper.isMultiplayerClient()){
             return ((MenuRequestTerminal) inventorySlots).networkCraftables;
         }
         INetworkController controller = tile.getController();
@@ -273,7 +274,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
 
     public @UnmodifiableView List<Pair<ItemStack,NetworkCraftable>> getFilteredStacks() {
 
-        if(EnvironmentHelper.isClientWorld()){
+        if(EnvironmentHelper.isMultiplayerClient()){
             return ((MenuRequestTerminal) inventorySlots).networkCraftables;
         }
 

@@ -1,9 +1,7 @@
 # RetroStorage
-Digital storage system mod for BTA 7.1. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
+Digital storage system mod for BTA! 8.0. **Visit the [wiki](https://github.com/MartinSVK12/retrostorage/wiki)!**
 
 # Maybe you're looking for the [b1.7.3 Modloader](https://github.com/MartinSVK12/retrostorage/tree/b1.7.3) version instead?
-
-Requires Babric, designed for Better than Adventure.
 
 **Features**:
 

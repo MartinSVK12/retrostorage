@@ -29,9 +29,9 @@ public class PacketFluidTerminalRequestContents implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(EnvironmentHelper.isServerEnvironment()){
-            if(context.player != null && context.player.craftingInventory instanceof MenuDigitalFluidTerminal){
-                MenuDigitalFluidTerminal menu = (MenuDigitalFluidTerminal) context.player.craftingInventory;
+        if(EnvironmentHelper.isMultiplayerServer()){
+            if(context.player != null && context.player.containerMenu instanceof MenuDigitalFluidTerminal){
+                MenuDigitalFluidTerminal menu = (MenuDigitalFluidTerminal) context.player.containerMenu;
                 menu.getFilteredStacks(searchQuery);
                 NetworkHandler.sendToPlayer(context.player,new PacketFluidTerminalContents(menu.networkStacks));
             }

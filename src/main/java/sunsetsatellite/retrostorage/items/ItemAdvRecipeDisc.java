@@ -13,6 +13,8 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.screens.ScreenCraftingProcess;
@@ -33,14 +35,14 @@ public class ItemAdvRecipeDisc extends Item implements ICustomDescription {
         return "";
     }
 
-    @Override
-    @Environment(EnvType.CLIENT)
-    public ItemStack onUseItem(ItemStack itemstack, World world, Player entityplayer) {
-        if(!EnvironmentHelper.isServerEnvironment()){
-            Minecraft.getMinecraft().displayScreen(new ScreenCraftingProcess(new CraftingProcess(itemstack.getData().getCompound("disc"))));
-        }
-        return super.onUseItem(itemstack, world, entityplayer);
-    }
+	@Override
+	@Environment(EnvType.CLIENT)
+	public @Nullable ItemStack onUse(@NotNull ItemStack stack, @NotNull World world, @NotNull Player player) {
+		if(!EnvironmentHelper.isMultiplayerServer()){
+			Minecraft.getMinecraft().displayScreen(new ScreenCraftingProcess(new CraftingProcess(stack.getData().getCompound("disc"))));
+		}
+		return super.onUse(stack, world, player);
+	}
 
     @Override
     public String getPersistentDescription(ItemStack stack) {

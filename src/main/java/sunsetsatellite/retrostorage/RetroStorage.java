@@ -5,6 +5,7 @@ import com.mojang.nbt.tags.CompoundTag;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
+import net.minecraft.core.block.entity.TileEntityDispatcher;
 import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeGroup;
@@ -43,11 +44,11 @@ import sunsetsatellite.retrostorage.util.VariantStack;
 import sunsetsatellite.retrostorage.util.crafting.CraftableType;
 import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
-import turniplabs.halplibe.helper.EntityHelper;
+import turniplabs.halplibe.HalpLibe;
+import turniplabs.halplibe.event.defs.CommonEvents;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.network.NetworkHandler;
-import turniplabs.halplibe.util.GameStartEntrypoint;
-import turniplabs.halplibe.util.RecipeEntrypoint;
+import turniplabs.halplibe.util.dependency.Key;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -57,8 +58,8 @@ import static sunsetsatellite.retrostorage.ReSBlocks.*;
 import static sunsetsatellite.retrostorage.ReSConfig.config;
 import static sunsetsatellite.retrostorage.ReSItems.*;
 
-public class RetroStorage implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
-    public static final String MOD_ID = "retrostorage";
+public class RetroStorage implements ModInitializer {
+    public static final String MOD_ID = HalpLibe.registerMod("retrostorage", true);
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Set<Fluid> DISALLOWED_FLUIDS = new HashSet<>();
@@ -68,29 +69,35 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
     @SuppressWarnings("UnreachableCode")
     @Override
     public void onInitialize() {
-        EntityHelper.createTileEntity(TileEntityDigitalTerminal.class,id("digital_terminal"));
-        EntityHelper.createTileEntity(TileEntityDigitalFluidTerminal.class,id("digital_fluid_terminal"));
-        EntityHelper.createTileEntity(TileEntityDigitalController.class,id("digital_controller"));
-        EntityHelper.createTileEntity(TileEntityDiscDrive.class,id("disc_drive"));
-        EntityHelper.createTileEntity(TileEntityFluidDiscDrive.class,id("fluid_disc_drive"));
-        EntityHelper.createTileEntity(TileEntityNetworkCable.class,id("network_cable"));
-        EntityHelper.createTileEntity(TileEntityRecipeEncoder.class,id("recipe_encoder"));
-        EntityHelper.createTileEntity(TileEntityAssembler.class,id("assembler"));
-        EntityHelper.createTileEntity(TileEntityRequestTerminal.class,id("request_terminal"));
-        EntityHelper.createTileEntity(TileEntityImporter.class,id("item_importer"));
-        EntityHelper.createTileEntity(TileEntityFluidImporter.class,id("fluid_mporter"));
-        EntityHelper.createTileEntity(TileEntityExporter.class,id("item_exporter"));
-        EntityHelper.createTileEntity(TileEntityFluidExporter.class,id("fluid_exporter"));
-        EntityHelper.createTileEntity(TileEntityProcessProgrammer.class,id("process_programmer"));
-        EntityHelper.createTileEntity(TileEntityAdvInterface.class,id("adv_interface"));
-        EntityHelper.createTileEntity(TileEntityWirelessLink.class,id("wireless_link"));
-        EntityHelper.createTileEntity(TileEntityEnergyAcceptor.class, id("energy_acceptor"));
-        EntityHelper.createTileEntity(TileEntityRedstoneEmitter.class,id("redstone_emitter"));
-        EntityHelper.createTileEntity(TileEntityFluidRedstoneEmitter.class,id("fluid_redstone_emitter"));
-        EntityHelper.createTileEntity(TileEntityCoprocessor.class,id("crafting_coprocessor"));
-        EntityHelper.createTileEntity(TileEntityStorageBus.class,id("storage_bus"));
-        EntityHelper.createTileEntity(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
-        EntityHelper.createTileEntity(TileEntityAdvAssembler.class,id("adv_assembler"));
+		CommonEvents.BEFORE_GAME_START.listen(Key.of(MOD_ID), this::beforeGameStart);
+		CommonEvents.AFTER_GAME_START.listen(Key.of(MOD_ID),this::afterGameStart);
+		CommonEvents.AFTER_BLOCK_INIT.listen(Key.of(MOD_ID),()->new ReSBlocks().afterBlockInit());
+		CommonEvents.AFTER_ITEM_INIT.listen(Key.of(MOD_ID),()->new ReSItems().afterItemInit());
+		CommonEvents.RECIPES_NAMESPACE_INIT.listen(Key.of(MOD_ID),this::initNamespaces);
+		CommonEvents.RECIPES_READY.listen(Key.of(MOD_ID),this::onRecipesReady);
+		TileEntityDispatcher.addMapping(TileEntityDigitalTerminal.class,id("digital_terminal"));
+		TileEntityDispatcher.addMapping(TileEntityDigitalFluidTerminal.class,id("digital_fluid_terminal"));
+		TileEntityDispatcher.addMapping(TileEntityDigitalController.class,id("digital_controller"));
+		TileEntityDispatcher.addMapping(TileEntityDiscDrive.class,id("disc_drive"));
+		TileEntityDispatcher.addMapping(TileEntityFluidDiscDrive.class,id("fluid_disc_drive"));
+		TileEntityDispatcher.addMapping(TileEntityNetworkCable.class,id("network_cable"));
+		TileEntityDispatcher.addMapping(TileEntityRecipeEncoder.class,id("recipe_encoder"));
+		TileEntityDispatcher.addMapping(TileEntityAssembler.class,id("assembler"));
+		TileEntityDispatcher.addMapping(TileEntityRequestTerminal.class,id("request_terminal"));
+		TileEntityDispatcher.addMapping(TileEntityImporter.class,id("item_importer"));
+		TileEntityDispatcher.addMapping(TileEntityFluidImporter.class,id("fluid_mporter"));
+		TileEntityDispatcher.addMapping(TileEntityExporter.class,id("item_exporter"));
+		TileEntityDispatcher.addMapping(TileEntityFluidExporter.class,id("fluid_exporter"));
+		TileEntityDispatcher.addMapping(TileEntityProcessProgrammer.class,id("process_programmer"));
+		TileEntityDispatcher.addMapping(TileEntityAdvInterface.class,id("adv_interface"));
+		TileEntityDispatcher.addMapping(TileEntityWirelessLink.class,id("wireless_link"));
+		TileEntityDispatcher.addMapping(TileEntityEnergyAcceptor.class, id("energy_acceptor"));
+		TileEntityDispatcher.addMapping(TileEntityRedstoneEmitter.class,id("redstone_emitter"));
+		TileEntityDispatcher.addMapping(TileEntityFluidRedstoneEmitter.class,id("fluid_redstone_emitter"));
+		TileEntityDispatcher.addMapping(TileEntityCoprocessor.class,id("crafting_coprocessor"));
+		TileEntityDispatcher.addMapping(TileEntityStorageBus.class,id("storage_bus"));
+		TileEntityDispatcher.addMapping(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
+		TileEntityDispatcher.addMapping(TileEntityAdvAssembler.class,id("adv_assembler"));
 
         NetworkHandler.registerNetworkMessage(PacketTerminalRequestContents::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
@@ -121,7 +128,6 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         LOGGER.info("RetroStorage initialized.");
     }
 
-    @Override
     public void onRecipesReady() {
         RecipeBuilder.Shaped(MOD_ID, "GGG", "GRG", "GGG")
                 .addInput('G', Blocks.GLASS)
@@ -564,7 +570,7 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         RecipeBuilder.Shaped(MOD_ID, " C ", "IHE", " C ")
                 .addInput('C', machineCasing)
                 .addInput('I', fluidImporter)
-                .addInput('H', Items.BUCKET)
+                .addInput('H', Items.BUCKET_IRON)
                 .addInput('E', fluidExporter)
                 .create("fluid_storage_bus", new ItemStack(fluidStorageBus, 1));
 
@@ -594,7 +600,6 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         RecipeBuilder.Furnace(MOD_ID).setInput(ceramicPlateUnfired).create("ceramic_plate", new ItemStack(ceramicPlate, 1));
     }
 
-    @Override
     public void initNamespaces() {
         RecipeNamespace namespace = new RecipeNamespace();
         final RecipeGroup<RecipeEntryCrafting<?, ?>> WORKBENCH = new RecipeGroup<>(new RecipeSymbol(new ItemStack(Blocks.WORKBENCH)));
@@ -641,14 +646,12 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
     public static ArrayList<RecipeEntryCrafting<?, ?>> findRecipesByOutput(ItemStack output) {
         ArrayList<RecipeEntryCrafting<?, ?>> foundRecipes = new ArrayList<>();
         for (RecipeEntryCrafting<?, ?> recipe : Registries.RECIPES.getAllCraftingRecipes()) {
-            if (recipe instanceof RecipeEntryCraftingShaped) {
-                RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
-                if (r.getOutput().isItemEqual(output)) {
+            if (recipe instanceof RecipeEntryCraftingShaped r) {
+				if (r.getOutput().isItemEqual(output)) {
                     foundRecipes.add(recipe);
                 }
-            } else if (recipe instanceof RecipeEntryCraftingShapeless) {
-                RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
-                if (r.getOutput().isItemEqual(output)) {
+            } else if (recipe instanceof RecipeEntryCraftingShapeless r) {
+				if (r.getOutput().isItemEqual(output)) {
                     foundRecipes.add(recipe);
                 }
             }
@@ -712,13 +715,11 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         if (craftable.getType() == CraftableType.RECIPE) {
             RecipeEntryCrafting<?, ItemStack> recipe = craftable.getRecipe();
             ArrayList<ItemStack> inputs = new ArrayList<>();
-            if (recipe instanceof RecipeEntryCraftingShapeless) {
-                RecipeEntryCraftingShapeless r = (RecipeEntryCraftingShapeless) recipe;
-                inputs = r.getInput().stream().map((S) -> S == null ? null : S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
+            if (recipe instanceof RecipeEntryCraftingShapeless r) {
+				inputs = r.getInput().stream().map((S) -> S == null ? null : S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
             }
-            if (recipe instanceof RecipeEntryCraftingShaped) {
-                RecipeEntryCraftingShaped r = (RecipeEntryCraftingShaped) recipe;
-                inputs = Arrays.stream(r.getInput()).map((S) -> S == null ? null : S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
+            if (recipe instanceof RecipeEntryCraftingShaped r) {
+				inputs = Arrays.stream(r.getInput()).map((S) -> S == null ? null : S.resolve().get(0)).map((s)-> s != null ? s.copy() : null).collect(Collectors.toCollection(ArrayList::new));
             }
             inputs.removeIf(Objects::isNull);
             for (ItemStack input : inputs) {
@@ -825,18 +826,16 @@ public class RetroStorage implements ModInitializer, GameStartEntrypoint, Recipe
         return null;
     }
 
-    @Override
     public void beforeGameStart() {
 
     }
 
-    @Override
     public void afterGameStart() {
 
     }
 
     public static NamespaceID id(String id) {
-        return NamespaceID.getPermanent(MOD_ID, id);
+        return new NamespaceID(MOD_ID, id);
     }
 
     public static String key(String key){

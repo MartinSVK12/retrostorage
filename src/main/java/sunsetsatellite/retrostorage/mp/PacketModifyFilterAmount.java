@@ -48,7 +48,7 @@ public class PacketModifyFilterAmount implements NetworkMessage {
 
     @Override
     public void handle(NetworkContext context) {
-        if(EnvironmentHelper.isServerEnvironment()){
+        if(EnvironmentHelper.isMultiplayerServer()){
             if(context.player != null && context.player.world != null) {
                 TileEntity te = context.player.world.getTileEntity(x, y, z);
                 if (te instanceof TileEntityProcessProgrammer) {

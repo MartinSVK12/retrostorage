@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.menus;
 
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.InventoryAction;
 import net.minecraft.core.entity.player.Player;
 
@@ -54,18 +55,18 @@ public class MenuDigitalTerminal extends MenuAbstract {
             }
         }
 
-        if(EnvironmentHelper.isServerEnvironment()){
+        if(EnvironmentHelper.isMultiplayerServer()){
             NetworkHandler.sendToPlayer(inventoryPlayer.player,new PacketTerminalContents(networkStacks));
         }
     }
 
     @Override
-    public List<Integer> getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
+    public IntList getMoveSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
         return null;
     }
 
     @Override
-    public List<Integer> getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
+    public IntList getTargetSlots(InventoryAction inventoryAction, Slot slot, int i, Player entityPlayer) {
         return null;
     }
 
@@ -104,16 +105,16 @@ public class MenuDigitalTerminal extends MenuAbstract {
                     if(itemStack.stackSize > 0){
                         inventoryPlayer.player.dropPlayerItem(itemStack);
                     }
-                    if(EnvironmentHelper.isServerEnvironment()){
-                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                    if(EnvironmentHelper.isMultiplayerServer()){
+                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                     }
                     return;
                 }
                 ItemStack heldItemStack = inventoryPlayer.getHeldItemStack();
                 if(heldItemStack != null){
                     inventoryPlayer.setHeldItemStack(controller.addItemToNetwork(heldItemStack));
-                    if(EnvironmentHelper.isServerEnvironment()) {
-                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                    if(EnvironmentHelper.isMultiplayerServer()) {
+                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                     }
                 } else {
                     if(id >= networkStacks.size()) return;
@@ -121,8 +122,8 @@ public class MenuDigitalTerminal extends MenuAbstract {
                     if(stack == null) return;
                     int amount = stack.getItem().getItemStackLimit(stack);
                     inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID,stack.getMetadata(),stack.getData(),amount));
-                    if(EnvironmentHelper.isServerEnvironment()) {
-                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                    if(EnvironmentHelper.isMultiplayerServer()) {
+                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                     }
                 }
             }
@@ -133,8 +134,8 @@ public class MenuDigitalTerminal extends MenuAbstract {
                     Optional<ItemStack> leftovers = Optional.ofNullable(controller.addItemToNetwork(heldItemStack.splitStack(1)));
                     if(heldItemStack.stackSize <= 0) {
                         inventoryPlayer.setHeldItemStack(leftovers.orElse(null));
-                        if(EnvironmentHelper.isServerEnvironment()) {
-                            ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                        if(EnvironmentHelper.isMultiplayerServer()) {
+                            ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                         }
                     }
                     leftovers.ifPresent((S)->heldItemStack.stackSize += S.stackSize);
@@ -144,8 +145,8 @@ public class MenuDigitalTerminal extends MenuAbstract {
                     if (stack == null) return;
                     int amount = Math.min(stack.stackSize / 2, stack.getItem().getItemStackLimit(stack) / 2);
                     inventoryPlayer.setHeldItemStack(controller.removeItemFromNetwork(stack.itemID, stack.getMetadata(), stack.getData(), amount));
-                    if (EnvironmentHelper.isServerEnvironment()) {
-                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, inventoryPlayer.getHeldItemStack()));
+                    if (EnvironmentHelper.isMultiplayerServer()) {
+                        ((PlayerServer) inventoryPlayer.player).playerNetServerHandler.sendPacket(new PacketContainerSetSlot(-1, -1, -1, inventoryPlayer.getHeldItemStack()));
                     }
                 }
             }
