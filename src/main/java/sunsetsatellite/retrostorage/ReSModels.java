@@ -1,6 +1,5 @@
 package sunsetsatellite.retrostorage;
 
-import com.google.common.base.Supplier;
 import net.minecraft.client.render.EntityRendererDispatcher;
 import net.minecraft.client.render.TileEntityRenderDispatcher;
 import net.minecraft.client.render.block.color.BlockColorDispatcher;
@@ -13,6 +12,8 @@ import sunsetsatellite.retrostorage.blocks.models.BlockModelNetworkCable;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelFluidRedstoneEmitter;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelMachine;
 import sunsetsatellite.retrostorage.blocks.models.BlockModelRedstoneEmitter;
+import java.util.function.Supplier;
+
 import static sunsetsatellite.retrostorage.ReSBlocks.*;
 import static sunsetsatellite.retrostorage.ReSItems.*;
 import static sunsetsatellite.retrostorage.RetroStorage.MOD_ID;
