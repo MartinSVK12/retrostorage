@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "RetroStorage",
   "description": "Digital storage mod for old versions of Minecraft, adapted to work with Better than Adventure.",
-  "icon": "icon.png",
+  "icon": "icon128.png",
   "authors": [
     "sunsetsatellite"
   ],
