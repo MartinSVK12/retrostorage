@@ -359,7 +359,7 @@ if(githubToken.isPresent){
 			val releaseBuilder = GHReleaseBuilder(repository, "${modVersion}bta")
 			releaseBuilder.name("${modVersion} - BTA")
 			releaseBuilder.body(Files.readString(project.projectDir.toPath().resolve("CHANGELOG.md")))
-			releaseBuilder.commitish("8.0")
+			releaseBuilder.commitish("bta")
 
 			val release = releaseBuilder.create()
 			release.uploadAsset(
