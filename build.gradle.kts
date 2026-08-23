@@ -3,9 +3,21 @@ import com.smushytaco.lwjgl_gradle.Preset
 import groovy.namespace.QName
 import groovy.util.Node
 import groovy.xml.XmlParser
-import java.io.FileNotFoundException
+import org.kohsuke.github.GHReleaseBuilder
+import org.kohsuke.github.GitHub
 import java.io.IOException
 import java.net.URL
+import java.nio.file.Files
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath("org.kohsuke:github-api:1.135")
+	}
+}
 
 plugins {
 	alias(libs.plugins.loom)
@@ -267,6 +279,31 @@ tasks {
 // Removes LWJGL2 dependencies
 configurations.configureEach { exclude(group = "org.lwjgl.lwjgl") }
 
+val modrinthToken: Provider<String> = providers.gradleProperty("modrinthToken")
+val githubToken: Provider<String> = providers.gradleProperty("githubToken")
+val catalystVersion = project(":catalyst-all").properties["mod_version"] as String
+
+if (modrinthToken.isPresent) {
+	modrinth {
+		token = modrinthToken
+		projectId = "retrostorage"
+		versionName = "RetroStorage ${modVersion}"
+		versionNumber = modVersion
+		versionType = "release"
+		uploadFile.set(tasks.jar)
+		additionalFiles = listOf(tasks.named("sourcesJar"))
+		gameVersions.add("b1.7.3")
+		loaders.add("bta-babric")
+		changelog = Files.readString(project.projectDir.toPath().resolve("CHANGELOG.md"))
+		dependencies { // A special DSL for creating dependencies
+			required.version("halplibe", libs.versions.halplibe.get())
+			required.version("catalyst", catalystVersion)
+			optional.project("tmb")
+			optional.project("btwaila")
+		}
+	}
+}
+
 publishing {
 	if(checkVersion(modGroup, modName, modVersion)){
 		repositories {
@@ -302,10 +339,37 @@ fun checkVersion(group: String, name: String, version: String): Boolean {
 			System.err.println("Version $version of $group.$name already exists!")
 			false
 		} else {
+			System.out.println("Version $version of $group.$name ready to release!")
 			true
 		}
 	} catch (e: IOException) {
-		System.err.println(e.message)
+		System.err.println("Failed to check version for $group.$name!")
+		e.printStackTrace()
 		true
+	}
+}
+
+if(githubToken.isPresent){
+	tasks.register("github") {
+		description = "Publishes mod to GitHub"
+		doLast {
+			val github = GitHub.connectUsingOAuth(githubToken.get())
+			val repository = github.getRepository("MartinSVK12/retrostorage")
+
+			val releaseBuilder = GHReleaseBuilder(repository, "${modVersion}bta")
+			releaseBuilder.name("${modVersion} - BTA")
+			releaseBuilder.body(Files.readString(project.projectDir.toPath().resolve("CHANGELOG.md")))
+			releaseBuilder.commitish("8.0")
+
+			val release = releaseBuilder.create()
+			release.uploadAsset(
+				project.file(tasks.named("jar").get().outputs.files.singleFile),
+				"application/java-archive"
+			)
+			release.uploadAsset(
+				project.file(tasks.named("sourcesJar").get().outputs.files.singleFile),
+				"application/java-archive"
+			)
+		}
 	}
 }
