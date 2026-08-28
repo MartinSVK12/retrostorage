@@ -1,6 +1,7 @@
 package sunsetsatellite.retrostorage.blocks;
 
 import net.minecraft.core.block.Block;
+import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.world.WorldSource;
 import net.minecraft.core.world.pos.TilePosc;
@@ -44,7 +45,8 @@ public class BlockLogicNetworkCable extends BlockLogicNetworkDevice implements I
         for (Direction dir : Direction.values()) {
             Vec3i v = dir.getVec();
             TileEntity te = world.getTileEntity(x + v.x, y + v.y, z + v.z);
-            Block b = world.getBlock(x + v.x, y + v.y, z + v.z);
+            Block<?> b = world.getBlock(x + v.x, y + v.y, z + v.z);
+			if(b == Blocks.AIR) continue;
             //noinspection ConditionCoveredByFurtherCondition
             if (
                     te == null || !(te instanceof TileEntityFluidPipe) ||
