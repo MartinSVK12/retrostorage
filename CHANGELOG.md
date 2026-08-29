@@ -1,1 +1,1 @@
-- Fixed crash with network cables.
+- Temporary removed autocrafting request complete popups.
