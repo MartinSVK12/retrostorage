@@ -1,1 +1,1 @@
-- Temporary removed autocrafting request complete popups.
+- Temporarily removed autocrafting request complete popups to prevent a crash in multiplayer.
