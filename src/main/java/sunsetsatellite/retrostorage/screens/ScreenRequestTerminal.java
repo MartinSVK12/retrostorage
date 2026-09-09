@@ -25,6 +25,7 @@ import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.menus.MenuRequestTerminal;
 import sunsetsatellite.retrostorage.mp.PacketClearRequestQueue;
 import sunsetsatellite.retrostorage.mp.terminal.request.PacketRequestTerminalRequestContents;
@@ -55,7 +56,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
 
     public ScreenRequestTerminal(ContainerInventory invPlayer, TileEntityRequestTerminal tile) {
         super(new MenuRequestTerminal(invPlayer, tile));
-        ySize = 220;
+		ySize = 222;
         this.tile = tile;
         this.player = invPlayer.player;
 
@@ -278,28 +279,7 @@ public class ScreenRequestTerminal extends ScreenContainerAbstract implements IE
             return ((MenuRequestTerminal) inventorySlots).networkCraftables;
         }
 
-        SearchQuery query = SearchQuery.resolve("");
-
-        //miniscule amounts of reflection
-        try {
-            Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
-            for (Field F1 : tmbRenderer.getDeclaredFields()) {
-                if (F1.getType() == TextFieldElement.class) {
-                    try {
-                        TextFieldElement field = ((TextFieldElement) F1.get(null));
-                        if(field != null) {
-                            String text = field.getText();
-                            query = SearchQuery.resolve(text);
-                        }
-                    } catch (IllegalAccessException ignored) {
-                        //failed to access text field
-                    }
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ignored) {
-            //tmb not installed, ignore
-        }
+		SearchQuery query = RetroStorage.getSearchQuery();
 
         searching = false;
         searchQuery = "";

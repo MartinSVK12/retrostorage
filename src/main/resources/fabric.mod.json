@@ -33,7 +33,10 @@
     ],
     "gatherTMBPlugins": [
       "sunsetsatellite.retrostorage.api.impl.tmb.TMBReSPlugin"
-    ]
+    ],
+		"emi": [
+			"sunsetsatellite.retrostorage.api.impl.bemi.bEMIReSPlugin"
+		]
   },
   "mixins": [
     "retrostorage.mixins.json"

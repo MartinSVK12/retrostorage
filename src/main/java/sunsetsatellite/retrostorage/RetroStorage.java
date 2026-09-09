@@ -3,6 +3,9 @@ package sunsetsatellite.retrostorage;
 
 import com.mojang.nbt.tags.CompoundTag;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.TextFieldElement;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.entity.TileEntityDispatcher;
@@ -11,6 +14,7 @@ import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeGroup;
 import net.minecraft.core.data.registry.recipe.RecipeNamespace;
 import net.minecraft.core.data.registry.recipe.RecipeSymbol;
+import net.minecraft.core.data.registry.recipe.SearchQuery;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
@@ -50,6 +54,7 @@ import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.network.NetworkHandler;
 import turniplabs.halplibe.util.dependency.Key;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -825,6 +830,53 @@ public class RetroStorage implements ModInitializer {
         }
         return null;
     }
+
+	public static SearchQuery getSearchQuery(){
+		if(FabricLoader.getInstance().isModLoaded("tmb") && !FabricLoader.getInstance().isModLoaded("emi")) {
+			//miniscule amounts of reflection
+			try {
+				Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
+				for (Field F1 : tmbRenderer.getDeclaredFields()) {
+					if (F1.getType() == TextFieldElement.class) {
+						try {
+							TextFieldElement field = ((TextFieldElement) F1.get(null));
+							if (field != null) {
+								String text = field.getText();
+								return SearchQuery.resolve(text);
+							}
+						} catch (IllegalAccessException ignored) {
+							//failed to access text field
+						}
+						break;
+					}
+				}
+			} catch (ClassNotFoundException ignored) {
+				//tmb not installed, ignore
+			}
+		} else if (FabricLoader.getInstance().isModLoaded("emi")) {
+			//miniscule amounts of reflection pt. 2
+			try {
+				Class<?> bemiSearch = Class.forName("dev.emi.emi.screen.EmiScreenManager");
+				for (Field F1 : bemiSearch.getDeclaredFields()) {
+					if (TextFieldWidget.class.isAssignableFrom(F1.getType())) {
+						try {
+							TextFieldWidget field = ((TextFieldWidget) F1.get(null));
+							if(field != null) {
+								String text = field.getText();
+								return SearchQuery.resolve(text);
+							}
+						} catch (IllegalAccessException ignored) {
+							//failed to access text field
+						}
+						break;
+					}
+				}
+			} catch (ClassNotFoundException ignored) {
+				//bemi not installed, ignore
+			}
+		}
+		return SearchQuery.resolve("");
+	}
 
     public void beforeGameStart() {
 

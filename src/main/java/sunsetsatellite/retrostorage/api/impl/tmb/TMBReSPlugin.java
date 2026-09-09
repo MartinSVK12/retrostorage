@@ -18,7 +18,7 @@ public class TMBReSPlugin implements ITMBPlugin, TMBEntrypoint {
 
     @Override
     public void onGatherPlugins(boolean isReload) {
-        TMB.LOGGER.info("Loading plugin: {} from {}", this.getClass().getSimpleName(), RetroStorage.MOD_ID);
+        //TMB.LOGGER.info("Loading plugin: {} from {}", this.getClass().getSimpleName(), RetroStorage.MOD_ID);
         TMB.registerPlugin(this);
     }
 }

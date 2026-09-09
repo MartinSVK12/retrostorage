@@ -1,11 +1,13 @@
 package sunsetsatellite.retrostorage.screens;
 
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.TextFieldElement;
 import net.minecraft.client.gui.TooltipElement;
 import net.minecraft.client.gui.container.ScreenContainerAbstract;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.option.enums.DescriptionPromptEnum;
 import net.minecraft.client.render.renderer.GLRenderer;
@@ -23,6 +25,7 @@ import org.lwjgl.input.Mouse;
 import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.menus.MenuDigitalTerminal;
 import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalInteraction;
 import sunsetsatellite.retrostorage.mp.terminal.item.PacketTerminalRequestContents;
@@ -51,7 +54,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
 
     public ScreenDigitalTerminal(ContainerInventory inventoryplayer, TileEntityDigitalTerminal tile) {
         super(new MenuDigitalTerminal(inventoryplayer, tile));
-        ySize = 220;
+        ySize = 222;
         this.tile = tile;
         this.inventoryPlayer = inventoryplayer;
 
@@ -243,31 +246,7 @@ public class ScreenDigitalTerminal extends ScreenContainerAbstract implements IE
             return ((MenuDigitalTerminal) inventorySlots).networkStacks;
         }
 
-        SearchQuery query = SearchQuery.resolve("");
-
-        //miniscule amounts of reflection
-        try {
-            Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
-            for (Field F1 : tmbRenderer.getDeclaredFields()) {
-                if (F1.getType() == TextFieldElement.class) {
-                    try {
-                        TextFieldElement field = ((TextFieldElement) F1.get(null));
-                        if(field != null) {
-                            String text = field.getText();
-                            query = SearchQuery.resolve(text);
-                        }
-                    } catch (IllegalAccessException ignored) {
-                        //failed to access text field
-                    }
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ignored) {
-            //tmb not installed, ignore
-        }
-
-        /*String text = TMBRenderer.search.getText();
-        query = SearchQuery.resolve(text);*/
+        SearchQuery query = RetroStorage.getSearchQuery();
 
         searching = false;
         searchQuery = "";

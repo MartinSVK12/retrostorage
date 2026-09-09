@@ -25,6 +25,7 @@ import sunsetsatellite.catalyst.core.util.TickTimer;
 import sunsetsatellite.catalyst.core.util.vector.Vec2i;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.core.util.mixin.interfaces.IExtendedScreenDraw;
+import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.menus.MenuDigitalFluidTerminal;
 import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalInteraction;
 import sunsetsatellite.retrostorage.mp.terminal.fluid.PacketFluidTerminalRequestContents;
@@ -52,7 +53,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
 
     public ScreenDigitalFluidTerminal(ContainerInventory inventoryplayer, TileEntityDigitalFluidTerminal tile) {
         super(new MenuDigitalFluidTerminal(inventoryplayer, tile));
-        ySize = 220;
+		ySize = 222;
         this.tile = tile;
         this.inventoryPlayer = inventoryplayer;
 
@@ -232,28 +233,7 @@ public class ScreenDigitalFluidTerminal extends ScreenContainerAbstract implemen
             return ((MenuDigitalFluidTerminal) inventorySlots).networkStacks;
         }
 
-        SearchQuery query = SearchQuery.resolve("");
-
-        //miniscule amounts of reflection
-        try {
-            Class<?> tmbRenderer = Class.forName("turing.tmb.client.TMBRenderer");
-            for (Field F1 : tmbRenderer.getDeclaredFields()) {
-                if (F1.getType() == TextFieldElement.class) {
-                    try {
-                        TextFieldElement field = ((TextFieldElement) F1.get(null));
-                        if(field != null) {
-                            String text = field.getText();
-                            query = SearchQuery.resolve(text);
-                        }
-                    } catch (IllegalAccessException ignored) {
-                        //failed to access text field
-                    }
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ignored) {
-            //tmb not installed, ignore
-        }
+		SearchQuery query = RetroStorage.getSearchQuery();
 
         searching = false;
         searchQuery = "";
