@@ -207,6 +207,8 @@ subprojects {
 	}
 }
 
+println("@Mod Updates **RetroStorage updated to ${version}!**\n\n${Files.readString(project.projectDir.toPath().resolve("CHANGELOG.md"))}\n:modrinth:https://modrinth.com/mod/retrostorage/version/${version}\n:github:<https://github.com/MartinSVK12/retrostorage/releases/tag/${version}bta>")
+
 java {
 	toolchain {
 		languageVersion = javaVersion.map { JavaLanguageVersion.of(it) }
