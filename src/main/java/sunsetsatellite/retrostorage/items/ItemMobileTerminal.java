@@ -13,6 +13,7 @@ import net.minecraft.core.world.pos.TilePos;
 import net.minecraft.core.world.pos.TilePosc;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.Catalyst;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import sunsetsatellite.retrostorage.ReSItems;
@@ -45,6 +46,8 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
 			if (player.isSneaking()) {
 				stack.getData().getValue().remove("position");
 				player.sendTranslatedChatMessage("action.retrostorage.terminalUnbound");
+			} else {
+				openTerminal(stack, world, player);
 			}
 		}
 		return true;
@@ -52,6 +55,11 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
 
 	@Override
 	public @Nullable ItemStack onUse(@NotNull ItemStack stack, @NotNull World world, @NotNull Player player) {
+		openTerminal(stack, world, player);
+		return super.onUse(stack, world, player);
+	}
+
+	private void openTerminal(@NonNull ItemStack stack, @NonNull World world, @NonNull Player player) {
 		CompoundTag positionNBT = stack.getData().getCompound("position");
 		TileEntity tile = world.getTileEntity(new TilePos(positionNBT.getInteger("x"), positionNBT.getInteger("y"), positionNBT.getInteger("z")));
 		if (stack.getItem().equals(ReSItems.mobileTerminal)) {
@@ -67,11 +75,9 @@ public class ItemMobileTerminal extends Item implements ICustomDescription {
 				Catalyst.displayGui(player, tile, key("gui/request_terminal"));
 			}
 		}
-
-		return super.onUse(stack, world, player);
 	}
 
-    @Override
+	@Override
     public String getDescription(ItemStack itemStack) {
         CompoundTag pos = itemStack.getData().getCompoundOrDefault("position", null);
         if (pos != null) {
