@@ -1,1 +1,1 @@
-- Temporarily removed autocrafting request complete popups to prevent a crash in multiplayer.
+- Added support for bEMI.
