@@ -153,7 +153,7 @@ dependencies {
 	implementation(project(":catalyst-fluids"))
 	implementation(project(":catalyst-energy"))
 	implementation(project(":catalyst-multiblocks"))
-	//implementation(project(":catalyst-multipart"))
+	implementation(project(":catalyst-multipart"))
 	implementation(project(":catalyst-effects"))
 	implementation(project(":catalyst-screens"))
 	implementation(project(":tmb"))
@@ -270,7 +270,7 @@ tasks {
 			"fluids" to project(":catalyst-fluids").properties["mod_version"] as String,
 			"energy" to project(":catalyst-energy").properties["mod_version"] as String,
 			"multiblocks" to project(":catalyst-multiblocks").properties["mod_version"] as String,
-			//"multipart" to project(":catalyst-multipart").properties["mod_version"] as String,
+			"multipart" to project(":catalyst-multipart").properties["mod_version"] as String,
 			"effects" to project(":catalyst-effects").properties["mod_version"] as String,
 			"screens" to project(":catalyst-screens").properties["mod_version"] as String
 		)

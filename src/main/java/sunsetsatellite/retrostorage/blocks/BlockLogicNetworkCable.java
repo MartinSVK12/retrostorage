@@ -27,12 +27,12 @@ public class BlockLogicNetworkCable extends BlockLogicNetworkDevice implements I
         return false;
     }
 
-    @Override
-    public boolean renderAsNormalBlockOnCondition(WorldSource world, int x, int y, int z) {
-        return false;
-    }
+	@Override
+	public boolean renderAsNormalBlockOnCondition(@NotNull WorldSource source, @NotNull TilePosc tilePos) {
+		return false;
+	}
 
-    @Override
+	@Override
     public ConduitCapability getConduitCapability() {
         return ConduitCapability.RES_NETWORK;
     }

@@ -12,6 +12,7 @@ import net.minecraft.core.world.pos.TilePosc;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.useless.dragonfly.data.block.BlockModelData;
+import sunsetsatellite.catalyst.CatalystMultipart;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.conduit.IMultiConduit;
 import sunsetsatellite.catalyst.core.util.vector.Vec3i;
@@ -42,6 +43,8 @@ public class BlockModelNetworkCable<T extends BlockLogic> extends BlockModelGene
 				models.get(dir).asModel().renderAttached(this, tessellator, worldSource, tilePos, 0, 0, 0, 0.0F, 0.0F, 0.0F, false, cullFaces, overrideTexture);
 			}
 		}
+
+		BlockModelDispatcher.getInstance().getDispatch(CatalystMultipart.multipartBlock).render(tessellator, worldSource, tilePos);
 
 		return loadBaseConduitModel().asModel().renderAttached(this, tessellator, worldSource, tilePos, 0, 0, 0, 0.0F, 0.0F, 0.0F, false, cullFaces, overrideTexture);
 	}

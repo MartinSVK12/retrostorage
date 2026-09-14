@@ -47,6 +47,7 @@
 		"catalyst-core": ">=${core}",
 		"catalyst-fluids": ">=${fluids}",
 		"catalyst-energy": ">=${energy}",
+		"catalyst-multipart": ">=${multipart}",
 		"halplibe": ">=${halplibe}"
 	},
 	"suggests": {
