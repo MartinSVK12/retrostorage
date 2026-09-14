@@ -1,1 +1,2 @@
 - Added support for bEMI.
+- Reimplemented support for multiparts.
