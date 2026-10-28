@@ -48,9 +48,15 @@ public class CraftingProcess {
             Step step = null;
             if (Objects.equals(taskTag.getString("type"), "item")) {
                 step = new Step(taskTag.getInteger("slot"), taskTag.getInteger("id"), taskTag.getBoolean("isOutput"), ItemStack.readItemStackFromNbt(taskTag.getCompound("stack")));
-            } else if (Objects.equals(taskTag.getString("type"), "fluid")) {
+				if(taskTag.containsKey("subinterface")) {
+					step.setSubinterface(taskTag.getInteger("subinterface"));
+				}
+			} else if (Objects.equals(taskTag.getString("type"), "fluid")) {
                 step = new Step(taskTag.getInteger("slot"), taskTag.getInteger("id"), taskTag.getBoolean("isOutput"), new FluidStack(taskTag.getCompound("stack")));
-            }
+				if(taskTag.containsKey("subinterface")) {
+					step.setSubinterface(taskTag.getInteger("subinterface"));
+				}
+			}
             if (step != null) unsortedSteps.add(step);
         }
         steps = unsortedSteps.stream().sorted(Comparator.comparingInt(s -> s.id)).collect(Collectors.toList());
@@ -60,6 +66,7 @@ public class CraftingProcess {
         public StackType type;
         public int slot;
         public int id;
+		public int subinterface = 0;
         public boolean output;
         public ItemStack stack;
         public FluidStack fluidStack;
@@ -82,11 +89,17 @@ public class CraftingProcess {
             this.stack = null;
         }
 
-        public void writeToNBT(CompoundTag tag) {
+		public Step setSubinterface(int subinterface) {
+			this.subinterface = subinterface;
+			return this;
+		}
+
+	    public void writeToNBT(CompoundTag tag) {
             tag.putString("type", type.name().toLowerCase());
             tag.putInt("slot", slot);
             tag.putInt("id", id);
             tag.putBoolean("isOutput",output);
+			tag.putInt("subinterface", subinterface);
             CompoundTag stackTag = new CompoundTag();
             if(stack != null){
                 stack.writeToNBT(stackTag);
@@ -104,6 +117,9 @@ public class CraftingProcess {
             slot = tag.getInteger("slot");
             id = tag.getInteger("id");
             output = tag.getBoolean("isOutput");
+			if(tag.containsKey("subinterface")) {
+				subinterface = tag.getInteger("subinterface");
+			}
             if(type == StackType.ITEM) {
                 stack = ItemStack.readItemStackFromNbt(tag.getCompound("stack"));
             } else {

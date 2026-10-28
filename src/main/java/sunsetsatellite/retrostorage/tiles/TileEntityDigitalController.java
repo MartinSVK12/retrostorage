@@ -261,7 +261,7 @@ public class TileEntityDigitalController extends TileEntityNetworkDevice impleme
         return null;
     }
 
-    @Override
+	@Override
     public IProcessor findProcessorWithNode(ProcessNode node) {
         if (worldObj != null && worldObj.isClientSide) return null;
         for (IProcessor processor : getProcessors()) {

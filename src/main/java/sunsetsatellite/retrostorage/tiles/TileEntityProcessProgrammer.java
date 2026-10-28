@@ -13,6 +13,7 @@ import sunsetsatellite.catalyst.fluids.util.Fluid;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.retrostorage.RetroStorage;
 import sunsetsatellite.retrostorage.items.ItemAdvRecipeDisc;
+import sunsetsatellite.retrostorage.util.crafting.CraftingProcess;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class TileEntityProcessProgrammer extends TileEntity
                 isCurrentOutput = false;
                 currentSlot = 0;
                 currentTask = 0;
+				currentSubinterface = 0;
                 currentProcessName = "New Process";
                 break;
             case 2:
@@ -52,7 +54,7 @@ public class TileEntityProcessProgrammer extends TileEntity
                 currentSlot++;
                 break;
             case 5:
-                if (currentSlot > 0) currentSlot--;
+                if (currentSlot >= 0) currentSlot--;
                 break;
             case 7:
                 setTask(selectedType);
@@ -62,6 +64,12 @@ public class TileEntityProcessProgrammer extends TileEntity
                 break;
             case 9:
                 selectedType = "fluid";
+                break;
+			case 10:
+				currentSubinterface++;
+                break;
+			case 11:
+				currentSubinterface--;
                 break;
         }
     }
@@ -252,6 +260,7 @@ public class TileEntityProcessProgrammer extends TileEntity
                 task.put("slot", currentSlot);
                 task.put("stack", getItem(0).copy());
                 task.put("isOutput", isCurrentOutput);
+				task.put("subinterface", currentSubinterface);
                 task.put("type", "item");
                 tasks.put(currentTask, task);
             } else {
@@ -263,6 +272,7 @@ public class TileEntityProcessProgrammer extends TileEntity
                 task.put("slot", currentSlot);
                 task.put("stack", filter.getFluidInSlot(0).copy());
                 task.put("isOutput", isCurrentOutput);
+				task.put("subinterface", currentSubinterface);
                 task.put("type", "fluid");
                 tasks.put(currentTask, task);
             } else {
@@ -283,30 +293,41 @@ public class TileEntityProcessProgrammer extends TileEntity
         tasks.clear();
     }
 
+	public CraftingProcess getProcess(){
+		return new CraftingProcess(getProcessNBT());
+	}
+
+	public CompoundTag getProcessNBT(){
+		CompoundTag data = new CompoundTag();
+		CompoundTag taskData = new CompoundTag();
+		tasks.forEach((K, V) -> {
+			CompoundTag task = new CompoundTag();
+			task.putInt("id", K);
+			task.putString("type", (String) V.get("type"));
+			task.putInt("slot", (Integer) V.get("slot"));
+			task.putBoolean("isOutput", (Boolean) V.get("isOutput"));
+			task.putBoolean("isOutput", (Boolean) V.get("isOutput"));
+			task.putInt("subinterface", (Integer) V.get("subinterface"));
+			CompoundTag stack = new CompoundTag();
+			if (V.get("type") == "item") {
+				((ItemStack) V.get("stack")).writeToNBT(stack);
+			} else if (V.get("type") == "fluid") {
+				((FluidStack) V.get("stack")).writeToNBT(stack);
+			}
+			task.putCompound("stack", stack);
+			taskData.putCompound("task" + K, task);
+		});
+		data.putCompound("tasks", taskData);
+		data.putString("processName", currentProcessName);
+		return data;
+	}
+
     public void saveProcess() {
         if (getItem(1) != null && getItem(1).getItem() instanceof ItemAdvRecipeDisc) {
-            CompoundTag data = new CompoundTag();
-            CompoundTag taskData = new CompoundTag();
-            tasks.forEach((K, V) -> {
-                CompoundTag task = new CompoundTag();
-                task.putInt("id", K);
-                task.putString("type", (String) V.get("type"));
-                task.putInt("slot", (Integer) V.get("slot"));
-                task.putBoolean("isOutput", (Boolean) V.get("isOutput"));
-                CompoundTag stack = new CompoundTag();
-                if (V.get("type") == "item") {
-                    ((ItemStack) V.get("stack")).writeToNBT(stack);
-                } else if (V.get("type") == "fluid") {
-                    ((FluidStack) V.get("stack")).writeToNBT(stack);
-                }
-                task.putCompound("stack", stack);
-                taskData.putCompound("task" + K, task);
-            });
-            getItem(1).getData().putString("name", "Adv. Recipe Disc: " + currentProcessName);
-            getItem(1).getData().putBoolean("overrideName", true);
-            data.putCompound("tasks", taskData);
-            data.putString("processName", currentProcessName);
-            getItem(1).getData().putCompound("disc", data);
+			CompoundTag data = getItem(1).getData();
+	        data.putString("name", "Adv. Recipe Disc: " + currentProcessName);
+            data.putBoolean("overrideName", true);
+            data.putCompound("disc", getProcessNBT());
         }
     }
 
@@ -325,6 +346,7 @@ public class TileEntityProcessProgrammer extends TileEntity
 
     public int currentTask = 0;
     public int currentSlot = 0;
+	public int currentSubinterface = 0;
     public boolean isCurrentOutput = false;
     public String currentProcessName = "";
     public String selectedType;

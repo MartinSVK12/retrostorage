@@ -11,6 +11,8 @@ import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 import java.util.List;
 
 public interface IProcessor {
+	int getId();
+
     List<NetworkCraftable> getCraftables();
 
     boolean isInUse();

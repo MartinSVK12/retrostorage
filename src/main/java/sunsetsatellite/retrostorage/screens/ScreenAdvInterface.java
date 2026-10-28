@@ -25,7 +25,12 @@ public class ScreenAdvInterface extends ScreenContainerAbstract {
         if(tile.workingTile != null && tile.workingTile instanceof TileEntity){
             Vec3i pos = new Vec3i(((TileEntity) tile.workingTile).tilePos);
 			drawStringNoShadow(fontRenderer,tile.workingTile.getClass().getSimpleName().replace("TileEntity","")+" at "+pos,0,-10,0xFFFFFF);
-        }
+        } else {
+			drawStringNoShadow(fontRenderer,"No machine connected!",0,-10,0xFFFFFF);
+		}
+		if(!tile.subinterfaces.isEmpty()){
+			drawStringNoShadow(fontRenderer,"Subinterfaces connected: "+tile.subinterfaces.size(),0,-20,0xFFFFFF);
+		}
 
     }
 

@@ -10,6 +10,7 @@ import net.minecraft.core.player.inventory.container.Container;
 import org.jspecify.annotations.NonNull;
 import sunsetsatellite.catalyst.core.util.Direction;
 import sunsetsatellite.catalyst.core.util.io.ItemStackList;
+import sunsetsatellite.catalyst.core.util.vector.Vec3i;
 import sunsetsatellite.catalyst.fluids.api.IFluidInventory;
 import sunsetsatellite.catalyst.fluids.util.FluidStack;
 import sunsetsatellite.catalyst.fluids.util.FluidStackList;
@@ -21,9 +22,7 @@ import sunsetsatellite.retrostorage.util.crafting.CraftingTask;
 import sunsetsatellite.retrostorage.util.crafting.NetworkCraftable;
 import sunsetsatellite.retrostorage.util.crafting.ProcessNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TileEntityAdvInterface extends TileEntityNetworkDevice
@@ -31,6 +30,8 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 
     private ItemStack[] contents;
     public HashMap<Direction, TileEntity> connectedTiles = new HashMap<>();
+	public Set<Vec3i> subintPositions = new HashSet<>();
+	public HashMap<Integer, IProcessor> subinterfaces = new HashMap<>();
     public Container workingTile;
     public IFluidInventory workingFluidTile;
     public ProcessNode workingNode;
@@ -99,9 +100,9 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public void readAdditionalData(@NonNull CompoundTag CompoundTag) {
+    public void readAdditionalData(@NonNull CompoundTag compoundTag) {
 
-        ListTag listTag = CompoundTag.getList("Items");
+        ListTag listTag = compoundTag.getList("Items");
         contents = new ItemStack[getContainerSize()];
         for (int i = 0; i < listTag.tagCount(); i++) {
             CompoundTag CompoundTag1 = (CompoundTag) listTag.tagAt(i);
@@ -110,11 +111,23 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                 contents[j] = ItemStack.readItemStackFromNbt(CompoundTag1);
             }
         }
+		ListTag list2Tag = compoundTag.getList("SubInterfaces");
+		for (int i = 0; i < list2Tag.tagCount(); i++) {
+			CompoundTag tag = (CompoundTag) list2Tag.tagAt(i);
+			subintPositions.add(new Vec3i(tag));
+		}
     }
 
     @Override
-    public void writeAdditionalData(@NonNull CompoundTag CompoundTag) {
+    public void writeAdditionalData(@NonNull CompoundTag compoundTag) {
 
+		ListTag subIntTag = new ListTag();
+		for (Vec3i pos : subintPositions) {
+			CompoundTag tag = new CompoundTag();
+			pos.writeToNBT(tag);
+			subIntTag.addTag(tag);
+		}
+		compoundTag.put("SubInterfaces", subIntTag);
         ListTag listTag = new ListTag();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -124,7 +137,7 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 				listTag.addTag(CompoundTag1);
             }
         }
-        CompoundTag.put("Items", listTag);
+        compoundTag.put("Items", listTag);
     }
 
     @Override
@@ -132,47 +145,34 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return 64;
     }
 
-    public int getInventorySlotContainItem(int itemID, int itemDamage) {
-        for (int i2 = 0; i2 < this.contents.length; ++i2) {
-            if (this.contents[i2] != null && this.contents[i2].itemID == itemID && this.contents[i2].getMetadata() == itemDamage) {
-                return i2;
-            }
-        }
-
-        return -1;
-    }
-
     @Override
     public void tick() {
         super.tick();
         if (worldObj != null && worldObj.isClientSide) return;
         if (worldObj != null && network != null && getController() != null) {
+			if(subintPositions.size() != subinterfaces.size()){
+				subinterfaces.clear();
+				subintPositions.forEach((pos) -> {
+					TileEntity tile = worldObj.getTileEntity(pos.tilePos());
+					if(tile instanceof TileEntitySubinterface subint) {
+						subinterfaces.put(subint.getId(), subint);
+					}
+				});
+			}
             ArrayList<Class<?>> tiles = new ArrayList<>();
             tiles.add(Container.class);
             tiles.add(IFluidInventory.class);
             connectedTiles = getConnectedTileEntity(tiles);
             TileEntity tileEntity = Direction.getDirectionFromSide(getBlockMeta()).getTileEntity(worldObj, this);
-            int i = 1;
             if (tileEntity instanceof Container && !(tileEntity instanceof TileEntityAdvInterface)) {
                 workingTile = (Container) tileEntity;
             }
             if (tileEntity instanceof IFluidInventory && !(tileEntity instanceof TileEntityAdvInterface)) {
                 workingFluidTile = (IFluidInventory) tileEntity;
             }
-            /*for (TileEntity tile : connectedTiles.values()) {
-
-                if ((tile instanceof Container || tile instanceof IFluidInventory) && !(tile instanceof TileEntityAdvInterface)) {
-                    break;
-                }
-
-                i++;
-            }*/
-            if (i >= 6) {
-                workingTile = null;
-            }
-
-            if (isInUse() && (workingTile != null || workingFluidTile != null)) {
+			if (isInUse() && (workingTile != null || workingFluidTile != null)) {
                 for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+					if(step.subinterface != getId()) continue;
                     if (step.output && step.type == StackType.ITEM && workingTile != null) {
                         ItemStack slotStack = workingTile.getItem(step.slot);
                         ItemStack stepStack = step.stack;
@@ -205,6 +205,28 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         }
     }
 
+	public void insertFluidFromSlot(FluidStack fluidStack, int slot) {
+		FluidStack slotStack = workingFluidTile.getFluidInSlot(slot);
+		if (slotStack == null) {
+			return;
+		}
+		if(fluidStack.isFluidEqual(slotStack)){
+			FluidStack remainder = workingTask.insertFromProcess(slotStack);
+			workingFluidTile.setFluidInSlot(slot, remainder);
+		}
+	}
+
+	public void insertItemFromSlot(ItemStack stack, int slot) {
+		ItemStack slotStack = workingTile.getItem(slot);
+		if (slotStack == null) {
+			return;
+		}
+		if(stack.isItemEqual(slotStack)){
+			ItemStack remainder = workingTask.insertFromProcess(slotStack);
+			workingTile.setItem(slot, remainder);
+		}
+	}
+
     public ArrayList<CraftingProcess> getProcesses() {
         ArrayList<CraftingProcess> processes = new ArrayList<>();
         for (ItemStack stack : contents) {
@@ -226,6 +248,11 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
 	@Override
 	public void sort() {
 
+	}
+
+	@Override
+	public int getId() {
+		return 0;
 	}
 
 	@Override
@@ -267,8 +294,29 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         if (!isInUse() || workingTile == null) return false;
         if (!canInsertItems(items)) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+			if(step.subinterface != getId()) {
+				if(!subinterfaces.containsKey(step.subinterface)){
+					return false;
+				}
+				subinterfaces.get(step.subinterface).setFocus(workingNode, workingTask);
+				boolean b = subinterfaces.get(step.subinterface).insertItems(items);
+				if(!b) return false;
+				continue;
+			}
             if (!step.output && step.type == StackType.ITEM) {
-                ItemStack slotStack = workingTile.getItem(step.slot);
+				int slot = step.slot;
+				if(step.slot == -1) {
+					for (int i = 0; i < workingTile.getContainerSize(); i++) {
+						if (canInsertItem(i, step.stack, items)) {
+							slot = i;
+							break;
+						}
+					}
+					if(slot == -1) {
+						return false;
+					}
+				}
+                ItemStack slotStack = workingTile.getItem(slot);
                 ItemStack stepStack = step.stack;
                 if(stepStack == null) continue;
                 if(slotStack == null || stepStack.isItemEqual(slotStack)){
@@ -277,9 +325,9 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
                         return false;
                     }
                     if (slotStack == null) {
-                        workingTile.setItem(step.slot, removed);
+                        workingTile.setItem(slot, removed);
                     } else {
-                        workingTile.getItem(step.slot).stackSize += removed.stackSize;
+                        workingTile.getItem(slot).stackSize += removed.stackSize;
                     }
                 }
             }
@@ -287,37 +335,73 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return true;
     }
 
+	public boolean canInsertItem(int slot, ItemStack stack, ItemStackList items){
+		ItemStack slotStack = workingTile.getItem(slot);
+		if (slotStack != null) {
+			if(stack == null) return true;
+			if (!slotStack.isItemEqual(stack)) {
+				return false;
+			} else {
+				ItemStack testStack = items.get(stack.itemID, stack.getMetadata(), stack.getData());
+				if (testStack == null) {
+					return false;
+				}
+				if (testStack.stackSize < stack.stackSize) {
+					return false;
+				}
+				if (slotStack.stackSize + stack.stackSize > slotStack.getMaxStackSize()) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
     @Override
     public boolean canInsertItems(ItemStackList items) {
         boolean can = true;
         if (!isInUse() || workingTile == null) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+			if(step.subinterface != getId()) {
+				if(!subinterfaces.containsKey(step.subinterface)){
+					return false;
+				}
+				subinterfaces.get(step.subinterface).setFocus(workingNode, workingTask);
+				can = subinterfaces.get(step.subinterface).canInsertItems(items);
+				if(!can) break;
+				continue;
+			}
             if (!step.output && step.type == StackType.ITEM) {
-                ItemStack slotStack = workingTile.getItem(step.slot);
-                ItemStack stepStack = step.stack;
-                if (slotStack != null) {
-                    if(stepStack == null) continue;
-                    if (!slotStack.isItemEqual(stepStack)) {
-                        can = false;
-                        break;
-                    } else {
-                        ItemStack testStack = items.get(stepStack.itemID, stepStack.getMetadata(), stepStack.getData());
-                        if (testStack == null) {
-                            can = false;
-                            break;
-                        }
-                        if (testStack.stackSize < stepStack.stackSize) {
-                            can = false;
-                            break;
-                        }
-                        if (slotStack.stackSize + stepStack.stackSize > slotStack.getMaxStackSize()) {
-                            can = false;
-                            break;
-                        }
-                    }
-                }
+				int slot = step.slot;
+				if(step.slot == -1) {
+					for (int i = 0; i < workingTile.getContainerSize(); i++) {
+						if (canInsertItem(i, step.stack, items)) {
+							slot = i;
+							break;
+						}
+					}
+					if(slot == -1) {
+						return false;
+					}
+				}
+				if (!canInsertItem(slot, step.stack, items)) {
+					can = false;
+					break;
+				}
             } else if(step.output && step.type == StackType.ITEM){
-                ItemStack slotStack = workingTile.getItem(step.slot);
+				int slot = step.slot;
+				if(step.slot == -1) {
+					for (int i = 0; i < workingTile.getContainerSize(); i++) {
+						if (canInsertItem(i, step.stack, items)) {
+							slot = i;
+							break;
+						}
+					}
+					if(slot == -1) {
+						return false;
+					}
+				}
+                ItemStack slotStack = workingTile.getItem(slot);
                 ItemStack stepStack = step.stack;
                 if(stepStack == null) continue;
                 if(slotStack != null && !stepStack.isItemEqual(slotStack)) can = false;
@@ -327,23 +411,44 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
     }
 
     @Override
-    public boolean insertFluids(FluidStackList items) {
-        if(!canInsertFluids(items)) return false;
-        if(items.isEmpty()) return true;
+    public boolean insertFluids(FluidStackList fluids) {
+        if(!canInsertFluids(fluids)) return false;
+        if(fluids.isEmpty()) return true;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+			if(step.subinterface != getId()) {
+				if(!subinterfaces.containsKey(step.subinterface)){
+					return false;
+				}
+				subinterfaces.get(step.subinterface).setFocus(workingNode, workingTask);
+				boolean b = subinterfaces.get(step.subinterface).insertFluids(fluids);
+				if(!b) return false;
+				continue;
+			}
             if (!step.output && step.type == StackType.FLUID) {
-                FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
+				int slot = step.slot;
+				if(step.slot == -1) {
+					for (int i = 0; i < workingFluidTile.getFluidInventorySize(); i++) {
+						if (canInsertFluid(i, step.fluidStack, fluids)) {
+							slot = i;
+							break;
+						}
+					}
+					if(slot == -1) {
+						return false;
+					}
+				}
+                FluidStack slotStack = workingFluidTile.getFluidInSlot(slot);
                 FluidStack stepStack = step.fluidStack;
                 if(stepStack == null) continue;
                 if(slotStack == null || stepStack.isFluidEqual(slotStack)){
-                    FluidStack removed = items.removeById(stepStack.fluid.getFirstId(), stepStack.amount, false);
+                    FluidStack removed = fluids.removeById(stepStack.fluid.getFirstId(), stepStack.amount, false);
                     if (removed == null) {
                         return false;
                     }
                     if (slotStack == null) {
-                        workingFluidTile.setFluidInSlot(step.slot, removed);
+                        workingFluidTile.setFluidInSlot(slot, removed);
                     } else {
-                        workingFluidTile.getFluidInSlot(step.slot).amount += removed.amount;
+                        workingFluidTile.getFluidInSlot(slot).amount += removed.amount;
                     }
                 }
             }
@@ -351,38 +456,74 @@ public class TileEntityAdvInterface extends TileEntityNetworkDevice
         return true;
     }
 
+	public boolean canInsertFluid(int slot, FluidStack stack, FluidStackList items){
+		FluidStack slotStack = workingFluidTile.getFluidInSlot(slot);
+		if (slotStack != null) {
+			if(stack == null) return true;
+			if (!slotStack.isFluidEqual(stack)) {
+				return false;
+			} else {
+				FluidStack testStack = items.getById(stack.fluid.getFirstId());
+				if (testStack == null) {
+					return false;
+				}
+				if (testStack.amount < stack.amount) {
+					return false;
+				}
+				if (slotStack.amount + stack.amount > workingFluidTile.getFluidCapacityForSlot(slot)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
     @Override
-    public boolean canInsertFluids(FluidStackList items) {
-        if(items.isEmpty()) return true;
+    public boolean canInsertFluids(FluidStackList fluids) {
+        if(fluids.isEmpty()) return true;
         boolean can = true;
         if (!isInUse() || workingFluidTile == null) return false;
         for (CraftingProcess.Step step : workingNode.getProcess().steps) {
+			if(step.subinterface != getId()) {
+				if(!subinterfaces.containsKey(step.subinterface)){
+					return false;
+				}
+				subinterfaces.get(step.subinterface).setFocus(workingNode, workingTask);
+				can = subinterfaces.get(step.subinterface).canInsertFluids(fluids);
+				if(!can) break;
+				continue;
+			}
             if (!step.output && step.type == StackType.FLUID) {
-                FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
-                FluidStack stepStack = step.fluidStack;
-                if (slotStack != null) {
-                    if(stepStack == null) continue;
-                    if (!slotStack.isFluidEqual(stepStack)) {
-                        can = false;
-                        break;
-                    } else {
-                        FluidStack testStack = items.getById(stepStack.fluid.getFirstId());
-                        if (testStack == null) {
-                            can = false;
-                            break;
-                        }
-                        if (testStack.amount < stepStack.amount) {
-                            can = false;
-                            break;
-                        }
-                        if (slotStack.amount + stepStack.amount > workingFluidTile.getFluidCapacityForSlot(step.slot)) {
-                            can = false;
-                            break;
-                        }
-                    }
-                }
+				int slot = step.slot;
+				if(step.slot == -1) {
+					for (int i = 0; i < workingFluidTile.getFluidInventorySize(); i++) {
+						if (canInsertFluid(i, step.fluidStack, fluids)) {
+							slot = i;
+							break;
+						}
+					}
+					if(slot == -1) {
+						return false;
+					}
+				}
+				if (!canInsertFluid(slot, step.fluidStack, fluids)) {
+					can = false;
+					break;
+				}
             } else if(step.output && step.type == StackType.FLUID){
-                FluidStack slotStack = workingFluidTile.getFluidInSlot(step.slot);
+				int slot = step.slot;
+				if(step.slot == -1) {
+					for (int i = 0; i < workingFluidTile.getFluidInventorySize(); i++) {
+						if (canInsertFluid(i, step.fluidStack, fluids)) {
+							slot = i;
+							break;
+						}
+					}
+					if(slot == -1) {
+						return false;
+					}
+				}
+                FluidStack slotStack = workingFluidTile.getFluidInSlot(slot);
                 FluidStack stepStack = step.fluidStack;
                 if(stepStack == null) continue;
                 if(slotStack != null && !stepStack.isFluidEqual(slotStack)) can = false;

@@ -75,6 +75,8 @@ tile.retrostorage.processProgrammer.name=Process Programmer
 tile.retrostorage.processProgrammer.desc=Used to program process tasks onto an <Adv. Recipe Disc>.
 tile.retrostorage.advInterface.name=Interface
 tile.retrostorage.advInterface.desc=Executes tasks from <Adv. Recipe Discs> on demand.
+tile.retrostorage.subinterface.name=Subinterface
+tile.retrostorage.subinterface.desc=Executes tasks from another <Interface> on demand. Useful for multiblock machines.
 tile.retrostorage.wirelessLink.name=Wireless Link
 tile.retrostorage.wirelessLink.desc=This machine is currently non-functional, sorry.
 tile.retrostorage.energyAcceptor.name=Energy Acceptor
@@ -139,7 +141,7 @@ item.retrostorage.mobileFluidTerminal.desc=Remote access to a placed <Digital Fl
 item.retrostorage.mobileRequestTerminal.name=Mobile Request Terminal
 item.retrostorage.mobileRequestTerminal.desc=Remote access to a placed <Request Terminal>. Chunk with the bound block needs to be loaded.
 item.retrostorage.linkingCard.name=Linking Card
-item.retrostorage.linkingCard.desc=This item doesn't do anything for now.
+item.retrostorage.linkingCard.desc=Connects a machine to another machine.
 item.retrostorage.blankCard.name=Blank Card
 item.retrostorage.blankCard.desc=Template for <Cards>.
 

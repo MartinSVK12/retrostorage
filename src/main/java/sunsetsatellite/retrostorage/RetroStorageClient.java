@@ -40,5 +40,6 @@ public class RetroStorageClient implements ClientModInitializer {
 		Catalyst.GUIS.register(key("gui/fluid_redstone_emitter"), new TileGuiEntry<>(TileEntityFluidRedstoneEmitter.class, MenuFluidRedstoneEmitter.class, ScreenFluidRedstoneEmitter::new));
 		Catalyst.GUIS.register(key("gui/storage_bus"), new TileGuiEntry<>(TileEntityStorageBus.class, MenuStorageBus.class, ScreenStorageBus::new));
 		Catalyst.GUIS.register(key("gui/fluid_storage_bus"), new TileGuiEntry<>(TileEntityFluidStorageBus.class, MenuFluidStorageBus.class, ScreenFluidStorageBus::new));
+		Catalyst.GUIS.register(key("gui/subinterface"), new TileGuiEntry<>(TileEntitySubinterface.class, MenuSubinterface.class, ScreenSubinterface::new));
 	}
 }

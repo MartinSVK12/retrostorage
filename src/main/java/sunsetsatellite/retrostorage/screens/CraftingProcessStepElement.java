@@ -49,15 +49,15 @@ public class CraftingProcessStepElement extends SlotElement {
 	protected void renderItem(int index, int x, int y, int height, TessellatorGeneral tessellator) {
 		CraftingProcess.Step step = this.parent.list.get(index);
 		int color = 0xFFFFFF;
-		drawString(String.format("Step %d:",step.id),x+2,y+1, color);
-		drawString(String.format("%s%s %s %s%s %sslot %d",
+		drawString(String.format("Step %d: %s",step.id, step.subinterface != 0 ? "(USING subint " + step.subinterface + ")" : ""),x+2,y+1, color);
+		drawString(String.format("%s%s %s %s%s %sslot %s",
 			!(step.output) ? TextFormatting.LIME : TextFormatting.RED,
 			!(step.output) ? "INSERT" : "EXTRACT",
 			step.type == StackType.ITEM ? TextFormatting.WHITE + "item" : TextFormatting.LIGHT_BLUE + "fluid",
 			!(step.output) ? TextFormatting.LIME : TextFormatting.RED,
 			!(step.output) ? "INTO" : "FROM",
 			TextFormatting.WHITE,
-			step.slot
+			(step.slot == -1 ? "*" : step.slot)
 		),x+2,y+12, 0x808080);
 		switch (step.type){
 			case ITEM: {

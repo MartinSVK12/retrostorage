@@ -20,6 +20,7 @@ import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShaped;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCraftingShapeless;
 import net.minecraft.core.data.registry.recipe.entry.RecipeEntryFurnace;
 import net.minecraft.core.data.tag.Tag;
+import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.Items;
 import net.minecraft.core.player.inventory.container.ContainerCrafting;
@@ -103,6 +104,7 @@ public class RetroStorage implements ModInitializer {
 		TileEntityDispatcher.addMapping(TileEntityStorageBus.class,id("storage_bus"));
 		TileEntityDispatcher.addMapping(TileEntityFluidStorageBus.class,id("fluid_storage_bus"));
 		TileEntityDispatcher.addMapping(TileEntityAdvAssembler.class,id("adv_assembler"));
+		TileEntityDispatcher.addMapping(TileEntitySubinterface.class,id("subinterface"));
 
         NetworkHandler.registerNetworkMessage(PacketTerminalRequestContents::new);
         NetworkHandler.registerNetworkMessage(PacketTerminalContents::new);
@@ -327,17 +329,17 @@ public class RetroStorage implements ModInitializer {
                 .addInput('B', Blocks.BLOCK_REDSTONE)
                 .create("redstone_core", new ItemStack(redstoneCore, 1));
 
-        /*RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
-                .addInput('1', new ItemStack(Item.dye, 1, 12))
-                .addInput('2', new ItemStack(Item.dye, 1, 4))
-                .addInput('3', new ItemStack(Item.dye, 1, 12))
-                .addInput('4', new ItemStack(Item.dye, 1, 4))
+        RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
+                .addInput('1', new ItemStack(Items.DYE, 1, 12))
+                .addInput('2', new ItemStack(Items.DYE, 1, 4))
+                .addInput('3', new ItemStack(Items.DYE, 1, 12))
+                .addInput('4', new ItemStack(Items.DYE, 1, 4))
                 .addInput('5', blankCard)
-                .addInput('6', new ItemStack(Item.dye, 1, 4))
-                .addInput('7', new ItemStack(Item.dye, 1, 12))
+                .addInput('6', new ItemStack(Items.DYE, 1, 4))
+                .addInput('7', new ItemStack(Items.DYE, 1, 12))
                 .addInput('8', chipWireless)
-                .addInput('9', new ItemStack(Item.dye, 1, 12))
-                .create("linking_card", new ItemStack(linkingCard, 1));*/
+                .addInput('9', new ItemStack(Items.DYE, 1, 12))
+                .create("linking_card", new ItemStack(linkingCard, 1));
 
         RecipeBuilder.Shaped(MOD_ID, "A", "T", "W")
                 .addInput('A', wirelessAntenna)
@@ -477,6 +479,17 @@ public class RetroStorage implements ModInitializer {
                 .addInput('8', advMachineCasing)
                 .addInput('9', Blocks.OBSIDIAN)
                 .create("adv_interface", new ItemStack(advInterface, 1));
+
+		RecipeBuilder.Shaped(MOD_ID, "123", "4 6", "789")
+			.addInput('1', Blocks.OBSIDIAN)
+			.addInput('2', advRecipeDisc)
+			.addInput('3', Blocks.OBSIDIAN)
+			.addInput('4', chipCrafting)
+			.addInput('6', chipDigitizer)
+			.addInput('7', Blocks.OBSIDIAN)
+			.addInput('8', advMachineCasing)
+			.addInput('9', Blocks.OBSIDIAN)
+			.create("adv_interface", new ItemStack(subinterface, 1));
 
 /*RecipeBuilder.Shaped(MOD_ID, "123", "456", "789")
         .addInput('2', chipWireless)

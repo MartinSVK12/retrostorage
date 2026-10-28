@@ -25,10 +25,11 @@ import java.util.Objects;
 public class ScreenProcessProgrammer extends ScreenFluidFake {
 
     public String selected = "item";
+	public ScreenCraftingProcess processScreen = null;
 
     public ScreenProcessProgrammer(ContainerInventory inventoryplayer, TileEntityProcessProgrammer tileEntityprocessprogrammer) {
         super(inventoryplayer, new MenuProcessProgrammer(inventoryplayer, tileEntityprocessprogrammer));
-        ySize = 220;
+        ySize = 240;
         tile = tileEntityprocessprogrammer;
         renderAmount = true;
     }
@@ -36,8 +37,9 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
     protected void drawGuiContainerForegroundLayer() {
         drawStringNoShadow(fontRenderer,"Process Programmer", 35, 6, 0x404040);
         drawStringNoShadow(fontRenderer,"Process:", 10, 24, 0x404040);
-        drawStringNoShadow(fontRenderer,"Step: " + tile.currentTask, 42, 50, 0x404040);
-        drawStringNoShadow(fontRenderer,"Slot: " + tile.currentSlot, 42, 75, 0x404040);
+        drawStringNoShadow(fontRenderer,"Step: " + tile.currentTask, 42, 47, 0x404040);
+        drawStringNoShadow(fontRenderer,"Slot: " + (tile.currentSlot == -1 ? "*" : tile.currentSlot), 42, 72, 0x404040);
+		drawStringNoShadow(fontRenderer,"Int: " + tile.currentSubinterface, 42, 97, 0x404040);
         drawStringNoShadow(fontRenderer,"Inventory", 8, (ySize - 95) + 2, 0x404040);
 
 
@@ -45,19 +47,22 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
 
     public void init() {
         super.init();
-        processName = new TextFieldElement(this, fontRenderer, Math.round((float) width / 2 - 31), Math.round((float) height / 2 - 92), 100, 20, Objects.equals(tile.currentProcessName, "") ? "New Process" : tile.currentProcessName, "Process name..");
-        buttons.add(new ButtonElement(0, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 12), 40, 20, "Save"));
-        buttons.add(new ButtonElement(1, Math.round((float) width / 2 + 31), Math.round((float) height / 2 - 12), 40, 20, "Clear"));
-        buttons.add(new ButtonElement(6, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 40), 40, 20, (tile.isCurrentOutput ? "Output" : "Input")));
-        buttons.add(new ButtonElement(7, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 65), 40, 20, "Set"));
+        processName = new TextFieldElement(this, fontRenderer, Math.round((float) width / 2 - 31), Math.round((float) height / 2 - 103), 100, 20, Objects.equals(tile.currentProcessName, "") ? "New Process" : tile.currentProcessName, "Process name..");
+        buttons.add(new ButtonElement(0, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 3), 40, 20, "Save"));
+        buttons.add(new ButtonElement(1, Math.round((float) width / 2 + 31), Math.round((float) height / 2 - 3), 40, 20, "Clear"));
+        buttons.add(new ButtonElement(6, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 31), 40, 20, (tile.isCurrentOutput ? "Output" : "Input")));
+        buttons.add(new ButtonElement(7, Math.round((float) width / 2 + 30), Math.round((float) height / 2 - 56), 40, 20, "Set"));
         //buttons.add();
-        buttons.add(new ButtonElement(2, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 65), 20, 20, "+"));
-        buttons.add(new ButtonElement(3, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 65), 20, 20, "-"));// /2 - 34, - 150*/
-        buttons.add(new ButtonElement(4, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 40), 20, 20, "+"));
-        buttons.add(new ButtonElement(5, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 40), 20, 20, "-"));// /2 - 34, - 150*/
+        buttons.add(new ButtonElement(2, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 80), 20, 20, "+"));
+        buttons.add(new ButtonElement(3, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 80), 20, 20, "-"));// /2 - 34, - 150*/
+        buttons.add(new ButtonElement(4, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 56), 20, 20, "+"));
+        buttons.add(new ButtonElement(5, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 56), 20, 20, "-"));// /2 - 34, - 150*/
 
-        buttons.add(new ButtonElement(8, Math.round((float) width / 2 - 27), Math.round((float) height / 2 - 12 + 20), 18, 4, ""));
-        buttons.add(new ButtonElement(9, Math.round((float) width / 2 - 8), Math.round((float) height / 2 - 12 + 20), 18, 4, ""));
+        buttons.add(new ButtonElement(8, Math.round((float) width / 2 - 27), Math.round((float) height / 2 - 12 + 31), 18, 5, ""));
+        buttons.add(new ButtonElement(9, Math.round((float) width / 2 - 8), Math.round((float) height / 2 - 12 + 31), 18, 5, ""));
+
+		buttons.add(new ButtonElement(10, Math.round((float) width / 2 - 5), Math.round((float) height / 2 - 31), 20, 20, "+"));
+		buttons.add(new ButtonElement(11, Math.round((float) width / 2 - 70), Math.round((float) height / 2 - 31), 20, 20, "-"));
 
         buttons.get(8).enabled = false;
     }
@@ -104,10 +109,12 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
                 tile.currentSlot++;
                 break;
             case 5:
-                if (tile.currentSlot > 0) tile.currentSlot--;
+                if (tile.currentSlot >= 0) tile.currentSlot--;
                 break;
             case 7:
                 tile.setTask(selected);
+				processScreen = new ScreenCraftingProcess(tile.getProcess());
+				processScreen.opened(256,256);
                 break;
             case 8:
                 selected = "item";
@@ -118,6 +125,12 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
                 selected = "fluid";
                 guibutton.enabled = false;
                 buttons.get(8).enabled = true;
+                break;
+            case 10:
+                tile.currentSubinterface++;
+                break;
+            case 11:
+                tile.currentSubinterface--;
                 break;
         }
         if(EnvironmentHelper.isMultiplayerClient()){
@@ -196,6 +209,14 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
             }
         }
         super.render(mouseX, mouseY, partialTick);
+		GLRenderer.pushFrame();
+		if(processScreen != null){
+			int centerX = (this.width - this.xSize) / 2 - (xSize + (xSize/2));
+			int centerY = (this.height - this.ySize) / 2;
+			GLRenderer.modelM4f().translate(centerX, centerY,0);
+			processScreen.render(mouseX, mouseY, partialTick);
+		}
+		GLRenderer.popFrame();
     }
 
     public void onClosed() {

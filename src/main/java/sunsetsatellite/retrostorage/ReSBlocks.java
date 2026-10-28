@@ -1,6 +1,5 @@
 package sunsetsatellite.retrostorage;
 
-import net.minecraft.client.render.block.model.BlockModelHorizontalRotation;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.BlockLogic;
 import net.minecraft.core.block.BlockLogicSupplier;
@@ -48,6 +47,7 @@ public class ReSBlocks extends DataInitializer {
     public static Block<?> storageBus;
     public static Block<?> fluidStorageBus;
     public static Block<?> energyAcceptor;;
+	public static Block<?> subinterface;
 
     public void afterBlockInit() {
         init();
@@ -224,6 +224,12 @@ public class ReSBlocks extends DataInitializer {
                 new MachineTextures(false)
                         .withDefaultTexture("energy_acceptor")
         );
+
+		subinterface = customBlock(defaultBuilder(), "subinterface", "subinterface", "subinterface", 2,
+			(block) -> new BlockLogicSubinterface(block, TileEntitySubinterface::new, "subinterface"),
+			new MachineTextures(true)
+				.withDefaultTexture("adv_subinterface_side")
+		);
 
         setInitialized(true);
     }

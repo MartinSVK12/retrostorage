@@ -189,7 +189,12 @@ public class TileEntityAssembler extends TileEntityNetworkDevice
         return recipes;
     }
 
-    @Override
+	@Override
+	public int getId() {
+		return 0;
+	}
+
+	@Override
     public List<NetworkCraftable> getCraftables() {
         if(!craftableCache.isEmpty()){
             return craftableCache;

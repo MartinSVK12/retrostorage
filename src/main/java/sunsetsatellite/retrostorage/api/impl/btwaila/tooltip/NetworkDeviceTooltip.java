@@ -22,6 +22,7 @@ public class NetworkDeviceTooltip extends TileTooltip<TileEntityNetworkDevice> {
         this.addClass(TileEntityFluidDiscDrive.class);
         this.addClass(TileEntityRedstoneEmitter.class);
         this.addClass(TileEntityAdvInterface.class);
+		this.addClass(TileEntitySubinterface.class);
     }
 
     @Override

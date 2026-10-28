@@ -112,7 +112,6 @@ public class ReSItems extends DataInitializer {
         chipWireless = simpleItem("chipWireless", "chip_wireless", "chipWireless", "wireless_chip");
         wirelessAntenna = simpleItem("wirelessAntenna", "wireless_antenna", "wirelessAntenna", "wireless_antenna");
         redstoneCore = simpleItem("redstoneCore", "redstone_core", "redstoneCore", "redstone_core");
-        linkingCard = simpleItem("linkingCard", "linking_card", "linkingCard", "linking_card");
         blankCard = simpleItem("blankCard", "blank_card", "blankCard", "blank_card");
         blankDisc = simpleItem("blankDisc", "blank_disc", "blankDisc", "blank_disc");
 
@@ -136,7 +135,8 @@ public class ReSItems extends DataInitializer {
         advRecipeDisc = customItem(()-> new ItemAdvRecipeDisc("advRecipeDisc",key("item/adv_recipe_disc"),item("advRecipeDisc")),"adv_recipe_disc");
 
         slotIdFinder = simpleItem("slotIdFinder", "slot_id_finder", "slotIdFinder", "id_finder");
-        mobileTerminal = customItem(()-> new ItemMobileTerminal("mobileTerminal",key("item/mobile_terminal"),item("mobileTerminal")),"mobile_terminal");
+		linkingCard = customItem(()-> new ItemLinkingCard("linkingCard",key("item/linking_card"),item("linkingCard")),"linking_card");
+		mobileTerminal = customItem(()-> new ItemMobileTerminal("mobileTerminal",key("item/mobile_terminal"),item("mobileTerminal")),"mobile_terminal");
         mobileFluidTerminal = customItem(()-> new ItemMobileTerminal("mobileFluidTerminal",key("item/mobile_fluid_terminal"),item("mobileFluidTerminal")),"mobile_fluid_terminal");
         mobileRequestTerminal = customItem(()-> new ItemMobileTerminal("mobileRequestTerminal",key("item/mobile_request_terminal"),item("mobileRequestTerminal")),"mobile_request_terminal");
 
