@@ -223,5 +223,5 @@ public class ScreenProcessProgrammer extends ScreenFluidFake {
     }
 
     public TextFieldElement processName;
-    private final TileEntityProcessProgrammer tile;
+    public final TileEntityProcessProgrammer tile;
 }

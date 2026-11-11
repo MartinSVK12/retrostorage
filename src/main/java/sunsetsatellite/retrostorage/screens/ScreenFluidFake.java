@@ -1,6 +1,8 @@
 
 package sunsetsatellite.retrostorage.screens;
 
+import com.rewindmc.retroemi.RetroEMI;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.ButtonElement;
 import net.minecraft.client.gui.ItemElement;
 import net.minecraft.client.gui.TooltipElement;
@@ -49,7 +51,14 @@ public class ScreenFluidFake extends ScreenFluid {
 		this.drawGuiContainerBackgroundLayer(partialTick);
 		GLRenderer.pushFrame();
 		GLRenderer.modelM4f().translate((float)centerX, (float)centerY, 0.0F);
+		if(FabricLoader.getInstance().isModLoaded("emi")) {
+			RetroEMI.renderForegroundPre(this, mx, my);
+			RetroEMI.renderBackground(this, mx, my);
+		}
 		this.drawGuiContainerForegroundLayer();
+		if(FabricLoader.getInstance().isModLoaded("emi")) {
+			RetroEMI.renderForegroundPost(this, mx, my);
+		}
 		Slot slot = null;
 
 		for(int i = 0; i < this.inventorySlots.slots.size(); ++i) {
@@ -74,6 +83,9 @@ public class ScreenFluidFake extends ScreenFluid {
 			}
 		}
 
+		if(FabricLoader.getInstance().isModLoaded("emi")) {
+			RetroEMI.drawSlotOverlays(this);
+		}
 		GLRenderer.popFrame();
 		//Screen
 		for(ButtonElement button : this.buttons) {
@@ -85,6 +97,9 @@ public class ScreenFluidFake extends ScreenFluid {
 			this.itemElement.render(grabbedItem, mx - centerX - 8, my - centerY - 8);
 		}
 
+		if(FabricLoader.getInstance().isModLoaded("emi")) {
+			RetroEMI.drawSlotOverlays(this);
+		}
 		GLRenderer.popFrame();
 		GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (containerInventory.getHeldItemStack() == null && slot != null && slot.hasItem()) {
