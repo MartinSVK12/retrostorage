@@ -143,25 +143,29 @@ public class ReSBlocks extends DataInitializer {
         importer = customBlock(defaultBuilder(), "importer", "item_importer", "importer", 2,
                 (block) -> new BlockLogicImporter(block, TileEntityImporter::new, "item_importer"),
                 new MachineTextures(false)
-                        .withDefaultTexture("importer")
+					.withDefaultTexture("importer")
+					.withDefaultNorthTexture("importer_front")
         );
 
         fluidImporter = customBlock(defaultBuilder(), "fluidImporter", "fluid_importer", "fluidImporter", 2,
                 (block) -> new BlockLogicFluidImporter(block, TileEntityFluidImporter::new, "fluid_importer"),
                 new MachineTextures(false)
-                        .withDefaultTexture("fluid_importer")
+					.withDefaultTexture("fluid_importer")
+					.withDefaultNorthTexture("fluid_importer_front")
         );
 
         exporter = customBlock(defaultBuilder(), "exporter", "item_exporter", "exporter", 2,
                 (block) -> new BlockLogicExporter(block, TileEntityExporter::new, "item_exporter"),
                 new MachineTextures(false)
-                        .withDefaultTexture("exporter")
+					.withDefaultTexture("exporter")
+					.withDefaultNorthTexture("exporter_front")
         );
 
         fluidExporter = customBlock(defaultBuilder(), "fluidExporter", "fluid_exporter", "fluidExporter", 2,
                 (block) -> new BlockLogicFluidExporter(block, TileEntityFluidExporter::new, "fluid_exporter"),
                 new MachineTextures(false)
-                        .withDefaultTexture("fluid_exporter")
+					.withDefaultTexture("fluid_exporter")
+					.withDefaultNorthTexture("fluid_exporter_front")
         );
 
         processProgrammer = customBlock(defaultBuilder(), "processProgrammer", "process_programmer", "processProgrammer", 2,
@@ -174,7 +178,8 @@ public class ReSBlocks extends DataInitializer {
         advInterface = customBlock(defaultBuilder(), "advInterface", "adv_interface", "advInterface", 2,
                 (block) -> new BlockLogicAdvInterface(block, TileEntityAdvInterface::new, "adv_interface"),
                 new MachineTextures(true)
-                        .withDefaultTexture("adv_interface_side")
+					.withDefaultTexture("adv_interface_side")
+					.withDefaultNorthTexture("adv_interface_front")
         );
 
         craftingCoprocessor = customBlock(defaultBuilder(), "craftingCoprocessor", "crafting_coprocessor", "craftingCoprocessor", 2,
@@ -229,6 +234,7 @@ public class ReSBlocks extends DataInitializer {
 			(block) -> new BlockLogicSubinterface(block, TileEntitySubinterface::new, "subinterface"),
 			new MachineTextures(true)
 				.withDefaultTexture("adv_subinterface_side")
+				.withDefaultNorthTexture("adv_subinterface_front")
 		);
 
         setInitialized(true);

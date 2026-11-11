@@ -4,6 +4,7 @@ import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.Container;
 import org.jspecify.annotations.NonNull;
@@ -252,6 +253,34 @@ public class TileEntityProcessProgrammer extends TileEntity
     public int getMaxStackSize() {
         return 64;
     }
+
+	public void setTask(ItemStack stack, int slot, boolean isOutput, int subinterface) {
+		if (stack != null) {
+			HashMap<String, Object> task = new HashMap<>();
+			task.put("slot", slot);
+			task.put("stack", stack.copy());
+			task.put("isOutput", isOutput);
+			task.put("subinterface", subinterface);
+			task.put("type", "item");
+			tasks.put(currentTask, task);
+		} else {
+			tasks.remove(currentTask);
+		}
+	}
+
+	public void setTask(FluidStack stack, int slot, boolean isOutput, int subinterface) {
+		if (stack != null) {
+			HashMap<String, Object> task = new HashMap<>();
+			task.put("slot", slot);
+			task.put("stack", stack.copy());
+			task.put("isOutput", isOutput);
+			task.put("subinterface", subinterface);
+			task.put("type", "fluid");
+			tasks.put(currentTask, task);
+		} else {
+			tasks.remove(currentTask);
+		}
+	}
 
     public void setTask(String selected) {
         if (Objects.equals(selected, "item")) {
