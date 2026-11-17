@@ -1,2 +1,4 @@
-- Added support for bEMI.
-- Reimplemented support for multiparts.
+- Added the Subinterface.
+- Process programmer now shows the contents of a recipe disc.
+- Fronts of blocks now have unique textures.
+- Fix bug where bEMI didn't render in the process programmer.
